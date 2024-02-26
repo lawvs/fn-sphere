@@ -1,0 +1,25 @@
+.DS_Store
+.idea
+.vscode/*
+!.vscode/tasks.json
+!.vscode/settings.template.json
+!.vscode/launch.template.json
+!.vscode/extensions.json
+node_modules
+*.tgz
+
+# code coverage
+/.nyc_output
+/.coverage
+
+# Build out
+dist/
+build
+temp
+tsconfig.tsbuildinfo
+tsconfig.*.tsbuildinfo
+.next
+next-env.d.ts
+
+# Cache
+.eslintcache
