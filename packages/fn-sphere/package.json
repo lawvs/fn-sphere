@@ -1,0 +1,27 @@
+{
+  "name": "fn-sphere",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typeCheck": "tsc --noEmit",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "dependencies": {
+    "zod": "^3.22.4",
+    "zod-compare": "^0.1.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts"
+  }
+}
