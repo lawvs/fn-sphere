@@ -1,4 +1,5 @@
 import type { FnSchema } from "./types.js";
+import { createFilterSphere } from "./filter/index.js";
 import { isSameType } from "zod-compare";
 import { z } from "zod";
 
@@ -68,6 +69,15 @@ export const createFnSphere = () => {
     return filterFn as FnSchema<z.ZodFunction<Input, Output>>[];
   };
 
+  const setupFilter = <S>(schema: z.ZodType<S>) => {
+    // Filter fn should return boolean
+    const filterFn = findFn({
+      output: z.boolean(),
+    });
+    const zFilter = createFilterSphere(schema, filterFn);
+    return zFilter;
+  };
+
   return {
     _state: state,
 
@@ -76,5 +86,7 @@ export const createFnSphere = () => {
     getFn,
     removeFn,
     findFn,
+
+    setupFilter,
   };
 };
