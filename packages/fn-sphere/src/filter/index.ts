@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { ZodType } from "zod";
 import type {
-  InputFilter,
+  FilterFnSchema,
   ZodFilterFn,
   FieldFilter,
   FilterableField,
@@ -11,15 +11,15 @@ import { isSameType } from "zod-compare";
 import { createFieldFilter, filterPredicate } from "./utils.js";
 
 export const createFilterSphere = <DataType>(
-  schema: ZodType<DataType>,
-  filterFnList: InputFilter<ZodFilterFn>[],
+  dataSchema: ZodType<DataType>,
+  filterFnList: FilterFnSchema<ZodFilterFn>[],
 ) => {
   type FilterState = {
     schema: ZodType<DataType>;
-    filter: Record<string, InputFilter<ZodFilterFn>>;
+    filter: Record<string, FilterFnSchema<ZodFilterFn>>;
   };
   const state: FilterState = {
-    schema,
+    schema: dataSchema,
     filter: {},
   };
 
@@ -69,7 +69,7 @@ export const createFilterSphere = <DataType>(
 
     const queue = [
       {
-        schema,
+        schema: dataSchema,
         path: "",
         deep: 0,
       },
@@ -103,7 +103,7 @@ export const createFilterSphere = <DataType>(
     skipEmptyFilter = true,
   ) => {
     return (data: DataType) =>
-      filterPredicate(schema, data, rule, skipEmptyFilter);
+      filterPredicate(dataSchema, data, rule, skipEmptyFilter);
   };
 
   const filterData = <T extends DataType, R extends T>(
@@ -137,7 +137,7 @@ export const createFilterSphere = <DataType>(
     }
     return JSON.stringify({
       type: "Filter",
-      name: rule.name,
+      name: rule.schema.name,
       field: rule.field,
       arguments: rule.getPlaceholderArguments(),
     });
@@ -162,7 +162,7 @@ export const createFilterSphere = <DataType>(
 
   return {
     _state: state,
-    schema,
+    dataSchema,
 
     getField,
     createFilterGroup,

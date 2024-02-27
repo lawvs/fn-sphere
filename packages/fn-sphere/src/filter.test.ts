@@ -36,7 +36,7 @@ test("basic usage", () => {
   expect(availableFilter).toHaveLength(1);
 
   const firstFilter = availableFilter[0];
-  expect(firstFilter.name).toEqual("is admin");
+  expect(firstFilter.schema.name).toEqual("is admin");
   const requiredParameters = firstFilter.requiredParameters;
   expect(requiredParameters.items).toHaveLength(0);
 
@@ -84,7 +84,7 @@ test("filter nested obj", () => {
   expect(availableFilter).toHaveLength(1);
 
   const firstFilter = availableFilter[0];
-  expect(firstFilter.name).toEqual("number equal");
+  expect(firstFilter.schema.name).toEqual("number equal");
   const requiredParameters = firstFilter.requiredParameters;
   expect(requiredParameters.items).toHaveLength(1);
   firstFilter.input(19);
@@ -131,9 +131,11 @@ test("FilterGroup usage", () => {
   const ageField = fields.find((i) => i.path === "age")!;
   const nameField = fields.find((i) => i.path === "name")!;
 
-  const ageFilter = ageField.filterList.find((i) => i.name === "number equal")!;
+  const ageFilter = ageField.filterList.find(
+    (i) => i.schema.name === "number equal",
+  )!;
   const nameFilter = nameField.filterList.find(
-    (i) => i.name === "string equal",
+    (i) => i.schema.name === "string equal",
   )!;
 
   ageFilter.input(19);

@@ -7,12 +7,9 @@ import type {
   ZodType,
 } from "zod";
 
-export type FnSchema<
-  T extends ZodFunction<ZodTuple<any, any>, ZodTypeAny> = ZodFunction<
-    ZodTuple<any, any>,
-    ZodTypeAny
-  >,
-> = {
+export type ZodAnyFn = ZodFunction<ZodTuple<any, any>, ZodTypeAny>;
+
+export type FnSchema<T extends ZodAnyFn = ZodAnyFn> = {
   name: string;
   define: T;
   implement: TypeOf<T>;
@@ -31,10 +28,11 @@ export interface GenericFnSchema<
 
 export type ZodFilterFn = ZodFunction<ZodTuple<any, any>, ZodBoolean>;
 
-export interface InputFilter<T extends ZodFilterFn> extends FnSchema<T> {}
+export interface FilterFnSchema<T extends ZodFilterFn> extends FnSchema<T> {}
 
-export type FieldFilter<T = unknown> = InputFilter<ZodFilterFn> & {
+export type FieldFilter<T = unknown> = {
   filterType: "Filter";
+  schema: FilterFnSchema<ZodFilterFn>;
   field: string;
   requiredParameters: ZodTuple;
   setInvert: (invert: boolean) => void;

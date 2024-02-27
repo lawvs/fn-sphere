@@ -1,6 +1,6 @@
 import { ZodType, z } from "zod";
 import type {
-  InputFilter,
+  FilterFnSchema,
   ZodFilterFn,
   FieldFilter,
   FilterGroup,
@@ -9,7 +9,7 @@ import { get } from "../utils.js";
 
 // **Parameter** is the variable in the declaration of the function.
 // **Argument** is the actual value of this variable that gets passed to the function.
-const getRequiredParameters = (inputFilter: InputFilter<ZodFilterFn>) => {
+const getRequiredParameters = (inputFilter: FilterFnSchema<ZodFilterFn>) => {
   const fullParameters = inputFilter.define.parameters();
   if (!fullParameters.items.length) {
     console.error(
@@ -30,10 +30,10 @@ const getRequiredParameters = (inputFilter: InputFilter<ZodFilterFn>) => {
 };
 
 export const createFieldFilter = <T>(
-  inputFilter: InputFilter<ZodFilterFn>,
+  filterSchema: FilterFnSchema<ZodFilterFn>,
   field: string,
 ): FieldFilter<T> => {
-  const requiredParameters = getRequiredParameters(inputFilter);
+  const requiredParameters = getRequiredParameters(filterSchema);
 
   const state = {
     invert: false,
@@ -42,7 +42,7 @@ export const createFieldFilter = <T>(
   };
 
   return {
-    ...inputFilter,
+    schema: filterSchema,
     // state,
     filterType: "Filter",
     field,
@@ -63,8 +63,8 @@ export const createFieldFilter = <T>(
       ) {
         console.error(
           "Invalid input parameters!",
-          inputFilter.name,
-          inputFilter,
+          filterSchema.name,
+          filterSchema,
           args,
           requiredParameters,
         );
@@ -77,14 +77,14 @@ export const createFieldFilter = <T>(
       return {
         filterType: "FilterGroup",
         op,
-        conditions: [createFieldFilter(inputFilter, field)],
+        conditions: [createFieldFilter(filterSchema, field)],
       };
     },
   };
 };
 
 export const filterPredicate = <T>(
-  schema: ZodType<T>,
+  dataSchema: ZodType<T>,
   data: T,
   rule: FieldFilter<T> | FilterGroup<T>,
   skipEmptyRule = true,
@@ -97,12 +97,15 @@ export const filterPredicate = <T>(
       }
       throw new Error("Missing input parameters!");
     }
-    const item = schema.parse(data);
+    const item = dataSchema.parse(data);
     const value = get(item, field);
     const invert = rule.isInvert();
+    const filterSchema = rule.schema;
     // Returns a new function that automatically validates its inputs and outputs.
     // See https://zod.dev/?id=functions
-    const fnWithValidates = rule.define.implement(rule.implement);
+    const fnWithValidates = filterSchema.define.implement(
+      filterSchema.implement,
+    );
     const result = fnWithValidates(value, ...rule.getPlaceholderArguments());
     return invert ? !result : result;
   }
@@ -112,12 +115,12 @@ export const filterPredicate = <T>(
     }
     if (rule.op === "or") {
       return rule.conditions.some((condition) =>
-        filterPredicate(schema, data, condition),
+        filterPredicate(dataSchema, data, condition),
       );
     }
     if (rule.op === "and") {
       return rule.conditions.every((condition) =>
-        filterPredicate(schema, data, condition),
+        filterPredicate(dataSchema, data, condition),
       );
     }
     throw new Error("Invalid op: " + rule.op);
