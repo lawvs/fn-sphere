@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { defineTypedFn } from "./fn-sphere.js";
+import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
+import type { FnSchema, GenericFnSchema } from "./types.js";
 
 export const stringFilter = defineTypedFn([
   {
@@ -126,7 +127,7 @@ export const booleanFilter = defineTypedFn([
   },
 ]);
 
-export const otherBooleanFilter = defineTypedFn([
+export const longWindedBooleanFilter = defineTypedFn([
   {
     define: z.function().args(z.boolean(), z.boolean()).returns(z.boolean()),
     name: "Is equal",
@@ -153,11 +154,81 @@ export const dateFilter = defineTypedFn([
   },
 ]);
 
+export const genericEqualFilter = defineGenericFn([
+  {
+    name: "Is equal",
+    genericLimit: (
+      t,
+    ): t is z.ZodString | z.ZodNumber | z.ZodUnion<[z.ZodLiteral<any>]> =>
+      t instanceof z.ZodString ||
+      t instanceof z.ZodNumber ||
+      (t instanceof z.ZodUnion &&
+        t.options.every((op: z.ZodType) => op instanceof z.literal)),
+    define: (t) => z.function().args(t, t).returns(z.boolean()),
+    implement: (value: z.Primitive, target: z.Primitive) => {
+      return value === target;
+    },
+  },
+]);
+
+export const genericContainFilter = defineGenericFn([
+  {
+    name: "Contains",
+    genericLimit: (t): t is z.ZodArray<z.ZodType> | z.ZodString =>
+      t instanceof z.ZodArray || t instanceof z.ZodString,
+    define: (t) =>
+      z
+        .function()
+        .args(t, t instanceof z.ZodString ? t : t.element)
+        .returns(z.boolean()),
+    implement: (value: string | unknown[], target: string | unknown) => {
+      if (typeof value === "string" && typeof target === "string") {
+        return value.includes(target);
+      }
+      if (Array.isArray(value)) {
+        return value.includes(target);
+      }
+      throw new Error("Invalid input type!");
+    },
+  },
+  {
+    name: "Does not contains",
+    genericLimit: (t): t is z.ZodArray<z.ZodType> | z.ZodString =>
+      t instanceof z.ZodArray || t instanceof z.ZodString,
+    define: (t) =>
+      z
+        .function()
+        .args(t, t instanceof z.ZodString ? t : t.element)
+        .returns(z.boolean()),
+    implement: (value: string | unknown[], target: string | unknown) => {
+      if (typeof value === "string" && typeof target === "string") {
+        return !value.includes(target);
+      }
+      if (Array.isArray(value)) {
+        return !value.includes(target);
+      }
+      throw new Error("Invalid input type!");
+    },
+  },
+]);
+
+export const genericFilter: GenericFnSchema[] = [
+  ...genericEqualFilter,
+  ...genericContainFilter,
+];
+
 // TODO support case insensitive
 // TODO support optional field
-export const commonFilters = [
+export const commonFiltersWithDuplicated: FnSchema[] = [
   ...stringFilter,
   ...numberFilter,
   ...booleanFilter,
   ...dateFilter,
 ];
+
+export const commonFilters = commonFiltersWithDuplicated.filter(
+  (fn, i) =>
+    commonFiltersWithDuplicated
+      .reverse()
+      .findIndex((f) => fn.name === f.name) === i,
+);

@@ -1,4 +1,4 @@
-import type { FnSchema } from "./types.js";
+import type { FnSchema, GenericFnSchema } from "./types.js";
 import { createFilterSphere } from "./filter/index.js";
 import { isSameType } from "zod-compare";
 import { z } from "zod";
@@ -9,13 +9,19 @@ export function defineTypedFn<
 export function defineTypedFn<
   T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
 >(schema: FnSchema<T>): FnSchema<T>;
-export function defineTypedFn(schema: any): any {
+export function defineTypedFn<T>(schema: T) {
   return schema;
 }
 
 export function defineGenericFn<
-  T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schemaFn: (t: T) => FnSchema<T>): (t: T) => FnSchema<T> {
+  Generic extends z.ZodType,
+  Fn extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
+>(schemaFn: GenericFnSchema<Generic, Fn>): GenericFnSchema<Generic, Fn>;
+export function defineGenericFn<
+  Generic extends z.ZodType,
+  Fn extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
+>(schemaFn: GenericFnSchema<Generic, Fn>[]): GenericFnSchema<Generic, Fn>[];
+export function defineGenericFn<T>(schemaFn: T) {
   return schemaFn;
 }
 

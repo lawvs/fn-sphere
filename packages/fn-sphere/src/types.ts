@@ -20,16 +20,13 @@ export type FnSchema<
 };
 
 export interface GenericFnSchema<
-  T extends ZodFunction<ZodTuple<any, any>, ZodTypeAny> = ZodFunction<
-    ZodTuple<any, any>,
-    ZodTypeAny
-  >,
-  U extends ZodType = ZodType,
+  Generic extends ZodType = any,
+  Fn extends ZodAnyFn = ZodAnyFn,
 > {
   name: string;
-  define: (t: U) => T;
-  genericLimit: (t: U) => boolean;
-  implement: TypeOf<T>;
+  genericLimit: (t: ZodType) => t is Generic;
+  define: (t: Generic) => Fn;
+  implement: TypeOf<Fn>;
 }
 
 export type ZodFilterFn = ZodFunction<ZodTuple<any, any>, ZodBoolean>;
