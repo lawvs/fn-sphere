@@ -54,8 +54,9 @@ export const createFieldFilter = <T>(
     input: (...args: unknown[]) => {
       const rest = requiredParameters._def.rest;
       if (
-        (!rest && requiredParameters.items.length !== args.length) ||
-        (rest && requiredParameters.items.length > args.length)
+        !filterSchema.skipValidate &&
+        ((!rest && requiredParameters.items.length !== args.length) ||
+          (rest && requiredParameters.items.length > args.length))
       ) {
         console.error(
           "Invalid input parameters!",
