@@ -9,13 +9,11 @@ import type {
   GenericFnSchema,
 } from "../types.js";
 import {
-  bfsSchemaField,
-  createFieldFilter,
   createFilterGroup,
-  filterPredicate,
   isFilterFn,
   serializeFieldFilter,
 } from "./utils.js";
+import { bfsSchemaField, createFieldFilter, filterPredicate } from "./field.js";
 
 export const createFilterSphere = <DataType>(
   dataSchema: ZodType<DataType>,
