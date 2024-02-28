@@ -1,5 +1,4 @@
-import { z } from "zod";
-import type { FieldFilter, FilterGroup, FnSchema } from "../types.js";
+import type { FieldFilter, FilterGroup } from "../types.js";
 
 export const createFilterGroup = <T>(
   op: FilterGroup<T>["op"],
@@ -18,20 +17,7 @@ export const createFilterGroup = <T>(
   };
 };
 
-export const isFilterFn = (fn: FnSchema) => {
-  if (!(fn.define.returnType() instanceof z.ZodBoolean)) {
-    console.error("Filter should return boolean!", fn);
-    return false;
-  }
-  const parameters = fn.define.parameters();
-  if (parameters.items.length === 0) {
-    console.error("Filter should have at least one parameter!", fn);
-    return false;
-  }
-  return true;
-};
-
-export const serializeFieldFilter = <T>(
+export const serializeFieldRule = <T>(
   rule: FieldFilter<T> | FilterGroup<T>,
 ) => {
   // TODO support group

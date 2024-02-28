@@ -1,11 +1,4 @@
-import type {
-  ZodBoolean,
-  ZodFunction,
-  ZodTuple,
-  TypeOf,
-  ZodTypeAny,
-  ZodType,
-} from "zod";
+import type { ZodFunction, ZodTuple, TypeOf, ZodTypeAny, ZodType } from "zod";
 
 export type ZodAnyFn = ZodFunction<ZodTuple<any, any>, ZodTypeAny>;
 

@@ -8,12 +8,11 @@ import type {
   FnSchema,
   GenericFnSchema,
 } from "../types.js";
-import {
-  createFilterGroup,
-  isFilterFn,
-  serializeFieldFilter,
-} from "./utils.js";
+import { createFilterGroup, serializeFieldRule } from "./utils.js";
 import { bfsSchemaField, createFieldFilter, filterPredicate } from "./field.js";
+import { isFilterFn } from "../utils.js";
+
+export { createFilterGroup } from "./utils.js";
 
 export const createFilterSphere = <DataType>(
   dataSchema: ZodType<DataType>,
@@ -45,7 +44,7 @@ export const createFilterSphere = <DataType>(
     state.filter[fn.name] = fn;
   });
 
-  const getField = ({
+  const findFilterableField = ({
     maxDeep = 1,
   }: {
     maxDeep?: number;
@@ -56,16 +55,22 @@ export const createFilterSphere = <DataType>(
 
     const walk = (fieldSchema: ZodType, path: string) => {
       const instantiationGenericFilter: FnSchema[] = allGenericFilter
-        .map((filter): FnSchema | false => {
-          const { genericLimit } = filter;
+        .map((genericFilter): FnSchema | false => {
+          const { genericLimit } = genericFilter;
           if (!genericLimit(fieldSchema)) {
             return false;
           }
           const instantiationFn: FnSchema = {
-            name: filter.name,
-            define: filter.define(fieldSchema),
-            implement: filter.implement,
+            name: genericFilter.name,
+            define: genericFilter.define(fieldSchema),
+            implement: genericFilter.implement,
+            skipValidate: genericFilter.skipValidate,
           };
+          // @ts-expect-error For debug
+          instantiationFn.__generic = fieldSchema;
+          // @ts-expect-error For debug
+          instantiationFn.__genericFn = genericFilter;
+
           const isFilter = isFilterFn(instantiationFn);
           if (!isFilter) {
             return false;
@@ -122,7 +127,7 @@ export const createFilterSphere = <DataType>(
     return data.filter(predicate);
   };
 
-  const deserializeFieldFilter = (data: string) => {
+  const deserializeFieldRule = (data: string) => {
     // TODO types
     type serializedFilter = any;
     const parsed: serializedFilter = JSON.parse(data);
@@ -134,8 +139,11 @@ export const createFilterSphere = <DataType>(
       throw new Error("Filter not found!");
     }
 
-    const result = createFieldFilter<DataType>(filter, parsed.field);
-    result.input(...parsed.arguments);
+    const result = createFieldFilter<DataType>(
+      filter,
+      parsed.field,
+      parsed.arguments,
+    );
     return result;
   };
 
@@ -143,11 +151,11 @@ export const createFilterSphere = <DataType>(
     _state: state,
     dataSchema,
 
-    getField,
+    findFilterableField,
     createFilterGroup,
     filterData,
 
-    serializeFieldFilter,
-    deserializeFieldFilter,
+    serializeFieldRule,
+    deserializeFieldRule,
   };
 };

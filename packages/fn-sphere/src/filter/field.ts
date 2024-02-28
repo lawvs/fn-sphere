@@ -28,6 +28,7 @@ const getRequiredParameters = (inputFilter: FnSchema) => {
 export const createFieldFilter = <T>(
   filterSchema: FnSchema,
   field: string,
+  userInput?: unknown[],
 ): FieldFilter<T> => {
   const requiredParameters = getRequiredParameters(filterSchema);
 
@@ -36,6 +37,30 @@ export const createFieldFilter = <T>(
     ready: requiredParameters.items.length === 0,
     placeholderArguments: [] as unknown[],
   };
+
+  const input = (...args: unknown[]) => {
+    const rest = requiredParameters._def.rest;
+    if (
+      !filterSchema.skipValidate &&
+      ((!rest && requiredParameters.items.length !== args.length) ||
+        (rest && requiredParameters.items.length > args.length))
+    ) {
+      console.error(
+        "Invalid input parameters!",
+        filterSchema.name,
+        filterSchema,
+        args,
+        requiredParameters,
+      );
+      throw new Error("Invalid input parameters!");
+    }
+    state.placeholderArguments = args;
+    state.ready = true;
+  };
+
+  if (userInput) {
+    input(...userInput);
+  }
 
   return {
     _state: state,
@@ -51,27 +76,11 @@ export const createFieldFilter = <T>(
       state.placeholderArguments = [];
       state.ready = false;
     },
-    input: (...args: unknown[]) => {
-      const rest = requiredParameters._def.rest;
-      if (
-        !filterSchema.skipValidate &&
-        ((!rest && requiredParameters.items.length !== args.length) ||
-          (rest && requiredParameters.items.length > args.length))
-      ) {
-        console.error(
-          "Invalid input parameters!",
-          filterSchema.name,
-          filterSchema,
-          args,
-          requiredParameters,
-        );
-        throw new Error("Invalid input parameters!");
-      }
-      state.placeholderArguments = args;
-      state.ready = true;
-    },
+    input,
     turnToGroup: (op) =>
-      createFilterGroup(op, [createFieldFilter(filterSchema, field)]),
+      createFilterGroup(op, [
+        createFieldFilter(filterSchema, field, state.placeholderArguments),
+      ]),
   };
 };
 

@@ -27,7 +27,7 @@ test("basic usage", () => {
     },
   ]);
 
-  const fields = zPipeline.getField();
+  const fields = zPipeline.findFilterableField();
   expect(fields).toHaveLength(2);
   expect(fields.map((i) => i.path)).toEqual(["", "age"]);
 
@@ -75,7 +75,7 @@ test("filter nested obj", () => {
     },
   ]);
 
-  const fields = zPipeline.getField();
+  const fields = zPipeline.findFilterableField();
   expect(fields).toHaveLength(1);
   expect(fields.map((i) => i.path)).toEqual(["age"]);
 
@@ -127,7 +127,7 @@ test("FilterGroup usage", () => {
     },
   ]);
 
-  const fields = zPipeline.getField();
+  const fields = zPipeline.findFilterableField();
   const ageField = fields.find((i) => i.path === "age")!;
   const nameField = fields.find((i) => i.path === "name")!;
 

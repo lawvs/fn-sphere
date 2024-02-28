@@ -2,6 +2,7 @@ import type { FnSchema, GenericFnSchema } from "./types.js";
 import { createFilterSphere } from "./filter/index.js";
 import { isSameType } from "zod-compare";
 import { z } from "zod";
+import { isFilterFn as isFilterSchema } from "./utils.js";
 
 export function defineTypedFn<
   T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
@@ -28,13 +29,15 @@ export function defineGenericFn<T>(schemaFn: T) {
 export const createFnSphere = () => {
   type FnBoxState = {
     fnMap: Record<string, FnSchema>;
+    genericFn: Record<string, GenericFnSchema>;
   };
   const state: FnBoxState = {
     fnMap: {},
+    genericFn: {},
   };
 
   const addFn = <F extends FnSchema>(fn: F) => {
-    if (fn.name in state.fnMap) {
+    if (fn.name in state.fnMap || fn.name in state.genericFn) {
       throw new Error("Duplicate function name: " + fn.name);
     }
     state.fnMap[fn.name] = fn;
@@ -59,13 +62,18 @@ export const createFnSphere = () => {
   const findFn = <
     Input extends z.ZodTuple<any, any> = z.ZodTuple<any, any>,
     Output extends z.ZodType = z.ZodUnknown,
-  >({
-    input,
-    output,
-  }: {
-    input?: Input;
-    output?: Output;
-  }) => {
+  >(
+    maybePredicate:
+      | {
+          input?: Input;
+          output?: Output;
+        }
+      | ((fn: FnSchema) => boolean),
+  ) => {
+    if (typeof maybePredicate === "function") {
+      return Object.values(state.fnMap).filter(maybePredicate);
+    }
+    const { input, output } = maybePredicate;
     const filterFn = Object.values(state.fnMap).filter((fn) => {
       return (
         (input ? isSameType(input, fn.define.parameters()) : true) &&
@@ -76,10 +84,7 @@ export const createFnSphere = () => {
   };
 
   const setupFilter = <S>(schema: z.ZodType<S>) => {
-    // Filter fn should return boolean
-    const filterFn = findFn({
-      output: z.boolean(),
-    });
+    const filterFn = findFn(isFilterSchema);
     const zFilter = createFilterSphere(schema, filterFn);
     return zFilter;
   };

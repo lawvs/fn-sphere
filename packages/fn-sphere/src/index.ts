@@ -1,5 +1,5 @@
 export { createFnSphere, defineTypedFn } from "./fn-sphere.js";
-export { createFilterSphere } from "./filter/index.js";
+export { createFilterSphere, createFilterGroup } from "./filter/index.js";
 export {
   stringFilter,
   numberFilter,
