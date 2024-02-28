@@ -14,6 +14,7 @@ export type FnSchema<T extends ZodAnyFn = ZodAnyFn> = {
   define: T;
   implement: TypeOf<T>;
   // context?: Record<string, unknown>;
+  skipValidate?: boolean;
 };
 
 export interface GenericFnSchema<
@@ -24,15 +25,13 @@ export interface GenericFnSchema<
   genericLimit: (t: ZodType) => t is Generic;
   define: (t: Generic) => Fn;
   implement: TypeOf<Fn>;
+  skipValidate?: boolean;
 }
 
-export type ZodFilterFn = ZodFunction<ZodTuple<any, any>, ZodBoolean>;
-
-export interface FilterFnSchema<T extends ZodFilterFn> extends FnSchema<T> {}
-
 export type FieldFilter<T = unknown> = {
+  _state: unknown;
   filterType: "Filter";
-  schema: FilterFnSchema<ZodFilterFn>;
+  schema: FnSchema;
   field: string;
   requiredParameters: ZodTuple;
   setInvert: (invert: boolean) => void;

@@ -1,15 +1,10 @@
-import { ZodType, z } from "zod";
-import type {
-  FilterFnSchema,
-  ZodFilterFn,
-  FieldFilter,
-  FilterGroup,
-} from "../types.js";
+import { z } from "zod";
+import type { FieldFilter, FilterGroup, FnSchema } from "../types.js";
 import { get } from "../utils.js";
 
 // **Parameter** is the variable in the declaration of the function.
 // **Argument** is the actual value of this variable that gets passed to the function.
-const getRequiredParameters = (inputFilter: FilterFnSchema<ZodFilterFn>) => {
+const getRequiredParameters = (inputFilter: FnSchema) => {
   const fullParameters = inputFilter.define.parameters();
   if (!fullParameters.items.length) {
     console.error(
@@ -30,7 +25,7 @@ const getRequiredParameters = (inputFilter: FilterFnSchema<ZodFilterFn>) => {
 };
 
 export const createFieldFilter = <T>(
-  filterSchema: FilterFnSchema<ZodFilterFn>,
+  filterSchema: FnSchema,
   field: string,
 ): FieldFilter<T> => {
   const requiredParameters = getRequiredParameters(filterSchema);
@@ -42,8 +37,8 @@ export const createFieldFilter = <T>(
   };
 
   return {
+    _state: state,
     schema: filterSchema,
-    // state,
     filterType: "Filter",
     field,
     requiredParameters,
@@ -84,7 +79,7 @@ export const createFieldFilter = <T>(
 };
 
 export const filterPredicate = <T>(
-  dataSchema: ZodType<T>,
+  dataSchema: z.ZodType<T>,
   data: T,
   rule: FieldFilter<T> | FilterGroup<T>,
   skipEmptyRule = true,
@@ -101,12 +96,13 @@ export const filterPredicate = <T>(
     const value = get(item, field);
     const invert = rule.isInvert();
     const filterSchema = rule.schema;
+    const skipValidate = filterSchema.skipValidate;
     // Returns a new function that automatically validates its inputs and outputs.
     // See https://zod.dev/?id=functions
-    const fnWithValidates = filterSchema.define.implement(
-      filterSchema.implement,
-    );
-    const result = fnWithValidates(value, ...rule.getPlaceholderArguments());
+    const fnWithImplement = skipValidate
+      ? filterSchema.implement
+      : filterSchema.define.implement(filterSchema.implement);
+    const result = fnWithImplement(value, ...rule.getPlaceholderArguments());
     return invert ? !result : result;
   }
   if (rule.filterType === "FilterGroup") {
@@ -127,4 +123,52 @@ export const filterPredicate = <T>(
   }
   console.error("Invalid rule type", rule);
   throw new Error("Invalid rule type!");
+};
+
+export const bfsSchemaField = (
+  schema: z.ZodType,
+  maxDeep: number,
+  walk: (field: z.ZodSchema, path: string) => void,
+) => {
+  const queue = [
+    {
+      schema,
+      path: "",
+      deep: 0,
+    },
+  ];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) break;
+    if (current.deep > maxDeep) {
+      break;
+    }
+    walk(current.schema, current.path);
+
+    if (!(current.schema instanceof z.ZodObject)) {
+      continue;
+    }
+    const fields = current.schema.shape;
+    for (const key in fields) {
+      const field = fields[key];
+      queue.push({
+        schema: field,
+        path: current.path ? current.path + "." + key : key,
+        deep: current.deep + 1,
+      });
+    }
+  }
+};
+
+export const isFilterFn = (fn: FnSchema) => {
+  if (!(fn.define.returnType() instanceof z.ZodBoolean)) {
+    console.error("Filter should return boolean!", fn);
+    return false;
+  }
+  const parameters = fn.define.parameters();
+  if (parameters.items.length === 0) {
+    console.error("Filter should have at least one parameter!", fn);
+    return false;
+  }
+  return true;
 };

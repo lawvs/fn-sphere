@@ -1,35 +1,46 @@
-import { z } from "zod";
 import type { ZodType } from "zod";
+import { z } from "zod";
+import { isSameType } from "zod-compare";
 import type {
-  FilterFnSchema,
-  ZodFilterFn,
   FieldFilter,
   FilterableField,
   FilterGroup,
+  FnSchema,
+  GenericFnSchema,
 } from "../types.js";
-import { isSameType } from "zod-compare";
-import { createFieldFilter, filterPredicate } from "./utils.js";
+import {
+  bfsSchemaField,
+  createFieldFilter,
+  filterPredicate,
+  isFilterFn,
+} from "./utils.js";
 
 export const createFilterSphere = <DataType>(
   dataSchema: ZodType<DataType>,
-  filterFnList: FilterFnSchema<ZodFilterFn>[],
+  filterFnList: (FnSchema | GenericFnSchema)[],
 ) => {
   type FilterState = {
     schema: ZodType<DataType>;
-    filter: Record<string, FilterFnSchema<ZodFilterFn>>;
+    filter: Record<string, FnSchema>;
+    genericFn: Record<string, GenericFnSchema>;
   };
   const state: FilterState = {
     schema: dataSchema,
     filter: {},
+    genericFn: {},
   };
 
   filterFnList.forEach((fn) => {
-    if (fn.name in state.filter) {
+    if (fn.name in state.filter || fn.name in state.genericFn) {
       throw new Error("Duplicate filter name: " + fn.name);
     }
-    if (!(fn.define.returnType() instanceof z.ZodBoolean)) {
-      console.error("Filter should return boolean!", fn.name, fn.define);
-      throw new Error("Invalid return type for filter: " + fn.name);
+    const isGeneric = "genericLimit" in fn;
+    if (isGeneric) {
+      state.genericFn[fn.name] = fn;
+      return;
+    }
+    if (!isFilterFn(fn)) {
+      throw new Error("Invalid filter function: " + fn.name);
     }
     state.filter[fn.name] = fn;
   });
@@ -39,23 +50,47 @@ export const createFilterSphere = <DataType>(
   }: {
     maxDeep?: number;
   } = {}): FilterableField<DataType>[] => {
-    const allFilter = Object.values(state.filter);
+    const allSimpleFilter = Object.values(state.filter);
+    const allGenericFilter = Object.values(state.genericFn);
+    const allFilter = [...allSimpleFilter, ...allGenericFilter];
     const result: FilterableField<DataType>[] = [];
 
     const walk = (fieldSchema: ZodType, path: string) => {
-      const availableFilter = allFilter.filter((filter) => {
+      const instantiationGenericFilter: FnSchema[] = allGenericFilter
+        .map((filter): FnSchema | false => {
+          const { genericLimit } = filter;
+          if (!genericLimit(fieldSchema)) {
+            return false;
+          }
+          const instantiationFn: FnSchema = {
+            name: filter.name,
+            define: filter.define(fieldSchema),
+            implement: filter.implement,
+          };
+          const isFilter = isFilterFn(instantiationFn);
+          if (!isFilter) {
+            return false;
+          }
+          return instantiationFn;
+        })
+        .filter((fn): fn is FnSchema => !!fn);
+
+      const availableFilter = [
+        ...instantiationGenericFilter,
+        ...allSimpleFilter,
+      ].filter((filter) => {
         const { define } = filter;
         const parameters = define.parameters();
-        const firstParameter: ZodType = parameters.items[0];
+        const firstFnParameter: ZodType = parameters.items[0];
         // TODO use isCompatibleType
         if (
-          firstParameter instanceof z.ZodAny ||
-          isSameType(fieldSchema, firstParameter)
+          firstFnParameter instanceof z.ZodAny ||
+          isSameType(fieldSchema, firstFnParameter)
         ) {
           return true;
         }
       });
-      // TODO limitFn
+
       if (availableFilter.length > 0) {
         result.push({
           path,
@@ -67,34 +102,7 @@ export const createFilterSphere = <DataType>(
       }
     };
 
-    const queue = [
-      {
-        schema: dataSchema,
-        path: "",
-        deep: 0,
-      },
-    ];
-
-    while (queue.length > 0) {
-      const current = queue.shift();
-      if (!current) break;
-      if (current.deep > maxDeep) {
-        break;
-      }
-      walk(current.schema, current.path);
-
-      if (current.schema instanceof z.ZodObject) {
-        const fields = current.schema.shape;
-        for (const key in fields) {
-          const field = fields[key];
-          queue.push({
-            schema: field,
-            path: current.path ? current.path + "." + key : key,
-            deep: current.deep + 1,
-          });
-        }
-      }
-    }
+    bfsSchemaField(dataSchema, maxDeep, walk);
     return result;
   };
 
@@ -150,7 +158,7 @@ export const createFilterSphere = <DataType>(
     if (parsed.type !== "Filter") {
       throw new Error("Invalid data!");
     }
-    const filter = state.filter[parsed.name];
+    const filter = state.filter[parsed.name] || state.genericFn[parsed.name];
     if (!filter) {
       throw new Error("Filter not found!");
     }

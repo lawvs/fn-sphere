@@ -3,46 +3,46 @@ import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
 import type { FnSchema, GenericFnSchema } from "./types.js";
 
 export const stringFilter = defineTypedFn([
-  {
-    define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-    name: "Is",
-    implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return value == target;
-    },
-  },
-  {
-    define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-    name: "Is not",
-    implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return value != target;
-    },
-  },
-  {
-    define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-    name: "Contains",
-    implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return value.includes(target);
-    },
-  },
-  {
-    define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-    name: "Does no contains",
-    implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return !value.includes(target);
-    },
-  },
+  // {
+  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+  //   name: "Is",
+  //   implement: (value, target) => {
+  //     if (!target) {
+  //       return true;
+  //     }
+  //     return value == target;
+  //   },
+  // },
+  // {
+  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+  //   name: "Is not",
+  //   implement: (value, target) => {
+  //     if (!target) {
+  //       return true;
+  //     }
+  //     return value != target;
+  //   },
+  // },
+  // {
+  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+  //   name: "Contains",
+  //   implement: (value, target) => {
+  //     if (!target) {
+  //       return true;
+  //     }
+  //     return value.includes(target);
+  //   },
+  // },
+  // {
+  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+  //   name: "Does not contains",
+  //   implement: (value, target) => {
+  //     if (!target) {
+  //       return true;
+  //     }
+  //     return !value.includes(target);
+  //   },
+  // },
   {
     define: z.function().args(z.string(), z.string()).returns(z.boolean()),
     name: "Starts with",
@@ -94,20 +94,20 @@ export const numberFilter = defineTypedFn([
       return value <= target;
     },
   },
-  {
-    define: z.function().args(z.number(), z.number()).returns(z.boolean()),
-    name: "==",
-    implement: (value, target) => {
-      return value == target;
-    },
-  },
-  {
-    define: z.function().args(z.number(), z.number()).returns(z.boolean()),
-    name: "!=",
-    implement: (value, target) => {
-      return value != target;
-    },
-  },
+  // {
+  //   define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+  //   name: "==",
+  //   implement: (value, target) => {
+  //     return value == target;
+  //   },
+  // },
+  // {
+  //   define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+  //   name: "!=",
+  //   implement: (value, target) => {
+  //     return value != target;
+  //   },
+  // },
 ]);
 
 export const booleanFilter = defineTypedFn([
@@ -154,24 +154,66 @@ export const dateFilter = defineTypedFn([
   },
 ]);
 
-export const genericEqualFilter = defineGenericFn([
+// TODO support case insensitive
+// TODO support optional field
+export const commonFilters: FnSchema[] = [
+  ...stringFilter,
+  ...numberFilter,
+  ...booleanFilter,
+  ...dateFilter,
+];
+
+const genericEqualFilter = defineGenericFn([
   {
-    name: "Is equal",
+    name: "Equals",
     genericLimit: (
       t,
     ): t is z.ZodString | z.ZodNumber | z.ZodUnion<[z.ZodLiteral<any>]> =>
       t instanceof z.ZodString ||
       t instanceof z.ZodNumber ||
       (t instanceof z.ZodUnion &&
-        t.options.every((op: z.ZodType) => op instanceof z.literal)),
+        t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
     define: (t) => z.function().args(t, t).returns(z.boolean()),
     implement: (value: z.Primitive, target: z.Primitive) => {
       return value === target;
     },
   },
+  {
+    name: "Not equal",
+    genericLimit: (
+      t,
+    ): t is z.ZodString | z.ZodNumber | z.ZodUnion<[z.ZodLiteral<any>]> =>
+      t instanceof z.ZodString ||
+      t instanceof z.ZodNumber ||
+      (t instanceof z.ZodUnion &&
+        t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
+    define: (t) => z.function().args(t, t).returns(z.boolean()),
+    implement: (value: z.Primitive, target: z.Primitive) => {
+      return value !== target;
+    },
+  },
 ]);
 
-export const genericContainFilter = defineGenericFn([
+const genericBlankFilter = defineGenericFn([
+  {
+    name: "Is blank",
+    genericLimit: (
+      t,
+    ): t is
+      | z.ZodOptional<z.ZodTypeAny>
+      | z.ZodNullable<z.ZodTypeAny>
+      | z.ZodString =>
+      t instanceof z.ZodOptional ||
+      t instanceof z.ZodNullable ||
+      t instanceof z.ZodString,
+    define: (t) => z.function().args(t).returns(z.boolean()),
+    implement: (value: unknown | null | undefined | string) => {
+      return value === null || value === undefined || value === "";
+    },
+  },
+]);
+
+const genericContainFilter = defineGenericFn([
   {
     name: "Contains",
     genericLimit: (t): t is z.ZodArray<z.ZodType> | z.ZodString =>
@@ -214,21 +256,6 @@ export const genericContainFilter = defineGenericFn([
 
 export const genericFilter: GenericFnSchema[] = [
   ...genericEqualFilter,
+  ...genericBlankFilter,
   ...genericContainFilter,
 ];
-
-// TODO support case insensitive
-// TODO support optional field
-export const commonFiltersWithDuplicated: FnSchema[] = [
-  ...stringFilter,
-  ...numberFilter,
-  ...booleanFilter,
-  ...dateFilter,
-];
-
-export const commonFilters = commonFiltersWithDuplicated.filter(
-  (fn, i) =>
-    commonFiltersWithDuplicated
-      .reverse()
-      .findIndex((f) => fn.name === f.name) === i,
-);
