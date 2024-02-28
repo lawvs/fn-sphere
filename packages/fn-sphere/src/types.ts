@@ -50,9 +50,10 @@ export type FilterableField<T = unknown> = {
 };
 
 export type FilterGroup<T = unknown> = {
+  _state: unknown;
   filterType: "FilterGroup";
   op: "and" | "or";
   conditions: (FieldFilter<T> | FilterGroup<T>)[];
-  // isInvert: () => boolean;
-  // setInvert: (invert: boolean) => void;
+  isInvert: () => boolean;
+  setInvert: (invert: boolean) => void;
 };

@@ -2,6 +2,23 @@ import { z } from "zod";
 import type { FieldFilter, FilterGroup, FnSchema } from "../types.js";
 import { get } from "../utils.js";
 
+export const createFilterGroup = <T>(
+  op: FilterGroup<T>["op"],
+  rules: (FieldFilter<T> | FilterGroup<T>)[],
+): FilterGroup<T> => {
+  const state = {
+    invert: false,
+  };
+  return {
+    _state: state,
+    filterType: "FilterGroup",
+    op,
+    conditions: rules,
+    isInvert: () => state.invert,
+    setInvert: (invert) => (state.invert = invert),
+  };
+};
+
 // **Parameter** is the variable in the declaration of the function.
 // **Argument** is the actual value of this variable that gets passed to the function.
 const getRequiredParameters = (inputFilter: FnSchema) => {
@@ -38,8 +55,8 @@ export const createFieldFilter = <T>(
 
   return {
     _state: state,
-    schema: filterSchema,
     filterType: "Filter",
+    schema: filterSchema,
     field,
     requiredParameters,
     getPlaceholderArguments: () => state.placeholderArguments,
@@ -68,13 +85,8 @@ export const createFieldFilter = <T>(
       state.placeholderArguments = args;
       state.ready = true;
     },
-    turnToGroup: (op) => {
-      return {
-        filterType: "FilterGroup",
-        op,
-        conditions: [createFieldFilter(filterSchema, field)],
-      };
-    },
+    turnToGroup: (op) =>
+      createFilterGroup(op, [createFieldFilter(filterSchema, field)]),
   };
 };
 
@@ -105,19 +117,23 @@ export const filterPredicate = <T>(
     const result = fnWithImplement(value, ...rule.getPlaceholderArguments());
     return invert ? !result : result;
   }
+
   if (rule.filterType === "FilterGroup") {
     if (!rule.conditions.length) {
       return true;
     }
+    const invert = rule.isInvert();
     if (rule.op === "or") {
-      return rule.conditions.some((condition) =>
+      const result = rule.conditions.some((condition) =>
         filterPredicate(dataSchema, data, condition),
       );
+      return invert ? !result : result;
     }
     if (rule.op === "and") {
-      return rule.conditions.every((condition) =>
+      const result = rule.conditions.every((condition) =>
         filterPredicate(dataSchema, data, condition),
       );
+      return invert ? !result : result;
     }
     throw new Error("Invalid op: " + rule.op);
   }
@@ -171,4 +187,21 @@ export const isFilterFn = (fn: FnSchema) => {
     return false;
   }
   return true;
+};
+
+export const serializeFieldFilter = <T>(
+  rule: FieldFilter<T> | FilterGroup<T>,
+) => {
+  // TODO support group
+  // TODO check cannot serialized arguments
+  // TODO types
+  if (rule.filterType === "FilterGroup") {
+    throw new Error("Not implemented yet!");
+  }
+  return JSON.stringify({
+    type: "Filter",
+    name: rule.schema.name,
+    field: rule.field,
+    arguments: rule.getPlaceholderArguments(),
+  });
 };

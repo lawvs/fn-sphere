@@ -11,8 +11,10 @@ import type {
 import {
   bfsSchemaField,
   createFieldFilter,
+  createFilterGroup,
   filterPredicate,
   isFilterFn,
+  serializeFieldFilter,
 } from "./utils.js";
 
 export const createFilterSphere = <DataType>(
@@ -50,10 +52,9 @@ export const createFilterSphere = <DataType>(
   }: {
     maxDeep?: number;
   } = {}): FilterableField<DataType>[] => {
+    const result: FilterableField<DataType>[] = [];
     const allSimpleFilter = Object.values(state.filter);
     const allGenericFilter = Object.values(state.genericFn);
-    const allFilter = [...allSimpleFilter, ...allGenericFilter];
-    const result: FilterableField<DataType>[] = [];
 
     const walk = (fieldSchema: ZodType, path: string) => {
       const instantiationGenericFilter: FnSchema[] = allGenericFilter
@@ -121,34 +122,6 @@ export const createFilterSphere = <DataType>(
   ): T[] => {
     const predicate = createFilterFn(rule, skipEmptyFilter);
     return data.filter(predicate);
-  };
-
-  const createFilterGroup = (
-    op: FilterGroup<DataType>["op"],
-    rules: (FieldFilter<DataType> | FilterGroup<DataType>)[],
-  ): FilterGroup<DataType> => {
-    return {
-      filterType: "FilterGroup",
-      op,
-      conditions: rules,
-    };
-  };
-
-  const serializeFieldFilter = (
-    rule: FieldFilter<DataType> | FilterGroup<DataType>,
-  ) => {
-    // TODO support group
-    // TODO check cannot serialized arguments
-    // TODO types
-    if (rule.filterType === "FilterGroup") {
-      throw new Error("Not implemented yet!");
-    }
-    return JSON.stringify({
-      type: "Filter",
-      name: rule.schema.name,
-      field: rule.field,
-      arguments: rule.getPlaceholderArguments(),
-    });
   };
 
   const deserializeFieldFilter = (data: string) => {
