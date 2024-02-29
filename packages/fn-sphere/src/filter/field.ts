@@ -81,6 +81,9 @@ export const createFieldFilter = <T>(
       createFilterGroup(op, [
         createFieldFilter(filterSchema, field, state.placeholderArguments),
       ]),
+    duplicate: () => {
+      return createFieldFilter(filterSchema, field, state.placeholderArguments);
+    },
   };
 };
 

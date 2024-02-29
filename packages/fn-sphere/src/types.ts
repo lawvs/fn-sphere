@@ -34,6 +34,7 @@ export type FieldFilter<T = unknown> = {
   input: (...args: unknown[]) => void;
   reset: () => void;
   turnToGroup: (op: "and" | "or") => FilterGroup<T>;
+  duplicate: () => FieldFilter<T>;
 };
 
 export type FilterableField<T = unknown> = {
