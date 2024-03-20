@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Type Check
+        run: pnpm run typeCheck
+
+      - name: Lint
+        run: pnpm run format
+
+      - name: Test
+        run: pnpm run test
+        # run: pnpm run test --coverage
+
+      # - name: Upload test coverage
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage
+      #     path: ./coverage
+      #     if-no-files-found: ignore
