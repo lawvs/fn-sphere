@@ -159,3 +159,5 @@ export const createFilterSphere = <DataType>(
     deserializeFieldRule,
   };
 };
+
+export type FilterSphere = ReturnType<typeof createFilterSphere>;

@@ -10,3 +10,4 @@ export {
 } from "./presets.js";
 
 export type * from "./types.js";
+export type { FilterSphere } from "./filter/index.js";
