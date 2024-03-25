@@ -3,12 +3,10 @@
   "private": true,
   "description": "",
   "type": "module",
-  "keywords": [
-    "data-filter"
-  ],
   "author": "whitewater <me@waterwater.moe>",
   "scripts": {
     "typeCheck": "pnpm --recursive run typeCheck",
+    "lint": "pnpm --recursive run lint",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "test": "pnpm --recursive run test"
