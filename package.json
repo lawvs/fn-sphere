@@ -8,9 +8,10 @@
   ],
   "author": "whitewater <me@waterwater.moe>",
   "scripts": {
+    "typeCheck": "pnpm --recursive run typeCheck",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "pnpm --recursive run test"
   },
   "prettier": {},
   "devDependencies": {
