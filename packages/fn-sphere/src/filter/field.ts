@@ -101,7 +101,12 @@ export const filterPredicate = <T>(
       }
       throw new Error("Missing input parameters!");
     }
-    const item = dataSchema.parse(data);
+    const parseResult = dataSchema.safeParse(data);
+    // TODO add option to skip validate
+    if (!parseResult.success) {
+      throw parseResult.error;
+    }
+    const item = parseResult.data;
     const value = get(item, field);
     const invert = rule.isInvert();
     const filterSchema = rule.schema;
