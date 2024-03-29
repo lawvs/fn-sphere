@@ -5,6 +5,7 @@
   "type": "module",
   "author": "whitewater <me@waterwater.moe>",
   "scripts": {
+    "build": "pnpm --recursive run build",
     "typeCheck": "pnpm --recursive run typeCheck",
     "lint": "pnpm --recursive run lint",
     "format": "prettier --check .",
@@ -17,5 +18,8 @@
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
   },
-  "packageManager": "pnpm@8.15.3"
+  "packageManager": "pnpm@8.15.3",
+  "engines": {
+    "node": ">=18"
+  }
 }

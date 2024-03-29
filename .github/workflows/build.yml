@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read # to access the repository
       pages: write # to deploy to Pages
       id-token: write # to verify the deployment originates from an appropriate source
 
