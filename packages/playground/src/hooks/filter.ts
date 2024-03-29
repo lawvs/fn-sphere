@@ -7,7 +7,7 @@ import {
   type FilterGroup,
   type FnSchema,
   type GenericFnSchema,
-} from "fn-sphere";
+} from "@fn-sphere/core";
 import { createContextState } from "./misc";
 
 const FlexFilterContext = createContext<ReturnType<

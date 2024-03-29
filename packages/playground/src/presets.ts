@@ -5,7 +5,7 @@ import {
   genericFilter,
   type FnSchema,
   type GenericFnSchema,
-} from "fn-sphere";
+} from "@fn-sphere/core";
 import { genFakeName, sample, genId } from "./utils";
 
 export const presetSchema = z

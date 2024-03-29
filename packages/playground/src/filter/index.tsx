@@ -3,7 +3,7 @@ import {
   type FilterableField,
   type FnSchema,
   type GenericFnSchema,
-} from "fn-sphere";
+} from "@fn-sphere/core";
 import { CloseIcon } from "tdesign-icons-react";
 import { Button } from "tdesign-react";
 import {

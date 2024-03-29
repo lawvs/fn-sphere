@@ -1,5 +1,5 @@
 {
-  "name": "fn-sphere",
+  "name": "@fn-sphere/core",
   "version": "0.0.0",
   "description": "",
   "type": "module",

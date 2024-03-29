@@ -29,6 +29,9 @@ importers:
 
   packages/playground:
     dependencies:
+      '@fn-sphere/core':
+        specifier: workspace:^
+        version: link:../fn-sphere
       '@zodui/components-lib-tdesign':
         specifier: ^0.2.2
         version: 0.2.2(@zodui/react@0.2.2)(react@18.2.0)(tdesign-icons-react@0.3.2)(tdesign-react@1.5.1)
@@ -41,9 +44,6 @@ importers:
       '@zodui/react':
         specifier: ^0.2.2
         version: 0.2.2(react@18.2.0)(zod@3.22.4)
-      fn-sphere:
-        specifier: workspace:^
-        version: link:../fn-sphere
       react:
         specifier: ^18.2.0
         version: 18.2.0

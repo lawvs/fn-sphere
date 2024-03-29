@@ -1,4 +1,4 @@
-import type { FilterableField } from "fn-sphere";
+import type { FilterableField } from "@fn-sphere/core";
 import { useState } from "react";
 import { Button, Popup, Select } from "tdesign-react";
 import { useClickAway } from "./hooks";

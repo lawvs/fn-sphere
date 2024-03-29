@@ -1,5 +1,9 @@
 import { List } from "@zodui/react";
-import type { FieldFilter, FilterGroup, FilterableField } from "fn-sphere";
+import type {
+  FieldFilter,
+  FilterGroup,
+  FilterableField,
+} from "@fn-sphere/core";
 import { CloseIcon } from "tdesign-icons-react";
 import { Button, Select } from "tdesign-react";
 import { useFilter, useFilterableField } from "../hooks/filter";
