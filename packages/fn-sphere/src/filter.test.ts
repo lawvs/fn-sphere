@@ -14,7 +14,7 @@ test("basic usage", () => {
 
   type Data = z.infer<typeof zData>;
 
-  const zPipeline = createFilterSphere(zData, [
+  const filterSphere = createFilterSphere(zData, [
     {
       name: "is admin",
       define: z.function().args(zData).returns(z.boolean()),
@@ -27,7 +27,7 @@ test("basic usage", () => {
     },
   ]);
 
-  const fields = zPipeline.findFilterableField();
+  const fields = filterSphere.findFilterableField();
   expect(fields).toHaveLength(2);
   expect(fields.map((i) => i.path)).toEqual(["", "age"]);
 
@@ -53,7 +53,7 @@ test("basic usage", () => {
     },
   ];
 
-  const filterData = zPipeline.filterData(data, firstFilter);
+  const filterData = filterSphere.filterData(data, firstFilter);
 
   expect(filterData).toHaveLength(1);
   expect(filterData[0].id).toEqual("admin");
@@ -67,7 +67,7 @@ test("filter nested obj", () => {
 
   type Data = z.infer<typeof zData>;
 
-  const zPipeline = createFilterSphere(zData, [
+  const filterSphere = createFilterSphere(zData, [
     {
       name: "number equal",
       define: z.function().args(z.number(), z.number()).returns(z.boolean()),
@@ -75,7 +75,7 @@ test("filter nested obj", () => {
     },
   ]);
 
-  const fields = zPipeline.findFilterableField();
+  const fields = filterSphere.findFilterableField();
   expect(fields).toHaveLength(1);
   expect(fields.map((i) => i.path)).toEqual(["age"]);
 
@@ -100,7 +100,7 @@ test("filter nested obj", () => {
     },
   ];
 
-  const filterData = zPipeline.filterData(data, firstFilter);
+  const filterData = filterSphere.filterData(data, firstFilter);
 
   expect(filterData).toHaveLength(1);
   expect(filterData[0].age).toEqual(19);
@@ -114,7 +114,7 @@ test("FilterGroup usage", () => {
 
   type Data = z.infer<typeof zData>;
 
-  const zPipeline = createFilterSphere(zData, [
+  const filterSphere = createFilterSphere(zData, [
     {
       name: "number equal",
       define: z.function().args(z.number(), z.number()).returns(z.boolean()),
@@ -127,7 +127,7 @@ test("FilterGroup usage", () => {
     },
   ]);
 
-  const fields = zPipeline.findFilterableField();
+  const fields = filterSphere.findFilterableField();
   const ageField = fields.find((i) => i.path === "age")!;
   const nameField = fields.find((i) => i.path === "name")!;
 
@@ -159,16 +159,16 @@ test("FilterGroup usage", () => {
     },
   ];
 
-  const filterData = zPipeline.filterData(data, filterGroup);
+  const filterData = filterSphere.filterData(data, filterGroup);
 
   expect(filterData).toHaveLength(1);
   expect(filterData[0].name).toEqual("Alice");
   expect(filterData[0].age).toEqual(19);
 
-  const orGroup = zPipeline.createFilterGroup("or", [ageFilter, nameFilter]);
+  const orGroup = filterSphere.createFilterGroup("or", [ageFilter, nameFilter]);
   nameFilter.input("Bob");
   ageFilter.input(18);
-  const orFilterData = zPipeline.filterData(data, orGroup);
+  const orFilterData = filterSphere.filterData(data, orGroup);
 
   expect(orFilterData).toHaveLength(2);
   expect(orFilterData[0].name).toEqual("Bob");
