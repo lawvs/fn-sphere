@@ -110,10 +110,10 @@ export const createFilterSphere = <DataType>(
     return result;
   };
 
-  const createFilterFn = (
-    rule: FieldFilter<DataType> | FilterGroup<DataType>,
+  const createFilterPredicate = <T extends DataType, R extends T>(
+    rule: FieldFilter<R> | FilterGroup<R>,
     skipEmptyFilter = true,
-  ) => {
+  ): ((data: T) => boolean) => {
     return (data: DataType) =>
       filterPredicate(dataSchema, data, rule, skipEmptyFilter);
   };
@@ -123,7 +123,7 @@ export const createFilterSphere = <DataType>(
     rule: FieldFilter<R> | FilterGroup<R>,
     skipEmptyFilter = true,
   ): T[] => {
-    const predicate = createFilterFn(rule, skipEmptyFilter);
+    const predicate = createFilterPredicate(rule, skipEmptyFilter);
     return data.filter(predicate);
   };
 
@@ -153,6 +153,7 @@ export const createFilterSphere = <DataType>(
 
     findFilterableField,
     createFilterGroup,
+    createFilterPredicate,
     filterData,
 
     serializeFieldRule,
