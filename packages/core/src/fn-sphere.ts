@@ -1,4 +1,4 @@
-import type { FnSchema, GenericFnSchema } from "./types.js";
+import type { FnSchema, GenericFnSchema, ZodAnyFn } from "./types.js";
 import { createFilterSphere } from "./filter/index.js";
 import { isSameType } from "zod-compare";
 import { z } from "zod";
@@ -43,7 +43,9 @@ export const createFnSphere = () => {
     state.fnMap[fn.name] = fn;
   };
 
-  const registerFnList = (fnList: FnSchema[]) => {
+  const registerFnList = <T extends ZodAnyFn>(
+    fnList: FnSchema<NoInfer<T>>[],
+  ) => {
     fnList.forEach((fn) => {
       addFn(fn);
     });

@@ -1,5 +1,8 @@
 import type { ZodFunction, ZodTuple, TypeOf, ZodTypeAny, ZodType } from "zod";
 
+/**
+ * @internal
+ */
 export type ZodAnyFn = ZodFunction<ZodTuple<any, any>, ZodTypeAny>;
 
 export type FnSchema<T extends ZodAnyFn = ZodAnyFn> = {
