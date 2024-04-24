@@ -1,4 +1,4 @@
-import type { ZodFunction, ZodTuple, TypeOf, ZodTypeAny, ZodType } from "zod";
+import type { TypeOf, ZodFunction, ZodTuple, ZodType, ZodTypeAny } from "zod";
 
 /**
  * @internal
@@ -53,4 +53,17 @@ export type FilterGroup<T = unknown> = {
   conditions: (FieldFilter<T> | FilterGroup<T>)[];
   isInvert: () => boolean;
   setInvert: (invert: boolean) => void;
+};
+
+export type SerializedRule = {
+  type: "Filter";
+  name: string;
+  field: string;
+  arguments: unknown[];
+};
+
+export type SerializedGroup = {
+  type: "FilterGroup";
+  op: "and" | "or";
+  conditions: (SerializedGroup | SerializedRule)[];
 };

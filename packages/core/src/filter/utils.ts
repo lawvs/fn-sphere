@@ -1,4 +1,9 @@
-import type { FieldFilter, FilterGroup } from "../types.js";
+import type {
+  FieldFilter,
+  FilterGroup,
+  SerializedGroup,
+  SerializedRule,
+} from "../types.js";
 
 export const createFilterGroup = <T>(
   op: FilterGroup<T>["op"],
@@ -17,19 +22,27 @@ export const createFilterGroup = <T>(
   };
 };
 
-export const serializeFieldRule = <T>(
-  rule: FieldFilter<T> | FilterGroup<T>,
-) => {
-  // TODO support group
-  // TODO check cannot serialized arguments
-  // TODO types
-  if (rule.filterType === "FilterGroup") {
-    throw new Error("Not implemented yet!");
+export function serializeFieldRule<T>(rule: FieldFilter<T>): SerializedRule;
+export function serializeFieldRule<T>(rule: FilterGroup<T>): SerializedGroup;
+export function serializeFieldRule<T>(
+  rule: FilterGroup<T> | FieldFilter<T>,
+): SerializedGroup | SerializedRule {
+  if (rule.filterType === "Filter") {
+    return {
+      type: "Filter",
+      name: rule.schema.name,
+      field: rule.field,
+      arguments: rule.getPlaceholderArguments(),
+    };
   }
-  return JSON.stringify({
-    type: "Filter",
-    name: rule.schema.name,
-    field: rule.field,
-    arguments: rule.getPlaceholderArguments(),
-  });
-};
+
+  if (rule.filterType === "FilterGroup") {
+    return {
+      type: "FilterGroup",
+      op: rule.op,
+      conditions: rule.conditions.map(serializeFieldRule as any),
+    };
+  }
+
+  throw new Error("Invalid rule!");
+}

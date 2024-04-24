@@ -7,10 +7,12 @@ import type {
   FilterGroup,
   FnSchema,
   GenericFnSchema,
+  SerializedGroup,
+  SerializedRule,
 } from "../types.js";
-import { createFilterGroup, serializeFieldRule } from "./utils.js";
-import { bfsSchemaField, createFieldFilter, filterPredicate } from "./field.js";
 import { isFilterFn } from "../utils.js";
+import { bfsSchemaField, createFieldFilter, filterPredicate } from "./field.js";
+import { createFilterGroup, serializeFieldRule } from "./utils.js";
 
 export { createFilterGroup } from "./utils.js";
 
@@ -127,25 +129,33 @@ export const createFilterSphere = <DataType>(
     return data.filter(predicate);
   };
 
-  const deserializeFieldRule = (data: string) => {
-    // TODO types
-    type serializedFilter = any;
-    const parsed: serializedFilter = JSON.parse(data);
-    if (parsed.type !== "Filter") {
-      throw new Error("Invalid data!");
+  function deserializeFieldRule(data: SerializedRule): FieldFilter<DataType>;
+  function deserializeFieldRule(data: SerializedGroup): FilterGroup<DataType>;
+  function deserializeFieldRule(
+    data: SerializedGroup | SerializedRule,
+  ): FilterGroup<DataType> | FieldFilter<DataType> {
+    if (data.type === "Filter") {
+      const filter = state.filter[data.name] || state.genericFn[data.name];
+      if (!filter) {
+        console.error("Failed to deserialize filter rule!", data, state);
+        throw new Error(
+          `Failed to deserialize filter rule! Filter not found! ${data.name}`,
+        );
+      }
+      const result = createFieldFilter<DataType>(
+        filter,
+        data.field,
+        data.arguments,
+      );
+      return result;
     }
-    const filter = state.filter[parsed.name] || state.genericFn[parsed.name];
-    if (!filter) {
-      throw new Error("Filter not found!");
+    if (data.type === "FilterGroup") {
+      const conditions: (FilterGroup<DataType> | FieldFilter<DataType>)[] =
+        data.conditions.map(deserializeFieldRule as any);
+      return createFilterGroup(data.op, conditions);
     }
-
-    const result = createFieldFilter<DataType>(
-      filter,
-      parsed.field,
-      parsed.arguments,
-    );
-    return result;
-  };
+    throw new Error("Invalid rule" + data);
+  }
 
   return {
     _state: state,
