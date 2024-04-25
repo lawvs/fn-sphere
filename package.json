@@ -5,6 +5,7 @@
   "type": "module",
   "author": "whitewater <me@waterwater.moe>",
   "scripts": {
+    "dev": "pnpm --filter playground run dev",
     "build": "pnpm --recursive run build",
     "typeCheck": "pnpm --recursive run typeCheck",
     "lint": "pnpm --recursive run lint",
