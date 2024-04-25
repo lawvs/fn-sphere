@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
-import type { FnSchema, GenericFnSchema } from "./types.js";
+import type { GenericFnSchema, StandardFnSchema } from "./types.js";
 
 export const stringFilter = defineTypedFn([
   // {
@@ -156,7 +156,7 @@ export const dateFilter = defineTypedFn([
 
 // TODO support case insensitive
 // TODO support optional field
-export const commonFilters: FnSchema[] = [
+export const commonFilters: StandardFnSchema[] = [
   ...stringFilter,
   ...numberFilter,
   ...booleanFilter,

@@ -1,11 +1,11 @@
 import { z } from "zod";
-import type { FieldFilter, FilterGroup, FnSchema } from "../types.js";
+import type { FieldFilter, FilterGroup, StandardFnSchema } from "../types.js";
 import { get } from "../utils.js";
 import { createFilterGroup } from "./utils.js";
 
 // **Parameter** is the variable in the declaration of the function.
 // **Argument** is the actual value of this variable that gets passed to the function.
-const getRequiredParameters = (inputFilter: FnSchema) => {
+const getRequiredParameters = (inputFilter: StandardFnSchema) => {
   const fullParameters = inputFilter.define.parameters();
   if (!fullParameters.items.length) {
     console.error(
@@ -26,7 +26,7 @@ const getRequiredParameters = (inputFilter: FnSchema) => {
 };
 
 export const createFieldFilter = <T>(
-  filterSchema: FnSchema,
+  filterSchema: StandardFnSchema,
   field: string,
   userInput?: unknown[],
 ): FieldFilter<T> => {

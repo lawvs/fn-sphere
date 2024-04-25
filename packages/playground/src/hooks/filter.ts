@@ -1,13 +1,12 @@
-import { createContext, createElement, useContext } from "react";
-import type { ZodType } from "zod";
 import {
   createFilterGroup,
   createFilterSphere,
   type FieldFilter,
   type FilterGroup,
   type FnSchema,
-  type GenericFnSchema,
 } from "@fn-sphere/core";
+import { createContext, createElement, useContext } from "react";
+import type { ZodType } from "zod";
 import { createContextState } from "./misc";
 
 const FlexFilterContext = createContext<ReturnType<
@@ -20,7 +19,7 @@ export const FlexFilterProvider = <T>({
   children,
 }: {
   schema: ZodType<T>;
-  filterList: (FnSchema | GenericFnSchema)[];
+  filterList: FnSchema[];
   children: React.ReactNode;
 }) => {
   return createElement(

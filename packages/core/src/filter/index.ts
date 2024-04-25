@@ -3,12 +3,13 @@ import { z } from "zod";
 import { isSameType } from "zod-compare";
 import type {
   FieldFilter,
-  FilterableField,
   FilterGroup,
+  FilterableField,
   FnSchema,
   GenericFnSchema,
   SerializedGroup,
   SerializedRule,
+  StandardFnSchema,
 } from "../types.js";
 import { isFilterFn } from "../utils.js";
 import { bfsSchemaField, createFieldFilter, filterPredicate } from "./field.js";
@@ -18,11 +19,11 @@ export { createFilterGroup } from "./utils.js";
 
 export const createFilterSphere = <DataType>(
   dataSchema: ZodType<DataType>,
-  filterFnList: (FnSchema | GenericFnSchema)[],
+  filterFnList: FnSchema[],
 ) => {
   type FilterState = {
     schema: ZodType<DataType>;
-    filter: Record<string, FnSchema>;
+    filter: Record<string, StandardFnSchema>;
     genericFn: Record<string, GenericFnSchema>;
   };
   const state: FilterState = {
@@ -56,13 +57,13 @@ export const createFilterSphere = <DataType>(
     const allGenericFilter = Object.values(state.genericFn);
 
     const walk = (fieldSchema: ZodType, path: string) => {
-      const instantiationGenericFilter: FnSchema[] = allGenericFilter
-        .map((genericFilter): FnSchema | false => {
+      const instantiationGenericFilter: StandardFnSchema[] = allGenericFilter
+        .map((genericFilter): StandardFnSchema | false => {
           const { genericLimit } = genericFilter;
           if (!genericLimit(fieldSchema)) {
             return false;
           }
-          const instantiationFn: FnSchema = {
+          const instantiationFn: StandardFnSchema = {
             name: genericFilter.name,
             define: genericFilter.define(fieldSchema),
             implement: genericFilter.implement,
@@ -79,7 +80,7 @@ export const createFilterSphere = <DataType>(
           }
           return instantiationFn;
         })
-        .filter((fn): fn is FnSchema => !!fn);
+        .filter((fn): fn is StandardFnSchema => !!fn);
 
       const availableFilter = [
         ...instantiationGenericFilter,

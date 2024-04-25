@@ -1,15 +1,15 @@
-import type { FnSchema, GenericFnSchema, ZodAnyFn } from "./types.js";
-import { createFilterSphere } from "./filter/index.js";
-import { isSameType } from "zod-compare";
 import { z } from "zod";
+import { isSameType } from "zod-compare";
+import { createFilterSphere } from "./filter/index.js";
+import type { GenericFnSchema, StandardFnSchema, ZodAnyFn } from "./types.js";
 import { isFilterFn as isFilterSchema } from "./utils.js";
 
 export function defineTypedFn<
   T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schema: FnSchema<T>[]): FnSchema<T>[];
+>(schema: StandardFnSchema<T>[]): StandardFnSchema<T>[];
 export function defineTypedFn<
   T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schema: FnSchema<T>): FnSchema<T>;
+>(schema: StandardFnSchema<T>): StandardFnSchema<T>;
 export function defineTypedFn<T>(schema: T) {
   return schema;
 }
@@ -27,16 +27,17 @@ export function defineGenericFn<T>(schemaFn: T) {
 }
 
 export const createFnSphere = () => {
-  type FnBoxState = {
-    fnMap: Record<string, FnSchema>;
+  type FnSphereState = {
+    fnMap: Record<string, StandardFnSchema>;
     genericFn: Record<string, GenericFnSchema>;
   };
-  const state: FnBoxState = {
+  const state: FnSphereState = {
     fnMap: {},
     genericFn: {},
   };
 
-  const addFn = <F extends FnSchema>(fn: F) => {
+  // TODO: supports genericFn
+  const addFn = <F extends StandardFnSchema>(fn: F) => {
     if (fn.name in state.fnMap || fn.name in state.genericFn) {
       throw new Error("Duplicate function name: " + fn.name);
     }
@@ -44,7 +45,7 @@ export const createFnSphere = () => {
   };
 
   const registerFnList = <T extends ZodAnyFn>(
-    fnList: FnSchema<NoInfer<T>>[],
+    fnList: StandardFnSchema<NoInfer<T>>[],
   ) => {
     fnList.forEach((fn) => {
       addFn(fn);
@@ -70,7 +71,7 @@ export const createFnSphere = () => {
           input?: Input;
           output?: Output;
         }
-      | ((fn: FnSchema) => boolean),
+      | ((fn: StandardFnSchema) => boolean),
   ) => {
     if (typeof maybePredicate === "function") {
       return Object.values(state.fnMap).filter(maybePredicate);
@@ -82,7 +83,7 @@ export const createFnSphere = () => {
         (output ? isSameType(output, fn.define.returnType()) : true)
       );
     });
-    return filterFn as FnSchema<z.ZodFunction<Input, Output>>[];
+    return filterFn as StandardFnSchema<z.ZodFunction<Input, Output>>[];
   };
 
   const setupFilter = <S>(schema: z.ZodType<S>) => {

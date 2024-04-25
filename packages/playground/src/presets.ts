@@ -1,12 +1,11 @@
-import { z } from "zod";
 import {
   commonFilters,
   defineTypedFn,
   genericFilter,
   type FnSchema,
-  type GenericFnSchema,
 } from "@fn-sphere/core";
-import { genFakeName, sample, genId } from "./utils";
+import { z } from "zod";
+import { genFakeName, genId, sample } from "./utils";
 
 export const presetSchema = z
   .object({
@@ -26,7 +25,7 @@ export const presetSchema = z
 
 export type PresetData = z.infer<typeof presetSchema>;
 
-export const dataFilters: (FnSchema | GenericFnSchema)[] = [
+export const dataFilters: FnSchema[] = [
   ...genericFilter,
   ...commonFilters,
   defineTypedFn({

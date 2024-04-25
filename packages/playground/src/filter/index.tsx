@@ -2,10 +2,11 @@ import {
   type FilterGroup,
   type FilterableField,
   type FnSchema,
-  type GenericFnSchema,
 } from "@fn-sphere/core";
+import { useEffect } from "react";
 import { CloseIcon } from "tdesign-icons-react";
 import { Button } from "tdesign-react";
+import type { ZodType } from "zod";
 import {
   FilterRuleProvide,
   FlexFilterProvider,
@@ -15,8 +16,6 @@ import {
 } from "../hooks/filter";
 import { AddFilterButton } from "./add-filter-button";
 import { SingleRule } from "./single-rule";
-import type { ZodType } from "zod";
-import { useEffect } from "react";
 
 export const Filter = <T,>({
   schema,
@@ -24,7 +23,7 @@ export const Filter = <T,>({
   onChange,
 }: {
   schema: ZodType<T>;
-  filterList: (FnSchema | GenericFnSchema)[];
+  filterList: FnSchema[];
   onChange?: (cb: {
     rule: FilterGroup;
     filterData: <T>(d: T[]) => T[];
