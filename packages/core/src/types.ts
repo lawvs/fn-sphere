@@ -59,8 +59,14 @@ export type FilterGroup<T = unknown> = {
 
 export type SerializedRule = {
   type: "Filter";
-  name: string;
+  /**
+   * Field path
+   */
   field: string;
+  /**
+   * Filter name
+   */
+  name: string;
   arguments: unknown[];
 };
 

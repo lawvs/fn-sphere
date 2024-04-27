@@ -142,38 +142,3 @@ export const filterPredicate = <T>(
   console.error("Invalid rule type", rule);
   throw new Error("Invalid rule type!");
 };
-
-export const bfsSchemaField = (
-  schema: z.ZodType,
-  maxDeep: number,
-  walk: (field: z.ZodSchema, path: string) => void,
-) => {
-  const queue = [
-    {
-      schema,
-      path: "",
-      deep: 0,
-    },
-  ];
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current) break;
-    if (current.deep > maxDeep) {
-      break;
-    }
-    walk(current.schema, current.path);
-
-    if (!(current.schema instanceof z.ZodObject)) {
-      continue;
-    }
-    const fields = current.schema.shape;
-    for (const key in fields) {
-      const field = fields[key];
-      queue.push({
-        schema: field,
-        path: current.path ? current.path + "." + key : key,
-        deep: current.deep + 1,
-      });
-    }
-  }
-};

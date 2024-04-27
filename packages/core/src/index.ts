@@ -1,13 +1,18 @@
-export { createFnSphere, defineTypedFn } from "./fn-sphere.js";
-export { createFilterSphere, createFilterGroup } from "./filter/index.js";
 export {
-  stringFilter,
-  numberFilter,
+  countNumberOfRules,
+  createFilterGroup,
+  createFilterSphere,
+  findFilterField,
+} from "./filter/index.js";
+export { createFnSphere, defineTypedFn } from "./fn-sphere.js";
+export {
   booleanFilter,
-  dateFilter,
   commonFilters,
+  dateFilter,
   genericFilter,
+  numberFilter,
+  stringFilter,
 } from "./presets.js";
 
-export type * from "./types.js";
 export type { FilterSphere } from "./filter/index.js";
+export type * from "./types.js";

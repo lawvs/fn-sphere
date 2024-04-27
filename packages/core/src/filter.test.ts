@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import { createFilterSphere } from "./filter/index.js";
 import { z } from "zod";
+import { createFilterSphere } from "./filter/index.js";
 
 test("basic usage", () => {
   const zData = z.object({

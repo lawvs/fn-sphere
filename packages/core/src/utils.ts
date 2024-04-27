@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { FnSchema } from "./types.js";
 import { isSameType } from "zod-compare";
+import type { FnSchema, GenericFnSchema, StandardFnSchema } from "./types.js";
 
 /**
  * Simple get function
@@ -37,7 +37,11 @@ export const get = <T = unknown>(
     }, value);
 };
 
-export const isFilterFn = (fn: FnSchema) => {
+export const isGenericFilter = (
+  fnSchema: FnSchema,
+): fnSchema is GenericFnSchema => "genericLimit" in fnSchema;
+
+export const isFilterFn = (fn: StandardFnSchema) => {
   if (!(fn.define.returnType() instanceof z.ZodBoolean)) {
     // Filter should return boolean
     return false;
@@ -50,7 +54,7 @@ export const isFilterFn = (fn: FnSchema) => {
   return true;
 };
 
-export const isCompareFn = (fn: FnSchema) => {
+export const isCompareFn = (fn: StandardFnSchema) => {
   const returnType = fn.define.returnType();
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
   if (
