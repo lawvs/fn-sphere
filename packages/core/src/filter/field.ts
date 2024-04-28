@@ -64,7 +64,7 @@ export const createFieldFilter = <T>(
 
   return {
     _state: state,
-    filterType: "Filter",
+    type: "Filter",
     schema: filterSchema,
     field,
     requiredParameters,
@@ -93,7 +93,7 @@ export const filterPredicate = <T>(
   rule: FieldFilter<T> | FilterGroup<T>,
   skipEmptyRule = true,
 ): boolean => {
-  if (rule.filterType === "Filter") {
+  if (rule.type === "Filter") {
     const field = rule.field;
     if (!rule.ready()) {
       if (skipEmptyRule) {
@@ -120,7 +120,7 @@ export const filterPredicate = <T>(
     return invert ? !result : result;
   }
 
-  if (rule.filterType === "FilterGroup") {
+  if (rule.type === "FilterGroup") {
     if (!rule.conditions.length) {
       return true;
     }

@@ -13,6 +13,7 @@ export {
   numberFilter,
   stringFilter,
 } from "./presets.js";
+export { genFilterId } from "./utils.js";
 
 export type { FilterSphere } from "./filter/index.js";
 export type * from "./types.js";

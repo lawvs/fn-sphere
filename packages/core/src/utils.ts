@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { isSameType } from "zod-compare";
-import type { FnSchema, GenericFnSchema, StandardFnSchema } from "./types.js";
+import type {
+  FilterId,
+  FnSchema,
+  GenericFnSchema,
+  StandardFnSchema,
+} from "./types.js";
 
 /**
  * Simple get function
@@ -36,6 +41,10 @@ export const get = <T = unknown>(
       return acc;
     }, value);
 };
+
+export function genFilterId(): FilterId {
+  return Math.random().toString(36).slice(2, 9) as FilterId;
+}
 
 export const isGenericFilter = (
   fnSchema: FnSchema,

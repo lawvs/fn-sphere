@@ -100,10 +100,10 @@ const FilterGroup = ({
                 {filterGroup.op === "and" ? "AND" : "OR"}
               </Button>
             )}
-            {rule.filterType === "Filter" && (
+            {rule.type === "Filter" && (
               <SingleRule rule={rule} ruleParent={filterGroup}></SingleRule>
             )}
-            {rule.filterType === "FilterGroup" && (
+            {rule.type === "FilterGroup" && (
               <FilterGroup filterGroup={rule} groupParent={filterGroup} />
             )}
           </div>

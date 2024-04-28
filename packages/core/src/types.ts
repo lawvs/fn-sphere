@@ -28,7 +28,7 @@ export type FnSchema = StandardFnSchema | GenericFnSchema;
 
 export type FieldFilter<T = unknown> = {
   _state: unknown;
-  filterType: "Filter";
+  type: "Filter";
   schema: StandardFnSchema;
   field: string;
   requiredParameters: ZodTuple;
@@ -50,14 +50,19 @@ export type FilterableField<T = unknown> = {
 
 export type FilterGroup<T = unknown> = {
   _state: unknown;
-  filterType: "FilterGroup";
+  type: "FilterGroup";
   op: "and" | "or";
   conditions: (FieldFilter<T> | FilterGroup<T>)[];
   isInvert: () => boolean;
   setInvert: (invert: boolean) => void;
 };
 
+export type FilterId = string & { __filterId: true };
 export type SerializedRule = {
+  /**
+   * Unique id, used for tracking changes or resorting
+   */
+  id: FilterId;
   type: "Filter";
   /**
    * Field path
@@ -71,6 +76,10 @@ export type SerializedRule = {
 };
 
 export type SerializedGroup = {
+  /**
+   * Unique id, used for tracking changes or resorting
+   */
+  id: FilterId;
   type: "FilterGroup";
   op: "and" | "or";
   conditions: (SerializedGroup | SerializedRule)[];

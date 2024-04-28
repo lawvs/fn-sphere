@@ -7,7 +7,7 @@ import type {
   SerializedRule,
   StandardFnSchema,
 } from "../types.js";
-import { isFilterFn } from "../utils.js";
+import { genFilterId, isFilterFn } from "../utils.js";
 
 export const createFilterGroup = <T>(
   op: FilterGroup<T>["op"],
@@ -18,7 +18,7 @@ export const createFilterGroup = <T>(
   };
   return {
     _state: state,
-    filterType: "FilterGroup",
+    type: "FilterGroup",
     op,
     conditions: rules,
     isInvert: () => state.invert,
@@ -31,8 +31,9 @@ export function serializeFieldRule<T>(rule: FilterGroup<T>): SerializedGroup;
 export function serializeFieldRule<T>(
   rule: FilterGroup<T> | FieldFilter<T>,
 ): SerializedGroup | SerializedRule {
-  if (rule.filterType === "Filter") {
+  if (rule.type === "Filter") {
     return {
+      id: genFilterId(),
       type: "Filter",
       name: rule.schema.name,
       field: rule.field,
@@ -40,8 +41,9 @@ export function serializeFieldRule<T>(
     };
   }
 
-  if (rule.filterType === "FilterGroup") {
+  if (rule.type === "FilterGroup") {
     return {
+      id: genFilterId(),
       type: "FilterGroup",
       op: rule.op,
       conditions: rule.conditions.map(serializeFieldRule as any),
@@ -74,11 +76,13 @@ export const instantiateGenericFilter = (
   return instantiationFn;
 };
 
-export const countNumberOfRules = (rule: FilterGroup | FieldFilter): number => {
-  if (rule.filterType === "Filter") {
+export const countNumberOfRules = (
+  rule: FilterGroup | FieldFilter | SerializedGroup | SerializedRule,
+): number => {
+  if (rule.type === "Filter") {
     return 1;
   }
-  if (rule.filterType === "FilterGroup") {
+  if (rule.type === "FilterGroup") {
     return rule.conditions.reduce((acc, r) => acc + countNumberOfRules(r), 0);
   }
   throw new Error("Invalid rule!");
