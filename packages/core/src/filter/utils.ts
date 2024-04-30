@@ -7,7 +7,7 @@ import type {
   SerializedRule,
   StandardFnSchema,
 } from "../types.js";
-import { genFilterId, isFilterFn } from "../utils.js";
+import { isFilterFn } from "../utils.js";
 
 export const createFilterGroup = <T>(
   op: FilterGroup<T>["op"],
@@ -25,33 +25,6 @@ export const createFilterGroup = <T>(
     setInvert: (invert) => (state.invert = invert),
   };
 };
-
-export function serializeFieldRule<T>(rule: FieldFilter<T>): SerializedRule;
-export function serializeFieldRule<T>(rule: FilterGroup<T>): SerializedGroup;
-export function serializeFieldRule<T>(
-  rule: FilterGroup<T> | FieldFilter<T>,
-): SerializedGroup | SerializedRule {
-  if (rule.type === "Filter") {
-    return {
-      id: genFilterId(),
-      type: "Filter",
-      name: rule.schema.name,
-      field: rule.field,
-      arguments: rule.getPlaceholderArguments(),
-    };
-  }
-
-  if (rule.type === "FilterGroup") {
-    return {
-      id: genFilterId(),
-      type: "FilterGroup",
-      op: rule.op,
-      conditions: rule.conditions.map(serializeFieldRule as any),
-    };
-  }
-
-  throw new Error("Invalid rule!");
-}
 
 export const instantiateGenericFilter = (
   schema: ZodType,

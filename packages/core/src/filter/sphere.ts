@@ -12,7 +12,8 @@ import type {
 import { isFilterFn } from "../utils.js";
 import { createFieldFilter, filterPredicate } from "./field.js";
 import { findFilterField } from "./pure.js";
-import { createFilterGroup, serializeFieldRule } from "./utils.js";
+import { serializeFieldRule } from "./serialize.js";
+import { createFilterGroup } from "./utils.js";
 
 export const createFilterSphere = <DataType>(
   dataSchema: ZodType<DataType>,
