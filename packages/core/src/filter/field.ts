@@ -31,11 +31,11 @@ const getRequiredParameters = (inputFilter: StandardFnSchema) => {
 };
 
 export const createFieldFilter = <T>(
-  filterSchema: StandardFnSchema,
+  fnSchema: StandardFnSchema,
   field: Path,
   userInput?: unknown[],
 ): FieldFilter<T> => {
-  const requiredParameters = getRequiredParameters(filterSchema);
+  const requiredParameters = getRequiredParameters(fnSchema);
 
   const state = {
     invert: false,
@@ -44,20 +44,17 @@ export const createFieldFilter = <T>(
   };
 
   const input = (...args: unknown[]) => {
-    const rest = requiredParameters._def.rest;
-    if (
-      !filterSchema.skipValidate &&
-      ((!rest && requiredParameters.items.length !== args.length) ||
-        (rest && requiredParameters.items.length > args.length))
-    ) {
-      console.error(
-        "Invalid input parameters!",
-        filterSchema.name,
-        filterSchema,
-        args,
-        requiredParameters,
-      );
-      throw new Error("Invalid input parameters!");
+    if (!fnSchema.skipValidate) {
+      const parseResult = requiredParameters.safeParse(args);
+      if (!parseResult.success) {
+        console.error(
+          "Invalid input parameters!",
+          fnSchema,
+          args,
+          requiredParameters,
+        );
+        throw parseResult.error;
+      }
     }
     state.placeholderArguments = args;
     state.ready = true;
@@ -70,7 +67,7 @@ export const createFieldFilter = <T>(
   return {
     _state: state,
     type: "Filter",
-    schema: filterSchema,
+    schema: fnSchema,
     field,
     requiredParameters,
     getPlaceholderArguments: () => state.placeholderArguments,
@@ -84,10 +81,10 @@ export const createFieldFilter = <T>(
     input,
     turnToGroup: (op) =>
       createFilterGroup(op, [
-        createFieldFilter(filterSchema, field, state.placeholderArguments),
+        createFieldFilter(fnSchema, field, state.placeholderArguments),
       ]),
     duplicate: () => {
-      return createFieldFilter(filterSchema, field, state.placeholderArguments);
+      return createFieldFilter(fnSchema, field, state.placeholderArguments);
     },
   };
 };
