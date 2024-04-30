@@ -4,8 +4,16 @@ import type {
   FilterId,
   FnSchema,
   GenericFnSchema,
+  Path,
   StandardFnSchema,
 } from "./types.js";
+
+export const isEqualPath = (a: Path, b: Path): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((v, i) => v === b[i]);
+};
 
 /**
  * Simple get function
@@ -18,28 +26,25 @@ import type {
  *  target: [1, 2, { a: "test" }],
  * };
  *
- * get(obj, "selector.to.val"); // "val"
- * get(obj, "target.2.a"); // "test"
+ * get(obj, ["selector", "to", "val"]); // "val"
+ * get(obj, ["target", 2, "a"]); // "test"
  */
 export const get = <T = unknown>(
   value: any,
-  path: string,
+  path: Path,
   defaultValue?: T,
 ): T => {
   if (!path) {
     return value;
   }
-  return String(path)
-    .split(".")
-    .filter(Boolean)
-    .reduce((acc, v) => {
-      try {
-        acc = acc[v];
-      } catch (e) {
-        return defaultValue;
-      }
-      return acc;
-    }, value);
+  return path.reduce((acc, v) => {
+    try {
+      acc = acc[v];
+    } catch (e) {
+      return defaultValue;
+    }
+    return acc;
+  }, value);
 };
 
 export function genFilterId(): FilterId {

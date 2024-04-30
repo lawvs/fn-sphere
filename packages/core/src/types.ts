@@ -1,5 +1,7 @@
 import type { TypeOf, ZodFunction, ZodTuple, ZodType, ZodTypeAny } from "zod";
 
+export type Path = (string | number)[];
+
 /**
  * @internal
  */
@@ -30,7 +32,10 @@ export type FieldFilter<T = unknown> = {
   _state: unknown;
   type: "Filter";
   schema: StandardFnSchema;
-  field: string;
+  /**
+   * Field path
+   */
+  field: Path;
   requiredParameters: ZodTuple;
   setInvert: (invert: boolean) => void;
   isInvert: () => boolean;
@@ -43,7 +48,10 @@ export type FieldFilter<T = unknown> = {
 };
 
 export type FilterableField<T = unknown> = {
-  path: string;
+  /**
+   * If it's a empty string, it means the root object
+   */
+  path: Path;
   fieldSchema: ZodTypeAny;
   filterList: FieldFilter<T>[];
 };
@@ -67,7 +75,7 @@ export type SerializedRule = {
   /**
    * Field path
    */
-  field: string;
+  field: Path;
   /**
    * Filter name
    */

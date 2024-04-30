@@ -9,12 +9,12 @@ import { instantiateGenericFilter } from "./utils.js";
 const bfsSchemaField = (
   schema: z.ZodType,
   maxDeep: number,
-  walk: (field: z.ZodSchema, path: string) => void,
+  walk: (field: z.ZodSchema, path: string[]) => void,
 ) => {
   const queue = [
     {
       schema,
-      path: "",
+      path: [] as string[],
       deep: 0,
     },
   ];
@@ -34,7 +34,7 @@ const bfsSchemaField = (
       const field = fields[key];
       queue.push({
         schema: field,
-        path: current.path ? current.path + "." + key : key,
+        path: [...current.path, key],
         deep: current.deep + 1,
       });
     }
@@ -52,7 +52,7 @@ export const findFilterField = <DataType>({
 }): FilterableField<DataType>[] => {
   const result: FilterableField<DataType>[] = [];
 
-  const walk = (fieldSchema: ZodType, path: string) => {
+  const walk = (fieldSchema: ZodType, path: string[]) => {
     const instantiationFilter: StandardFnSchema[] = filterList
       .map((fnSchema): StandardFnSchema | undefined => {
         if (!isGenericFilter(fnSchema)) {

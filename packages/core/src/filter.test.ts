@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { z } from "zod";
 import { createFilterSphere } from "./filter/index.js";
+import { isEqualPath } from "./utils.js";
 
 test("basic usage", () => {
   const zData = z.object({
@@ -128,8 +129,8 @@ test("FilterGroup usage", () => {
   ]);
 
   const fields = filterSphere.findFilterableField();
-  const ageField = fields.find((i) => i.path === "age")!;
-  const nameField = fields.find((i) => i.path === "name")!;
+  const ageField = fields.find((i) => isEqualPath(i.path, ["age"]))!;
+  const nameField = fields.find((i) => isEqualPath(i.path, ["name"]))!;
 
   const ageFilter = ageField.filterList.find(
     (i) => i.schema.name === "number equal",

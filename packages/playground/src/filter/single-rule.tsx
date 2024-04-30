@@ -1,9 +1,10 @@
-import { List } from "@zodui/react";
-import type {
-  FieldFilter,
-  FilterGroup,
-  FilterableField,
+import {
+  isEqualPath,
+  type FieldFilter,
+  type FilterGroup,
+  type FilterableField,
 } from "@fn-sphere/core";
+import { List } from "@zodui/react";
 import { CloseIcon } from "tdesign-icons-react";
 import { Button, Select } from "tdesign-react";
 import { useFilter, useFilterableField } from "../hooks/filter";
@@ -35,13 +36,15 @@ export const SingleRule = ({
     <>
       <Select
         value={
-          fields.find((field) => field.path === rule.field)?.fieldSchema
-            .description
+          fields.find((field) => isEqualPath(field.path, rule.field))
+            ?.fieldSchema.description
         }
         options={[
           ...fields.map((field, i) => ({
             label:
-              field.fieldSchema.description || field.path || `Unknown ${i}`,
+              field.fieldSchema.description ||
+              field.path.join(".") ||
+              `Unknown ${i}`,
             value: field,
           })),
         ]}
@@ -54,7 +57,7 @@ export const SingleRule = ({
         value={rule.schema.name}
         options={
           fields
-            .find((field) => field.path === rule.field)
+            .find((field) => isEqualPath(field.path, rule.field))
             ?.filterList.map((filter) => ({
               label: filter.schema.name,
               value: filter,

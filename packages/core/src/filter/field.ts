@@ -1,5 +1,10 @@
 import { z } from "zod";
-import type { FieldFilter, FilterGroup, StandardFnSchema } from "../types.js";
+import type {
+  FieldFilter,
+  FilterGroup,
+  Path,
+  StandardFnSchema,
+} from "../types.js";
 import { get } from "../utils.js";
 import { createFilterGroup } from "./utils.js";
 
@@ -27,7 +32,7 @@ const getRequiredParameters = (inputFilter: StandardFnSchema) => {
 
 export const createFieldFilter = <T>(
   filterSchema: StandardFnSchema,
-  field: string,
+  field: Path,
   userInput?: unknown[],
 ): FieldFilter<T> => {
   const requiredParameters = getRequiredParameters(filterSchema);
