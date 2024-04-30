@@ -29,22 +29,42 @@ export const isEqualPath = (a: Path, b: Path): boolean => {
  * get(obj, ["selector", "to", "val"]); // "val"
  * get(obj, ["target", 2, "a"]); // "test"
  */
-export const get = <T = unknown>(
-  value: any,
+export const getValueAtPath = <T = unknown>(data: any, path: Path): T => {
+  if (!path || path.length === 0) {
+    return data;
+  }
+  let result = data;
+  for (let i = 0; i < path.length; i++) {
+    if (result == null) {
+      return result;
+    }
+    result = result[path[i]];
+  }
+  return result;
+};
+
+/**
+ * This function retrieves the schema from a given path within a Zod schema.
+ */
+export const getSchemaAtPath = <T extends z.ZodType = z.ZodType>(
+  schema: z.ZodType,
   path: Path,
   defaultValue?: T,
-): T => {
-  if (!path) {
-    return value;
+): T | undefined => {
+  if (!path || path.length === 0) {
+    return schema as T;
   }
-  return path.reduce((acc, v) => {
-    try {
-      acc = acc[v];
-    } catch (e) {
-      return defaultValue;
+  let result = schema;
+  for (let i = 0; i < path.length; i++) {
+    if (result == null) {
+      return defaultValue as T;
     }
-    return acc;
-  }, value);
+    if (!(result instanceof z.ZodObject)) {
+      return defaultValue as T;
+    }
+    result = result.shape[path[i]];
+  }
+  return result as T;
 };
 
 export function genFilterId(): FilterId {

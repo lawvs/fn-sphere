@@ -5,7 +5,7 @@ import type {
   Path,
   StandardFnSchema,
 } from "../types.js";
-import { get } from "../utils.js";
+import { getValueAtPath } from "../utils.js";
 import { createFilterGroup } from "./utils.js";
 
 // **Parameter** is the variable in the declaration of the function.
@@ -112,7 +112,7 @@ export const filterPredicate = <T>(
       throw parseResult.error;
     }
     const item = parseResult.data;
-    const value = get(item, field);
+    const value = getValueAtPath(item, field);
     const invert = rule.isInvert();
     const filterSchema = rule.schema;
     const skipValidate = filterSchema.skipValidate;
