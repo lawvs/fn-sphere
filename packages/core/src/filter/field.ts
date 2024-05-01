@@ -1,11 +1,5 @@
 import { z } from "zod";
-import type {
-  FieldFilter,
-  FilterGroup,
-  Path,
-  StandardFnSchema,
-} from "../types.js";
-import { getValueAtPath } from "../utils.js";
+import type { FieldFilter, Path, StandardFnSchema } from "../types.js";
 import { createFilterGroup } from "./utils.js";
 
 // **Parameter** is the variable in the declaration of the function.
@@ -87,60 +81,4 @@ export const createFieldFilter = <T>(
       return createFieldFilter(fnSchema, field, state.placeholderArguments);
     },
   };
-};
-
-export const filterPredicate = <T>(
-  dataSchema: z.ZodType<T>,
-  data: T,
-  rule: FieldFilter<T> | FilterGroup<T>,
-  skipEmptyRule = true,
-): boolean => {
-  if (rule.type === "Filter") {
-    const field = rule.field;
-    if (!rule.ready()) {
-      if (skipEmptyRule) {
-        return true;
-      }
-      throw new Error("Missing input parameters!");
-    }
-    const parseResult = dataSchema.safeParse(data);
-    // TODO add option to skip validate
-    if (!parseResult.success) {
-      throw parseResult.error;
-    }
-    const item = parseResult.data;
-    const value = getValueAtPath(item, field);
-    const invert = rule.isInvert();
-    const filterSchema = rule.schema;
-    const skipValidate = filterSchema.skipValidate;
-    // Returns a new function that automatically validates its inputs and outputs.
-    // See https://zod.dev/?id=functions
-    const fnWithImplement = skipValidate
-      ? filterSchema.implement
-      : filterSchema.define.implement(filterSchema.implement);
-    const result = fnWithImplement(value, ...rule.getPlaceholderArguments());
-    return invert ? !result : result;
-  }
-
-  if (rule.type === "FilterGroup") {
-    if (!rule.conditions.length) {
-      return true;
-    }
-    const invert = rule.isInvert();
-    if (rule.op === "or") {
-      const result = rule.conditions.some((condition) =>
-        filterPredicate(dataSchema, data, condition),
-      );
-      return invert ? !result : result;
-    }
-    if (rule.op === "and") {
-      const result = rule.conditions.every((condition) =>
-        filterPredicate(dataSchema, data, condition),
-      );
-      return invert ? !result : result;
-    }
-    throw new Error("Invalid op: " + rule.op);
-  }
-  console.error("Invalid rule type", rule);
-  throw new Error("Invalid rule type!");
 };

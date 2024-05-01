@@ -5,14 +5,11 @@ import type {
   FilterableField,
   FnSchema,
   GenericFnSchema,
-  SerializedGroup,
-  SerializedRule,
   StandardFnSchema,
 } from "../types.js";
 import { isFilterFn } from "../utils.js";
-import { createFieldFilter, filterPredicate } from "./field.js";
+import { createFilterPredicate } from "./create-filter-predicate.js";
 import { findFilterField } from "./pure.js";
-import { serializeFieldRule } from "./serialize.js";
 import { createFilterGroup } from "./utils.js";
 
 export const createFilterSphere = <DataType>(
@@ -56,50 +53,25 @@ export const createFilterSphere = <DataType>(
       maxDeep,
     });
 
-  const createFilterPredicate = <T extends DataType, R extends T>(
+  const getFilterPredicate = <T extends DataType, R extends T>(
     rule: FieldFilter<R> | FilterGroup<R>,
-    skipEmptyFilter = true,
+    skipEmptyRule = true,
   ): ((data: T) => boolean) => {
-    return (data: DataType) =>
-      filterPredicate(dataSchema, data, rule, skipEmptyFilter);
+    return createFilterPredicate({
+      schema: dataSchema,
+      rule,
+      skipEmptyRule,
+    });
   };
 
   const filterData = <T extends DataType, R extends T>(
     data: T[],
     rule: FieldFilter<R> | FilterGroup<R>,
-    skipEmptyFilter = true,
+    skipEmptyRule = true,
   ): T[] => {
-    const predicate = createFilterPredicate(rule, skipEmptyFilter);
+    const predicate = getFilterPredicate(rule, skipEmptyRule);
     return data.filter(predicate);
   };
-
-  function deserializeFieldRule(data: SerializedRule): FieldFilter<DataType>;
-  function deserializeFieldRule(data: SerializedGroup): FilterGroup<DataType>;
-  function deserializeFieldRule(
-    data: SerializedGroup | SerializedRule,
-  ): FilterGroup<DataType> | FieldFilter<DataType> {
-    if (data.type === "Filter") {
-      const filter = state.filter[data.name] || state.genericFn[data.name];
-      if (!filter) {
-        console.error("Failed to deserialize filter rule!", data, state);
-        throw new Error(
-          `Failed to deserialize filter rule! Filter not found! ${data.name}`,
-        );
-      }
-      const result = createFieldFilter<DataType>(
-        filter,
-        data.field,
-        data.arguments,
-      );
-      return result;
-    }
-    if (data.type === "FilterGroup") {
-      const conditions: (FilterGroup<DataType> | FieldFilter<DataType>)[] =
-        data.conditions.map(deserializeFieldRule as any);
-      return createFilterGroup(data.op, conditions);
-    }
-    throw new Error("Invalid rule" + data);
-  }
 
   return {
     _state: state,
@@ -107,10 +79,7 @@ export const createFilterSphere = <DataType>(
 
     findFilterableField,
     createFilterGroup,
-    createFilterPredicate,
+    getFilterPredicate,
     filterData,
-
-    serializeFieldRule,
-    deserializeFieldRule,
   };
 };
