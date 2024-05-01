@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { FieldFilter, FilterGroup } from "../types.js";
-import { getValueAtPath } from "../utils.js";
+import type { FieldFilter, FilterGroup } from "./types.js";
+import { getValueAtPath } from "./utils.js";
 
 type FilterPredicateOptions<T> = {
   /**

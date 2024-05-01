@@ -4,6 +4,7 @@ export {
   createFilterSphere,
   findFilterField,
 } from "./filter/index.js";
+export { genFilterId, isEqualPath } from "./filter/utils.js";
 export { createFnSphere, defineTypedFn } from "./fn-sphere.js";
 export {
   booleanFilter,
@@ -13,7 +14,7 @@ export {
   numberFilter,
   stringFilter,
 } from "./presets.js";
-export { genFilterId, isEqualPath } from "./utils.js";
 
 export type { FilterSphere } from "./filter/index.js";
+export type * from "./filter/types.js";
 export type * from "./types.js";

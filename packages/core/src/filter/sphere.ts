@@ -1,15 +1,9 @@
 import type { ZodType } from "zod";
-import type {
-  FieldFilter,
-  FilterGroup,
-  FilterableField,
-  FnSchema,
-  GenericFnSchema,
-  StandardFnSchema,
-} from "../types.js";
+import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn } from "../utils.js";
 import { createFilterPredicate } from "./create-filter-predicate.js";
 import { findFilterField } from "./pure.js";
+import type { FieldFilter, FilterGroup, FilterableField } from "./types.js";
 import { createFilterGroup } from "./utils.js";
 
 export const createFilterSphere = <DataType>(

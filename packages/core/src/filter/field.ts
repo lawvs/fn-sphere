@@ -1,5 +1,6 @@
 import { z } from "zod";
-import type { FieldFilter, Path, StandardFnSchema } from "../types.js";
+import type { StandardFnSchema } from "../types.js";
+import type { FieldFilter, Path } from "./types.js";
 import { createFilterGroup } from "./utils.js";
 
 // **Parameter** is the variable in the declaration of the function.

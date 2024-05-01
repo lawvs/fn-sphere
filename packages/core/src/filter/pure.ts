@@ -1,9 +1,10 @@
 import type { ZodType } from "zod";
 import { z } from "zod";
 import { isSameType } from "zod-compare";
-import type { FilterableField, FnSchema, StandardFnSchema } from "../types.js";
+import type { FnSchema, StandardFnSchema } from "../types.js";
 import { isGenericFilter } from "../utils.js";
 import { createFieldFilter } from "./field.js";
+import type { FilterableField } from "./types.js";
 import { instantiateGenericFilter } from "./utils.js";
 
 const bfsSchemaField = (

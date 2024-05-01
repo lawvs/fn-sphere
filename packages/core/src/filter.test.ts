@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { z } from "zod";
 import { createFilterSphere } from "./filter/index.js";
-import { isEqualPath } from "./utils.js";
+import { isEqualPath } from "./filter/utils.js";
 
 test("basic usage", () => {
   const zData = z.object({

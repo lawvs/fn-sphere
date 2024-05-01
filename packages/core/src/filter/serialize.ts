@@ -1,14 +1,19 @@
 import type { ZodType } from "zod";
+import type { FnSchema } from "../types.js";
+import { isGenericFilter } from "../utils.js";
+import { createFieldFilter } from "./field.js";
 import type {
   FieldFilter,
   FilterGroup,
-  FnSchema,
   SerializedGroup,
   SerializedRule,
-} from "../types.js";
-import { genFilterId, getSchemaAtPath, isGenericFilter } from "../utils.js";
-import { createFieldFilter } from "./field.js";
-import { createFilterGroup, instantiateGenericFilter } from "./utils.js";
+} from "./types.js";
+import {
+  createFilterGroup,
+  genFilterId,
+  getSchemaAtPath,
+  instantiateGenericFilter,
+} from "./utils.js";
 
 export function serializeFieldRule<T>(rule: FieldFilter<T>): SerializedRule;
 export function serializeFieldRule<T>(rule: FilterGroup<T>): SerializedGroup;
