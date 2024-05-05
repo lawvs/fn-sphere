@@ -1,16 +1,16 @@
-import type { ZodTuple, ZodTypeAny } from "zod";
+import type { ZodTuple, ZodType, ZodTypeAny } from "zod";
 import type { StandardFnSchema } from "../types.js";
 
-export type Path = (string | number)[];
+export type FilterPath = (string | number)[];
 
-export type FieldFilter<T = unknown> = {
-  _state: unknown;
+export type FilterRuleWrapper<T = unknown> = {
+  _state: FilterRule;
   type: "Filter";
   schema: StandardFnSchema;
   /**
    * Field path
    */
-  field: Path;
+  path: FilterPath;
   requiredParameters: ZodTuple;
   setInvert: (invert: boolean) => void;
   isInvert: () => boolean;
@@ -19,44 +19,96 @@ export type FieldFilter<T = unknown> = {
   input: (...args: unknown[]) => void;
   reset: () => void;
   turnToGroup: (op: "and" | "or") => FilterGroup<T>;
-  duplicate: () => FieldFilter<T>;
+  duplicate: () => FilterRuleWrapper<T>;
 };
 
+export type FilterField = {
+  /**
+   * If it's a empty array, it means the root object
+   */
+  path: FilterPath;
+  fieldSchema: ZodType;
+  filterList: StandardFnSchema[];
+};
+
+/**
+ * @deprecated Use {@link FilterField}
+ */
 export type FilterableField<T = unknown> = {
   /**
-   * If it's a empty string, it means the root object
+   * If it's a empty array, it means the root object
    */
-  path: Path;
+  path: FilterPath;
   fieldSchema: ZodTypeAny;
-  filterList: FieldFilter<T>[];
-};
-
-export type FilterGroup<T = unknown> = {
-  _state: unknown;
-  type: "FilterGroup";
-  op: "and" | "or";
-  conditions: (FieldFilter<T> | FilterGroup<T>)[];
-  isInvert: () => boolean;
-  setInvert: (invert: boolean) => void;
+  filterList: FilterRuleWrapper<T>[];
 };
 
 export type FilterId = string & { __filterId: true };
-export type SerializedRule = {
+
+export type FilterGroup<T = unknown> = {
   /**
    * Unique id, used for tracking changes or resorting
    */
   id: FilterId;
+  type: "FilterGroup";
+  op: "and" | "or";
+  conditions: (FilterRuleWrapper<T> | FilterGroup<T>)[];
+  invert?: boolean;
+};
+
+export type LooseFilterRule = {
+  /**
+   * Unique id, used for tracking changes or resorting
+   */
+  id?: FilterId;
   type: "Filter";
   /**
    * Field path
+   *
+   * If it's a empty array, it means the root object.
+   * If not provided, it means user didn't select a field.
    */
-  field: Path;
+  path?: FilterPath;
   /**
    * Filter name
+   *
+   * If not provided, it means user didn't select a filter.
    */
-  name: string;
+  name?: string;
+  /**
+   * Arguments for the filter function
+   */
   arguments: unknown[];
+  invert?: boolean;
 };
+
+export type LooseFilterGroup = {
+  /**
+   * Unique id, used for tracking changes or resorting
+   */
+  id?: FilterId;
+  type: "FilterGroup";
+  op: "and" | "or";
+  conditions: (LooseFilterRule | LooseFilterGroup)[];
+  invert?: boolean;
+};
+
+/**
+ * @deprecated
+ */
+export type FilterRule = Required<LooseFilterRule>;
+
+export type StrictFilterRule = Readonly<FilterRule>;
+export type StrictFilterGroup = Readonly<{
+  /**
+   * Unique id, used for tracking changes or resorting
+   */
+  id: FilterId;
+  type: "FilterGroup";
+  op: "and" | "or";
+  conditions: (StrictFilterRule | StrictFilterGroup)[];
+  invert: boolean;
+}>;
 
 export type SerializedGroup = {
   /**
@@ -65,5 +117,6 @@ export type SerializedGroup = {
   id: FilterId;
   type: "FilterGroup";
   op: "and" | "or";
-  conditions: (SerializedGroup | SerializedRule)[];
+  conditions: (SerializedGroup | FilterRule)[];
+  invert?: boolean;
 };

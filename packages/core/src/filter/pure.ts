@@ -3,19 +3,18 @@ import { z } from "zod";
 import { isSameType } from "zod-compare";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import { isGenericFilter } from "../utils.js";
-import { createFieldFilter } from "./field.js";
-import type { FilterableField } from "./types.js";
-import { instantiateGenericFilter } from "./utils.js";
+import type { FilterField, FilterPath } from "./types.js";
+import { instantiateGenericFn } from "./utils.js";
 
 const bfsSchemaField = (
   schema: z.ZodType,
   maxDeep: number,
-  walk: (field: z.ZodSchema, path: string[]) => void,
+  walk: (field: z.ZodSchema, path: FilterPath) => void,
 ) => {
   const queue = [
     {
       schema,
-      path: [] as string[],
+      path: [] as unknown as FilterPath,
       deep: 0,
     },
   ];
@@ -35,25 +34,25 @@ const bfsSchemaField = (
       const field = fields[key];
       queue.push({
         schema: field,
-        path: [...current.path, key],
+        path: [...current.path, key] as FilterPath,
         deep: current.deep + 1,
       });
     }
   }
 };
 
-export const findFilterField = <DataType>({
+export const findFilterField = <Data>({
   schema,
   filterList,
   maxDeep = 1,
 }: {
-  schema: ZodType<DataType>;
+  schema: ZodType<Data>;
   filterList: FnSchema[];
   maxDeep?: number;
-}): FilterableField<DataType>[] => {
-  const result: FilterableField<DataType>[] = [];
+}): FilterField[] => {
+  const result: FilterField[] = [];
 
-  const walk = (fieldSchema: ZodType, path: string[]) => {
+  const walk = (fieldSchema: ZodType, path: FilterPath) => {
     const instantiationFilter: StandardFnSchema[] = filterList
       .map((fnSchema): StandardFnSchema | undefined => {
         if (!isGenericFilter(fnSchema)) {
@@ -61,7 +60,7 @@ export const findFilterField = <DataType>({
           return fnSchema;
         }
         const genericFilter = fnSchema;
-        return instantiateGenericFilter(fieldSchema, genericFilter);
+        return instantiateGenericFn(fieldSchema, genericFilter);
       })
       .filter((fn): fn is StandardFnSchema => !!fn);
 
@@ -82,9 +81,7 @@ export const findFilterField = <DataType>({
       result.push({
         path,
         fieldSchema,
-        filterList: availableFilter.map((filter) =>
-          createFieldFilter(filter, path),
-        ),
+        filterList: availableFilter,
       });
     }
   };
