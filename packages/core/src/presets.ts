@@ -44,7 +44,10 @@ export const stringFilter = defineTypedFn([
   //   },
   // },
   {
-    define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+    define: z
+      .function()
+      .args(z.string(), z.coerce.string())
+      .returns(z.boolean()),
     name: "Starts with",
     implement: (value, target) => {
       if (!target) {
@@ -54,7 +57,10 @@ export const stringFilter = defineTypedFn([
     },
   },
   {
-    define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+    define: z
+      .function()
+      .args(z.string(), z.coerce.string())
+      .returns(z.boolean()),
     name: "Ends with",
     implement: (value, target) => {
       if (!target) {
@@ -67,42 +73,54 @@ export const stringFilter = defineTypedFn([
 
 export const numberFilter = defineTypedFn([
   {
-    define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+    define: z
+      .function()
+      .args(z.number(), z.coerce.number())
+      .returns(z.boolean()),
     name: ">",
     implement: (value, target) => {
       return value > target;
     },
   },
   {
-    define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+    define: z
+      .function()
+      .args(z.number(), z.coerce.number())
+      .returns(z.boolean()),
     name: ">=",
     implement: (value, target) => {
       return value >= target;
     },
   },
   {
-    define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+    define: z
+      .function()
+      .args(z.number(), z.coerce.number())
+      .returns(z.boolean()),
     name: "<",
     implement: (value, target) => {
       return value < target;
     },
   },
   {
-    define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+    define: z
+      .function()
+      .args(z.number(), z.coerce.number())
+      .returns(z.boolean()),
     name: "<=",
     implement: (value, target) => {
       return value <= target;
     },
   },
   // {
-  //   define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+  //   define: z.function().args(z.number(), z.coerce.number()).returns(z.boolean()),
   //   name: "==",
   //   implement: (value, target) => {
   //     return value == target;
   //   },
   // },
   // {
-  //   define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+  //   define: z.function().args(z.number(), z.coerce.number()).returns(z.boolean()),
   //   name: "!=",
   //   implement: (value, target) => {
   //     return value != target;
@@ -129,7 +147,10 @@ export const booleanFilter = defineTypedFn([
 
 export const longWindedBooleanFilter = defineTypedFn([
   {
-    define: z.function().args(z.boolean(), z.boolean()).returns(z.boolean()),
+    define: z
+      .function()
+      .args(z.boolean(), z.coerce.boolean())
+      .returns(z.boolean()),
     name: "Is equal",
     implement: (value, target) => {
       return value === target;
@@ -139,14 +160,14 @@ export const longWindedBooleanFilter = defineTypedFn([
 
 export const dateFilter = defineTypedFn([
   {
-    define: z.function().args(z.date(), z.date()).returns(z.boolean()),
+    define: z.function().args(z.date(), z.coerce.date()).returns(z.boolean()),
     name: "Before",
     implement: (value, target) => {
       return value.getTime() < target.getTime();
     },
   },
   {
-    define: z.function().args(z.date(), z.date()).returns(z.boolean()),
+    define: z.function().args(z.date(), z.coerce.date()).returns(z.boolean()),
     name: "After",
     implement: (value, target) => {
       return value.getTime() > target.getTime();

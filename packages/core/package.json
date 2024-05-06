@@ -16,7 +16,7 @@
   "keywords": [],
   "dependencies": {
     "zod": "^3.23.6",
-    "zod-compare": "^0.1.4"
+    "zod-compare": "^0.2.0"
   },
   "publishConfig": {
     "access": "public",
