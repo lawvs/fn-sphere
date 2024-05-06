@@ -10,10 +10,10 @@ import { FlattenFilterDialog } from "./flatten-filter-dialog";
 import type { FilterBuilderProps, FlattenFilterGroup } from "./types";
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 
-type OpenFlattenFilterProps<Data = unknown> = {
+export type OpenFlattenFilterProps<Data = unknown> = {
   filterList: FilterBuilderProps<Data>["filterList"];
   schema: FilterBuilderProps<Data>["schema"];
-  rule: FilterBuilderProps<Data>["defaultRule"];
+  rule?: FilterBuilderProps<Data>["filterGroup"];
   /**
    * The maximum depth of searching for filter fields.
    *
@@ -40,10 +40,10 @@ type OpenFlattenFilterProps<Data = unknown> = {
   abortSignal?: AbortSignal;
 };
 
-type FlattenFilterProps<Data> = Partial<OpenFlattenFilterProps<Data>> &
+export type FlattenFilterProps<Data> = Partial<OpenFlattenFilterProps<Data>> &
   Pick<OpenFlattenFilterProps<Data>, "schema">;
 
-const defaultOptions: Omit<OpenFlattenFilterProps, "schema"> = {
+export const defaultOptions: Omit<OpenFlattenFilterProps, "schema"> = {
   container: null,
   storageKey: "fn-sphere-flatten-filter",
   filterList: [...commonFilters, ...genericFilter],
@@ -51,8 +51,8 @@ const defaultOptions: Omit<OpenFlattenFilterProps, "schema"> = {
   rule: undefined,
 };
 
-const openFlattenFilter = async <Data>(
-  options: OpenFlattenFilterProps<Data>,
+export const openFlattenFilter = async <Data>(
+  options: Omit<OpenFlattenFilterProps<Data>, "storageKey">,
 ): Promise<{
   rule: LooseFilterGroup;
   predicate: (data: Data) => boolean;
@@ -77,11 +77,10 @@ const openFlattenFilter = async <Data>(
     });
   }
 
-  const initialRule =
-    options.rule ??
-    ((await getInitialRule(options.storageKey, undefined)) as
-      | FlattenFilterGroup
-      | undefined);
+  // const initialRule = options.rule;
+  // ?? ((await getInitialRule(options.storageKey, undefined)) as
+  //   | FlattenFilterGroup
+  //   | undefined);
 
   const resolvers = Promise.withResolvers<{
     rule: LooseFilterGroup;
@@ -94,7 +93,7 @@ const openFlattenFilter = async <Data>(
         schema: options.schema,
         filterList: options.filterList,
         deepLimit: options.deepLimit,
-        defaultRule: initialRule,
+        defaultRule: options.rule,
       },
       onClose: (e) => {
         root.unmount();
@@ -108,9 +107,9 @@ const openFlattenFilter = async <Data>(
         if (isFallbackContainer) {
           container.remove();
         }
-        if (options.storageKey) {
-          defaultStorage.setItem(options.storageKey, value.rule);
-        }
+        // if (options.storageKey) {
+        //   defaultStorage.setItem(options.storageKey, value.rule);
+        // }
         resolvers.resolve(value);
       },
     }),
@@ -131,7 +130,12 @@ function getInitialRule(
   }
 }
 
-export const createFilter = <Data>(userOptions: FlattenFilterProps<Data>) => {
+/**
+ * @deprecated Waiting for refactoring
+ */
+export const createFilter = <Data>(
+  userOptions: Omit<FlattenFilterProps<Data>, "rule">,
+) => {
   const options: OpenFlattenFilterProps<Data> = {
     ...defaultOptions,
     ...userOptions,

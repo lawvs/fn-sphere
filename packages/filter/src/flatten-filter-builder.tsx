@@ -11,7 +11,7 @@ import { EMPTY_ROOT_FILTER, createEmptyRule } from "./utils";
 export const FilterBuilder = <Data,>({
   schema,
   filterList,
-  defaultRule: filterGroup = EMPTY_ROOT_FILTER,
+  filterGroup = EMPTY_ROOT_FILTER,
   deepLimit = 1,
   onChange,
 }: FilterBuilderProps<Data>) => {
