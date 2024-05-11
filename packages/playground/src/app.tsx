@@ -13,6 +13,7 @@ export const App = () => {
 
   const [tableData] = useState(genSampleData);
   const { rule, predicate, openFilter } = useFilter({
+    storageKey: "fn-sphere-flatten-filter",
     schema: presetSchema,
     filterList: dataFilters,
     deepLimit: Infinity,

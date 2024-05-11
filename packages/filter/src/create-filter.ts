@@ -13,7 +13,7 @@ import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 export type OpenFlattenFilterProps<Data = unknown> = {
   filterList: FilterBuilderProps<Data>["filterList"];
   schema: FilterBuilderProps<Data>["schema"];
-  rule?: FilterBuilderProps<Data>["filterGroup"];
+  rule?: FilterBuilderProps<Data>["rule"];
   /**
    * The maximum depth of searching for filter fields.
    *
@@ -28,7 +28,7 @@ export type OpenFlattenFilterProps<Data = unknown> = {
    *
    * The default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
    *
-   * @default "fn-sphere-flatten-filter"
+   * @default null
    */
   storageKey: string | null;
   /**
@@ -45,7 +45,7 @@ export type FlattenFilterProps<Data> = Partial<OpenFlattenFilterProps<Data>> &
 
 export const defaultOptions: Omit<OpenFlattenFilterProps, "schema"> = {
   container: null,
-  storageKey: "fn-sphere-flatten-filter",
+  storageKey: null,
   filterList: [...commonFilters, ...genericFilter],
   deepLimit: 1,
   rule: undefined,
@@ -130,9 +130,6 @@ function getInitialRule(
   }
 }
 
-/**
- * @deprecated Waiting for refactoring
- */
 export const createFilter = <Data>(
   userOptions: Omit<FlattenFilterProps<Data>, "rule">,
 ) => {

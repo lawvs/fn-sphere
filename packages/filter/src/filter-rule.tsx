@@ -85,7 +85,7 @@ export const FilterRule = ({
         <Select value="" disabled placeholder="Select item..." />
       )}
       {/* TODO fix other type */}
-      {requiredArguments ? (
+      {requiredArguments && requiredArguments.items.length ? (
         <Input
           type="text"
           value={rule.arguments?.[0] ?? ""}
@@ -95,9 +95,10 @@ export const FilterRule = ({
               ...rule,
               arguments: [value],
             });
+            return;
           }}
         />
-      ) : (
+      ) : requiredArguments && !requiredArguments.items.length ? null : (
         <Input disabled value="" />
       )}
       <Button size="small" onClick={() => onAddFilter("and")}>

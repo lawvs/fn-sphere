@@ -15,7 +15,7 @@ type FilterValue<Data> = {
 };
 
 type FlattenFilterDialogProps<Data> = ComponentProps<typeof Dialog> & {
-  filterBuilder: Omit<FilterBuilderProps<Data>, "filterGroup"> & {
+  filterBuilder: FilterBuilderProps<Data> & {
     defaultRule?: FlattenFilterGroup;
   };
   title?: string;
@@ -30,6 +30,7 @@ export const FlattenFilterDialog = <Data,>({
   onRuleChange,
   ...props
 }: FlattenFilterDialogProps<Data>) => {
+  const controlled = filterBuilder.rule !== undefined;
   const [filterGroup, setFilterGroup] = useState(filterBuilder.defaultRule);
   return (
     <Dialog {...props}>
@@ -39,17 +40,19 @@ export const FlattenFilterDialog = <Data,>({
           schema={filterBuilder.schema}
           filterList={filterBuilder.filterList}
           deepLimit={filterBuilder.deepLimit}
-          filterGroup={filterGroup}
-          onChange={(filterGroup) => {
+          rule={controlled ? filterBuilder.rule : filterGroup}
+          onChange={(newRule) => {
             onRuleChange?.({
-              rule: filterGroup ?? EMPTY_ROOT_FILTER,
+              rule: newRule ?? EMPTY_ROOT_FILTER,
               predicate: createFilterPredicate({
                 schema: filterBuilder.schema,
                 filterList: filterBuilder.filterList,
-                rule: filterGroup,
+                rule: newRule,
               }),
             });
-            setFilterGroup(filterGroup);
+            if (!controlled) {
+              setFilterGroup(newRule);
+            }
           }}
         />
       </DialogContent>

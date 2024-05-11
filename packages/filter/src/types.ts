@@ -19,7 +19,7 @@ export type FlattenFilterGroup = {
 export type FilterBuilderProps<Data = unknown> = {
   schema: ZodType<Data>;
   filterList: FnSchema[];
-  filterGroup?: FlattenFilterGroup;
+  rule?: FlattenFilterGroup;
   deepLimit?: number;
-  onChange?: (filterGroup: FlattenFilterGroup) => void;
+  onChange?: (rule: FlattenFilterGroup) => void;
 };
