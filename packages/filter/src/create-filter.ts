@@ -7,7 +7,7 @@ import {
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { FlattenFilterDialog } from "./flatten-filter-dialog";
-import type { FilterBuilderProps, FlattenFilterGroup } from "./types";
+import type { FilterBuilderProps } from "./types";
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 
 export type OpenFlattenFilterProps<Data = unknown> = {
@@ -77,11 +77,6 @@ export const openFlattenFilter = async <Data>(
     });
   }
 
-  // const initialRule = options.rule;
-  // ?? ((await getInitialRule(options.storageKey, undefined)) as
-  //   | FlattenFilterGroup
-  //   | undefined);
-
   const resolvers = Promise.withResolvers<{
     rule: LooseFilterGroup;
     predicate: (data: Data) => boolean;
@@ -107,9 +102,6 @@ export const openFlattenFilter = async <Data>(
         if (isFallbackContainer) {
           container.remove();
         }
-        // if (options.storageKey) {
-        //   defaultStorage.setItem(options.storageKey, value.rule);
-        // }
         resolvers.resolve(value);
       },
     }),
@@ -139,10 +131,7 @@ export const createFilter = <Data>(
   };
   const getRule = async () => {
     const rule =
-      options.rule ??
-      ((await getInitialRule(options.storageKey, undefined)) as
-        | FlattenFilterGroup
-        | undefined);
+      options.rule ?? (await getInitialRule(options.storageKey, undefined));
 
     const predicate = createFilterPredicate({
       schema: options.schema,

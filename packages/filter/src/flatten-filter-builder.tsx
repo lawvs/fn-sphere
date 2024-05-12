@@ -6,20 +6,38 @@ import {
 import Button from "@mui/material/Button";
 import { FilterRule } from "./filter-rule";
 import type { FilterBuilderProps } from "./types";
-import { EMPTY_ROOT_FILTER, createEmptyRule } from "./utils";
+import {
+  EMPTY_ROOT_FILTER,
+  createEmptyRule,
+  isFlattenFilterGroup,
+} from "./utils";
 
-export const FilterBuilder = <Data,>({
+export const FlattenFilterBuilder = <Data,>({
   schema,
   filterList,
   rule: filterGroup = EMPTY_ROOT_FILTER,
   deepLimit = 1,
   onChange,
 }: FilterBuilderProps<Data>) => {
-  const filterFields = findFilterField({
-    schema,
-    filterList,
-    maxDeep: deepLimit,
-  });
+  const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
+
+  if (!isValidFlattenRule) {
+    return (
+      <>
+        <div>Invalid Rule</div>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => {
+            onChange?.(EMPTY_ROOT_FILTER);
+          }}
+        >
+          Reset Filter
+        </Button>
+      </>
+    );
+  }
+
   const count = countNumberOfRules(filterGroup);
   if (count <= 0) {
     return (
@@ -33,6 +51,13 @@ export const FilterBuilder = <Data,>({
       </Button>
     );
   }
+
+  const filterFields = findFilterField({
+    schema,
+    filterList,
+    maxDeep: deepLimit,
+  });
+
   return (
     <div className="filter-builder-container">
       {filterGroup.conditions.map((andGroup, groupIdx) => {
@@ -150,4 +175,4 @@ export const FilterBuilder = <Data,>({
     </div>
   );
 };
-FilterBuilder.displayName = "FilterBuilder";
+FlattenFilterBuilder.displayName = "FilterBuilder";

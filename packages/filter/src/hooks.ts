@@ -6,7 +6,6 @@ import {
   type FlattenFilterProps,
   type OpenFlattenFilterProps,
 } from "./create-filter";
-import type { FlattenFilterGroup } from "./types";
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 
 const defaultState = {
@@ -55,7 +54,7 @@ export const useFilter = <Data>(
       try {
         const data = await openFlattenFilter({
           ...options,
-          rule: filterInfo.rule as FlattenFilterGroup | undefined,
+          rule: filterInfo.rule,
         });
         setFilterInfo(data);
         if (options.storageKey) {

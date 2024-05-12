@@ -5,8 +5,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useState, type ComponentProps } from "react";
-import { FilterBuilder } from "./flatten-filter-builder";
-import type { FilterBuilderProps, FlattenFilterGroup } from "./types";
+import { FlattenFilterBuilder } from "./flatten-filter-builder";
+import type { FilterBuilderProps } from "./types";
 import { EMPTY_ROOT_FILTER } from "./utils";
 
 type FilterValue<Data> = {
@@ -16,7 +16,7 @@ type FilterValue<Data> = {
 
 type FlattenFilterDialogProps<Data> = ComponentProps<typeof Dialog> & {
   filterBuilder: FilterBuilderProps<Data> & {
-    defaultRule?: FlattenFilterGroup;
+    defaultRule?: LooseFilterGroup;
   };
   title?: string;
   onRuleChange?: (rule: FilterValue<Data>) => void;
@@ -36,7 +36,7 @@ export const FlattenFilterDialog = <Data,>({
     <Dialog {...props}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <FilterBuilder
+        <FlattenFilterBuilder
           schema={filterBuilder.schema}
           filterList={filterBuilder.filterList}
           deepLimit={filterBuilder.deepLimit}

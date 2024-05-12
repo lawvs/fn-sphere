@@ -1,8 +1,13 @@
-import type { FilterGroup, FnSchema, LooseFilterRule } from "@fn-sphere/core";
+import type {
+  FilterGroup,
+  FnSchema,
+  LooseFilterGroup,
+  LooseFilterRule,
+} from "@fn-sphere/core";
 import type { ZodType } from "zod";
 
 /**
- * @deprecated Use {@link LooseFilterGroup} instead.
+ * @internal
  */
 export type FlattenFilterGroup = {
   id: FilterGroup["id"];
@@ -19,7 +24,7 @@ export type FlattenFilterGroup = {
 export type FilterBuilderProps<Data = unknown> = {
   schema: ZodType<Data>;
   filterList: FnSchema[];
-  rule?: FlattenFilterGroup;
+  rule?: LooseFilterGroup;
   deepLimit?: number;
-  onChange?: (rule: FlattenFilterGroup) => void;
+  onChange?: (rule: LooseFilterGroup) => void;
 };

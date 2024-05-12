@@ -48,3 +48,18 @@ export const defaultStorage: Storage<LooseFilterGroup> = {
     localStorage.setItem(key, JSON.stringify(newValue));
   },
 };
+
+export const isFlattenFilterGroup = (
+  filterGroup: LooseFilterGroup,
+): filterGroup is FlattenFilterGroup => {
+  if (filterGroup.op === "and") {
+    return false;
+  }
+
+  return filterGroup.conditions.every(
+    (group) =>
+      group.type === "FilterGroup" &&
+      group.op === "and" &&
+      group.conditions.every((rule) => rule.type === "Filter"),
+  );
+};
