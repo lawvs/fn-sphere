@@ -12,7 +12,7 @@ export const createEmptyRule = () =>
     arguments: [],
   }) satisfies LooseFilterRule;
 
-export const EMPTY_ROOT_FILTER = {
+export const EMPTY_ROOT_FILTER: LooseFilterGroup = {
   id: genFilterId(),
   type: "FilterGroup",
   op: "or",
@@ -42,6 +42,7 @@ export const defaultStorage: Storage<LooseFilterGroup> = {
     if (storedValue === null) {
       throw new Error("no value stored");
     }
+    // TODO Validating stored values
     return JSON.parse(storedValue);
   },
   setItem: (key, newValue) => {

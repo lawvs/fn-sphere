@@ -10,49 +10,45 @@ import { FlattenFilterDialog } from "./flatten-filter-dialog";
 import type { FilterBuilderProps } from "./types";
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 
-export type OpenFlattenFilterProps<Data = unknown> = {
-  filterList: FilterBuilderProps<Data>["filterList"];
-  schema: FilterBuilderProps<Data>["schema"];
-  rule?: FilterBuilderProps<Data>["rule"];
-  /**
-   * The maximum depth of searching for filter fields.
-   *
-   * @default 1
-   */
-  deepLimit: number;
-
+type OpenFlattenFilterProps<Data = unknown> = Omit<
+  FilterBuilderProps<Data>,
+  "onChange"
+> & {
   container: HTMLElement | null;
-  /**
-   *
-   * Set `null` to disable storage.
-   *
-   * The default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
-   *
-   * @default null
-   */
-  storageKey: string | null;
-  /**
-   * TODO The storage option is not supported yet.
-   *
-   * See https://jotai.org/docs/utilities/storage#atomwithstorage
-   */
-  storage?: undefined;
   abortSignal?: AbortSignal;
 };
 
-export type FlattenFilterProps<Data> = Partial<OpenFlattenFilterProps<Data>> &
-  Pick<OpenFlattenFilterProps<Data>, "schema">;
+export type CreateFilterProps<Data> = Partial<
+  Omit<OpenFlattenFilterProps<Data>, "rule" | "abortSignal">
+> &
+  Pick<OpenFlattenFilterProps<Data>, "schema"> & {
+    defaultRule: LooseFilterGroup | undefined;
+    /**
+     *
+     * Set `null` to disable storage.
+     *
+     * The default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
+     *
+     * @default null
+     */
+    storageKey: string | null;
+    /**
+     * TODO The storage option is not supported yet.
+     *
+     * See https://jotai.org/docs/utilities/storage#atomwithstorage
+     */
+    storage?: null;
+  };
 
-export const defaultOptions: Omit<OpenFlattenFilterProps, "schema"> = {
+export const defaultOptions = {
   container: null,
-  storageKey: null,
   filterList: [...commonFilters, ...genericFilter],
   deepLimit: 1,
   rule: undefined,
-};
+} as const satisfies Omit<OpenFlattenFilterProps, "schema">;
 
 export const openFlattenFilter = async <Data>(
-  options: Omit<OpenFlattenFilterProps<Data>, "storageKey">,
+  options: OpenFlattenFilterProps<Data>,
 ): Promise<{
   rule: LooseFilterGroup;
   predicate: (data: Data) => boolean;
@@ -109,43 +105,70 @@ export const openFlattenFilter = async <Data>(
   return resolvers.promise;
 };
 
-function getInitialRule(
-  key: string | null,
-  initialValue: LooseFilterGroup | undefined,
-) {
-  if (!key) return initialValue;
+async function getStorageRule(key: string | null) {
+  if (!key) return;
   try {
-    // TODO Validating stored values
-    return defaultStorage.getItem(key);
+    return await defaultStorage.getItem(key);
   } catch {
-    return initialValue;
+    return;
   }
 }
 
-export const createFilter = <Data>(
-  userOptions: Omit<FlattenFilterProps<Data>, "rule">,
-) => {
-  const options: OpenFlattenFilterProps<Data> = {
+/**
+ * Create a filter instance.
+ *
+ * @public
+ */
+export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
+  const options: Required<CreateFilterProps<Data>> = {
     ...defaultOptions,
+    storage: null,
     ...userOptions,
   };
-  const getRule = async () => {
-    const rule =
-      options.rule ?? (await getInitialRule(options.storageKey, undefined));
+  let rule = userOptions.defaultRule ?? EMPTY_ROOT_FILTER;
 
+  const getRule = async () => {
+    const storageKey = options.storageKey;
+    if (!storageKey) {
+      return rule;
+    }
+    const storageRule = await getStorageRule(options.storageKey);
+    if (!storageRule) {
+      return rule;
+    }
+    rule = storageRule;
+    return rule;
+  };
+
+  const getPredicate = async () => {
+    const rule = await getRule();
     const predicate = createFilterPredicate({
       schema: options.schema,
       filterList: options.filterList,
       rule,
     });
-    return {
-      rule: rule ?? EMPTY_ROOT_FILTER,
-      // ruleCount: rule ? countNumberOfRules(rule) : 0,
-      predicate,
-    };
+    return predicate;
   };
+
   return {
     getRule,
-    openFilter: () => openFlattenFilter(options),
+    getPredicate,
+    openFilter: async ({
+      abortSignal,
+    }: {
+      abortSignal?: AbortSignal;
+    } = {}) => {
+      const r = await getRule();
+      const result = await openFlattenFilter({
+        ...options,
+        rule: r,
+        abortSignal,
+      });
+      rule = result.rule;
+      if (options.storageKey) {
+        defaultStorage.setItem(options.storageKey, rule);
+      }
+      return result;
+    },
   };
 };

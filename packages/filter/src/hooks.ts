@@ -3,29 +3,46 @@ import { useEffect, useState } from "react";
 import {
   defaultOptions,
   openFlattenFilter,
-  type FlattenFilterProps,
-  type OpenFlattenFilterProps,
+  type CreateFilterProps,
 } from "./create-filter";
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
+
+export type UseFilterProps<Data = unknown> = CreateFilterProps<Data>;
 
 const defaultState = {
   rule: EMPTY_ROOT_FILTER,
   predicate: () => true,
 };
 
-export const useFilter = <Data>(
-  userOptions: Omit<FlattenFilterProps<Data>, "rule">,
-) => {
-  const options: Omit<OpenFlattenFilterProps<Data>, "rule"> = {
+/**
+ * Hook to create a filter instance.
+ *
+ * @public
+ * @example
+ * ```tsx
+ * const { rule, predicate, openFilter } = useFilter({
+ *   schema: schema,
+ *   filterList: filterList,
+ * });
+ *
+ * await openFilter();
+ * data.filter(predicate);
+ * ```
+ */
+export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
+  const options: Required<UseFilterProps<Data>> = {
     ...defaultOptions,
+    storage: null,
     ...userOptions,
   };
   const [filterInfo, setFilterInfo] = useState<{
     rule: LooseFilterGroup;
     predicate: (data: Data) => boolean;
   }>(defaultState);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    // FIX defaultRule is not working
     if (filterInfo !== defaultState || !options.storageKey) return;
     const storageKey = options.storageKey;
     const abortController = new AbortController();
@@ -50,20 +67,31 @@ export const useFilter = <Data>(
   }, [filterInfo, options.filterList, options.schema, options.storageKey]);
   return {
     ...filterInfo,
-    openFilter: async () => {
+    openFilter: async ({
+      abortSignal,
+    }: {
+      abortSignal?: AbortSignal;
+    } = {}) => {
+      if (isOpen) {
+        console.error("The filter dialog is already open.");
+        return;
+      }
       try {
+        setIsOpen(true);
         const data = await openFlattenFilter({
           ...options,
           rule: filterInfo.rule,
+          abortSignal,
         });
         setFilterInfo(data);
         if (options.storageKey) {
           defaultStorage.setItem(options.storageKey, data.rule);
         }
-        return data;
       } catch (error) {
         // console.error("User closed the filter dialog", error);
         return;
+      } finally {
+        setIsOpen(false);
       }
     },
   };

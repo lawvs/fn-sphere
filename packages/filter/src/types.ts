@@ -25,6 +25,11 @@ export type FilterBuilderProps<Data = unknown> = {
   schema: ZodType<Data>;
   filterList: FnSchema[];
   rule?: LooseFilterGroup;
+  /**
+   * The maximum depth of searching for filter fields.
+   *
+   * @default 1
+   */
   deepLimit?: number;
   onChange?: (rule: LooseFilterGroup) => void;
 };
