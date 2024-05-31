@@ -1,9 +1,5 @@
-import {
-  commonFilters,
-  createFilterPredicate,
-  genericFilter,
-  type LooseFilterGroup,
-} from "@fn-sphere/core";
+import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
+import { presetFilter } from "@fn-sphere/core/src/presets";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { z } from "zod";
@@ -24,7 +20,13 @@ type OpenFilterProps<Data = unknown> = {
   abortSignal?: AbortSignal;
 };
 
-export type CreateFilterProps<Data = unknown> = BasicFilterProps<Data> & {
+// See https://stackoverflow.com/questions/43159887/make-a-single-property-optional-in-typescript
+type PartialBy<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+
+export type CreateFilterProps<Data = unknown> = PartialBy<
+  BasicFilterProps<Data>,
+  "filterList"
+> & {
   defaultRule?: LooseFilterGroup | undefined;
   /**
    *
@@ -99,7 +101,7 @@ export const openFlattenFilter = async <Data>(
 
 export const defaultOptions = {
   schema: z.any(),
-  filterList: [...commonFilters, ...genericFilter],
+  filterList: presetFilter,
   deepLimit: 1,
   storageKey: null,
   container: null,
@@ -124,11 +126,12 @@ export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
     if (!storageKey) {
       return rule;
     }
-    const storageRule = await getStorageRule(options.storageKey);
-    if (!storageRule) {
-      return rule;
+    try {
+      const storageRule = await defaultStorage.getItem(storageKey);
+      rule = storageRule;
+    } catch {
+      // Do nothing
     }
-    rule = storageRule;
     return rule;
   };
 
@@ -169,12 +172,3 @@ export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
     },
   };
 };
-
-async function getStorageRule(key: string | null) {
-  if (!key) return;
-  try {
-    return await defaultStorage.getItem(key);
-  } catch {
-    return;
-  }
-}

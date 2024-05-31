@@ -12,6 +12,7 @@ export {
   dateFilter,
   genericFilter,
   numberFilter,
+  presetFilter,
   stringFilter,
 } from "./presets.js";
 

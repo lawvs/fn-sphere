@@ -20,8 +20,7 @@ export type FlattenFilterDialogProps<Data> = {
     defaultRule?: LooseFilterGroup;
   };
   open: DialogProps["open"];
-  dialogProps?: Omit<DialogProps, "open">;
-  title?: string;
+  dialogProps?: Omit<DialogProps, "open"> & { title?: string };
   onRuleChange?: (rule: FilterValue<Data>) => void;
   onConfirm?: (value: FilterValue<Data>) => void;
 };
@@ -38,7 +37,6 @@ export const FlattenFilterDialog = <Data,>({
   open,
   dialogProps,
   filterBuilder,
-  title = "Advanced Filter",
   onConfirm,
   onRuleChange,
 }: FlattenFilterDialogProps<Data>) => {
@@ -47,7 +45,7 @@ export const FlattenFilterDialog = <Data,>({
   const [filterGroup, setFilterGroup] = useState(filterBuilder.defaultRule);
   return (
     <Dialog open={open} {...dialogProps}>
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>{dialogProps?.title ?? "Advanced Filter"}</DialogTitle>
       <DialogContent>
         <FlattenFilterBuilder
           schema={filterBuilder.schema}

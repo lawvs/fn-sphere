@@ -280,3 +280,5 @@ export const genericFilter: GenericFnSchema[] = [
   ...genericBlankFilter,
   ...genericContainFilter,
 ];
+
+export const presetFilter = [...commonFilters, ...genericFilter];

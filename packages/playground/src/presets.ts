@@ -1,9 +1,4 @@
-import {
-  commonFilters,
-  defineTypedFn,
-  genericFilter,
-  type FnSchema,
-} from "@fn-sphere/core";
+import { defineTypedFn, presetFilter, type FnSchema } from "@fn-sphere/core";
 import { z } from "zod";
 import { genFakeName, genId, sample } from "./utils";
 
@@ -26,8 +21,7 @@ export const presetSchema = z
 export type PresetData = z.infer<typeof presetSchema>;
 
 export const dataFilters: FnSchema[] = [
-  ...genericFilter,
-  ...commonFilters,
+  ...presetFilter,
   defineTypedFn({
     name: "Luck User",
     define: z.function().args(presetSchema).returns(z.boolean()),
