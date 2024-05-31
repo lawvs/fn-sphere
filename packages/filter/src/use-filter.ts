@@ -1,5 +1,5 @@
 import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   defaultOptions,
   openFlattenFilter,
@@ -8,11 +8,6 @@ import {
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 
 export type UseFilterProps<Data = unknown> = CreateFilterProps<Data>;
-
-const defaultState = {
-  rule: EMPTY_ROOT_FILTER,
-  predicate: () => true,
-};
 
 /**
  * Hook to create a filter instance.
@@ -34,38 +29,34 @@ export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
     ...defaultOptions,
     ...userOptions,
   };
-  const [filterInfo, setFilterInfo] = useState<{
-    rule: LooseFilterGroup;
-    predicate: (data: Data) => boolean;
-  }>(defaultState);
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    // FIX defaultRule is not working
-    if (filterInfo !== defaultState || !options.storageKey) return;
+  const [loading, setLoading] = useState(true);
+  const [rule, setRule] = useState<LooseFilterGroup>(() => {
+    const defaultState = options.defaultRule ?? EMPTY_ROOT_FILTER;
     const storageKey = options.storageKey;
+    if (!storageKey) return defaultState;
     const abortController = new AbortController();
     (async () => {
       try {
         const rule = await defaultStorage.getItem(storageKey);
         if (abortController.signal.aborted) return;
-        const predicate = createFilterPredicate({
-          schema: options.schema,
-          filterList: options.filterList,
-          rule,
-        });
-        setFilterInfo({ rule, predicate });
+        setRule(rule);
       } catch (error) {
         // console.error("Failed to get filter rule from storage", error);
-        return;
+      } finally {
+        setLoading(false);
       }
     })();
-    return () => {
-      abortController.abort();
-    };
-  }, [filterInfo, options.filterList, options.schema, options.storageKey]);
+    return defaultState;
+  });
+  const [isOpen, setIsOpen] = useState(false);
+
   return {
-    ...filterInfo,
+    rule,
+    predicate: createFilterPredicate({
+      schema: options.schema,
+      filterList: options.filterList,
+      rule,
+    }),
     openFilter: async ({
       abortSignal,
     }: {
@@ -75,6 +66,9 @@ export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
         console.error("The filter dialog is already open.");
         return;
       }
+      if (loading) {
+        throw new Error("The filter dialog is not ready yet.");
+      }
       try {
         setIsOpen(true);
         const data = await openFlattenFilter({
@@ -82,12 +76,12 @@ export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
             schema: options.schema,
             filterList: options.filterList,
             deepLimit: options.deepLimit,
-            defaultRule: filterInfo.rule,
+            defaultRule: rule,
           },
           ...options,
           abortSignal,
         });
-        setFilterInfo(data);
+        setRule(data.rule);
         if (options.storageKey) {
           defaultStorage.setItem(options.storageKey, data.rule);
         }
