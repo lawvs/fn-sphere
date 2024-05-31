@@ -32,7 +32,6 @@ const defaultState = {
 export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
   const options: Required<UseFilterProps<Data>> = {
     ...defaultOptions,
-    storage: null,
     ...userOptions,
   };
   const [filterInfo, setFilterInfo] = useState<{
@@ -79,8 +78,13 @@ export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
       try {
         setIsOpen(true);
         const data = await openFlattenFilter({
+          filterBuilder: {
+            schema: options.schema,
+            filterList: options.filterList,
+            deepLimit: options.deepLimit,
+            defaultRule: filterInfo.rule,
+          },
           ...options,
-          rule: filterInfo.rule,
           abortSignal,
         });
         setFilterInfo(data);

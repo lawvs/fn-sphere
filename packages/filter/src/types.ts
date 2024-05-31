@@ -1,9 +1,4 @@
-import type {
-  FilterGroup,
-  FnSchema,
-  LooseFilterGroup,
-  LooseFilterRule,
-} from "@fn-sphere/core";
+import type { FilterGroup, FnSchema, LooseFilterRule } from "@fn-sphere/core";
 import type { ZodType } from "zod";
 
 /**
@@ -21,15 +16,13 @@ export type FlattenFilterGroup = {
   }[];
 };
 
-export type FilterBuilderProps<Data = unknown> = {
+export type BasicFilterProps<Data = unknown> = {
   schema: ZodType<Data>;
   filterList: FnSchema[];
-  rule?: LooseFilterGroup;
   /**
    * The maximum depth of searching for filter fields.
    *
    * @default 1
    */
   deepLimit?: number;
-  onChange?: (rule: LooseFilterGroup) => void;
 };

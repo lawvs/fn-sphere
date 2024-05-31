@@ -6,49 +6,41 @@ import {
 } from "@fn-sphere/core";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
-import { FlattenFilterDialog } from "./flatten-filter-dialog";
-import type { FilterBuilderProps } from "./types";
+import { z } from "zod";
+import {
+  FlattenFilterDialog,
+  type FlattenFilterDialogProps,
+} from "./flatten-filter-dialog";
+import type { BasicFilterProps } from "./types";
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 
-type OpenFlattenFilterProps<Data = unknown> = Omit<
-  FilterBuilderProps<Data>,
-  "onChange"
-> & {
-  container: HTMLElement | null;
+type OpenFilterProps<Data = unknown> = {
+  filterBuilder: BasicFilterProps<Data> & {
+    // uncontrolled mode only for the dialog
+    defaultRule: LooseFilterGroup | undefined;
+  };
+  dialogProps?: FlattenFilterDialogProps<Data>["dialogProps"];
+  container?: HTMLElement | null;
   abortSignal?: AbortSignal;
 };
 
-export type CreateFilterProps<Data> = Partial<
-  Omit<OpenFlattenFilterProps<Data>, "rule" | "abortSignal">
-> &
-  Pick<OpenFlattenFilterProps<Data>, "schema"> & {
-    defaultRule: LooseFilterGroup | undefined;
-    /**
-     *
-     * Set `null` to disable storage.
-     *
-     * The default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
-     *
-     * @default null
-     */
-    storageKey: string | null;
-    /**
-     * TODO The storage option is not supported yet.
-     *
-     * See https://jotai.org/docs/utilities/storage#atomwithstorage
-     */
-    storage?: null;
-  };
-
-export const defaultOptions = {
-  container: null,
-  filterList: [...commonFilters, ...genericFilter],
-  deepLimit: 1,
-  rule: undefined,
-} as const satisfies Omit<OpenFlattenFilterProps, "schema">;
+export type CreateFilterProps<Data = unknown> = BasicFilterProps<Data> & {
+  defaultRule?: LooseFilterGroup | undefined;
+  /**
+   *
+   * Set `null` to disable storage.
+   *
+   * The default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
+   *
+   * @default null
+   */
+  storageKey?: string | null;
+  dialogProps?: OpenFilterProps<Data>["dialogProps"];
+  container?: OpenFilterProps<Data>["container"];
+};
 
 export const openFlattenFilter = async <Data>(
-  options: OpenFlattenFilterProps<Data>,
+  options: OpenFilterProps<Data>,
 ): Promise<{
   rule: LooseFilterGroup;
   predicate: (data: Data) => boolean;
@@ -77,21 +69,21 @@ export const openFlattenFilter = async <Data>(
     rule: LooseFilterGroup;
     predicate: (data: Data) => boolean;
   }>();
+
   root.render(
     createElement(FlattenFilterDialog, {
       open: true,
-      filterBuilder: {
-        schema: options.schema,
-        filterList: options.filterList,
-        deepLimit: options.deepLimit,
-        defaultRule: options.rule,
-      },
-      onClose: (e) => {
-        root.unmount();
-        if (isFallbackContainer) {
-          container.remove();
-        }
-        resolvers.reject(e);
+      filterBuilder: options.filterBuilder,
+      dialogProps: {
+        ...options.dialogProps,
+        onClose: (e, reason) => {
+          root.unmount();
+          if (isFallbackContainer) {
+            container.remove();
+          }
+          resolvers.reject(e);
+          options.dialogProps?.onClose?.(e, reason);
+        },
       },
       onConfirm: (value) => {
         root.unmount();
@@ -105,14 +97,15 @@ export const openFlattenFilter = async <Data>(
   return resolvers.promise;
 };
 
-async function getStorageRule(key: string | null) {
-  if (!key) return;
-  try {
-    return await defaultStorage.getItem(key);
-  } catch {
-    return;
-  }
-}
+export const defaultOptions = {
+  schema: z.any(),
+  filterList: [...commonFilters, ...genericFilter],
+  deepLimit: 1,
+  storageKey: null,
+  container: null,
+  dialogProps: {},
+  defaultRule: EMPTY_ROOT_FILTER,
+} as const satisfies Required<CreateFilterProps>;
 
 /**
  * Create a filter instance.
@@ -122,10 +115,9 @@ async function getStorageRule(key: string | null) {
 export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
   const options: Required<CreateFilterProps<Data>> = {
     ...defaultOptions,
-    storage: null,
     ...userOptions,
   };
-  let rule = userOptions.defaultRule ?? EMPTY_ROOT_FILTER;
+  let rule = options.defaultRule;
 
   const getRule = async () => {
     const storageKey = options.storageKey;
@@ -160,8 +152,13 @@ export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
     } = {}) => {
       const r = await getRule();
       const result = await openFlattenFilter({
+        filterBuilder: {
+          schema: options.schema,
+          filterList: options.filterList,
+          deepLimit: options.deepLimit,
+          defaultRule: r,
+        },
         ...options,
-        rule: r,
         abortSignal,
       });
       rule = result.rule;
@@ -172,3 +169,12 @@ export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
     },
   };
 };
+
+async function getStorageRule(key: string | null) {
+  if (!key) return;
+  try {
+    return await defaultStorage.getItem(key);
+  } catch {
+    return;
+  }
+}

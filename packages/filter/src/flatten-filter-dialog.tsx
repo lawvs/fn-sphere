@@ -1,12 +1,12 @@
 import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
+import Dialog, { type DialogProps } from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useState, type ComponentProps } from "react";
+import { useState } from "react";
 import { FlattenFilterBuilder } from "./flatten-filter-builder";
-import type { FilterBuilderProps } from "./types";
+import type { BasicFilterProps } from "./types";
 import { EMPTY_ROOT_FILTER } from "./utils";
 
 type FilterValue<Data> = {
@@ -14,26 +14,39 @@ type FilterValue<Data> = {
   predicate: (data: Data) => boolean;
 };
 
-type FlattenFilterDialogProps<Data> = ComponentProps<typeof Dialog> & {
-  filterBuilder: FilterBuilderProps<Data> & {
+export type FlattenFilterDialogProps<Data> = {
+  filterBuilder: BasicFilterProps<Data> & {
+    rule?: LooseFilterGroup;
     defaultRule?: LooseFilterGroup;
   };
+  open: DialogProps["open"];
+  dialogProps?: Omit<DialogProps, "open">;
   title?: string;
   onRuleChange?: (rule: FilterValue<Data>) => void;
   onConfirm?: (value: FilterValue<Data>) => void;
 };
 
+/**
+ * A dialog to build a filter rule.
+ *
+ * If `rule` not provided, the dialog will be uncontrolled.
+ * The `defaultRule` and `rule` should not be used together.
+ *
+ * @public
+ */
 export const FlattenFilterDialog = <Data,>({
-  title = "Advanced Filter",
+  open,
+  dialogProps,
   filterBuilder,
+  title = "Advanced Filter",
   onConfirm,
   onRuleChange,
-  ...props
 }: FlattenFilterDialogProps<Data>) => {
   const controlled = filterBuilder.rule !== undefined;
+  // This state will be used only when the dialog is uncontrolled.
   const [filterGroup, setFilterGroup] = useState(filterBuilder.defaultRule);
   return (
-    <Dialog {...props}>
+    <Dialog open={open} {...dialogProps}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <FlattenFilterBuilder

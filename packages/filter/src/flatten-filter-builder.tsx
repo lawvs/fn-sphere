@@ -2,15 +2,21 @@ import {
   countNumberOfRules,
   findFilterField,
   genFilterId,
+  type LooseFilterGroup,
 } from "@fn-sphere/core";
 import Button from "@mui/material/Button";
 import { FilterRule } from "./filter-rule";
-import type { FilterBuilderProps } from "./types";
+import type { BasicFilterProps } from "./types";
 import {
   EMPTY_ROOT_FILTER,
   createEmptyRule,
   isFlattenFilterGroup,
 } from "./utils";
+
+export type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
+  rule?: LooseFilterGroup;
+  onChange?: (rule: LooseFilterGroup) => void;
+};
 
 export const FlattenFilterBuilder = <Data,>({
   schema,

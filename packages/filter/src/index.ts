@@ -1,4 +1,5 @@
 export { createTheme } from "@mui/material/styles";
+export { createFilter } from "./create-filter";
 export { FlattenFilterBuilder } from "./flatten-filter-builder";
 export { FlattenFilterDialog } from "./flatten-filter-dialog";
 export { useFilter } from "./hooks";
