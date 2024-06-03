@@ -3,6 +3,7 @@ import {
   type FilterField,
   type FilterPath,
   type LooseFilterRule,
+  type StandardFnSchema,
 } from "@fn-sphere/core";
 import { getRequiredParameters } from "@fn-sphere/core/src/filter/utils";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -11,6 +12,23 @@ import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+
+const mapPathToFieldName = (field: FilterField): string => {
+  if (field.fieldSchema.description) {
+    return field.fieldSchema.description;
+  }
+  if (field.path.length) {
+    return field.path.join(".");
+  }
+  return "root";
+};
+
+const mapFilterToLabel = (
+  filterSchema: StandardFnSchema,
+  field: FilterField,
+): string => {
+  return filterSchema.name;
+};
 
 export const FilterRule = ({
   rule,
@@ -55,11 +73,7 @@ export const FilterRule = ({
             key={field.path.join(".")}
             value={JSON.stringify(field.path)}
           >
-            {field.fieldSchema.description
-              ? field.fieldSchema.description
-              : field.path.length
-                ? field.path.join(".")
-                : "root"}
+            {mapPathToFieldName(field)}
           </MenuItem>
         ))}
       </Select>
@@ -77,7 +91,7 @@ export const FilterRule = ({
         >
           {selectedField.filterList.map((filter) => (
             <MenuItem key={filter.name} value={filter.name}>
-              {filter.name}
+              {mapFilterToLabel(filter, selectedField)}
             </MenuItem>
           ))}
         </Select>
