@@ -3,7 +3,7 @@ import {
   type LooseFilterGroup,
   type LooseFilterRule,
 } from "@fn-sphere/core";
-import type { FlattenFilterGroup } from "./types";
+import type { BasicFilterProps, FlattenFilterGroup } from "./types";
 
 export const createEmptyRule = () =>
   ({
@@ -63,4 +63,22 @@ export const isFlattenFilterGroup = (
       group.op === "and" &&
       group.conditions.every((rule) => rule.type === "Filter"),
   );
+};
+
+export const defaultMapFieldName: NonNullable<
+  BasicFilterProps["mapFieldName"]
+> = (field) => {
+  if (field.fieldSchema.description) {
+    return field.fieldSchema.description;
+  }
+  if (field.path.length) {
+    return field.path.join(".");
+  }
+  return "root";
+};
+
+export const defaultMapFilterLabel: NonNullable<
+  BasicFilterProps["mapFilterLabel"]
+> = (filterSchema) => {
+  return filterSchema.name;
 };

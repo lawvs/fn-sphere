@@ -10,10 +10,12 @@ import type { BasicFilterProps } from "./types";
 import {
   EMPTY_ROOT_FILTER,
   createEmptyRule,
+  defaultMapFieldName,
+  defaultMapFilterLabel,
   isFlattenFilterGroup,
 } from "./utils";
 
-export type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
+type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
   rule?: LooseFilterGroup;
   onChange?: (rule: LooseFilterGroup) => void;
 };
@@ -23,6 +25,8 @@ export const FlattenFilterBuilder = <Data,>({
   filterList,
   rule: filterGroup = EMPTY_ROOT_FILTER,
   deepLimit = 1,
+  mapFieldName = defaultMapFieldName,
+  mapFilterLabel = defaultMapFilterLabel,
   onChange,
 }: FilterBuilderProps<Data>) => {
   const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
@@ -90,6 +94,8 @@ export const FlattenFilterBuilder = <Data,>({
                   <FilterRule
                     rule={rule}
                     filterFields={filterFields}
+                    mapFieldName={mapFieldName}
+                    mapFilterLabel={mapFilterLabel}
                     onChange={(rule) => {
                       onChange?.({
                         ...filterGroup,

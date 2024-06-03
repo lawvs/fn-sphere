@@ -12,33 +12,24 @@ import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-
-const mapPathToFieldName = (field: FilterField): string => {
-  if (field.fieldSchema.description) {
-    return field.fieldSchema.description;
-  }
-  if (field.path.length) {
-    return field.path.join(".");
-  }
-  return "root";
-};
-
-const mapFilterToLabel = (
-  filterSchema: StandardFnSchema,
-  field: FilterField,
-): string => {
-  return filterSchema.name;
-};
+import { defaultMapFieldName, defaultMapFilterLabel } from "./utils";
 
 export const FilterRule = ({
   rule,
   filterFields,
+  mapFieldName = defaultMapFieldName,
+  mapFilterLabel = defaultMapFilterLabel,
   onChange,
   onAddFilter,
   onRemove,
 }: {
   rule: LooseFilterRule;
   filterFields: FilterField[];
+  mapFieldName?: (field: FilterField) => string;
+  mapFilterLabel?: (
+    filterSchema: StandardFnSchema,
+    field: FilterField,
+  ) => string;
   onChange: (rule: LooseFilterRule) => void;
   onAddFilter: (operator: "and" | "or") => void;
   onRemove: () => void;
@@ -73,7 +64,7 @@ export const FilterRule = ({
             key={field.path.join(".")}
             value={JSON.stringify(field.path)}
           >
-            {mapPathToFieldName(field)}
+            {mapFieldName(field)}
           </MenuItem>
         ))}
       </Select>
@@ -91,7 +82,7 @@ export const FilterRule = ({
         >
           {selectedField.filterList.map((filter) => (
             <MenuItem key={filter.name} value={filter.name}>
-              {mapFilterToLabel(filter, selectedField)}
+              {mapFilterLabel(filter, selectedField)}
             </MenuItem>
           ))}
         </Select>

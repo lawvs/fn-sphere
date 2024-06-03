@@ -8,7 +8,12 @@ import {
   type FlattenFilterDialogProps,
 } from "./flatten-filter-dialog";
 import type { BasicFilterProps } from "./types";
-import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
+import {
+  EMPTY_ROOT_FILTER,
+  defaultMapFieldName,
+  defaultMapFilterLabel,
+  defaultStorage,
+} from "./utils";
 
 type OpenFilterProps<Data = unknown> = {
   filterBuilder: BasicFilterProps<Data> & {
@@ -103,6 +108,8 @@ export const defaultOptions = {
   schema: z.any(),
   filterList: presetFilter,
   deepLimit: 1,
+  mapFieldName: defaultMapFieldName,
+  mapFilterLabel: defaultMapFilterLabel,
   storageKey: null,
   container: null,
   dialogProps: {},
@@ -159,6 +166,8 @@ export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
           schema: options.schema,
           filterList: options.filterList,
           deepLimit: options.deepLimit,
+          mapFieldName: options.mapFieldName,
+          mapFilterLabel: options.mapFilterLabel,
           defaultRule: r,
         },
         ...options,

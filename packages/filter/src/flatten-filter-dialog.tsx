@@ -51,6 +51,8 @@ export const FlattenFilterDialog = <Data,>({
           schema={filterBuilder.schema}
           filterList={filterBuilder.filterList}
           deepLimit={filterBuilder.deepLimit}
+          mapFieldName={filterBuilder.mapFieldName}
+          mapFilterLabel={filterBuilder.mapFilterLabel}
           rule={controlled ? filterBuilder.rule : filterGroup}
           onChange={(newRule) => {
             onRuleChange?.({
