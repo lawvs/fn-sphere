@@ -17,23 +17,23 @@
     "@zodui/core": "^0.2.1",
     "@zodui/plugin-common": "^0.2.0",
     "@zodui/react": "^0.2.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tdesign-icons-react": "^0.3.2",
-    "tdesign-react": "^1.5.1",
-    "zod": "^3.23.6"
+    "tdesign-react": "^1.7.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^8.56.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
     "less": "^4.2.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.1.0"
+    "typescript": "^5.4.5",
+    "vite": "^5.2.13"
   }
 }
