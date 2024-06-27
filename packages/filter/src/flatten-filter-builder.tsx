@@ -3,12 +3,11 @@ import {
   findFilterField,
   genFilterId,
   type LooseFilterGroup,
-  type LooseFilterRule,
 } from "@fn-sphere/core";
 import Button from "@mui/material/Button";
-import type { ReactNode } from "react";
 import { FilterRule } from "./filter-rule";
 import type { BasicFilterProps } from "./types";
+import { FilterGroupContainer, FilterRuleJoiner } from "./ui";
 import {
   EMPTY_ROOT_FILTER,
   createEmptyRule,
@@ -20,59 +19,6 @@ import {
 type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
   rule?: LooseFilterGroup;
   onChange?: (rule: LooseFilterGroup) => void;
-};
-
-const FilterGroupContainer = ({
-  filterGroup,
-  children,
-}: {
-  isRoot: boolean;
-  filterGroup: LooseFilterGroup;
-  children: ReactNode;
-}) => {
-  // if (isRoot) {
-  //   return children;
-  // }
-  return (
-    <div
-      className="filter-builder-group-container"
-      style={{
-        display: "flex",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginRight: 12,
-        }}
-      >
-        {filterGroup.op === "or" ? "Or" : "And"}
-      </div>
-      <div>{children}</div>
-    </div>
-  );
-};
-
-const FilterRuleJoiner = ({
-  operator,
-}: {
-  operator: LooseFilterGroup["op"];
-  joinBetween: [
-    LooseFilterRule | LooseFilterGroup,
-    LooseFilterRule | LooseFilterGroup,
-  ];
-}) => {
-  return (
-    <div
-      style={{
-        margin: 8,
-      }}
-    >
-      {operator === "or" ? "Or" : "And"}
-    </div>
-  );
 };
 
 export const FlattenFilterBuilder = <Data,>({
