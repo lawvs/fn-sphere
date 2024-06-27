@@ -52,7 +52,7 @@ export const FlattenFilterDialog = <Data,>({
           filterList={filterBuilder.filterList}
           deepLimit={filterBuilder.deepLimit}
           mapFieldName={filterBuilder.mapFieldName}
-          mapFilterLabel={filterBuilder.mapFilterLabel}
+          mapFilterName={filterBuilder.mapFilterName}
           rule={controlled ? filterBuilder.rule : filterGroup}
           onChange={(newRule) => {
             onRuleChange?.({

@@ -13,7 +13,7 @@ import {
   EMPTY_ROOT_FILTER,
   createEmptyRule,
   defaultMapFieldName,
-  defaultMapFilterLabel,
+  defaultMapFilterName,
   isFlattenFilterGroup,
 } from "./utils";
 
@@ -81,7 +81,7 @@ export const FlattenFilterBuilder = <Data,>({
   rule: filterGroup = EMPTY_ROOT_FILTER,
   deepLimit = 1,
   mapFieldName = defaultMapFieldName,
-  mapFilterLabel = defaultMapFilterLabel,
+  mapFilterName = defaultMapFilterName,
   onChange,
 }: FilterBuilderProps<Data>) => {
   const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
@@ -159,7 +159,7 @@ export const FlattenFilterBuilder = <Data,>({
                             rule={rule}
                             filterFields={filterFields}
                             mapFieldName={mapFieldName}
-                            mapFilterLabel={mapFilterLabel}
+                            mapFilterName={mapFilterName}
                             onChange={(rule) => {
                               onChange?.({
                                 ...filterGroup,

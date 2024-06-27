@@ -77,8 +77,8 @@ export const defaultMapFieldName: NonNullable<
   return "root";
 };
 
-export const defaultMapFilterLabel: NonNullable<
-  BasicFilterProps["mapFilterLabel"]
+export const defaultMapFilterName: NonNullable<
+  BasicFilterProps["mapFilterName"]
 > = (filterSchema) => {
   return filterSchema.name;
 };

@@ -46,7 +46,7 @@ export type BasicFilterProps<Data = unknown> = {
    *
    * If not provided, the default map will use the filter name as the label.
    */
-  mapFilterLabel?: (
+  mapFilterName?: (
     filterSchema: StandardFnSchema,
     field: FilterField,
   ) => string;

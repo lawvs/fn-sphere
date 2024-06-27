@@ -11,7 +11,7 @@ import type { BasicFilterProps } from "./types";
 import {
   EMPTY_ROOT_FILTER,
   defaultMapFieldName,
-  defaultMapFilterLabel,
+  defaultMapFilterName,
   defaultStorage,
 } from "./utils";
 
@@ -109,7 +109,7 @@ export const defaultOptions = {
   filterList: presetFilter,
   deepLimit: 1,
   mapFieldName: defaultMapFieldName,
-  mapFilterLabel: defaultMapFilterLabel,
+  mapFilterName: defaultMapFilterName,
   storageKey: null,
   container: null,
   dialogProps: {},
@@ -167,7 +167,7 @@ export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
           filterList: options.filterList,
           deepLimit: options.deepLimit,
           mapFieldName: options.mapFieldName,
-          mapFilterLabel: options.mapFilterLabel,
+          mapFilterName: options.mapFilterName,
           defaultRule: r,
         },
         ...options,

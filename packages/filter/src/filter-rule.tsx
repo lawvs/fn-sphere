@@ -1,24 +1,24 @@
 import {
+  getRequiredParameters,
   isEqualPath,
   type FilterField,
   type FilterPath,
   type LooseFilterRule,
   type StandardFnSchema,
 } from "@fn-sphere/core";
-import { getRequiredParameters } from "@fn-sphere/core/src/filter/utils";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { defaultMapFieldName, defaultMapFilterLabel } from "./utils";
+import { defaultMapFieldName, defaultMapFilterName } from "./utils";
 
 export const FilterRule = ({
   rule,
   filterFields,
   mapFieldName = defaultMapFieldName,
-  mapFilterLabel = defaultMapFilterLabel,
+  mapFilterName = defaultMapFilterName,
   onChange,
   onAddFilter,
   onRemove,
@@ -26,7 +26,7 @@ export const FilterRule = ({
   rule: LooseFilterRule;
   filterFields: FilterField[];
   mapFieldName?: (field: FilterField) => string;
-  mapFilterLabel?: (
+  mapFilterName?: (
     filterSchema: StandardFnSchema,
     field: FilterField,
   ) => string;
@@ -82,7 +82,7 @@ export const FilterRule = ({
         >
           {selectedField.filterList.map((filter) => (
             <MenuItem key={filter.name} value={filter.name}>
-              {mapFilterLabel(filter, selectedField)}
+              {mapFilterName(filter, selectedField)}
             </MenuItem>
           ))}
         </Select>
