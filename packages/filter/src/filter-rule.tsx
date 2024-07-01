@@ -12,7 +12,44 @@ import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import type { RefObject } from "react";
+import type { ZodTuple } from "zod";
 import { defaultMapFieldName, defaultMapFilterName } from "./utils";
+
+const DataInput = ({
+  ref,
+  rule,
+  inputSchema,
+  onChange,
+}: {
+  ref?: RefObject<HTMLInputElement>;
+  rule: LooseFilterRule;
+  inputSchema?: ZodTuple;
+  onChange: (rule: LooseFilterRule) => void;
+}) => {
+  if (!inputSchema) {
+    return <Input disabled value="" />;
+  }
+  if (!inputSchema.items.length) {
+    return null;
+  }
+  /* TODO fix other type */
+  return (
+    <Input
+      ref={ref}
+      type="text"
+      value={rule.arguments?.[0] ?? ""}
+      onChange={(e) => {
+        const value = e.target.value;
+        onChange({
+          ...rule,
+          arguments: [value],
+        });
+        return;
+      }}
+    />
+  );
+};
 
 export const FilterRule = ({
   rule,
@@ -89,23 +126,12 @@ export const FilterRule = ({
       ) : (
         <Select value="" disabled placeholder="Select item..." />
       )}
-      {/* TODO fix other type */}
-      {requiredArguments && requiredArguments.items.length ? (
-        <Input
-          type="text"
-          value={rule.arguments?.[0] ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            onChange({
-              ...rule,
-              arguments: [value],
-            });
-            return;
-          }}
-        />
-      ) : requiredArguments && !requiredArguments.items.length ? null : (
-        <Input disabled value="" />
-      )}
+      <DataInput
+        rule={rule}
+        inputSchema={requiredArguments}
+        onChange={onChange}
+      />
+
       <Button size="small" onClick={() => onAddFilter("and")}>
         And
       </Button>
