@@ -5,6 +5,7 @@ import {
   type LooseFilterGroup,
 } from "@fn-sphere/core";
 import Button from "@mui/material/Button";
+import { Fragment } from "react";
 import { FilterRule } from "./filter-rule";
 import type { BasicFilterProps } from "./types";
 import { FilterGroupContainer, FilterRuleJoiner } from "./ui";
@@ -92,14 +93,14 @@ export const FlattenFilterBuilder = <Data,>({
                   }}
                 >
                   {andGroup.conditions.map((rule, ruleIdx) => (
-                    <>
+                    <Fragment key={rule.id}>
                       {ruleIdx > 0 && (
                         <FilterRuleJoiner
                           operator={andGroup.op}
                           joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
                         />
                       )}
-                      <div key={rule.id} className="rule-container">
+                      <div className="rule-container">
                         {
                           <FilterRule
                             rule={rule}
@@ -198,7 +199,7 @@ export const FlattenFilterBuilder = <Data,>({
                           />
                         }
                       </div>
-                    </>
+                    </Fragment>
                   ))}
                 </div>
               </FilterGroupContainer>
