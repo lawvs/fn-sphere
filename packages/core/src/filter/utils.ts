@@ -1,4 +1,5 @@
 import { ZodAny, ZodObject, z, type ZodType } from "zod";
+import { isSameType } from "zod-compare";
 import type { GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
 import type {
@@ -57,11 +58,23 @@ export const getRequiredParameters = (fnSchema: StandardFnSchema) => {
     );
     throw new Error("Invalid filter parameters!");
   }
+
+  const stillNeed = z.tuple(fullParameters.items.slice(1));
+  // zod not support function rest parameter yet
+  // See https://github.com/colinhacks/zod/issues/2859
   // https://github.com/colinhacks/zod/blob/a5a9d31018f9c27000461529c582c50ade2d3937/src/types.ts#L3268
   const rest = fullParameters._def.rest;
-  // TODO fix should not return empty tuple
-  const stillNeed = z.tuple(fullParameters.items.slice(1));
+  // ZodFunction will always have a unknown rest parameter
+  // See https://github.com/colinhacks/zod/blob/4641f434f3bb3dab1bb8cb07f44dd2693c72e35e/src/types.ts#L3991
+  if (isSameType(rest, z.unknown())) {
+    return stillNeed;
+  }
   if (!rest) {
+    console.warn(
+      "No rest parameter found, try to report this issue to developer.",
+      fnSchema,
+      fullParameters,
+    );
     return stillNeed;
   }
   return stillNeed.rest(rest);
