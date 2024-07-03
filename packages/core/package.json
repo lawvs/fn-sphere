@@ -4,15 +4,13 @@
   "description": "",
   "type": "module",
   "main": "src/index.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsc",
     "typeCheck": "tsc --noEmit",
     "test": "vitest",
     "clean": "rm -rf dist"
   },
+  "sideEffects": false,
   "keywords": [],
   "dependencies": {
     "zod": "^3.23.6",
