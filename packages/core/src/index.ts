@@ -1,7 +1,6 @@
 export {
   countNumberOfRules,
   createFilterSphere,
-  createGroupRule,
   findFilterField,
 } from "./filter/index.js";
 export {
