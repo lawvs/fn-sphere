@@ -75,7 +75,7 @@ export const FlattenFilterBuilder = <Data,>({
       <FilterGroupContainer isRoot filterGroup={filterGroup}>
         {filterGroup.conditions.map((andGroup, groupIdx) => {
           return (
-            <>
+            <Fragment key={andGroup.id}>
               {groupIdx > 0 && (
                 <FilterRuleJoiner
                   operator={filterGroup.op}
@@ -203,7 +203,7 @@ export const FlattenFilterBuilder = <Data,>({
                   ))}
                 </div>
               </FilterGroupContainer>
-            </>
+            </Fragment>
           );
         })}
       </FilterGroupContainer>
