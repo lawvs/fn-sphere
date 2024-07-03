@@ -116,7 +116,9 @@ const validateStandardFnRule = ({
   if (!dataMatchFn) {
     return {
       success: false,
-      error: new Error("dataSchema not match fnSchema"),
+      error: new Error(
+        `fnParameters not match dataSchema at path: ${rule.path.join(".")}`,
+      ),
     };
   }
 
@@ -224,6 +226,8 @@ export const validateGroup = ({
 /**
  * - Remove empty group
  * - Remove invalid filter
+ * - Fill missing filter id
+ * - If filter is not ready, return `undefined`
  */
 export const normalizeFilter = ({
   filterList,
@@ -235,13 +239,14 @@ export const normalizeFilter = ({
   rule: LooseFilterGroup | LooseFilterRule;
 }): StrictFilterGroup | StrictFilterRule | undefined => {
   if (rule.type === "Filter") {
+    // User may not select filter name or field
+    if (!rule.name || !rule.path) return;
     const result = validateRule({
       filterList,
       dataSchema,
       rule,
     });
     if (!result.success) return;
-    if (!rule.name || !rule.path) return;
     return {
       ...rule,
       id: rule.id ?? genFilterId(),

@@ -8,7 +8,7 @@ import type {
   StrictFilterRule,
 } from "./types.js";
 import { genFilterId, getRequiredParameters } from "./utils.js";
-import { validateRule } from "./validate.js";
+import { validateRule } from "./validation.js";
 
 export const createGroupRule = <T>(
   op: FilterGroup<T>["op"],

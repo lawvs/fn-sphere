@@ -8,7 +8,7 @@ import type {
   StrictFilterRule,
 } from "./types.js";
 import { getValueAtPath } from "./utils.js";
-import { getRuleFilterSchema, normalizeFilter } from "./validate.js";
+import { getRuleFilterSchema, normalizeFilter } from "./validation.js";
 
 type FilterPredicateOptions<T> = {
   filterList: FnSchema[];
