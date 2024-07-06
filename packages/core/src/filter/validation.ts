@@ -11,7 +11,7 @@ import type {
 import {
   genFilterId,
   getFirstParameters,
-  getRequiredParameters,
+  getParametersExceptFirst,
   getSchemaAtPath,
   instantiateGenericFn,
 } from "./utils.js";
@@ -122,7 +122,7 @@ const validateStandardFnRule = ({
     };
   }
 
-  const requiredParameters = getRequiredParameters(fnSchema);
+  const requiredParameters = getParametersExceptFirst(fnSchema);
   if (!fnSchema.skipValidate) {
     const parseResult = requiredParameters.safeParse(rule.arguments);
     return parseResult;

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createFilterSphere } from "./filter/index.js";
 import {
   genFilterId,
-  getRequiredParameters,
+  getParametersExceptFirst,
   isEqualPath,
 } from "./filter/utils.js";
 
@@ -42,7 +42,7 @@ test("basic usage", () => {
 
   const firstFilter = availableFilter[0];
   expect(firstFilter.name).toEqual("is admin");
-  const requiredParameters = getRequiredParameters(firstFilter);
+  const requiredParameters = getParametersExceptFirst(firstFilter);
   expect(requiredParameters.items).toHaveLength(0);
 
   const data: Data[] = [
@@ -96,7 +96,7 @@ test("filter nested obj", () => {
 
   const firstFilterSchema = availableFilter[0];
   expect(firstFilterSchema.name).toEqual("number equal");
-  const requiredParameters = getRequiredParameters(firstFilterSchema);
+  const requiredParameters = getParametersExceptFirst(firstFilterSchema);
   expect(requiredParameters.items).toHaveLength(1);
 
   const data: Data[] = [

@@ -46,17 +46,25 @@ export const getFirstParameters = (fnSchema: StandardFnSchema) => {
   return fullParameters.items.at(0) as ZodAny;
 };
 
-// **Parameter** is the variable in the declaration of the function.
-// **Argument** is the actual value of this variable that gets passed to the function.
-export const getRequiredParameters = (fnSchema: StandardFnSchema) => {
+/**
+ * Returns all parameters from a function schema except the first.
+ *
+ * If the function schema has no parameters, it will throw an error.
+ *
+ * Glossary
+ *
+ * **Parameter** is the variable in the declaration of the function.
+ * **Argument** is the actual value of this variable that gets passed to the function.
+ */
+export const getParametersExceptFirst = (fnSchema: StandardFnSchema) => {
   const fullParameters = fnSchema.define.parameters();
   if (!fullParameters.items.length) {
     console.error(
-      "Invalid filter parameters!",
+      "Invalid fnSchema parameters!",
       fnSchema,
       fnSchema.define.parameters(),
     );
-    throw new Error("Invalid filter parameters!");
+    throw new Error("Invalid fnSchema parameters!");
   }
 
   const stillNeed = z.tuple(fullParameters.items.slice(1));

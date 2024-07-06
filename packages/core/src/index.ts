@@ -5,7 +5,7 @@ export {
 } from "./filter/index.js";
 export {
   genFilterId,
-  getRequiredParameters,
+  getParametersExceptFirst,
   isEqualPath,
 } from "./filter/utils.js";
 export { createFnSphere, defineTypedFn } from "./fn-sphere.js";
