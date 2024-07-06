@@ -9,44 +9,36 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import type { RefObject } from "react";
-import type { ZodTuple } from "zod";
+import { z, type ZodTuple } from "zod";
+import { useDataInputView, usePlaceholderView } from "./specs";
 import { defaultMapFieldName, defaultMapFilterName } from "./utils";
 
 const DataInput = ({
-  ref,
   rule,
   inputSchema,
   onChange,
 }: {
-  ref?: RefObject<HTMLInputElement>;
   rule: LooseFilterRule;
   inputSchema?: ZodTuple;
   onChange: (rule: LooseFilterRule) => void;
 }) => {
+  const refCallback = () => null;
+  const Placeholder = usePlaceholderView();
+  const DataInput = useDataInputView(inputSchema ?? z.tuple([z.never()]));
   if (!inputSchema) {
-    return <Input disabled value="" />;
+    return <Placeholder ref={refCallback} />;
   }
   if (!inputSchema.items.length) {
     return null;
   }
-  /* TODO fix other type */
   return (
-    <Input
-      ref={ref}
-      type="text"
-      value={rule.arguments?.[0] ?? ""}
-      onChange={(e) => {
-        const value = e.target.value;
-        onChange({
-          ...rule,
-          arguments: [value],
-        });
-        return;
-      }}
+    <DataInput
+      ref={refCallback}
+      rule={rule}
+      inputSchema={inputSchema}
+      onChange={onChange}
     />
   );
 };

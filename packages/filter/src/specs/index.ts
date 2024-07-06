@@ -1,3 +1,3 @@
 export { FilterViewProvider } from "./context";
-export { useFilterView, usePlaceholderView } from "./hooks";
-export { presetViewSpecs } from "./preset";
+export { useDataInputView, usePlaceholderView } from "./hooks";
+export { presetDataInputSpecs, presetView as presetUi } from "./preset";

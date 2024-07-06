@@ -1,25 +1,29 @@
 import { isSameType } from "@fn-sphere/core";
-import { useContext } from "react";
-import type { z } from "zod";
+import { useContext, type ComponentType } from "react";
+import { z } from "zod";
 import { ViewContext } from "./context";
+import type { DataInputViewProps } from "./types";
 
 export const usePlaceholderView = () => {
   const specs = useContext(ViewContext);
-  const placeholderSpec = specs.find((spec) => spec.name === "placeholder");
-  if (!placeholderSpec) {
-    console.error("no placeholder view found", specs);
-    return <div>No placeholder view found</div>;
-  }
-  return placeholderSpec.view;
+  const placeholderView = specs.dataInputPlaceholder;
+  return placeholderView;
 };
 
-export const useFilterView = (schema: z.ZodTypeAny) => {
+export const useInputView = () => {
   const specs = useContext(ViewContext);
-  const targetSpec = specs.find((spec) => {
-    if (!spec.match) {
-      // placeholder view
-      return false;
-    }
+  const inputView = specs.input;
+  return inputView;
+};
+
+export const useDataInputView = (
+  schema: z.ZodTuple,
+): ComponentType<DataInputViewProps> => {
+  const specs = useContext(ViewContext);
+  if (isSameType(schema, z.tuple([z.never()]))) {
+    return () => null;
+  }
+  const targetSpec = specs.dataInputViews.find((spec) => {
     if (typeof spec.match === "function") {
       return spec.match(schema);
     }
@@ -27,7 +31,15 @@ export const useFilterView = (schema: z.ZodTypeAny) => {
   });
   if (!targetSpec) {
     console.error("no view spec found for", schema, specs);
-    return <div>No view spec found for {schema._def.typeName}</div>;
+    return () => (
+      <div>
+        No view spec found for&nbsp;
+        {schema._def.typeName +
+          "<" +
+          schema.items.map((i) => i._def.typeName).join(", ") +
+          ">"}
+      </div>
+    );
   }
   return targetSpec.view;
 };
