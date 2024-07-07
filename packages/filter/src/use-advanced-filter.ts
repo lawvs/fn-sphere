@@ -2,12 +2,13 @@ import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
 import { useState } from "react";
 import {
   defaultOptions,
-  openFlattenFilter,
-  type CreateFilterProps,
-} from "./create-filter";
+  openFlattenFilterDialog,
+  type CreateAdvancedFilterProps,
+} from "./create-advanced-filter";
 import { EMPTY_ROOT_FILTER, defaultStorage } from "./utils";
 
-export type UseFilterProps<Data = unknown> = CreateFilterProps<Data>;
+export type UseAdvancedFilterProps<Data = unknown> =
+  CreateAdvancedFilterProps<Data>;
 
 /**
  * Hook to create a filter instance.
@@ -24,8 +25,10 @@ export type UseFilterProps<Data = unknown> = CreateFilterProps<Data>;
  * data.filter(predicate);
  * ```
  */
-export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
-  const options: Required<UseFilterProps<Data>> = {
+export const useAdvancedFilter = <Data>(
+  userOptions: UseAdvancedFilterProps<Data>,
+) => {
+  const options: Required<UseAdvancedFilterProps<Data>> = {
     ...defaultOptions,
     ...userOptions,
   };
@@ -57,7 +60,7 @@ export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
       filterList: options.filterList,
       rule,
     }),
-    openFilter: async ({
+    openFilterDialog: async ({
       abortSignal,
     }: {
       abortSignal?: AbortSignal;
@@ -71,7 +74,7 @@ export const useFilter = <Data>(userOptions: UseFilterProps<Data>) => {
       }
       try {
         setIsOpen(true);
-        const data = await openFlattenFilter({
+        const data = await openFlattenFilterDialog({
           filterBuilder: {
             schema: options.schema,
             filterList: options.filterList,

@@ -1,5 +1,5 @@
 import { countNumberOfRules } from "@fn-sphere/core";
-import { useFilter } from "@fn-sphere/filter";
+import { useAdvancedFilter } from "@fn-sphere/filter";
 import { useState } from "react";
 import { FilterIcon } from "tdesign-icons-react";
 import { Button } from "tdesign-react";
@@ -12,7 +12,7 @@ export const App = () => {
   useZodUI();
 
   const [tableData] = useState(genSampleData);
-  const { rule, predicate, openFilter } = useFilter({
+  const { rule, predicate, openFilterDialog } = useAdvancedFilter({
     storageKey: "fn-sphere-flatten-filter",
     schema: presetSchema,
     filterList: dataFilters,
@@ -29,7 +29,7 @@ export const App = () => {
         icon={<FilterIcon />}
         onClick={async () => {
           // setOpen(!open);
-          openFilter();
+          openFilterDialog();
         }}
       >
         Flatten Filter({countNumberOfRules(rule)})

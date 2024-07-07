@@ -28,7 +28,7 @@ type OpenFilterProps<Data = unknown> = {
 // See https://stackoverflow.com/questions/43159887/make-a-single-property-optional-in-typescript
 type PartialBy<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
-export type CreateFilterProps<Data = unknown> = PartialBy<
+export type CreateAdvancedFilterProps<Data = unknown> = PartialBy<
   BasicFilterProps<Data>,
   "filterList"
 > & {
@@ -46,7 +46,7 @@ export type CreateFilterProps<Data = unknown> = PartialBy<
   container?: OpenFilterProps<Data>["container"];
 };
 
-export const openFlattenFilter = async <Data>(
+export const openFlattenFilterDialog = async <Data>(
   options: OpenFilterProps<Data>,
 ): Promise<{
   rule: LooseFilterGroup;
@@ -114,15 +114,17 @@ export const defaultOptions = {
   container: null,
   dialogProps: {},
   defaultRule: EMPTY_ROOT_FILTER,
-} as const satisfies Required<CreateFilterProps>;
+} as const satisfies Required<CreateAdvancedFilterProps>;
 
 /**
  * Create a filter instance.
  *
  * @public
  */
-export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
-  const options: Required<CreateFilterProps<Data>> = {
+export const createAdvancedFilter = <Data>(
+  userOptions: CreateAdvancedFilterProps<Data>,
+) => {
+  const options: Required<CreateAdvancedFilterProps<Data>> = {
     ...defaultOptions,
     ...userOptions,
   };
@@ -155,13 +157,13 @@ export const createFilter = <Data>(userOptions: CreateFilterProps<Data>) => {
   return {
     getRule,
     getPredicate,
-    openFilter: async ({
+    openFilterDialog: async ({
       abortSignal,
     }: {
       abortSignal?: AbortSignal;
     } = {}) => {
       const r = await getRule();
-      const result = await openFlattenFilter({
+      const result = await openFlattenFilterDialog({
         filterBuilder: {
           schema: options.schema,
           filterList: options.filterList,
