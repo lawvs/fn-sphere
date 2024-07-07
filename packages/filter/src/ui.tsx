@@ -29,7 +29,15 @@ export const FilterGroupContainer = ({
       >
         {filterGroup.op === "or" ? "Or" : "And"}
       </div>
-      <div>{children}</div>
+      <div
+        style={{
+          borderRadius: 4,
+          padding: 4,
+          background: "rgba(0, 0, 0, 0.05)",
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

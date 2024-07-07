@@ -8,9 +8,9 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     // Use when user selects a field with no input
     name: "no need input",
     match: z.tuple([]),
-    view: () => {
+    view: forwardRef(() => {
       return null;
-    },
+    }),
   },
   {
     name: "string",

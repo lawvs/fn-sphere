@@ -21,7 +21,8 @@ type FilterRuleProps = {
     field: FilterField,
   ) => string;
   onChange: (rule: LooseFilterRule) => void;
-  onAddFilter: (operator: "and" | "or") => void;
+  onAddFilter: () => void;
+  onAddGroup: (operator: "and" | "or") => void;
   onRemove: () => void;
 };
 
@@ -32,6 +33,7 @@ export const FilterRule = ({
   mapFilterName = defaultMapFilterName,
   onChange,
   onAddFilter,
+  onAddGroup,
   onRemove,
 }: FilterRuleProps) => {
   const selectedField = filterFields.find((field) =>
@@ -62,10 +64,10 @@ export const FilterRule = ({
         onChange={onChange}
       />
 
-      <Button size="small" onClick={() => onAddFilter("and")}>
+      <Button size="small" onClick={onAddFilter}>
         And
       </Button>
-      <Button size="small" onClick={() => onAddFilter("or")}>
+      <Button size="small" onClick={() => onAddGroup("and")}>
         Or
       </Button>
       <IconButton aria-label="delete" size="small" onClick={onRemove}>

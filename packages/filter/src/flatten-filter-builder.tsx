@@ -53,14 +53,16 @@ export const FlattenFilterBuilder = <Data,>({
   const count = countNumberOfRules(filterGroup);
   if (count <= 0) {
     return (
-      <Button
-        variant="contained"
-        onClick={() => {
-          onChange?.(EMPTY_ROOT_FILTER);
-        }}
-      >
-        Add Filter
-      </Button>
+      <div className="filter-builder-container">
+        <Button
+          variant="contained"
+          onClick={() => {
+            onChange?.(EMPTY_ROOT_FILTER);
+          }}
+        >
+          Add Filter
+        </Button>
+      </div>
     );
   }
 
@@ -83,101 +85,76 @@ export const FlattenFilterBuilder = <Data,>({
                 />
               )}
               <FilterGroupContainer isRoot={false} filterGroup={andGroup}>
-                <div
-                  key={andGroup.id}
-                  className="group-container"
-                  style={{
-                    borderRadius: 4,
-                    padding: 4,
-                    background: "rgba(0, 0, 0, 0.05)",
-                  }}
-                >
-                  {andGroup.conditions.map((rule, ruleIdx) => (
-                    <Fragment key={rule.id}>
-                      {ruleIdx > 0 && (
-                        <FilterRuleJoiner
-                          operator={andGroup.op}
-                          joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
-                        />
-                      )}
-                      <div className="rule-container">
-                        {
-                          <FilterRule
-                            rule={rule}
-                            filterFields={filterFields}
-                            mapFieldName={mapFieldName}
-                            mapFilterName={mapFilterName}
-                            onChange={(rule) => {
-                              onChange?.({
-                                ...filterGroup,
-                                conditions: [
-                                  ...filterGroup.conditions.slice(0, groupIdx),
-                                  {
-                                    ...andGroup,
-                                    conditions: [
-                                      ...andGroup.conditions.slice(0, ruleIdx),
-                                      rule,
-                                      ...andGroup.conditions.slice(ruleIdx + 1),
-                                    ],
-                                  },
-                                  ...filterGroup.conditions.slice(groupIdx + 1),
-                                ],
-                              });
-                            }}
-                            onAddFilter={(operator) => {
-                              if (operator === "or") {
-                                filterGroup.conditions = [
-                                  ...filterGroup.conditions.slice(
-                                    0,
-                                    groupIdx + 1,
-                                  ),
-                                  {
-                                    id: genFilterId(),
-                                    type: "FilterGroup",
-                                    op: "and",
-                                    conditions: [createEmptyRule()],
-                                  },
-                                  ...filterGroup.conditions.slice(groupIdx + 1),
-                                ];
-                                onChange?.({
-                                  ...filterGroup,
-                                });
-                                return;
-                              }
-                              if (operator === "and") {
-                                andGroup.conditions = [
-                                  ...andGroup.conditions.slice(0, ruleIdx + 1),
-                                  createEmptyRule(),
-                                  ...andGroup.conditions.slice(ruleIdx + 1),
-                                ];
-                                onChange?.({
-                                  ...filterGroup,
-                                });
-                                return;
-                              }
-                              throw new Error("Invalid operator: " + operator);
-                            }}
-                            onRemove={() => {
-                              if (andGroup.conditions.length === 1) {
-                                if (filterGroup.conditions.length === 1) {
-                                  // onChange?.(EMPTY_FILTER_GROUP);
-                                  onChange?.({
-                                    ...filterGroup,
-                                    conditions: [],
-                                  });
-                                  return;
-                                }
-                                onChange?.({
-                                  ...filterGroup,
+                {andGroup.conditions.map((rule, ruleIdx) => (
+                  <Fragment key={rule.id}>
+                    {ruleIdx > 0 && (
+                      <FilterRuleJoiner
+                        operator={andGroup.op}
+                        joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
+                      />
+                    )}
+                    <div className="rule-container">
+                      {
+                        <FilterRule
+                          rule={rule}
+                          filterFields={filterFields}
+                          mapFieldName={mapFieldName}
+                          mapFilterName={mapFilterName}
+                          onChange={(rule) => {
+                            onChange?.({
+                              ...filterGroup,
+                              conditions: [
+                                ...filterGroup.conditions.slice(0, groupIdx),
+                                {
+                                  ...andGroup,
                                   conditions: [
-                                    ...filterGroup.conditions.slice(
-                                      0,
-                                      groupIdx,
-                                    ),
-                                    ...filterGroup.conditions.slice(
-                                      groupIdx + 1,
-                                    ),
+                                    ...andGroup.conditions.slice(0, ruleIdx),
+                                    rule,
+                                    ...andGroup.conditions.slice(ruleIdx + 1),
                                   ],
+                                },
+                                ...filterGroup.conditions.slice(groupIdx + 1),
+                              ],
+                            });
+                          }}
+                          onAddFilter={() => {
+                            andGroup.conditions = [
+                              ...andGroup.conditions.slice(0, ruleIdx + 1),
+                              createEmptyRule(),
+                              ...andGroup.conditions.slice(ruleIdx + 1),
+                            ];
+                            onChange?.({
+                              ...filterGroup,
+                            });
+                            return;
+                          }}
+                          onAddGroup={(operator) => {
+                            if (operator === "or") {
+                              throw new Error(
+                                "Not supported adding OR group in flatten filter builder",
+                              );
+                            }
+                            filterGroup.conditions = [
+                              ...filterGroup.conditions.slice(0, groupIdx + 1),
+                              {
+                                id: genFilterId(),
+                                type: "FilterGroup",
+                                op: "and",
+                                conditions: [createEmptyRule()],
+                              },
+                              ...filterGroup.conditions.slice(groupIdx + 1),
+                            ];
+                            onChange?.({
+                              ...filterGroup,
+                            });
+                          }}
+                          onRemove={() => {
+                            if (andGroup.conditions.length === 1) {
+                              if (filterGroup.conditions.length === 1) {
+                                // onChange?.(EMPTY_FILTER_GROUP);
+                                onChange?.({
+                                  ...filterGroup,
+                                  conditions: [],
                                 });
                                 return;
                               }
@@ -185,23 +162,31 @@ export const FlattenFilterBuilder = <Data,>({
                                 ...filterGroup,
                                 conditions: [
                                   ...filterGroup.conditions.slice(0, groupIdx),
-                                  {
-                                    ...andGroup,
-                                    conditions: [
-                                      ...andGroup.conditions.slice(0, ruleIdx),
-                                      ...andGroup.conditions.slice(ruleIdx + 1),
-                                    ],
-                                  },
                                   ...filterGroup.conditions.slice(groupIdx + 1),
                                 ],
                               });
-                            }}
-                          />
-                        }
-                      </div>
-                    </Fragment>
-                  ))}
-                </div>
+                              return;
+                            }
+                            onChange?.({
+                              ...filterGroup,
+                              conditions: [
+                                ...filterGroup.conditions.slice(0, groupIdx),
+                                {
+                                  ...andGroup,
+                                  conditions: [
+                                    ...andGroup.conditions.slice(0, ruleIdx),
+                                    ...andGroup.conditions.slice(ruleIdx + 1),
+                                  ],
+                                },
+                                ...filterGroup.conditions.slice(groupIdx + 1),
+                              ],
+                            });
+                          }}
+                        />
+                      }
+                    </div>
+                  </Fragment>
+                ))}
               </FilterGroupContainer>
             </Fragment>
           );
