@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "typeCheck": "tsc --noEmit",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest"
   },
   "sideEffects": false,
   "dependencies": {
