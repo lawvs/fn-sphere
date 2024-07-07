@@ -1,7 +1,7 @@
 import {
   isEqualPath,
-  type FieldFilter,
   type FilterGroup,
+  type FilterRuleWrapper,
   type FilterableField,
 } from "@fn-sphere/core";
 import { List } from "@zodui/react";
@@ -13,7 +13,7 @@ export const SingleRule = ({
   rule,
   ruleParent,
 }: {
-  rule: FieldFilter;
+  rule: FilterRuleWrapper;
   ruleParent: FilterGroup;
 }) => {
   const { updateFilter, inputFilter, removeFilter } = useFilter();
@@ -36,7 +36,7 @@ export const SingleRule = ({
     <>
       <Select
         value={
-          fields.find((field) => isEqualPath(field.path, rule.field))
+          fields.find((field) => isEqualPath(field.path, rule.path))
             ?.fieldSchema.description
         }
         options={[
@@ -57,20 +57,20 @@ export const SingleRule = ({
         value={rule.schema.name}
         options={
           fields
-            .find((field) => isEqualPath(field.path, rule.field))
+            .find((field) => isEqualPath(field.path, rule.path))
             ?.filterList.map((filter) => ({
-              label: filter.schema.name,
+              label: filter.name,
               value: filter,
             })) ?? []
         }
         onChange={(v) => {
-          const filter = v as FieldFilter;
+          const filter = v as FilterRuleWrapper;
           updateFilter(rule, filter, ruleParent);
         }}
       ></Select>
       {firstParam && (
         <List
-          key={rule.schema.name + rule.field}
+          key={rule.schema.name + rule.path}
           className="rule-input"
           model={rule.requiredParameters}
           value={rule.getPlaceholderArguments() as any}

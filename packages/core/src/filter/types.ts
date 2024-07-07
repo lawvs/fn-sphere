@@ -60,7 +60,7 @@ export type LooseFilterRule = {
   /**
    * Unique id, used for tracking changes or resorting
    */
-  id?: FilterId;
+  id: FilterId;
   type: "Filter";
   /**
    * Field path
@@ -86,7 +86,7 @@ export type LooseFilterGroup = {
   /**
    * Unique id, used for tracking changes or resorting
    */
-  id?: FilterId;
+  id: FilterId;
   type: "FilterGroup";
   op: "and" | "or";
   conditions: (LooseFilterRule | LooseFilterGroup)[];

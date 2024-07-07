@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import { z } from "zod";
 import { createFilterSphere } from "./filter/index.js";
+import type { LooseFilterGroup } from "./filter/types.js";
 import {
   genFilterId,
   getParametersExceptFirst,
@@ -154,17 +155,20 @@ test("FilterGroup usage", () => {
     (i) => i.name === "string equal",
   )!;
 
-  const filterGroup = {
+  const filterGroup: LooseFilterGroup = {
+    id: genFilterId(),
     type: "FilterGroup" as const,
     op: "and" as const,
     conditions: [
       {
+        id: genFilterId(),
         type: "Filter" as const,
         name: nameFilter.name,
         path: nameField.path,
         arguments: ["Alice"],
       },
       {
+        id: genFilterId(),
         type: "Filter" as const,
         name: ageFilter.name,
         path: ageField.path,
@@ -194,17 +198,20 @@ test("FilterGroup usage", () => {
   expect(filterData[0].name).toEqual("Alice");
   expect(filterData[0].age).toEqual(19);
 
-  const orGroup = {
+  const orGroup: LooseFilterGroup = {
+    id: genFilterId(),
     type: "FilterGroup" as const,
     op: "or" as const,
     conditions: [
       {
+        id: genFilterId(),
         type: "Filter" as const,
         name: nameFilter.name,
         path: nameField.path,
         arguments: ["Bob"],
       },
       {
+        id: genFilterId(),
         type: "Filter" as const,
         name: ageFilter.name,
         path: ageField.path,

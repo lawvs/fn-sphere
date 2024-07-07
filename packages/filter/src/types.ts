@@ -9,6 +9,7 @@ import type { ZodType } from "zod";
 
 /**
  * @internal
+ * @deprecated
  */
 export type FlattenFilterGroup = {
   id: FilterGroup["id"];

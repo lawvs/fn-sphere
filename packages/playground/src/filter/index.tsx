@@ -1,6 +1,6 @@
 import {
+  type FilterField,
   type FilterGroup,
-  type FilterableField,
   type FnSchema,
 } from "@fn-sphere/core";
 import { useEffect } from "react";
@@ -68,12 +68,19 @@ const FilterGroup = ({
     useFilter();
   const fields = useFilterableField(Infinity);
 
-  const onAddFilter = (value: FilterableField | undefined) => {
+  const onAddFilter = (value: FilterField | undefined) => {
     if (!value) {
       addFilterGroup("and", filterGroup);
       return;
     }
-    addFilter(value.filterList[0], filterGroup);
+    addFilter(
+      {
+        path: value.path,
+        fieldSchema: value.fieldSchema,
+        fnSchema: value.filterList[0],
+      },
+      filterGroup,
+    );
   };
 
   return (

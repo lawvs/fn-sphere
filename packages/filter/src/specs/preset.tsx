@@ -98,6 +98,14 @@ const DefaultInput = forwardRef<
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
+// const DefaultSelect = forwardRef<
+//   HTMLInputElement,
+//   InputHTMLAttributes<HTMLInputElement>
+// >(({ className, type, ...props }, ref) => {
+//   return <select></select>
+// });
+
+// eslint-disable-next-line react-refresh/only-export-components
 const DataInputPlaceholder = forwardRef<HTMLInputElement>((_, ref) => {
   const Input = useInputView();
   return <Input ref={ref} disabled />;

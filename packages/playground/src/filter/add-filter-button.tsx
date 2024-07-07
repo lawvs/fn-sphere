@@ -1,4 +1,4 @@
-import type { FilterableField } from "@fn-sphere/core";
+import type { FilterField } from "@fn-sphere/core";
 import { useState } from "react";
 import { Button, Popup, Select } from "tdesign-react";
 import { useClickAway } from "./hooks";
@@ -7,8 +7,8 @@ export function AddFilterButton({
   fields,
   onAddFilter,
 }: {
-  fields: FilterableField[];
-  onAddFilter: (value: FilterableField | undefined) => void;
+  fields: FilterField[];
+  onAddFilter: (value: FilterField | undefined) => void;
 }) {
   const [showPopup, setShowPopup] = useState(false);
   useClickAway(() => {
@@ -38,7 +38,7 @@ export function AddFilterButton({
           ]}
           onChange={(v) => {
             setShowPopup(false);
-            onAddFilter(v as FilterableField | undefined);
+            onAddFilter(v as FilterField | undefined);
           }}
         ></Select>
       }
