@@ -4,13 +4,12 @@ import {
   type LooseFilterRule,
   type StandardFnSchema,
 } from "@fn-sphere/core";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import { defaultMapFieldName, defaultMapFilterName } from "../utils";
-import { FieldSelect } from "./field-select";
-import { FilterDataInput } from "./filter-data-input";
-import { FilterSelect } from "./filter-select";
+import { Delete as DeleteIcon } from "@mui/icons-material";
+import { Button, IconButton } from "@mui/material";
+import { defaultMapFieldName, defaultMapFilterName } from "../utils.js";
+import { FieldSelect } from "./field-select.js";
+import { FilterDataInput } from "./filter-data-input.js";
+import { FilterSelect } from "./filter-select.js";
 
 type FilterRuleProps = {
   rule: LooseFilterRule;

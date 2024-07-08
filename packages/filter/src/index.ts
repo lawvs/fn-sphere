@@ -1,8 +1,8 @@
 export { createTheme } from "@mui/material/styles";
-export { createAdvancedFilter } from "./create-advanced-filter";
-export { FlattenFilterBuilder } from "./flatten-filter-builder";
-export { FlattenFilterDialog } from "./flatten-filter-dialog";
-export { useAdvancedFilter } from "./use-advanced-filter";
+export { createAdvancedFilter } from "./create-advanced-filter.js";
+export { FlattenFilterBuilder } from "./flatten-filter-builder.js";
+export { FlattenFilterDialog } from "./flatten-filter-dialog.js";
+export { useAdvancedFilter } from "./use-advanced-filter.js";
 
 export {
   ThemeProvider as FilterThemeProvider,

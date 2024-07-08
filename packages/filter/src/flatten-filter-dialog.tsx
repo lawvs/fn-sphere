@@ -1,13 +1,16 @@
 import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
-import Button from "@mui/material/Button";
-import Dialog, { type DialogProps } from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  type DialogProps,
+} from "@mui/material";
 import { useState } from "react";
-import { FlattenFilterBuilder } from "./flatten-filter-builder";
-import type { BasicFilterProps } from "./types";
-import { EMPTY_ROOT_FILTER } from "./utils";
+import { FlattenFilterBuilder } from "./flatten-filter-builder.js";
+import type { BasicFilterProps } from "./types.js";
+import { EMPTY_ROOT_FILTER } from "./utils.js";
 
 type FilterValue<Data> = {
   rule: LooseFilterGroup;

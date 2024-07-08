@@ -4,7 +4,7 @@ import {
   type LooseFilterGroup,
   type LooseFilterRule,
 } from "@fn-sphere/core";
-import type { BasicFilterProps, FlattenFilterGroup } from "./types";
+import type { BasicFilterProps, FlattenFilterGroup } from "./types.js";
 
 export const createEmptyRule = () =>
   ({

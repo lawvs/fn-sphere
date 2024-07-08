@@ -1,3 +1,3 @@
-export { FilterViewProvider } from "./context";
-export { useDataInputView, usePlaceholderView } from "./hooks";
-export { presetDataInputSpecs, presetView as presetUi } from "./preset";
+export { FilterViewProvider } from "./context.js";
+export { useDataInputView, usePlaceholderView } from "./hooks.js";
+export { presetDataInputSpecs, presetView as presetUi } from "./preset.js";

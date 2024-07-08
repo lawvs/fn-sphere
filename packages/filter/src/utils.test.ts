@@ -1,6 +1,6 @@
-import { FilterId, LooseFilterGroup } from "@fn-sphere/core";
+import type { FilterId, LooseFilterGroup } from "@fn-sphere/core";
 import { describe, expect, it } from "vitest";
-import { fromFilterMap, toFilterMap } from "./utils";
+import { fromFilterMap, toFilterMap } from "./utils.js";
 
 describe("toFilterMap/fromFilterMap", () => {
   it("should toFilterMap handle FilterGroup", () => {

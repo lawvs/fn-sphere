@@ -4,18 +4,18 @@ import {
   genFilterId,
   type LooseFilterGroup,
 } from "@fn-sphere/core";
-import Button from "@mui/material/Button";
+import { Button } from "@mui/material";
 import { Fragment } from "react";
-import { FilterRule } from "./filter-rule";
-import type { BasicFilterProps } from "./types";
-import { FilterGroupContainer, FilterRuleJoiner } from "./ui";
+import { FilterRule } from "./filter-rule/index.js";
+import type { BasicFilterProps } from "./types.js";
+import { FilterGroupContainer, FilterRuleJoiner } from "./ui.js";
 import {
   EMPTY_ROOT_FILTER,
   createEmptyRule,
   defaultMapFieldName,
   defaultMapFilterName,
   isFlattenFilterGroup,
-} from "./utils";
+} from "./utils.js";
 
 type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
   rule?: LooseFilterGroup;

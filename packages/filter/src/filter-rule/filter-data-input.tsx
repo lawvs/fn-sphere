@@ -4,7 +4,7 @@ import {
   getParametersExceptFirst,
 } from "@fn-sphere/core";
 import { z } from "zod";
-import { useDataInputView, usePlaceholderView } from "../specs";
+import { useDataInputView, usePlaceholderView } from "../specs/index.js";
 
 type FilterDataInputProps = {
   rule: LooseFilterRule;

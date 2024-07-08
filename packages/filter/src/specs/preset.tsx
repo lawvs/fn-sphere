@@ -1,7 +1,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 import { z } from "zod";
-import { useInputView } from "./hooks";
-import type { DataInputViewSpec, ViewSpec } from "./types";
+import { useInputView } from "./hooks.js";
+import type { DataInputViewSpec, ViewSpec } from "./types.js";
 
 export const presetDataInputSpecs: DataInputViewSpec[] = [
   {

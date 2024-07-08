@@ -1,8 +1,8 @@
 import { isSameType } from "@fn-sphere/core";
 import { useContext, type ComponentType } from "react";
 import { z } from "zod";
-import { ViewContext } from "./context";
-import type { DataInputViewProps } from "./types";
+import { ViewContext } from "./context.js";
+import type { DataInputViewProps } from "./types.js";
 
 export const usePlaceholderView = () => {
   const specs = useContext(ViewContext);

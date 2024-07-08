@@ -1,19 +1,22 @@
-import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
-import { presetFilter } from "@fn-sphere/core/src/presets";
+import {
+  createFilterPredicate,
+  presetFilter,
+  type LooseFilterGroup,
+} from "@fn-sphere/core";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { z } from "zod";
 import {
   FlattenFilterDialog,
   type FlattenFilterDialogProps,
-} from "./flatten-filter-dialog";
-import type { BasicFilterProps } from "./types";
+} from "./flatten-filter-dialog.js";
+import type { BasicFilterProps } from "./types.js";
 import {
   EMPTY_ROOT_FILTER,
   defaultMapFieldName,
   defaultMapFilterName,
   defaultStorage,
-} from "./utils";
+} from "./utils.js";
 
 type OpenFilterProps<Data = unknown> = {
   filterBuilder: BasicFilterProps<Data> & {
