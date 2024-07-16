@@ -13,6 +13,17 @@ export const createEmptyRule = () =>
     arguments: [],
   }) satisfies LooseFilterRule;
 
+export const createEmptyFilterGroup = (op: LooseFilterGroup["op"]) =>
+  ({
+    id: genFilterId(),
+    type: "FilterGroup",
+    op,
+    conditions: [createEmptyRule()],
+  }) satisfies LooseFilterGroup;
+
+/**
+ * @deprecated The id should be generated every time when creating a new filter group.
+ */
 export const EMPTY_ROOT_FILTER: LooseFilterGroup = {
   id: genFilterId(),
   type: "FilterGroup",
@@ -84,10 +95,22 @@ export const defaultMapFilterName: NonNullable<
   return filterSchema.name;
 };
 
-type FilterMap = {
-  [key: FilterId]:
-    | LooseFilterRule
+/**
+ * Flatten the filter group to a map for easier manipulation.
+ *
+ * @internal
+ */
+export type FilterMap = {
+  // [key: FilterId]:
+  [key: string]:
+    | {
+        type: "Filter";
+        data: LooseFilterRule;
+        parentId: FilterId;
+      }
     | (Omit<LooseFilterGroup, "conditions"> & {
+        // Only root group has no parent
+        parentId: FilterId | null;
         conditionIds: FilterId[];
       });
 };
@@ -95,9 +118,12 @@ type FilterMap = {
 /**
  * Convert the {@link LooseFilterGroup} to {@link FilterMap}.
  */
-export const toFilterMap = (filterGroup: LooseFilterGroup): FilterMap => {
+export const toFilterMap = (rootFilterGroup: LooseFilterGroup): FilterMap => {
   const map: FilterMap = {};
-  const queue: (LooseFilterRule | LooseFilterGroup)[] = [filterGroup];
+  const parentMap: Record<FilterId, FilterId | null> = {
+    [rootFilterGroup.id]: null,
+  };
+  const queue: (LooseFilterRule | LooseFilterGroup)[] = [rootFilterGroup];
 
   while (queue.length) {
     const rule = queue.shift();
@@ -105,8 +131,15 @@ export const toFilterMap = (filterGroup: LooseFilterGroup): FilterMap => {
       continue;
     }
     if (rule.type === "Filter") {
-      // For LooseFilterRule, store it directly
-      map[rule.id] = rule;
+      const parentId = parentMap[rule.id];
+      if (!parentId) {
+        throw new Error("Invalid parent ID! Filter must have a parent");
+      }
+      map[rule.id] = {
+        type: "Filter",
+        data: rule,
+        parentId,
+      };
       continue;
     }
 
@@ -117,9 +150,14 @@ export const toFilterMap = (filterGroup: LooseFilterGroup): FilterMap => {
       map[rule.id] = {
         ...rest,
         conditionIds: rule.conditions.map((condition) => condition.id),
+        parentId: parentMap[rule.id],
       };
       // Add conditions to the queue for further processing
       queue.push(...rule.conditions);
+      // Update parent map for the conditions
+      rule.conditions.forEach((condition) => {
+        parentMap[condition.id] = rule.id;
+      });
       continue;
     }
     throw new Error("Invalid rule type");
@@ -128,20 +166,15 @@ export const toFilterMap = (filterGroup: LooseFilterGroup): FilterMap => {
   return map;
 };
 
-const findRootFromMap = (map: FilterMap): FilterId | undefined => {
-  const referencedIds = new Set<FilterId>();
-  // Collect all IDs that are referenced as children
-  Object.values(map).forEach((item) => {
-    if (item.type === "FilterGroup" && item.conditionIds) {
-      item.conditionIds.forEach((id) => referencedIds.add(id));
-    }
-  });
-
-  // Find the first key not in the set of referenced IDs
-  const rootKey = Object.keys(map).find(
-    (key) => !referencedIds.has(key as FilterId),
-  ) as FilterId | undefined;
-  return rootKey;
+const findRootFromMap = (map: FilterMap): FilterId => {
+  const rootRule = Object.values(map).find((item) => item.parentId === null);
+  if (!rootRule) {
+    throw new Error("No root filter found");
+  }
+  if (rootRule.type !== "FilterGroup") {
+    throw new Error("Root filter is not a group");
+  }
+  return rootRule.id;
 };
 
 export const fromFilterMap = (
@@ -170,7 +203,7 @@ export const fromFilterMap = (
       throw new Error("Invalid condition ID");
     }
     if (item.type === "Filter") {
-      return item;
+      return item.data;
     }
     if (item.type === "FilterGroup") {
       return fromFilterMap(map, id);
