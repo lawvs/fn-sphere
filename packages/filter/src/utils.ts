@@ -118,10 +118,13 @@ export type FilterMap = {
 /**
  * Convert the {@link LooseFilterGroup} to {@link FilterMap}.
  */
-export const toFilterMap = (rootFilterGroup: LooseFilterGroup): FilterMap => {
+export const toFilterMap = (
+  rootFilterGroup: LooseFilterGroup,
+  parentId?: FilterId,
+): FilterMap => {
   const map: FilterMap = {};
   const parentMap: Record<FilterId, FilterId> = {
-    [rootFilterGroup.id]: rootFilterGroup.id,
+    [rootFilterGroup.id]: parentId ?? rootFilterGroup.id,
   };
   const queue: (LooseFilterRule | LooseFilterGroup)[] = [rootFilterGroup];
 
