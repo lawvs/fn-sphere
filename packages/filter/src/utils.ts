@@ -109,8 +109,8 @@ export type FilterMap = {
         parentId: FilterId;
       }
     | (Omit<LooseFilterGroup, "conditions"> & {
-        // Only root group has no parent
-        parentId: FilterId | null;
+        // The root filter group's parent ID is itself
+        parentId: FilterId;
         conditionIds: FilterId[];
       });
 };
@@ -120,8 +120,8 @@ export type FilterMap = {
  */
 export const toFilterMap = (rootFilterGroup: LooseFilterGroup): FilterMap => {
   const map: FilterMap = {};
-  const parentMap: Record<FilterId, FilterId | null> = {
-    [rootFilterGroup.id]: null,
+  const parentMap: Record<FilterId, FilterId> = {
+    [rootFilterGroup.id]: rootFilterGroup.id,
   };
   const queue: (LooseFilterRule | LooseFilterGroup)[] = [rootFilterGroup];
 
@@ -167,10 +167,13 @@ export const toFilterMap = (rootFilterGroup: LooseFilterGroup): FilterMap => {
 };
 
 const findRootFromMap = (map: FilterMap): FilterId => {
-  const rootRule = Object.values(map).find((item) => item.parentId === null);
-  if (!rootRule) {
+  const rootRuleEntry = Object.entries(map).find(
+    ([key, value]) => key === value.parentId,
+  );
+  if (!rootRuleEntry) {
     throw new Error("No root filter found");
   }
+  const [, rootRule] = rootRuleEntry;
   if (rootRule.type !== "FilterGroup") {
     throw new Error("Root filter is not a group");
   }

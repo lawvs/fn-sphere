@@ -16,7 +16,7 @@ describe("toFilterMap/fromFilterMap", () => {
           "conditionIds": [],
           "id": "1",
           "op": "or",
-          "parentId": null,
+          "parentId": "1",
           "type": "FilterGroup",
         },
       }
@@ -52,7 +52,7 @@ describe("toFilterMap/fromFilterMap", () => {
           ],
           "id": "1",
           "op": "or",
-          "parentId": null,
+          "parentId": "1",
           "type": "FilterGroup",
         },
         "2": {
