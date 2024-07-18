@@ -1,6 +1,6 @@
 import type {
   FilterField,
-  FilterGroup,
+  FilterId,
   FnSchema,
   LooseFilterRule,
   StandardFnSchema,
@@ -12,11 +12,11 @@ import type { ZodType } from "zod";
  * @deprecated
  */
 export type FlattenFilterGroup = {
-  id: FilterGroup["id"];
+  id: FilterId;
   type: "FilterGroup";
   op: "or";
   conditions: {
-    id: FilterGroup["id"];
+    id: FilterId;
     type: "FilterGroup";
     op: "and";
     conditions: LooseFilterRule[];
@@ -26,6 +26,12 @@ export type FlattenFilterGroup = {
 export type BasicFilterProps<Data = unknown> = {
   schema: ZodType<Data>;
   filterList: FnSchema[];
+  /**
+   * The maximum nesting depth limit of the filter rule.
+   *
+   * @default 2
+   */
+  // maxNestedDepth?: number;
   /**
    * The maximum depth of searching for filter fields.
    *

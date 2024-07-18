@@ -206,6 +206,7 @@ export const fromFilterMap = (
   result.conditions = root.conditionIds.map((id) => {
     const item = map[id];
     if (!item) {
+      console.error("Invalid condition ID", id, map, rootKey);
       throw new Error("Invalid condition ID");
     }
     if (item.type === "Filter") {

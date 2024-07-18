@@ -12,6 +12,7 @@ export const FilterGroupContainer = ({
   // if (isRoot) {
   //   return children;
   // }
+  const text = filterGroup.op === "or" ? "Or" : "And";
   return (
     <div
       className="filter-builder-group-container"
@@ -27,7 +28,7 @@ export const FilterGroupContainer = ({
           marginRight: 12,
         }}
       >
-        {filterGroup.op === "or" ? "Or" : "And"}
+        {text}
       </div>
       <div
         style={{
