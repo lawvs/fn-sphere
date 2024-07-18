@@ -1,75 +1,76 @@
-import {
-  isEqualPath,
-  type FilterField,
-  type LooseFilterRule,
-  type StandardFnSchema,
-} from "@fn-sphere/core";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import { type LooseFilterRule } from "@fn-sphere/core";
+import { Delete as DeleteIcon, Error as ErrorIcon } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
-import { defaultMapFieldName, defaultMapFilterName } from "../utils.js";
+import { useFilterRule } from "../hooks/use-filter-rule.js";
+import { useRootRule } from "../hooks/use-root-rule.js";
+import { createEmptyFilterGroup } from "../utils.js";
 import { FieldSelect } from "./field-select.js";
 import { FilterDataInput } from "./filter-data-input.js";
 import { FilterSelect } from "./filter-select.js";
 
 type FilterRuleProps = {
   rule: LooseFilterRule;
-  filterFields: FilterField[];
-  mapFieldName?: (field: FilterField) => string;
-  mapFilterName?: (
-    filterSchema: StandardFnSchema,
-    field: FilterField,
-  ) => string;
-  onChange: (rule: LooseFilterRule) => void;
-  onAddFilter: () => void;
-  onAddGroup: (operator: "and" | "or") => void;
-  onRemove: () => void;
 };
 
-export const FilterRule = ({
-  rule,
-  filterFields,
-  mapFieldName = defaultMapFieldName,
-  mapFilterName = defaultMapFilterName,
-  onChange,
-  onAddFilter,
-  onAddGroup,
-  onRemove,
-}: FilterRuleProps) => {
-  const selectedField = filterFields.find((field) =>
-    rule.path ? isEqualPath(field.path, rule.path) : false,
-  );
-  const selectedFilter = selectedField?.filterList.find(
-    (filter) => filter.name === rule.name,
-  );
+export const FilterRule = ({ rule }: FilterRuleProps) => {
+  const {
+    ruleState: { isValid },
+    filterableFields,
+    selectedField,
+    selectedFilter,
+    mapFieldName,
+    mapFilterName,
+    updateRule,
+    removeRule,
+    appendRule,
+  } = useFilterRule(rule);
+  const { getRootRule, updateRootRule } = useRootRule();
 
   return (
     <div>
       <FieldSelect
         rule={rule}
-        filterFields={filterFields}
+        filterableFields={filterableFields}
         mapFieldName={mapFieldName}
-        onChange={onChange}
+        onChange={updateRule}
       />
       <FilterSelect
         selectedField={selectedField}
         selectedFilter={selectedFilter}
         rule={rule}
         mapFilterName={mapFilterName}
-        onChange={onChange}
+        onChange={updateRule}
       />
       <FilterDataInput
         rule={rule}
         filterSchema={selectedFilter}
-        onChange={onChange}
+        onChange={updateRule}
       />
 
-      <Button size="small" onClick={onAddFilter}>
+      {isValid ? null : <ErrorIcon />}
+      <Button
+        size="small"
+        onClick={() => {
+          appendRule();
+        }}
+      >
         And
       </Button>
-      <Button size="small" onClick={() => onAddGroup("and")}>
+      <Button
+        size="small"
+        onClick={() => {
+          const rootRule = getRootRule();
+          rootRule.conditions.push(createEmptyFilterGroup("and"));
+          updateRootRule(rootRule);
+        }}
+      >
         Or
       </Button>
-      <IconButton aria-label="delete" size="small" onClick={onRemove}>
+      <IconButton
+        aria-label="delete"
+        size="small"
+        onClick={() => removeRule(true)}
+      >
         <DeleteIcon />
       </IconButton>
     </div>

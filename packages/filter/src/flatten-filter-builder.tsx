@@ -1,17 +1,12 @@
-import {
-  countNumberOfRules,
-  findFilterField,
-  genFilterId,
-  type LooseFilterGroup,
-} from "@fn-sphere/core";
+import { countNumberOfRules, type LooseFilterGroup } from "@fn-sphere/core";
 import { Button } from "@mui/material";
 import { Fragment } from "react";
 import { FilterRule } from "./filter-rule/index.js";
+import { FilterProvider } from "./hooks/filter-provider.js";
 import type { BasicFilterProps } from "./types.js";
 import { FilterGroupContainer, FilterRuleJoiner } from "./ui.js";
 import {
   EMPTY_ROOT_FILTER,
-  createEmptyRule,
   defaultMapFieldName,
   defaultMapFilterName,
   isFlattenFilterGroup,
@@ -66,133 +61,54 @@ export const FlattenFilterBuilder = <Data,>({
     );
   }
 
-  const filterFields = findFilterField({
-    schema,
-    filterList,
-    maxDeep: deepLimit,
-  });
-
   return (
-    <div className="filter-builder-container">
-      <FilterGroupContainer isRoot filterGroup={filterGroup}>
-        {filterGroup.conditions.map((andGroup, groupIdx) => {
-          return (
-            <Fragment key={andGroup.id}>
-              {groupIdx > 0 && (
-                <FilterRuleJoiner
-                  operator={filterGroup.op}
-                  joinBetween={[filterGroup.conditions[groupIdx - 1], andGroup]}
-                />
-              )}
-              <FilterGroupContainer isRoot={false} filterGroup={andGroup}>
-                {andGroup.conditions.map((rule, ruleIdx) => (
-                  <Fragment key={rule.id}>
-                    {ruleIdx > 0 && (
-                      <FilterRuleJoiner
-                        operator={andGroup.op}
-                        joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
-                      />
-                    )}
-                    <div className="rule-container">
-                      {
-                        <FilterRule
-                          rule={rule}
-                          filterFields={filterFields}
-                          mapFieldName={mapFieldName}
-                          mapFilterName={mapFilterName}
-                          onChange={(rule) => {
-                            onChange?.({
-                              ...filterGroup,
-                              conditions: [
-                                ...filterGroup.conditions.slice(0, groupIdx),
-                                {
-                                  ...andGroup,
-                                  conditions: [
-                                    ...andGroup.conditions.slice(0, ruleIdx),
-                                    rule,
-                                    ...andGroup.conditions.slice(ruleIdx + 1),
-                                  ],
-                                },
-                                ...filterGroup.conditions.slice(groupIdx + 1),
-                              ],
-                            });
-                          }}
-                          onAddFilter={() => {
-                            andGroup.conditions = [
-                              ...andGroup.conditions.slice(0, ruleIdx + 1),
-                              createEmptyRule(),
-                              ...andGroup.conditions.slice(ruleIdx + 1),
-                            ];
-                            onChange?.({
-                              ...filterGroup,
-                            });
-                            return;
-                          }}
-                          onAddGroup={(operator) => {
-                            if (operator === "or") {
-                              throw new Error(
-                                "Not supported adding OR group in flatten filter builder",
-                              );
-                            }
-                            filterGroup.conditions = [
-                              ...filterGroup.conditions.slice(0, groupIdx + 1),
-                              {
-                                id: genFilterId(),
-                                type: "FilterGroup",
-                                op: "and",
-                                conditions: [createEmptyRule()],
-                              },
-                              ...filterGroup.conditions.slice(groupIdx + 1),
-                            ];
-                            onChange?.({
-                              ...filterGroup,
-                            });
-                          }}
-                          onRemove={() => {
-                            if (andGroup.conditions.length === 1) {
-                              if (filterGroup.conditions.length === 1) {
-                                // onChange?.(EMPTY_FILTER_GROUP);
-                                onChange?.({
-                                  ...filterGroup,
-                                  conditions: [],
-                                });
-                                return;
-                              }
-                              onChange?.({
-                                ...filterGroup,
-                                conditions: [
-                                  ...filterGroup.conditions.slice(0, groupIdx),
-                                  ...filterGroup.conditions.slice(groupIdx + 1),
-                                ],
-                              });
-                              return;
-                            }
-                            onChange?.({
-                              ...filterGroup,
-                              conditions: [
-                                ...filterGroup.conditions.slice(0, groupIdx),
-                                {
-                                  ...andGroup,
-                                  conditions: [
-                                    ...andGroup.conditions.slice(0, ruleIdx),
-                                    ...andGroup.conditions.slice(ruleIdx + 1),
-                                  ],
-                                },
-                                ...filterGroup.conditions.slice(groupIdx + 1),
-                              ],
-                            });
-                          }}
+    <FilterProvider
+      value={{
+        schema,
+        filterList,
+        filterRule: filterGroup,
+        onRuleChange: onChange,
+
+        mapFieldName,
+        mapFilterName,
+        deepLimit,
+      }}
+    >
+      <div className="filter-builder-container">
+        <FilterGroupContainer isRoot filterGroup={filterGroup}>
+          {filterGroup.conditions.map((andGroup, groupIdx) => {
+            return (
+              <Fragment key={andGroup.id}>
+                {groupIdx > 0 && (
+                  <FilterRuleJoiner
+                    operator={filterGroup.op}
+                    joinBetween={[
+                      filterGroup.conditions[groupIdx - 1],
+                      andGroup,
+                    ]}
+                  />
+                )}
+                <FilterGroupContainer isRoot={false} filterGroup={andGroup}>
+                  {andGroup.conditions.map((rule, ruleIdx) => (
+                    <Fragment key={rule.id}>
+                      {ruleIdx > 0 && (
+                        <FilterRuleJoiner
+                          operator={andGroup.op}
+                          joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
                         />
-                      }
-                    </div>
-                  </Fragment>
-                ))}
-              </FilterGroupContainer>
-            </Fragment>
-          );
-        })}
-      </FilterGroupContainer>
-    </div>
+                      )}
+                      <div className="rule-container">
+                        {<FilterRule rule={rule} />}
+                      </div>
+                    </Fragment>
+                  ))}
+                </FilterGroupContainer>
+              </Fragment>
+            );
+          })}
+        </FilterGroupContainer>
+      </div>
+    </FilterProvider>
   );
 };
-FlattenFilterBuilder.displayName = "FilterBuilder";
+FlattenFilterBuilder.displayName = "FlattenFilterBuilder";
