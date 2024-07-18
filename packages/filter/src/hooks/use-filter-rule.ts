@@ -1,5 +1,6 @@
 import {
   isEqualPath,
+  isValidRule,
   type LooseFilterGroup,
   type LooseFilterRule,
 } from "@fn-sphere/core";
@@ -12,8 +13,15 @@ import {
 import { FilterBuilderContext } from "./filter-provider.js";
 
 export const useFilterRule = (rule: LooseFilterRule) => {
-  const { filterMap, filterFields, onRuleChange, mapFieldName, mapFilterName } =
-    useContext(FilterBuilderContext);
+  const {
+    schema,
+    filterList,
+    filterMap,
+    filterableFields,
+    onRuleChange,
+    mapFieldName,
+    mapFilterName,
+  } = useContext(FilterBuilderContext);
 
   const parentId = filterMap[rule.id].parentId;
   const parent = filterMap[parentId];
@@ -24,22 +32,23 @@ export const useFilterRule = (rule: LooseFilterRule) => {
   const index = parent.conditionIds.indexOf(rule.id);
 
   const selectedField = rule.path
-    ? filterFields.find((field) => isEqualPath(field.path, rule.path!))
+    ? filterableFields.find((field) => isEqualPath(field.path, rule.path!))
     : undefined;
-  const fieldList = filterFields.map((field) => ({
-    name: mapFieldName(field),
-    value: field,
-  }));
+  // const fieldList = filterFields.map((field) => ({
+  //   name: mapFieldName(field),
+  //   value: field,
+  // }));
 
   const selectedFilter = selectedField?.filterList.find(
     (filter) => filter.name === rule.name,
   );
-  const fieldFilterList = selectedField?.filterList.map((filter) => ({
-    name: mapFilterName(filter, selectedField),
-    value: filter,
-  }));
+  // const fieldFilterList = selectedField?.filterList.map((filter) => ({
+  //   name: mapFilterName(filter, selectedField),
+  //   value: filter,
+  // }));
 
   // TODO ignore FilterId in user input
+  // TODO check input data match the schema
   const updateRule = (newRule: LooseFilterRule) => {
     onRuleChange({
       ...filterMap,
@@ -69,6 +78,7 @@ export const useFilterRule = (rule: LooseFilterRule) => {
       },
     });
   };
+
   const appendGroup = (
     newFilterGroup: LooseFilterGroup = createEmptyFilterGroup("and"),
   ) => {
@@ -86,7 +96,38 @@ export const useFilterRule = (rule: LooseFilterRule) => {
     });
   };
 
-  const removeRule = () => {
+  const removeRule = (removeEmptyGroup = false) => {
+    if (removeEmptyGroup) {
+      let targetRuleId = rule.id;
+      let targetParent = parent;
+      const newFilterMap = { ...filterMap };
+      delete newFilterMap[targetRuleId];
+      // Remove empty group recursively
+      while (
+        targetParent.conditionIds.length === 1 &&
+        // Root group should not be removed
+        targetParent.parentId !== targetParent.id
+      ) {
+        const newParentNode = newFilterMap[targetParent.parentId];
+        if (!newParentNode || newParentNode.type !== "FilterGroup") {
+          console.error("Parent rule is not a group", filterMap, rule);
+          throw new Error("Parent rule is not a group");
+        }
+        delete newFilterMap[targetParent.id];
+        targetRuleId = targetParent.id;
+        targetParent = newParentNode;
+      }
+      newFilterMap[targetParent.id] = {
+        ...targetParent,
+        conditionIds: targetParent.conditionIds.filter(
+          (id) => id !== targetRuleId,
+        ),
+      };
+      console.log(newFilterMap);
+
+      onRuleChange(newFilterMap);
+      return;
+    }
     const newFilterMap = {
       ...filterMap,
       [parentId]: {
@@ -99,16 +140,21 @@ export const useFilterRule = (rule: LooseFilterRule) => {
   };
 
   return {
-    index,
-    isValid:
-      !!selectedField &&
-      !!selectedFilter &&
-      rule.arguments.length === selectedFilter.define.parameters.length - 1,
+    ruleState: {
+      index,
+      isFirstRule: index === 0,
+      isLastRule: index === parent.conditionIds.length - 1,
+      isValid: isValidRule({
+        dataSchema: schema,
+        filterList,
+        rule,
+      }),
+    },
 
-    fieldList,
+    filterableFields,
+    // fieldList,
+    // fieldFilterList,
     selectedField,
-
-    fieldFilterList,
     selectedFilter,
 
     mapFieldName,
@@ -118,7 +164,8 @@ export const useFilterRule = (rule: LooseFilterRule) => {
     appendRule,
     appendGroup,
     removeRule,
+    // moveRule,
     // duplicateRule,
-    // wrapWithGroup,
+    // wrapInGroup,
   };
 };
