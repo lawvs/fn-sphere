@@ -162,7 +162,6 @@ export const validateRule = ({
   }
   const strictRule: StrictFilterRule = {
     ...rule,
-    id: rule.id ?? genFilterId(),
     name: rule.name,
     path: rule.path,
     invert: !!rule.invert,
@@ -180,12 +179,28 @@ export const validateRule = ({
     dataSchema,
     rule: {
       ...rule,
-      id: rule.id ?? genFilterId(),
       name: rule.name,
       path: rule.path,
       invert: !!rule.invert,
     },
   });
+};
+
+export const isValidRule = ({
+  filterList,
+  dataSchema,
+  rule,
+}: {
+  filterList: FnSchema[];
+  dataSchema: ZodTypeAny;
+  rule: LooseFilterRule;
+}): boolean => {
+  const result = validateRule({
+    filterList,
+    dataSchema,
+    rule,
+  });
+  return result.success;
 };
 
 export const validateGroup = ({

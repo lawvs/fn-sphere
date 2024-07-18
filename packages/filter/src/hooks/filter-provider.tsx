@@ -1,7 +1,7 @@
 import {
   type FilterField,
   type LooseFilterGroup,
-  findFilterField,
+  findFilterableFields,
 } from "@fn-sphere/core";
 import { type ReactNode, createContext } from "react";
 import { z } from "zod";
@@ -25,7 +25,7 @@ type NormalizedFilterContextType = Required<BasicFilterProps<unknown>> & {
 
   // derived properties
   filterMap: FilterMap;
-  filterFields: FilterField[];
+  filterableFields: FilterField[];
 };
 
 const defaultContext: NormalizedFilterContextType = {
@@ -36,7 +36,7 @@ const defaultContext: NormalizedFilterContextType = {
   mapFilterName: defaultMapFilterName,
 
   filterMap: toFilterMap(createEmptyFilterGroup("or")),
-  filterFields: [],
+  filterableFields: [],
   onRuleChange: () => {},
 };
 
@@ -50,7 +50,7 @@ export const FilterProvider = ({
   value: FilterContextType;
   children: ReactNode;
 }) => {
-  const filterFields = findFilterField({
+  const filterableFields = findFilterableFields({
     schema: value.schema,
     filterList: value.filterList,
     maxDeep: value.deepLimit,
@@ -66,7 +66,7 @@ export const FilterProvider = ({
       value.onRuleChange?.(fromFilterMap(filterMap));
     },
     filterMap: toFilterMap(value.filterRule),
-    filterFields,
+    filterableFields,
   };
 
   return (

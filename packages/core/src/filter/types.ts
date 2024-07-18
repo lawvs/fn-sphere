@@ -45,6 +45,9 @@ export type FilterableField<T = unknown> = {
 
 export type FilterId = string & { __filterId: true };
 
+/**
+ * @deprecated
+ */
 export type FilterGroup<T = unknown> = {
   /**
    * Unique id, used for tracking changes or resorting

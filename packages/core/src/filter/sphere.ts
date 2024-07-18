@@ -1,7 +1,7 @@
 import type { ZodType } from "zod";
 import type { FnSchema } from "../types.js";
 import { createFilterPredicate } from "./predicate.js";
-import { findFilterField } from "./pure.js";
+import { findFilterableFields } from "./pure.js";
 import type { LooseFilterGroup, LooseFilterRule } from "./types.js";
 
 export const createFilterSphere = <Data = unknown>(
@@ -13,7 +13,7 @@ export const createFilterSphere = <Data = unknown>(
   }: {
     maxDeep?: number;
   } = {}) =>
-    findFilterField({
+    findFilterableFields({
       schema: dataSchema,
       filterList: filterFnList,
       maxDeep,

@@ -41,7 +41,10 @@ const bfsSchemaField = (
   }
 };
 
-export const findFilterField = <Data>({
+/**
+ * Find all fields that can be filtered based on the given schema and filterList.
+ */
+export const findFilterableFields = <Data>({
   schema,
   filterList,
   maxDeep = 1,

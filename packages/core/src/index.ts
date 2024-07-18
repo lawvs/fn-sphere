@@ -1,7 +1,7 @@
 export {
   countNumberOfRules,
   createFilterSphere,
-  findFilterField,
+  findFilterableFields,
 } from "./filter/index.js";
 export {
   genFilterId,
@@ -20,7 +20,7 @@ export {
 } from "./presets.js";
 
 export { isSameType } from "zod-compare";
-export { createFilterPredicate } from "./filter/index.js";
+export { createFilterPredicate, isValidRule } from "./filter/index.js";
 export type { FilterSphere } from "./filter/index.js";
 export type * from "./filter/types.js";
 export type * from "./types.js";

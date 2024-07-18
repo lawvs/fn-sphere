@@ -3,14 +3,14 @@ import { MenuItem, Select } from "@mui/material";
 
 type FieldSelectProps = {
   rule: LooseFilterRule;
-  filterFields: FilterField[];
+  filterableFields: FilterField[];
   mapFieldName: (field: FilterField) => string;
   onChange: (rule: LooseFilterRule) => void;
 };
 
 export const FieldSelect = ({
   rule,
-  filterFields,
+  filterableFields,
   mapFieldName,
   onChange,
 }: FieldSelectProps) => {
@@ -29,7 +29,7 @@ export const FieldSelect = ({
         });
       }}
     >
-      {filterFields.map((field) => (
+      {filterableFields.map((field) => (
         <MenuItem key={field.path.join(".")} value={JSON.stringify(field.path)}>
           {mapFieldName(field)}
         </MenuItem>
