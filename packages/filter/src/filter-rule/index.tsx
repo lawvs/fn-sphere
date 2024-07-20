@@ -18,13 +18,12 @@ export const FilterRule = ({ rule }: FilterRuleProps) => {
     filterableFields,
     selectedField,
     selectedFilter,
-    mapFieldName,
-    mapFilterName,
     updateRule,
     removeRule,
     appendRule,
   } = useFilterRule(rule);
-  const { getRootRule, updateRootRule } = useRootRule();
+  const { mapFieldName, mapFilterName, getRootRule, updateRootRule } =
+    useRootRule();
 
   return (
     <div>

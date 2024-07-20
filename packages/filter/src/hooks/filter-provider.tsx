@@ -5,14 +5,12 @@ import {
 } from "@fn-sphere/core";
 import { type ReactNode, createContext } from "react";
 import { z } from "zod";
+import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
 import type { BasicFilterProps } from "../types.js";
 import {
-  type FilterMap,
   createEmptyFilterGroup,
   defaultMapFieldName,
   defaultMapFilterName,
-  fromFilterMap,
-  toFilterMap,
 } from "../utils.js";
 
 type FilterContextType = {

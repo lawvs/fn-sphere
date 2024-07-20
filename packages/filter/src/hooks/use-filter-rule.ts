@@ -5,27 +5,22 @@ import {
   type LooseFilterRule,
 } from "@fn-sphere/core";
 import { useContext } from "react";
-import {
-  createEmptyFilterGroup,
-  createEmptyRule,
-  toFilterMap,
-} from "../utils.js";
+import { getDepthOfRule, toFilterMap } from "../filter-map.js";
+import { createEmptyFilterGroup, createEmptyRule } from "../utils.js";
 import { FilterBuilderContext } from "./filter-provider.js";
 
 export const useFilterRule = (rule: LooseFilterRule) => {
-  const {
-    schema,
-    filterList,
-    filterMap,
-    filterableFields,
-    onRuleChange,
-    mapFieldName,
-    mapFilterName,
-  } = useContext(FilterBuilderContext);
+  const { schema, filterList, filterMap, filterableFields, onRuleChange } =
+    useContext(FilterBuilderContext);
 
-  const parentId = filterMap[rule.id].parentId;
+  const ruleNode = filterMap[rule.id];
+  if (!ruleNode) {
+    console.error("Rule not found in filterMap", filterMap, rule);
+    throw new Error("Rule not found in filterMap");
+  }
+  const parentId = ruleNode.parentId;
   const parent = filterMap[parentId];
-  if (parent.type !== "FilterGroup") {
+  if (parent?.type !== "FilterGroup") {
     console.error("Parent rule is not a group", filterMap, rule);
     throw new Error("Parent rule is not a group");
   }
@@ -149,6 +144,7 @@ export const useFilterRule = (rule: LooseFilterRule) => {
         filterList,
         rule,
       }),
+      depth: getDepthOfRule(filterMap, rule.id),
     },
 
     filterableFields,
@@ -156,9 +152,6 @@ export const useFilterRule = (rule: LooseFilterRule) => {
     // fieldFilterList,
     selectedField,
     selectedFilter,
-
-    mapFieldName,
-    mapFilterName,
 
     updateRule,
     appendRule,

@@ -1,15 +1,16 @@
 import { type LooseFilterGroup, type LooseFilterRule } from "@fn-sphere/core";
 import { useContext } from "react";
-import {
-  createEmptyFilterGroup,
-  createEmptyRule,
-  toFilterMap,
-} from "../utils.js";
+import { getDepthOfRule, toFilterMap } from "../filter-map.js";
+import { createEmptyFilterGroup, createEmptyRule } from "../utils.js";
 import { FilterBuilderContext } from "./filter-provider.js";
 
 export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
   const { filterMap, onRuleChange } = useContext(FilterBuilderContext);
   const ruleNode = filterMap[ruleGroup.id];
+  if (!ruleNode) {
+    console.error("Rule not found in filterMap", ruleGroup, filterMap);
+    throw new Error("Rule not found in filterMap");
+  }
   if (ruleNode.type !== "FilterGroup") {
     console.error("Rule is not a group", ruleGroup, filterMap);
     throw new Error("Rule is not a group");
@@ -18,9 +19,9 @@ export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
     console.error("Rule id does not match", ruleNode, ruleGroup);
     throw new Error("Rule id does not match");
   }
-  const parentId = filterMap[ruleGroup.id].parentId;
+  const parentId = ruleNode.parentId;
   const parent = filterMap[parentId];
-  if (parent.type !== "FilterGroup") {
+  if (parent?.type !== "FilterGroup") {
     console.error("Parent rule is not a group", filterMap, ruleGroup);
     throw new Error("Parent rule is not a group");
   }
@@ -103,6 +104,8 @@ export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
       index: ruleIndex,
       isFirstRule: ruleIndex === 0,
       isLastRule: ruleIndex === parent.conditionIds.length - 1,
+
+      depth: getDepthOfRule(filterMap, ruleGroup.id),
     },
 
     toggleGroupOp,
