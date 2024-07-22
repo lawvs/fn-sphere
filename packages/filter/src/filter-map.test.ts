@@ -1,6 +1,6 @@
-import type { FilterId, LooseFilterGroup } from "@fn-sphere/core";
+import { type FilterId, type LooseFilterGroup } from "@fn-sphere/core";
 import { describe, expect, it } from "vitest";
-import { fromFilterMap, toFilterMap } from "./filter-map.js";
+import { fromFilterMap, getDepthOfRule, toFilterMap } from "./filter-map.js";
 
 describe("toFilterMap/fromFilterMap", () => {
   it("should toFilterMap handle FilterGroup", () => {
@@ -76,5 +76,85 @@ describe("toFilterMap/fromFilterMap", () => {
       }
     `);
     expect(fromFilterMap(toFilterMap(filterGroup))).toEqual(filterGroup);
+  });
+});
+
+describe("depth of rule", () => {
+  it("should return 0 for root rule", () => {
+    const filterMap = toFilterMap({
+      id: "1" as FilterId,
+      op: "or",
+      type: "FilterGroup",
+      conditions: [],
+    });
+    expect(getDepthOfRule(filterMap, "1" as FilterId)).toBe(0);
+  });
+
+  it("should throw error for invalid rule id", () => {
+    const filterMap = toFilterMap({
+      id: "1" as FilterId,
+      op: "or",
+      type: "FilterGroup",
+      conditions: [],
+    });
+    expect(() => getDepthOfRule(filterMap, "2" as FilterId)).toThrowError();
+  });
+
+  it("should return 1 for nested rule", () => {
+    const filterMap = toFilterMap({
+      id: "1" as FilterId,
+      op: "or",
+      type: "FilterGroup",
+      conditions: [
+        {
+          id: "2" as FilterId,
+          op: "or",
+          type: "FilterGroup",
+          conditions: [],
+        },
+      ],
+    });
+    expect(getDepthOfRule(filterMap, "2" as FilterId)).toBe(1);
+  });
+
+  it("should return 1 for nested rule group", () => {
+    const filterMap = toFilterMap({
+      id: "1" as FilterId,
+      op: "or",
+      type: "FilterGroup",
+      conditions: [
+        {
+          id: "2" as FilterId,
+          op: "or",
+          type: "FilterGroup",
+          conditions: [],
+        },
+      ],
+    });
+    expect(getDepthOfRule(filterMap, "2" as FilterId)).toBe(1);
+  });
+
+  it("should return 2 for doubly nested rule", () => {
+    const filterMap = toFilterMap({
+      id: "1" as FilterId,
+      op: "or",
+      type: "FilterGroup",
+      conditions: [
+        {
+          id: "2" as FilterId,
+          op: "or",
+          type: "FilterGroup",
+          conditions: [
+            {
+              id: "3" as FilterId,
+              op: "or",
+              type: "FilterGroup",
+              conditions: [],
+            },
+          ],
+        },
+      ],
+    });
+    expect(getDepthOfRule(filterMap, "3" as FilterId)).toBe(2);
   });
 });

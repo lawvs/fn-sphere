@@ -138,12 +138,22 @@ export const fromFilterMap = (
  * The root filter has a depth of 0. Each step towards a child filter increases the depth by 1.
  */
 export const getDepthOfRule = (filterMap: FilterMap, id: FilterId): number => {
+  const maybeRuleNode = filterMap[id];
+  if (!maybeRuleNode) {
+    console.error("Rule not found in map", id, filterMap);
+    throw new Error("Rule not found in map");
+  }
   let depth = 0;
-  let currentRule = filterMap[id];
-  // Iterate until a rule without a parent is found (root) or the rule does not exist in the map.
-  while (currentRule && isRoot(currentRule)) {
+  let currentRule = filterMap[id]!;
+
+  // Iterate until a rule is root.
+  while (!isRoot(currentRule)) {
     depth++; // Increment depth for each parent found.
     const parentNode = filterMap[currentRule.parentId];
+    if (!parentNode) {
+      console.error("Rule not found in map", id, filterMap);
+      throw new Error("Rule not found in map");
+    }
     currentRule = parentNode;
   }
   return depth;
