@@ -1,6 +1,6 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 import { z } from "zod";
-import { useInputView } from "./hooks.js";
+import { useView } from "./hooks.js";
 import type { DataInputViewSpec, ViewSpec } from "./types.js";
 
 export const presetDataInputSpecs: DataInputViewSpec[] = [
@@ -16,7 +16,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     name: "string",
     match: z.tuple([z.string()]),
     view: forwardRef(({ inputSchema, rule, onChange }, ref) => {
-      const Input = useInputView();
+      const Input = useView("input");
       if (!inputSchema.items.length) {
         return null;
       }
@@ -41,7 +41,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     name: "number",
     match: z.tuple([z.number()]),
     view: forwardRef(({ inputSchema, rule, onChange }, ref) => {
-      const Input = useInputView();
+      const Input = useView("input");
       if (!inputSchema.items.length) {
         return null;
       }
@@ -66,7 +66,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     name: "date",
     match: z.tuple([z.date()]),
     view: forwardRef(({ inputSchema, rule, onChange }, ref) => {
-      const Input = useInputView();
+      const Input = useView("input");
       if (!inputSchema.items.length) {
         return null;
       }
@@ -107,7 +107,7 @@ const DefaultInput = forwardRef<
 
 // eslint-disable-next-line react-refresh/only-export-components
 const DataInputPlaceholder = forwardRef<HTMLInputElement>((_, ref) => {
-  const Input = useInputView();
+  const Input = useView("input");
   return <Input ref={ref} disabled />;
 });
 

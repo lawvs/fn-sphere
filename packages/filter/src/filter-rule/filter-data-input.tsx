@@ -4,7 +4,7 @@ import {
   getParametersExceptFirst,
 } from "@fn-sphere/core";
 import { z } from "zod";
-import { useDataInputView, usePlaceholderView } from "../specs/index.js";
+import { useDataInputView, useView } from "../specs/index.js";
 
 type FilterDataInputProps = {
   rule: LooseFilterRule;
@@ -18,7 +18,7 @@ export const FilterDataInput = ({
   onChange,
 }: FilterDataInputProps) => {
   const refCallback = () => null;
-  const Placeholder = usePlaceholderView();
+  const Placeholder = useView("dataInputPlaceholder");
   const requiredArguments = filterSchema
     ? getParametersExceptFirst(filterSchema)
     : undefined;

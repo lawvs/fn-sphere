@@ -2,28 +2,24 @@ import { isSameType } from "@fn-sphere/core";
 import { useContext, type ComponentType } from "react";
 import { z } from "zod";
 import { ViewContext } from "./context.js";
-import type { DataInputViewProps } from "./types.js";
+import type { DataInputViewProps, ViewSpec } from "./types.js";
 
-export const usePlaceholderView = () => {
+export const useView = <T extends Exclude<keyof ViewSpec, "dataInputViews">>(
+  view: T,
+) => {
   const specs = useContext(ViewContext);
-  const placeholderView = specs.dataInputPlaceholder;
-  return placeholderView;
-};
-
-export const useInputView = () => {
-  const specs = useContext(ViewContext);
-  const inputView = specs.input;
-  return inputView;
+  return specs[view];
 };
 
 export const useDataInputView = (
   schema: z.ZodTuple,
 ): ComponentType<DataInputViewProps> => {
   const specs = useContext(ViewContext);
+  const dataInputViews = specs.dataInputViews;
   if (isSameType(schema, z.tuple([z.never()]))) {
     return () => null;
   }
-  const targetSpec = specs.dataInputViews.find((spec) => {
+  const targetSpec = dataInputViews.find((spec) => {
     if (typeof spec.match === "function") {
       return spec.match(schema);
     }
