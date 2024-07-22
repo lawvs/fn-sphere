@@ -1,5 +1,12 @@
-import type { LooseFilterRule } from "@fn-sphere/core";
-import type { ComponentType, InputHTMLAttributes, RefAttributes } from "react";
+import type { LooseFilterGroup, LooseFilterRule } from "@fn-sphere/core";
+import type {
+  ButtonHTMLAttributes,
+  ComponentType,
+  InputHTMLAttributes,
+  ReactNode,
+  RefAttributes,
+  SelectHTMLAttributes,
+} from "react";
 import type { ZodTuple, z } from "zod";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,10 +25,56 @@ export type DataInputViewSpec = {
   view: ComponentType<DataInputViewProps>;
 };
 
-export type ViewSpec = {
-  input: ComponentType<
-    InputHTMLAttributes<HTMLInputElement> & RefAttributes<HTMLInputElement>
-  >;
-  dataInputPlaceholder: ComponentType<RefAttributes<HTMLInputElement>>;
+export type SelectProps<T> = Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "value" | "onChange" | "children"
+> & {
+  value?: T;
+  options?: { value: T; label: string }[];
+  onChange?: (value: T) => void;
+};
+
+export type uiSpec = {
+  primitives: {
+    button: ComponentType<
+      ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>
+    >;
+    input: ComponentType<
+      InputHTMLAttributes<HTMLInputElement> & RefAttributes<HTMLInputElement>
+    >;
+    select: ComponentType<
+      InputHTMLAttributes<HTMLSelectElement> & RefAttributes<HTMLSelectElement>
+    >;
+    option: ComponentType<
+      InputHTMLAttributes<HTMLOptionElement> & RefAttributes<HTMLOptionElement>
+    >;
+  };
+  views: {
+    Button: ComponentType<
+      ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>
+    >;
+    Input: ComponentType<
+      Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> &
+        RefAttributes<HTMLInputElement> & {
+          onChange?: (value: string) => void;
+        }
+    >;
+    // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
+    Select: <T>(props: SelectProps<T>) => ReactNode;
+    RuleJoiner: ComponentType<{
+      parent: LooseFilterGroup;
+      joinBetween: [
+        LooseFilterRule | LooseFilterGroup,
+        LooseFilterRule | LooseFilterGroup,
+      ];
+    }>;
+    DataInputPlaceholder: ComponentType<RefAttributes<HTMLInputElement>>;
+    FilterGroupContainer: ComponentType<{
+      filterGroup: LooseFilterGroup;
+      isRoot: boolean;
+      children?: ReactNode;
+    }>;
+  };
+
   dataInputViews: DataInputViewSpec[];
 };

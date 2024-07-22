@@ -18,7 +18,7 @@ export const FilterDataInput = ({
   onChange,
 }: FilterDataInputProps) => {
   const refCallback = () => null;
-  const Placeholder = useView("dataInputPlaceholder");
+  const Placeholder = useView("DataInputPlaceholder");
   const requiredArguments = filterSchema
     ? getParametersExceptFirst(filterSchema)
     : undefined;

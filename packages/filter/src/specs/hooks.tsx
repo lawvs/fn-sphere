@@ -2,13 +2,18 @@ import { isSameType } from "@fn-sphere/core";
 import { useContext, type ComponentType } from "react";
 import { z } from "zod";
 import { ViewContext } from "./context.js";
-import type { DataInputViewProps, ViewSpec } from "./types.js";
+import type { DataInputViewProps, uiSpec } from "./types.js";
 
-export const useView = <T extends Exclude<keyof ViewSpec, "dataInputViews">>(
+export const usePrimitives = <T extends keyof uiSpec["primitives"]>(
   view: T,
 ) => {
   const specs = useContext(ViewContext);
-  return specs[view];
+  return specs.primitives[view];
+};
+
+export const useView = <T extends keyof uiSpec["views"]>(view: T) => {
+  const specs = useContext(ViewContext);
+  return specs.views[view];
 };
 
 export const useDataInputView = (

@@ -3,8 +3,8 @@ import { Button } from "@mui/material";
 import { Fragment } from "react";
 import { FilterRule } from "./filter-rule/index.js";
 import { FilterProvider } from "./hooks/filter-provider.js";
+import { useView } from "./specs/index.js";
 import type { BasicFilterProps } from "./types.js";
-import { FilterGroupContainer, FilterRuleJoiner } from "./ui.js";
 import {
   EMPTY_ROOT_FILTER,
   defaultMapFieldName,
@@ -26,6 +26,8 @@ export const FlattenFilterBuilder = <Data,>({
   mapFilterName = defaultMapFilterName,
   onChange,
 }: FilterBuilderProps<Data>) => {
+  const RuleJoiner = useView("RuleJoiner");
+  const FilterGroupContainer = useView("FilterGroupContainer");
   const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
 
   if (!isValidFlattenRule) {
@@ -80,8 +82,8 @@ export const FlattenFilterBuilder = <Data,>({
             return (
               <Fragment key={andGroup.id}>
                 {groupIdx > 0 && (
-                  <FilterRuleJoiner
-                    operator={filterGroup.op}
+                  <RuleJoiner
+                    parent={filterGroup}
                     joinBetween={[
                       filterGroup.conditions[groupIdx - 1],
                       andGroup,
@@ -92,8 +94,8 @@ export const FlattenFilterBuilder = <Data,>({
                   {andGroup.conditions.map((rule, ruleIdx) => (
                     <Fragment key={rule.id}>
                       {ruleIdx > 0 && (
-                        <FilterRuleJoiner
-                          operator={andGroup.op}
+                        <RuleJoiner
+                          parent={andGroup}
                           joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
                         />
                       )}
