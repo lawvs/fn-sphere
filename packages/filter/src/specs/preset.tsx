@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { z } from "zod";
+import { FilterRule } from "../filter-rule/index.js";
 import { usePrimitives, useView } from "./hooks.js";
 import { primitives } from "./primitives.js";
 import type { DataInputViewSpec, SelectProps, uiSpec } from "./types.js";
@@ -225,6 +226,7 @@ export const presetSpec: uiSpec = {
     Button: ButtonView,
     Input: InputView,
     Select: SelectView,
+    FilterRule,
     RuleJoiner,
     // Use when user does not select any field
     DataInputPlaceholder,

@@ -1,6 +1,4 @@
 import { type LooseFilterRule } from "@fn-sphere/core";
-import { Delete as DeleteIcon, Error as ErrorIcon } from "@mui/icons-material";
-import { Button, IconButton } from "@mui/material";
 import { useFilterRule } from "../hooks/use-filter-rule.js";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../specs/index.js";
@@ -24,11 +22,15 @@ export const FilterRule = ({ rule }: FilterRuleProps) => {
   const { mapFieldName, mapFilterName, getRootRule, updateRootRule } =
     useRootRule();
   const SelectView = useView("Select");
+  const ButtonView = useView("Button");
 
-  console.log("FilterRule", rule.path);
   return (
     <div>
       <SelectView
+        // Note: Can't use path.join('.') here because
+        // [].join('.') will return an empty string ''
+        // but ''.split('.') will return ['']
+        // which is not same as []
         value={JSON.stringify(rule.path)}
         options={filterableFields.map((field) => ({
           value: JSON.stringify(field.path),
@@ -67,17 +69,15 @@ export const FilterRule = ({ rule }: FilterRuleProps) => {
         onChange={updateRule}
       />
 
-      {isValid ? null : <ErrorIcon />}
-      <Button
-        size="small"
+      {isValid ? null : "!"}
+      <ButtonView
         onClick={() => {
           appendRule();
         }}
       >
         And
-      </Button>
-      <Button
-        size="small"
+      </ButtonView>
+      <ButtonView
         onClick={() => {
           const rootRule = getRootRule();
           rootRule.conditions.push(createEmptyFilterGroup("and"));
@@ -85,14 +85,10 @@ export const FilterRule = ({ rule }: FilterRuleProps) => {
         }}
       >
         Or
-      </Button>
-      <IconButton
-        aria-label="delete"
-        size="small"
-        onClick={() => removeRule(true)}
-      >
-        <DeleteIcon />
-      </IconButton>
+      </ButtonView>
+      <ButtonView aria-label="delete" onClick={() => removeRule(true)}>
+        Delete
+      </ButtonView>
     </div>
   );
 };

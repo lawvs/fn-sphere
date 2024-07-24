@@ -1,7 +1,6 @@
 import { countNumberOfRules, type LooseFilterGroup } from "@fn-sphere/core";
 import { Button } from "@mui/material";
 import { Fragment } from "react";
-import { FilterRule } from "./filter-rule/index.js";
 import { FilterProvider } from "./hooks/filter-provider.js";
 import { useView } from "./specs/index.js";
 import type { BasicFilterProps } from "./types.js";
@@ -28,6 +27,7 @@ export const FlattenFilterBuilder = <Data,>({
 }: FilterBuilderProps<Data>) => {
   const RuleJoiner = useView("RuleJoiner");
   const FilterGroupContainer = useView("FilterGroupContainer");
+  const FilterRule = useView("FilterRule");
   const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
 
   if (!isValidFlattenRule) {
