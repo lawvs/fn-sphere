@@ -91,6 +91,11 @@ export const useFilterRule = (rule: LooseFilterRule) => {
     });
   };
 
+  /**
+   * If removeEmptyGroup is true, remove the rule and remove empty group recursively
+   *
+   * Note: Root group should not be removed
+   */
   const removeRule = (removeEmptyGroup = false) => {
     if (removeEmptyGroup) {
       let targetRuleId = rule.id;

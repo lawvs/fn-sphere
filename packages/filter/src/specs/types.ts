@@ -9,9 +9,6 @@ import type {
 } from "react";
 import type { ZodTuple, z } from "zod";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// type RefCallBack = (instance: any) => void;
-
 export type DataInputViewProps = {
   rule: LooseFilterRule;
   inputSchema: ZodTuple;
