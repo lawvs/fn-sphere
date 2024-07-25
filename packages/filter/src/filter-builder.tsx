@@ -17,7 +17,11 @@ export const FilterBuilder = <Data,>({
 }: {
   rule: LooseFilterGroup;
   onRuleChange?: (rule: LooseFilterGroup) => void;
-  uiSpec: UiSpec;
+  uiSpec: {
+    dataInputViews?: UiSpec["dataInputViews"];
+    views?: Partial<UiSpec["views"]>;
+    primitives?: Partial<UiSpec["primitives"]>;
+  };
 } & BasicFilterProps<Data>) => {
   const FilterGroup = useView("FilterGroup");
 
@@ -28,7 +32,7 @@ export const FilterBuilder = <Data,>({
     ],
     views: { ...presetUiSpec.views, ...uiSpec.views },
     primitives: { ...presetUiSpec.primitives, ...uiSpec.primitives },
-  };
+  } satisfies UiSpec;
 
   return (
     <FilterUiProvider spec={normalizedSchema}>
