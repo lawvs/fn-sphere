@@ -12,7 +12,8 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "test": "vitest",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "release": "pnpm run build && changeset publish"
   },
   "prettier": {},
   "devDependencies": {
