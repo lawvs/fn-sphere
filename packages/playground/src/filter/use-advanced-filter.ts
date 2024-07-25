@@ -4,8 +4,8 @@ import {
   defaultOptions,
   openFlattenFilterDialog,
   type CreateAdvancedFilterProps,
-} from "../create-advanced-filter.js";
-import { defaultStorage } from "../utils.js";
+} from "./create-advanced-filter.js";
+import { defaultStorage } from "./default-storage.js";
 
 export type UseAdvancedFilterProps<Data = unknown> =
   CreateAdvancedFilterProps<Data>;

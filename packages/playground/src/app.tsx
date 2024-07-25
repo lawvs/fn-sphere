@@ -1,9 +1,9 @@
 import { countNumberOfRules } from "@fn-sphere/core";
-import { useAdvancedFilter } from "@fn-sphere/filter";
 import { useState } from "react";
 import { FilterIcon } from "tdesign-icons-react";
 import { Button } from "tdesign-react";
 import "./app.css";
+import { useAdvancedFilter } from "./filter/use-advanced-filter";
 import { useZodUI } from "./hooks/misc";
 import { dataFilters, genSampleData, presetSchema } from "./presets";
 import { DataTable } from "./table";
@@ -17,7 +17,11 @@ export const App = () => {
     schema: presetSchema,
     filterList: dataFilters,
     deepLimit: Infinity,
+    dialogProps: {
+      width: "600px",
+    },
   });
+  console.log("Filter rule", rule);
 
   const filteredData = tableData.filter(predicate);
 

@@ -6,7 +6,7 @@ import {
 } from "@fn-sphere/core";
 import { useContext } from "react";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
-import { createEmptyFilterGroup, createEmptyRule } from "../utils.js";
+import { createEmptyFilterGroup, createEmptyFilterRule } from "../utils.js";
 import { FilterBuilderContext } from "./filter-provider.js";
 
 export const useFilterRule = (rule: LooseFilterRule) => {
@@ -55,7 +55,7 @@ export const useFilterRule = (rule: LooseFilterRule) => {
     });
   };
 
-  const appendRule = (newRule: LooseFilterRule = createEmptyRule()) => {
+  const appendRule = (newRule: LooseFilterRule = createEmptyFilterRule()) => {
     onRuleChange({
       ...filterMap,
       [parentId]: {

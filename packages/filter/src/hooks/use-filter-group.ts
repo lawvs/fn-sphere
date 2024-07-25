@@ -1,7 +1,7 @@
 import { type LooseFilterGroup, type LooseFilterRule } from "@fn-sphere/core";
 import { useContext } from "react";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
-import { createEmptyFilterGroup, createEmptyRule } from "../utils.js";
+import { createEmptyFilterGroup, createEmptyFilterRule } from "../utils.js";
 import { FilterBuilderContext } from "./filter-provider.js";
 
 export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
@@ -44,7 +44,7 @@ export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
   };
 
   const appendChildRule = (
-    newRule: LooseFilterRule = createEmptyRule(),
+    newRule: LooseFilterRule = createEmptyFilterRule(),
     index = Infinity,
   ) => {
     onRuleChange({

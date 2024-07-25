@@ -5,7 +5,7 @@ import {
 } from "@fn-sphere/core";
 import type { BasicFilterProps, FlattenFilterGroup } from "./types.js";
 
-export const createEmptyRule = () =>
+export const createEmptyFilterRule = () =>
   ({
     id: genFilterId(),
     type: "Filter",
@@ -17,32 +17,8 @@ export const createEmptyFilterGroup = (op: LooseFilterGroup["op"]) =>
     id: genFilterId(),
     type: "FilterGroup",
     op,
-    conditions: [createEmptyRule()],
+    conditions: [createEmptyFilterRule()],
   }) satisfies LooseFilterGroup;
-
-type Storage<Value> = {
-  getItem: (key: string) => Value | Promise<Value>;
-  setItem: (key: string, newValue: Value) => void | Promise<void>;
-};
-
-/**
- * Ported from https://github.com/pmndrs/jotai/pull/394
- *
- * Licensed under MIT
- */
-export const defaultStorage: Storage<LooseFilterGroup> = {
-  getItem: (key) => {
-    const storedValue = localStorage.getItem(key);
-    if (storedValue === null) {
-      throw new Error("no value stored");
-    }
-    // TODO Validating stored values
-    return JSON.parse(storedValue);
-  },
-  setItem: (key, newValue) => {
-    localStorage.setItem(key, JSON.stringify(newValue));
-  },
-};
 
 export const isFlattenFilterGroup = (
   filterGroup: LooseFilterGroup,

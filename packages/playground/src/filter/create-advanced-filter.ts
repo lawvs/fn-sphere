@@ -3,20 +3,20 @@ import {
   presetFilter,
   type LooseFilterGroup,
 } from "@fn-sphere/core";
-import { createElement } from "react";
-import { createRoot } from "react-dom/client";
-import { z } from "zod";
-import {
-  FlattenFilterDialog,
-  type FlattenFilterDialogProps,
-} from "./flatten-filter-dialog.js";
-import type { BasicFilterProps } from "./types.js";
 import {
   createEmptyFilterGroup,
   defaultMapFieldName,
   defaultMapFilterName,
-  defaultStorage,
-} from "./utils.js";
+  type BasicFilterProps,
+} from "@fn-sphere/filter";
+import { createElement } from "react";
+import { createRoot } from "react-dom/client";
+import { z } from "zod";
+import { defaultStorage } from "./default-storage.js";
+import {
+  FlattenFilterDialog,
+  type FlattenFilterDialogProps,
+} from "./flatten-filter-dialog.js";
 
 type OpenFilterProps<Data = unknown> = {
   filterBuilder: BasicFilterProps<Data> & {
@@ -86,13 +86,13 @@ export const openFlattenFilterDialog = async <Data>(
       filterBuilder: options.filterBuilder,
       dialogProps: {
         ...options.dialogProps,
-        onClose: (e, reason) => {
+        onClose: (ctx) => {
           root.unmount();
           if (isFallbackContainer) {
             container.remove();
           }
-          resolvers.reject(e);
-          options.dialogProps?.onClose?.(e, reason);
+          resolvers.reject(ctx);
+          options.dialogProps?.onClose?.(ctx);
         },
       },
       onConfirm: (value) => {

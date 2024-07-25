@@ -1,10 +1,13 @@
-export { createTheme } from "@mui/material/styles";
-export { createAdvancedFilter } from "./create-advanced-filter.js";
 export { FlattenFilterBuilder } from "./flatten-filter-builder.js";
-export { FlattenFilterDialog } from "./flatten-filter-dialog.js";
-export { useAdvancedFilter } from "./hooks/use-advanced-filter.js";
+
+export { useFilterGroup } from "./hooks/use-filter-group.js";
+export { useFilterRule } from "./hooks/use-filter-rule.js";
 
 export {
-  ThemeProvider as FilterThemeProvider,
-  type Theme as FilterTheme,
-} from "@mui/material/styles";
+  createEmptyFilterGroup,
+  createEmptyFilterRule,
+  defaultMapFieldName,
+  defaultMapFilterName,
+} from "./utils.js";
+
+export type { BasicFilterProps } from "./types.js";

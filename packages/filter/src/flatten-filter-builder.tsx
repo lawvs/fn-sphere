@@ -1,5 +1,4 @@
 import { countNumberOfRules, type LooseFilterGroup } from "@fn-sphere/core";
-import { Button } from "@mui/material";
 import { Fragment } from "react";
 import { FilterProvider } from "./hooks/filter-provider.js";
 import { useView } from "./specs/index.js";
@@ -28,21 +27,20 @@ export const FlattenFilterBuilder = <Data,>({
   const RuleJoiner = useView("RuleJoiner");
   const FilterGroupContainer = useView("FilterGroupContainer");
   const FilterRule = useView("FilterRule");
+  const ButtonView = useView("Button");
   const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
 
   if (!isValidFlattenRule) {
     return (
       <>
         <div>Invalid Rule</div>
-        <Button
-          variant="outlined"
-          color="error"
+        <ButtonView
           onClick={() => {
             onChange?.(createEmptyFilterGroup("or"));
           }}
         >
           Reset Filter
-        </Button>
+        </ButtonView>
       </>
     );
   }
@@ -51,14 +49,13 @@ export const FlattenFilterBuilder = <Data,>({
   if (count <= 0) {
     return (
       <div className="filter-builder-container">
-        <Button
-          variant="contained"
+        <ButtonView
           onClick={() => {
             onChange?.(createEmptyFilterGroup("or"));
           }}
         >
           Add Filter
-        </Button>
+        </ButtonView>
       </div>
     );
   }

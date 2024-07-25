@@ -59,6 +59,7 @@ export type uiSpec = {
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
     Select: <T>(props: SelectProps<T>) => ReactNode;
     FilterRule: ComponentType<{ rule: LooseFilterRule }>;
+    FilterGroup: ComponentType<{ rule: LooseFilterGroup }>;
     RuleJoiner: ComponentType<{
       parent: LooseFilterGroup;
       joinBetween: [
