@@ -12,3 +12,5 @@ export {
 } from "./utils.js";
 
 export type { BasicFilterProps } from "./types.js";
+
+export * from "./specs/index.js";

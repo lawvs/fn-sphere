@@ -3,7 +3,11 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
-  "linked": [],
+  "linked": [
+    [
+      "@fn-sphere/*"
+    ]
+  ],
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

@@ -31,7 +31,7 @@ export type SelectProps<T> = Omit<
   onChange?: (value: T) => void;
 };
 
-export type uiSpec = {
+export type UiSpec = {
   primitives: {
     button: ComponentType<
       ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>

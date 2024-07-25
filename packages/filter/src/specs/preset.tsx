@@ -12,7 +12,7 @@ import { FilterGroup } from "../filter-group.js";
 import { FilterRule } from "../filter-rule/index.js";
 import { usePrimitives, useView } from "./hooks.js";
 import { primitives } from "./primitives.js";
-import type { DataInputViewSpec, SelectProps, uiSpec } from "./types.js";
+import type { DataInputViewSpec, SelectProps, UiSpec } from "./types.js";
 
 export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
@@ -220,7 +220,7 @@ const FilterGroupContainer = ({
   );
 };
 
-export const presetSpec: uiSpec = {
+export const presetUiSpec: UiSpec = {
   // primitive
   primitives,
   views: {
@@ -236,4 +236,4 @@ export const presetSpec: uiSpec = {
   },
 
   dataInputViews: presetDataInputSpecs,
-} satisfies uiSpec;
+} satisfies UiSpec;

@@ -1,15 +1,15 @@
 import { createContext, type ReactNode } from "react";
-import { presetSpec } from "./preset.js";
-import type { uiSpec } from "./types.js";
+import { presetUiSpec } from "./preset.js";
+import type { UiSpec } from "./types.js";
 
-export const ViewContext = createContext<uiSpec>(presetSpec);
+export const ViewContext = createContext<UiSpec>(presetUiSpec);
 
-export const FilterViewProvider = ({
-  specs,
+export const FilterUiProvider = ({
+  spec,
   children,
 }: {
-  specs: uiSpec;
+  spec: UiSpec;
   children: ReactNode;
 }) => {
-  return <ViewContext.Provider value={specs}>{children}</ViewContext.Provider>;
+  return <ViewContext.Provider value={spec}>{children}</ViewContext.Provider>;
 };
