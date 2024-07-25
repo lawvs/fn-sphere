@@ -1,3 +1,4 @@
+export { FilterBuilder } from "./filter-builder.js";
 export { FlattenFilterBuilder } from "./flatten-filter-builder.js";
 
 export { useFilterGroup } from "./hooks/use-filter-group.js";

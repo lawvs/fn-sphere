@@ -41,15 +41,14 @@ jobs:
         run: pnpm run lint
 
       - name: Test
-        run: pnpm run test
-        # run: pnpm run test --coverage
+        run: pnpm run test --coverage
 
-      # - name: Upload test coverage
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: coverage
-      #     path: ./coverage
-      #     if-no-files-found: ignore
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: ./coverage
+          if-no-files-found: ignore
 
       - name: Build
         run: pnpm run build

@@ -11,10 +11,13 @@
     "lint": "pnpm --recursive run lint",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "test": "vitest"
+    "test": "vitest",
+    "changeset": "changeset"
   },
   "prettier": {},
   "devDependencies": {
+    "@changesets/cli": "^2.27.7",
+    "@vitest/coverage-v8": "^2.0.4",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
     "vitest": "^2.0.4"
