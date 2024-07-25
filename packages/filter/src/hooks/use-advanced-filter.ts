@@ -5,7 +5,7 @@ import {
   openFlattenFilterDialog,
   type CreateAdvancedFilterProps,
 } from "../create-advanced-filter.js";
-import { EMPTY_ROOT_FILTER, defaultStorage } from "../utils.js";
+import { defaultStorage } from "../utils.js";
 
 export type UseAdvancedFilterProps<Data = unknown> =
   CreateAdvancedFilterProps<Data>;
@@ -34,7 +34,7 @@ export const useAdvancedFilter = <Data>(
   };
   const [loading, setLoading] = useState(true);
   const [rule, setRule] = useState<LooseFilterGroup>(() => {
-    const defaultState = options.defaultRule ?? EMPTY_ROOT_FILTER;
+    const defaultState = options.defaultRule;
     const storageKey = options.storageKey;
     if (!storageKey) return defaultState;
     const abortController = new AbortController();

@@ -5,7 +5,7 @@ import { FilterProvider } from "./hooks/filter-provider.js";
 import { useView } from "./specs/index.js";
 import type { BasicFilterProps } from "./types.js";
 import {
-  EMPTY_ROOT_FILTER,
+  createEmptyFilterGroup,
   defaultMapFieldName,
   defaultMapFilterName,
   isFlattenFilterGroup,
@@ -19,7 +19,7 @@ type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
 export const FlattenFilterBuilder = <Data,>({
   schema,
   filterList,
-  rule: filterGroup = EMPTY_ROOT_FILTER,
+  rule: filterGroup = createEmptyFilterGroup("or"),
   deepLimit = 1,
   mapFieldName = defaultMapFieldName,
   mapFilterName = defaultMapFilterName,
@@ -38,7 +38,7 @@ export const FlattenFilterBuilder = <Data,>({
           variant="outlined"
           color="error"
           onClick={() => {
-            onChange?.(EMPTY_ROOT_FILTER);
+            onChange?.(createEmptyFilterGroup("or"));
           }}
         >
           Reset Filter
@@ -54,7 +54,7 @@ export const FlattenFilterBuilder = <Data,>({
         <Button
           variant="contained"
           onClick={() => {
-            onChange?.(EMPTY_ROOT_FILTER);
+            onChange?.(createEmptyFilterGroup("or"));
           }}
         >
           Add Filter

@@ -20,23 +20,6 @@ export const createEmptyFilterGroup = (op: LooseFilterGroup["op"]) =>
     conditions: [createEmptyRule()],
   }) satisfies LooseFilterGroup;
 
-/**
- * @deprecated The id should be generated every time when creating a new filter group.
- */
-export const EMPTY_ROOT_FILTER: LooseFilterGroup = {
-  id: genFilterId(),
-  type: "FilterGroup",
-  op: "or",
-  conditions: [
-    {
-      id: genFilterId(),
-      type: "FilterGroup",
-      op: "and",
-      conditions: [createEmptyRule()],
-    },
-  ],
-} satisfies FlattenFilterGroup;
-
 type Storage<Value> = {
   getItem: (key: string) => Value | Promise<Value>;
   setItem: (key: string, newValue: Value) => void | Promise<void>;

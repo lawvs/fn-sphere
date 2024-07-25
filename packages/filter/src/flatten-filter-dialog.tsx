@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import { FlattenFilterBuilder } from "./flatten-filter-builder.js";
 import type { BasicFilterProps } from "./types.js";
-import { EMPTY_ROOT_FILTER } from "./utils.js";
+import { createEmptyFilterGroup } from "./utils.js";
 
 type FilterValue<Data> = {
   rule: LooseFilterGroup;
@@ -59,7 +59,7 @@ export const FlattenFilterDialog = <Data,>({
           rule={controlled ? filterBuilder.rule : filterGroup}
           onChange={(newRule) => {
             onRuleChange?.({
-              rule: newRule ?? EMPTY_ROOT_FILTER,
+              rule: newRule,
               predicate: createFilterPredicate({
                 schema: filterBuilder.schema,
                 filterList: filterBuilder.filterList,
@@ -77,7 +77,7 @@ export const FlattenFilterDialog = <Data,>({
         <Button
           onClick={() => {
             onConfirm?.({
-              rule: filterGroup ?? EMPTY_ROOT_FILTER,
+              rule: filterGroup ?? createEmptyFilterGroup("or"),
               predicate: createFilterPredicate({
                 schema: filterBuilder.schema,
                 filterList: filterBuilder.filterList,

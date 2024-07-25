@@ -12,7 +12,7 @@ import {
 } from "./flatten-filter-dialog.js";
 import type { BasicFilterProps } from "./types.js";
 import {
-  EMPTY_ROOT_FILTER,
+  createEmptyFilterGroup,
   defaultMapFieldName,
   defaultMapFilterName,
   defaultStorage,
@@ -116,7 +116,7 @@ export const defaultOptions = {
   storageKey: null,
   container: null,
   dialogProps: {},
-  defaultRule: EMPTY_ROOT_FILTER,
+  defaultRule: createEmptyFilterGroup("or"),
 } as const satisfies Required<CreateAdvancedFilterProps>;
 
 /**
