@@ -1,5 +1,11 @@
 # @fn-sphere/filter
 
+## 0.1.1
+
+### Patch Changes
+
+- d7460ba: export UiSpec
+
 ## 0.1.0
 
 ### Minor Changes
