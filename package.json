@@ -11,13 +11,13 @@
     "lint": "pnpm --recursive run lint",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "test": "pnpm --recursive run test"
+    "test": "vitest"
   },
   "prettier": {},
   "devDependencies": {
-    "prettier": "^3.2.5",
-    "typescript": "^5.5.3",
-    "vitest": "^1.5.0"
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.4"
   },
   "packageManager": "pnpm@9.0.6",
   "engines": {
