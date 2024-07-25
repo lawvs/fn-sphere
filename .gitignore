@@ -9,6 +9,7 @@ node_modules
 *.tgz
 
 # code coverage
+/coverage
 /.nyc_output
 /.coverage
 
@@ -23,68 +24,3 @@ next-env.d.ts
 
 # Cache
 .eslintcache
-coverage/base.css
-coverage/block-navigation.js
-coverage/clover.xml
-coverage/coverage-final.json
-coverage/favicon.png
-coverage/index.html
-coverage/prettify.css
-coverage/prettify.js
-coverage/sort-arrow-sprite.png
-coverage/sorter.js
-coverage/core/src/box.ts.html
-coverage/core/src/filter.ts.html
-coverage/core/src/fn-sphere.ts.html
-coverage/core/src/index.html
-coverage/core/src/index.ts.html
-coverage/core/src/presets.ts.html
-coverage/core/src/sorter.ts.html
-coverage/core/src/types.ts.html
-coverage/core/src/utils.ts.html
-coverage/core/src/filter/field.ts.html
-coverage/core/src/filter/index.html
-coverage/core/src/filter/index.ts.html
-coverage/core/src/filter/predicate.ts.html
-coverage/core/src/filter/pure.ts.html
-coverage/core/src/filter/sphere.ts.html
-coverage/core/src/filter/types.ts.html
-coverage/core/src/filter/utils.ts.html
-coverage/core/src/filter/validation.ts.html
-coverage/filter/src/filter-builder.tsx.html
-coverage/filter/src/filter-group.tsx.html
-coverage/filter/src/filter-map.ts.html
-coverage/filter/src/flatten-filter-builder.tsx.html
-coverage/filter/src/index.html
-coverage/filter/src/index.ts.html
-coverage/filter/src/types.ts.html
-coverage/filter/src/utils.ts.html
-coverage/filter/src/filter-rule/filter-data-input.tsx.html
-coverage/filter/src/filter-rule/index.html
-coverage/filter/src/filter-rule/index.tsx.html
-coverage/filter/src/hooks/filter-provider.tsx.html
-coverage/filter/src/hooks/index.html
-coverage/filter/src/hooks/use-filter-group.ts.html
-coverage/filter/src/hooks/use-filter-rule.ts.html
-coverage/filter/src/hooks/use-root-rule.ts.html
-coverage/filter/src/specs/context.tsx.html
-coverage/filter/src/specs/hooks.tsx.html
-coverage/filter/src/specs/index.html
-coverage/filter/src/specs/index.ts.html
-coverage/filter/src/specs/preset.tsx.html
-coverage/filter/src/specs/primitives.tsx.html
-coverage/filter/src/specs/types.ts.html
-coverage/playground/src/app.tsx.html
-coverage/playground/src/columns.tsx.html
-coverage/playground/src/index.html
-coverage/playground/src/main.tsx.html
-coverage/playground/src/presets.ts.html
-coverage/playground/src/table.tsx.html
-coverage/playground/src/utils.ts.html
-coverage/playground/src/filter/create-advanced-filter.ts.html
-coverage/playground/src/filter/default-storage.ts.html
-coverage/playground/src/filter/flatten-filter-dialog.tsx.html
-coverage/playground/src/filter/index.html
-coverage/playground/src/filter/use-advanced-filter.ts.html
-coverage/playground/src/hooks/index.html
-coverage/playground/src/hooks/misc.ts.html
