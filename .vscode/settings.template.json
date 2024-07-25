@@ -6,5 +6,8 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"
   },
-  "testing.automaticallyOpenPeekView": "never"
+  "testing.automaticallyOpenPeekView": "never",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
