@@ -89,11 +89,47 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
               ...rule,
               arguments: [value],
             });
-            return;
           }}
         />
       );
     }),
+  },
+  {
+    name: "literal union",
+    match: (schema) => {
+      if (schema.items.length === 0 || schema.items.length > 1) {
+        return false;
+      }
+      const [item] = schema.items;
+      const isUnion = item instanceof z.ZodUnion;
+      if (!isUnion) {
+        return false;
+      }
+      return item.options.every(
+        (option: unknown) => option instanceof z.ZodLiteral,
+      );
+    },
+    view: ({ inputSchema, rule, onChange }) => {
+      const SelectView = useView("Select");
+      const unionSchema = inputSchema.items[0] as z.ZodUnion<any>;
+      console.log(unionSchema, unionSchema.options);
+      const options = unionSchema.options.map((item: z.ZodLiteral<string>) => ({
+        label: item.value,
+        value: item.value,
+      }));
+      return (
+        <SelectView
+          options={options}
+          value={rule.arguments?.[0] as string}
+          onChange={(value) => {
+            onChange({
+              ...rule,
+              arguments: [value],
+            });
+          }}
+        />
+      );
+    },
   },
 ] satisfies DataInputViewSpec[];
 

@@ -17,7 +17,6 @@ export const FilterDataInput = ({
   filterSchema,
   onChange,
 }: FilterDataInputProps) => {
-  const refCallback = () => null;
   const Placeholder = useView("DataInputPlaceholder");
   const requiredArguments = filterSchema
     ? getParametersExceptFirst(filterSchema)
@@ -27,12 +26,11 @@ export const FilterDataInput = ({
   );
 
   if (!requiredArguments) {
-    return <Placeholder ref={refCallback} />;
+    return <Placeholder />;
   }
 
   return (
     <DataInputView
-      ref={refCallback}
       rule={rule}
       inputSchema={requiredArguments}
       onChange={onChange}
