@@ -27,23 +27,20 @@ export const FilterRule = ({ rule }: FilterRuleProps) => {
   return (
     <div>
       <SelectView
-        // Note: Can't use path.join('.') here because
-        // [].join('.') will return an empty string ''
-        // but ''.split('.') will return ['']
-        // which is not same as []
-        value={JSON.stringify(rule.path)}
+        value={selectedField}
         options={filterableFields.map((field) => ({
-          value: JSON.stringify(field.path),
+          value: field,
           label: mapFieldName(field),
         }))}
-        onChange={(pathStr) => {
+        onChange={(newField) => {
           updateRule({
             ...rule,
             // Clear filter name when field changed
             name: undefined,
+            // name: newField.filterList[0].name,
             // Reset arguments when field changed
             arguments: [],
-            path: JSON.parse(pathStr),
+            path: newField.path,
           });
         }}
       />

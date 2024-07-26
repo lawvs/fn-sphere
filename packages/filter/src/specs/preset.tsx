@@ -139,7 +139,7 @@ const SelectView = <T,>({
   );
   return (
     <SelectPrimitive value={selectedIdx} onChange={handleChange} {...props}>
-      <OptionPrimitive key={-1} value={-1} hidden disabled></OptionPrimitive>
+      <OptionPrimitive key={-1} value={-1} disabled></OptionPrimitive>
       {options.map(({ label }, index) => (
         <OptionPrimitive key={label} value={index}>
           {label}
