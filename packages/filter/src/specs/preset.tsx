@@ -109,18 +109,21 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         (option: unknown) => option instanceof z.ZodLiteral,
       );
     },
-    view: ({ inputSchema, rule, onChange }) => {
+    view: function LiteralSelect({ inputSchema, rule, onChange }) {
       const SelectView = useView("Select");
-      const unionSchema = inputSchema.items[0] as z.ZodUnion<any>;
-      console.log(unionSchema, unionSchema.options);
-      const options = unionSchema.options.map((item: z.ZodLiteral<string>) => ({
-        label: item.value,
-        value: item.value,
-      }));
+      const unionSchema = inputSchema.items[0] as z.ZodUnion<
+        [z.ZodLiteral<unknown>]
+      >;
+      const options = unionSchema.options.map(
+        (item: z.ZodLiteral<unknown>) => ({
+          label: item.description ?? String(item.value),
+          value: item.value,
+        }),
+      );
       return (
         <SelectView
           options={options}
-          value={rule.arguments?.[0] as string}
+          value={rule.arguments?.[0]}
           onChange={(value) => {
             onChange({
               ...rule,
