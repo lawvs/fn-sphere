@@ -24,6 +24,9 @@ export type DataInputViewSpec = {
   view: ComponentType<DataInputViewProps>;
 };
 
+/**
+ * @internal
+ */
 export type SelectProps<T> = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   "value" | "onChange" | "children"
