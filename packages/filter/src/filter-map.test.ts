@@ -66,7 +66,7 @@ describe("toFilterMap/fromFilterMap", () => {
         },
         "3": {
           "data": {
-            "arguments": [],
+            "args": [],
             "id": "3",
             "type": "Filter",
           },
