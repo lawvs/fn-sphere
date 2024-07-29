@@ -2,12 +2,7 @@ import { z, type ZodType } from "zod";
 import { isSameType } from "zod-compare";
 import type { GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
-import type {
-  FilterId,
-  FilterPath,
-  LooseFilterGroup,
-  LooseFilterRule,
-} from "./types.js";
+import type { FilterId, FilterPath, FilterRule } from "./types.js";
 
 export const instantiateGenericFn = (
   schema: ZodType,
@@ -86,9 +81,7 @@ export const getParametersExceptFirst = (
   return stillNeed;
 };
 
-export const countNumberOfRules = (
-  rule: LooseFilterGroup | LooseFilterRule,
-): number => {
+export const countNumberOfRules = (rule: FilterRule): number => {
   if (rule.type === "Filter") {
     return 1;
   }

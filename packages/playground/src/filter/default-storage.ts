@@ -1,4 +1,4 @@
-import type { LooseFilterGroup } from "@fn-sphere/core";
+import type { FilterGroup } from "@fn-sphere/core";
 
 type Storage<Value> = {
   getItem: (key: string) => Value | Promise<Value>;
@@ -10,7 +10,7 @@ type Storage<Value> = {
  * Licensed under MIT
  */
 
-export const defaultStorage: Storage<LooseFilterGroup> = {
+export const defaultStorage: Storage<FilterGroup> = {
   getItem: (key) => {
     const storedValue = localStorage.getItem(key);
     if (storedValue === null) {

@@ -1,5 +1,5 @@
-import { FilterGroup } from "../../filter-group.js";
-import { FilterRule } from "../../filter-rule/index.js";
+import { FilterGroupView } from "../../filter-group.js";
+import { SingleFilterView } from "../../filter-rule/index.js";
 import { presetDataInputSpecs } from "../index.js";
 import type { UiSpec } from "../types.js";
 import { primitives } from "./primitives.js";
@@ -19,8 +19,8 @@ export const presetUiSpec: UiSpec = {
     Button: ButtonView,
     Input: InputView,
     Select: SelectView,
-    FilterRule,
-    FilterGroup,
+    FilterRule: SingleFilterView,
+    FilterGroup: FilterGroupView,
     RuleJoiner,
     // Use when user does not select any field
     DataInputPlaceholder,

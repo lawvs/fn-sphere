@@ -1,7 +1,7 @@
 import {
   genFilterId,
-  type LooseFilterGroup,
-  type LooseFilterRule,
+  type FilterGroup,
+  type SingleFilter,
 } from "@fn-sphere/core";
 import type { BasicFilterProps, FlattenFilterGroup } from "./types.js";
 
@@ -9,19 +9,19 @@ export const createEmptyFilterRule = () =>
   ({
     id: genFilterId(),
     type: "Filter",
-    arguments: [],
-  }) satisfies LooseFilterRule;
+    args: [],
+  }) satisfies SingleFilter;
 
-export const createEmptyFilterGroup = (op: LooseFilterGroup["op"]) =>
+export const createEmptyFilterGroup = (op: FilterGroup["op"]) =>
   ({
     id: genFilterId(),
     type: "FilterGroup",
     op,
     conditions: [createEmptyFilterRule()],
-  }) satisfies LooseFilterGroup;
+  }) satisfies FilterGroup;
 
 export const isFlattenFilterGroup = (
-  filterGroup: LooseFilterGroup,
+  filterGroup: FilterGroup,
 ): filterGroup is FlattenFilterGroup => {
   if (filterGroup.op === "and") {
     return false;

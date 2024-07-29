@@ -1,9 +1,9 @@
 export { FilterBuilder } from "./filter-builder.js";
 export { FlattenFilterBuilder } from "./flatten-filter-builder.js";
-
 export { useFilterGroup } from "./hooks/use-filter-group.js";
 export { useFilterRule } from "./hooks/use-filter-rule.js";
-
+export * from "./specs/index.js";
+export type { BasicFilterProps } from "./types.js";
 export {
   createEmptyFilterGroup,
   createEmptyFilterRule,
@@ -11,6 +11,4 @@ export {
   defaultMapFilterName,
 } from "./utils.js";
 
-export type { BasicFilterProps } from "./types.js";
-
-export * from "./specs/index.js";
+export type { FilterGroup, FilterRule, SingleFilter } from "@fn-sphere/core";

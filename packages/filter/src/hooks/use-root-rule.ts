@@ -1,4 +1,4 @@
-import { type LooseFilterGroup } from "@fn-sphere/core";
+import { type FilterGroup } from "@fn-sphere/core";
 import { useContext } from "react";
 import { fromFilterMap, toFilterMap } from "../filter-map.js";
 import { FilterBuilderContext } from "./filter-provider.js";
@@ -17,7 +17,7 @@ export const useRootRule = () => {
     return fromFilterMap(filterMap);
   };
 
-  const updateRootRule = (rootGroup: LooseFilterGroup) => {
+  const updateRootRule = (rootGroup: FilterGroup) => {
     onRuleChange(toFilterMap(rootGroup));
   };
 

@@ -1,4 +1,4 @@
-import type { LooseFilterGroup } from "@fn-sphere/core";
+import type { FilterGroup } from "@fn-sphere/core";
 import { FilterProvider } from "./hooks/filter-provider.js";
 import { useView } from "./specs/hooks.js";
 import { FilterUiProvider, presetUiSpec } from "./specs/index.js";
@@ -15,8 +15,8 @@ export const FilterBuilder = <Data,>({
   deepLimit,
   uiSpec,
 }: {
-  rule: LooseFilterGroup;
-  onRuleChange?: (rule: LooseFilterGroup) => void;
+  rule: FilterGroup;
+  onRuleChange?: (rule: FilterGroup) => void;
   uiSpec: {
     dataInputViews?: UiSpec["dataInputViews"];
     views?: Partial<UiSpec["views"]>;

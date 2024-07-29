@@ -24,11 +24,11 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         <InputView
           ref={ref}
           type="text"
-          value={(rule.arguments?.[0] as string) ?? ""}
+          value={(rule.args?.[0] as string) ?? ""}
           onChange={(value) => {
             onChange({
               ...rule,
-              arguments: [value],
+              args: [value],
             });
             return;
           }}
@@ -48,11 +48,11 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         <InputView
           ref={ref}
           type="number"
-          value={(rule.arguments?.[0] as string) ?? ""}
+          value={(rule.args?.[0] as string) ?? ""}
           onChange={(value) => {
             onChange({
               ...rule,
-              arguments: [value],
+              args: [value],
             });
             return;
           }}
@@ -72,11 +72,11 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         <InputView
           ref={ref}
           type="date"
-          value={(rule.arguments?.[0] as string) ?? ""}
+          value={(rule.args?.[0] as string) ?? ""}
           onChange={(value) => {
             onChange({
               ...rule,
-              arguments: [value],
+              args: [value],
             });
           }}
         />
@@ -112,11 +112,11 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       return (
         <SelectView
           options={options}
-          value={rule.arguments?.[0]}
+          value={rule.args?.[0]}
           onChange={(value) => {
             onChange({
               ...rule,
-              arguments: [value],
+              args: [value],
             });
           }}
         />

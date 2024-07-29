@@ -1,25 +1,11 @@
-import type { ZodTuple, ZodType, ZodTypeAny } from "zod";
+import type { ZodType } from "zod";
 import type { StandardFnSchema } from "../types.js";
 
 export type FilterPath = (string | number)[];
 
-export type FilterRuleWrapper<T = unknown> = {
-  _state: FilterRule;
-  type: "Filter";
-  schema: StandardFnSchema;
-  /**
-   * Field path
-   */
-  path: FilterPath;
-  requiredParameters: ZodTuple;
-  setInvert: (invert: boolean) => void;
-  isInvert: () => boolean;
-  getPlaceholderArguments: () => unknown[];
-  ready: () => boolean;
-  input: (...args: unknown[]) => void;
-  reset: () => void;
-  turnToGroup: (op: "and" | "or") => FilterGroup<T>;
-  duplicate: () => FilterRuleWrapper<T>;
+export type FilterId = string & {
+  // Type differentiator only.
+  __filterId: true;
 };
 
 export type FilterField = {
@@ -31,39 +17,7 @@ export type FilterField = {
   filterList: StandardFnSchema[];
 };
 
-/**
- * @deprecated Use {@link FilterField}
- */
-export type FilterableField<T = unknown> = {
-  /**
-   * If it's a empty array, it means the root object
-   */
-  path: FilterPath;
-  fieldSchema: ZodTypeAny;
-  filterList: FilterRuleWrapper<T>[];
-};
-
-export type FilterId = string & { __filterId: true };
-
-/**
- * @deprecated
- */
-export type FilterGroup<T = unknown> = {
-  /**
-   * Unique id, used for tracking changes or resorting
-   */
-  id: FilterId;
-  type: "FilterGroup";
-  op: "and" | "or";
-  conditions: (FilterRuleWrapper<T> | FilterGroup<T>)[];
-  invert?: boolean;
-};
-
-export type LooseFilterRule = {
-  /**
-   * Unique id, used for tracking changes or resorting
-   */
-  id: FilterId;
+export interface SingleFilterInput {
   type: "Filter";
   /**
    * Field path
@@ -81,27 +35,34 @@ export type LooseFilterRule = {
   /**
    * Arguments for the filter function
    */
-  arguments: unknown[];
+  args: unknown[];
   invert?: boolean;
-};
+}
 
-export type LooseFilterGroup = {
+export interface SingleFilter extends SingleFilterInput {
   /**
    * Unique id, used for tracking changes or resorting
    */
   id: FilterId;
+}
+
+export interface FilterGroupInput {
   type: "FilterGroup";
   op: "and" | "or";
-  conditions: (LooseFilterRule | LooseFilterGroup)[];
+  conditions: (SingleFilter | FilterGroup)[];
   invert?: boolean;
-};
+}
 
-/**
- * @deprecated
- */
-export type FilterRule = Required<LooseFilterRule>;
+export interface FilterGroup extends FilterGroupInput {
+  /**
+   * Unique id, used for tracking changes or resorting
+   */
+  id: FilterId;
+}
 
-export type StrictFilterRule = Readonly<FilterRule>;
+export type FilterRule = SingleFilter | FilterGroup;
+
+export type StrictSingleFilter = Readonly<Required<SingleFilter>>;
 export type StrictFilterGroup = Readonly<{
   /**
    * Unique id, used for tracking changes or resorting
@@ -109,17 +70,8 @@ export type StrictFilterGroup = Readonly<{
   id: FilterId;
   type: "FilterGroup";
   op: "and" | "or";
-  conditions: (StrictFilterRule | StrictFilterGroup)[];
+  conditions: StrictFilterRule[];
   invert: boolean;
 }>;
 
-export type SerializedGroup = {
-  /**
-   * Unique id, used for tracking changes or resorting
-   */
-  id: FilterId;
-  type: "FilterGroup";
-  op: "and" | "or";
-  conditions: (SerializedGroup | FilterRule)[];
-  invert?: boolean;
-};
+export type StrictFilterRule = StrictSingleFilter | StrictFilterGroup;

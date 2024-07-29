@@ -1,14 +1,14 @@
 import {
-  type LooseFilterRule,
+  type SingleFilter,
   type StandardFnSchema,
   getParametersExceptFirst,
 } from "@fn-sphere/core";
 import { useDataInputView, useView } from "../specs/index.js";
 
 type FilterDataInputProps = {
-  rule: LooseFilterRule;
+  rule: SingleFilter;
   filterSchema?: StandardFnSchema;
-  onChange: (rule: LooseFilterRule) => void;
+  onChange: (rule: SingleFilter) => void;
 };
 
 export const FilterDataInput = ({

@@ -1,7 +1,7 @@
 import {
   createFilterPredicate,
   presetFilter,
-  type LooseFilterGroup,
+  type FilterGroup,
 } from "@fn-sphere/core";
 import {
   createEmptyFilterGroup,
@@ -21,7 +21,7 @@ import {
 type OpenFilterProps<Data = unknown> = {
   filterBuilder: BasicFilterProps<Data> & {
     // uncontrolled mode only for the dialog
-    defaultRule: LooseFilterGroup | undefined;
+    defaultRule: FilterGroup | undefined;
   };
   dialogProps?: FlattenFilterDialogProps<Data>["dialogProps"];
   container?: HTMLElement | null;
@@ -35,7 +35,7 @@ export type CreateAdvancedFilterProps<Data = unknown> = PartialBy<
   BasicFilterProps<Data>,
   "filterList"
 > & {
-  defaultRule?: LooseFilterGroup | undefined;
+  defaultRule?: FilterGroup | undefined;
   /**
    *
    * Set `null` to disable storage.
@@ -52,7 +52,7 @@ export type CreateAdvancedFilterProps<Data = unknown> = PartialBy<
 export const openFlattenFilterDialog = async <Data>(
   options: OpenFilterProps<Data>,
 ): Promise<{
-  rule: LooseFilterGroup;
+  rule: FilterGroup;
   predicate: (data: Data) => boolean;
 }> => {
   const isFallbackContainer = !options.container;
@@ -76,7 +76,7 @@ export const openFlattenFilterDialog = async <Data>(
   }
 
   const resolvers = Promise.withResolvers<{
-    rule: LooseFilterGroup;
+    rule: FilterGroup;
     predicate: (data: Data) => boolean;
   }>();
 

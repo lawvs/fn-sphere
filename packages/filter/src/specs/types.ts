@@ -1,4 +1,4 @@
-import type { LooseFilterGroup, LooseFilterRule } from "@fn-sphere/core";
+import type { FilterGroup, FilterRule, SingleFilter } from "@fn-sphere/core";
 import type {
   ButtonHTMLAttributes,
   ComponentType,
@@ -10,9 +10,9 @@ import type {
 import type { z } from "zod";
 
 export type DataInputViewProps = {
-  rule: LooseFilterRule;
+  rule: SingleFilter;
   requiredDataSchema: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]];
-  onChange: (rule: LooseFilterRule) => void;
+  onChange: (rule: SingleFilter) => void;
 } & RefAttributes<HTMLInputElement>;
 
 export type DataInputViewSpec = {
@@ -24,6 +24,9 @@ export type DataInputViewSpec = {
   view: ComponentType<DataInputViewProps>;
 };
 
+/**
+ * @internal
+ */
 export type SelectProps<T> = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   "value" | "onChange" | "children"
@@ -60,18 +63,15 @@ export type UiSpec = {
     >;
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
     Select: <T>(props: SelectProps<T>) => ReactNode;
-    FilterRule: ComponentType<{ rule: LooseFilterRule }>;
-    FilterGroup: ComponentType<{ rule: LooseFilterGroup }>;
+    FilterRule: ComponentType<{ rule: SingleFilter }>;
+    FilterGroup: ComponentType<{ rule: FilterGroup }>;
     RuleJoiner: ComponentType<{
-      parent: LooseFilterGroup;
-      joinBetween: [
-        LooseFilterRule | LooseFilterGroup,
-        LooseFilterRule | LooseFilterGroup,
-      ];
+      parent: FilterGroup;
+      joinBetween: [FilterRule, FilterRule];
     }>;
     DataInputPlaceholder: ComponentType<RefAttributes<HTMLInputElement>>;
     FilterGroupContainer: ComponentType<{
-      filterGroup: LooseFilterGroup;
+      filterGroup: FilterGroup;
       isRoot: boolean;
       children?: ReactNode;
     }>;

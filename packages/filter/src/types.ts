@@ -2,7 +2,7 @@ import type {
   FilterField,
   FilterId,
   FnSchema,
-  LooseFilterRule,
+  SingleFilter,
   StandardFnSchema,
 } from "@fn-sphere/core";
 import type { ZodType } from "zod";
@@ -19,7 +19,7 @@ export type FlattenFilterGroup = {
     id: FilterId;
     type: "FilterGroup";
     op: "and";
-    conditions: LooseFilterRule[];
+    conditions: SingleFilter[];
   }[];
 };
 

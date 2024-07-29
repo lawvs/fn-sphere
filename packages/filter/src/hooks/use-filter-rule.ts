@@ -1,15 +1,15 @@
 import {
   isEqualPath,
   isValidRule,
-  type LooseFilterGroup,
-  type LooseFilterRule,
+  type FilterGroup,
+  type SingleFilter,
 } from "@fn-sphere/core";
 import { useContext } from "react";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { createEmptyFilterGroup, createEmptyFilterRule } from "../utils.js";
 import { FilterBuilderContext } from "./filter-provider.js";
 
-export const useFilterRule = (rule: LooseFilterRule) => {
+export const useFilterRule = (rule: SingleFilter) => {
   const { schema, filterList, filterMap, filterableFields, onRuleChange } =
     useContext(FilterBuilderContext);
 
@@ -44,7 +44,7 @@ export const useFilterRule = (rule: LooseFilterRule) => {
 
   // TODO ignore FilterId in user input
   // TODO check input data match the schema
-  const updateRule = (newRule: LooseFilterRule) => {
+  const updateRule = (newRule: SingleFilter) => {
     onRuleChange({
       ...filterMap,
       [rule.id]: {
@@ -55,7 +55,7 @@ export const useFilterRule = (rule: LooseFilterRule) => {
     });
   };
 
-  const appendRule = (newRule: LooseFilterRule = createEmptyFilterRule()) => {
+  const appendRule = (newRule: SingleFilter = createEmptyFilterRule()) => {
     onRuleChange({
       ...filterMap,
       [parentId]: {
@@ -75,7 +75,7 @@ export const useFilterRule = (rule: LooseFilterRule) => {
   };
 
   const appendGroup = (
-    newFilterGroup: LooseFilterGroup = createEmptyFilterGroup("and"),
+    newFilterGroup: FilterGroup = createEmptyFilterGroup("and"),
   ) => {
     onRuleChange({
       ...filterMap,

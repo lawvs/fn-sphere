@@ -1,4 +1,4 @@
-import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
+import { createFilterPredicate, type FilterGroup } from "@fn-sphere/core";
 import {
   createEmptyFilterGroup,
   FlattenFilterBuilder,
@@ -8,14 +8,14 @@ import { useState } from "react";
 import { Dialog, type DialogProps } from "tdesign-react";
 
 type FilterValue<Data> = {
-  rule: LooseFilterGroup;
+  rule: FilterGroup;
   predicate: (data: Data) => boolean;
 };
 
 export type FlattenFilterDialogProps<Data> = {
   filterBuilder: BasicFilterProps<Data> & {
-    rule?: LooseFilterGroup;
-    defaultRule?: LooseFilterGroup;
+    rule?: FilterGroup;
+    defaultRule?: FilterGroup;
   };
   open: DialogProps["visible"];
   dialogProps?: Omit<DialogProps, "visible" | "onConfirm">;

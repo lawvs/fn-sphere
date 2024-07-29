@@ -1,10 +1,10 @@
-import { type LooseFilterGroup, type LooseFilterRule } from "@fn-sphere/core";
+import { type FilterGroup, type SingleFilter } from "@fn-sphere/core";
 import { useContext } from "react";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { createEmptyFilterGroup, createEmptyFilterRule } from "../utils.js";
 import { FilterBuilderContext } from "./filter-provider.js";
 
-export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
+export const useFilterGroup = (ruleGroup: FilterGroup) => {
   const { filterMap, onRuleChange } = useContext(FilterBuilderContext);
   const ruleNode = filterMap[ruleGroup.id];
   if (!ruleNode) {
@@ -28,7 +28,7 @@ export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
   const isRoot = parent.parentId === ruleGroup.id;
   const ruleIndex = parent.conditionIds.indexOf(ruleGroup.id);
 
-  const toggleGroupOp = (op?: LooseFilterGroup["op"]) => {
+  const toggleGroupOp = (op?: FilterGroup["op"]) => {
     const oldOp = ruleGroup.op;
     const newOp = (op ?? ruleGroup.op === "and") ? "or" : "and";
     if (oldOp === newOp) {
@@ -44,7 +44,7 @@ export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
   };
 
   const appendChildRule = (
-    newRule: LooseFilterRule = createEmptyFilterRule(),
+    newRule: SingleFilter = createEmptyFilterRule(),
     index = Infinity,
   ) => {
     onRuleChange({
@@ -66,7 +66,7 @@ export const useFilterGroup = (ruleGroup: LooseFilterGroup) => {
   };
 
   const appendChildGroup = (
-    newFilterGroup: LooseFilterGroup = createEmptyFilterGroup("and"),
+    newFilterGroup: FilterGroup = createEmptyFilterGroup("and"),
     index = Infinity,
   ) => {
     onRuleChange({

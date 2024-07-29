@@ -1,4 +1,4 @@
-import { countNumberOfRules, type LooseFilterGroup } from "@fn-sphere/core";
+import { countNumberOfRules, type FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
 import { FilterProvider } from "./hooks/filter-provider.js";
 import { useView } from "./specs/index.js";
@@ -11,8 +11,8 @@ import {
 } from "./utils.js";
 
 type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
-  rule?: LooseFilterGroup;
-  onChange?: (rule: LooseFilterGroup) => void;
+  rule?: FilterGroup;
+  onChange?: (rule: FilterGroup) => void;
 };
 
 export const FlattenFilterBuilder = <Data,>({
