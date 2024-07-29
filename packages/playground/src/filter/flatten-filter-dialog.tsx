@@ -1,8 +1,12 @@
-import { createFilterPredicate, type FilterGroup } from "@fn-sphere/core";
+import {
+  createFilterPredicate,
+  presetFilter,
+  type FilterGroup,
+} from "@fn-sphere/core";
 import {
   createEmptyFilterGroup,
   FlattenFilterBuilder,
-  type BasicFilterProps,
+  type BasicFilterBuilderProps,
 } from "@fn-sphere/filter";
 import { useState } from "react";
 import { Dialog, type DialogProps } from "tdesign-react";
@@ -13,7 +17,7 @@ type FilterValue<Data> = {
 };
 
 export type FlattenFilterDialogProps<Data> = {
-  filterBuilder: BasicFilterProps<Data> & {
+  filterBuilder: BasicFilterBuilderProps<Data> & {
     rule?: FilterGroup;
     defaultRule?: FilterGroup;
   };
@@ -41,7 +45,7 @@ export const FlattenFilterDialog = <Data,>({
   const controlled = filterBuilder.rule !== undefined;
   // This state will be used only when the dialog is uncontrolled.
   const [filterGroup, setFilterGroup] = useState(filterBuilder.defaultRule);
-
+  const filterList = filterBuilder.filterList ?? presetFilter;
   return (
     <Dialog
       visible={open}
@@ -52,7 +56,7 @@ export const FlattenFilterDialog = <Data,>({
           rule: filterGroup ?? createEmptyFilterGroup("or"),
           predicate: createFilterPredicate({
             schema: filterBuilder.schema,
-            filterList: filterBuilder.filterList,
+            filterList,
             rule: filterGroup,
           }),
         });
@@ -60,7 +64,7 @@ export const FlattenFilterDialog = <Data,>({
     >
       <FlattenFilterBuilder
         schema={filterBuilder.schema}
-        filterList={filterBuilder.filterList}
+        filterList={filterList}
         deepLimit={filterBuilder.deepLimit}
         mapFieldName={filterBuilder.mapFieldName}
         mapFilterName={filterBuilder.mapFilterName}
@@ -70,7 +74,7 @@ export const FlattenFilterDialog = <Data,>({
             rule: newRule,
             predicate: createFilterPredicate({
               schema: filterBuilder.schema,
-              filterList: filterBuilder.filterList,
+              filterList,
               rule: newRule,
             }),
           });

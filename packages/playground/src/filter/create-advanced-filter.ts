@@ -7,7 +7,7 @@ import {
   createEmptyFilterGroup,
   defaultMapFieldName,
   defaultMapFilterName,
-  type BasicFilterProps,
+  type BasicFilterBuilderProps,
 } from "@fn-sphere/filter";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
@@ -19,7 +19,7 @@ import {
 } from "./flatten-filter-dialog.js";
 
 type OpenFilterProps<Data = unknown> = {
-  filterBuilder: BasicFilterProps<Data> & {
+  filterBuilder: BasicFilterBuilderProps<Data> & {
     // uncontrolled mode only for the dialog
     defaultRule: FilterGroup | undefined;
   };
@@ -32,7 +32,7 @@ type OpenFilterProps<Data = unknown> = {
 type PartialBy<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
 export type CreateAdvancedFilterProps<Data = unknown> = PartialBy<
-  BasicFilterProps<Data>,
+  BasicFilterBuilderProps<Data>,
   "filterList"
 > & {
   defaultRule?: FilterGroup | undefined;

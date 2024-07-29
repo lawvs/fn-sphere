@@ -2,7 +2,7 @@ import { countNumberOfRules, type FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
 import { FilterProvider } from "./hooks/filter-provider.js";
 import { useView } from "./specs/index.js";
-import type { BasicFilterProps } from "./types.js";
+import type { BasicFilterBuilderProps } from "./types.js";
 import {
   createEmptyFilterGroup,
   defaultMapFieldName,
@@ -10,7 +10,7 @@ import {
   isFlattenFilterGroup,
 } from "./utils.js";
 
-type FilterBuilderProps<Data = unknown> = BasicFilterProps<Data> & {
+type FilterBuilderProps<Data = unknown> = BasicFilterBuilderProps<Data> & {
   rule?: FilterGroup;
   onChange?: (rule: FilterGroup) => void;
 };

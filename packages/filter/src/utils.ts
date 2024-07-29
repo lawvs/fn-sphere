@@ -3,7 +3,7 @@ import {
   type FilterGroup,
   type SingleFilter,
 } from "@fn-sphere/core";
-import type { BasicFilterProps, FlattenFilterGroup } from "./types.js";
+import type { BasicFilterBuilderProps, FlattenFilterGroup } from "./types.js";
 
 export const createEmptyFilterRule = () =>
   ({
@@ -36,7 +36,7 @@ export const isFlattenFilterGroup = (
 };
 
 export const defaultMapFieldName: NonNullable<
-  BasicFilterProps["mapFieldName"]
+  BasicFilterBuilderProps["mapFieldName"]
 > = (field) => {
   if (field.fieldSchema.description) {
     return field.fieldSchema.description;
@@ -48,7 +48,7 @@ export const defaultMapFieldName: NonNullable<
 };
 
 export const defaultMapFilterName: NonNullable<
-  BasicFilterProps["mapFilterName"]
+  BasicFilterBuilderProps["mapFilterName"]
 > = (filterSchema) => {
   return filterSchema.name;
 };

@@ -23,9 +23,9 @@ export type FlattenFilterGroup = {
   }[];
 };
 
-export type BasicFilterProps<Data = unknown> = {
+export type BasicFilterBuilderProps<Data = unknown> = {
   schema: ZodType<Data>;
-  filterList: FnSchema[];
+  filterList?: FnSchema[];
   /**
    * The maximum nesting depth limit of the filter rule.
    *

@@ -3,7 +3,7 @@ import { FilterProvider } from "./hooks/filter-provider.js";
 import { useView } from "./specs/hooks.js";
 import { FilterUiProvider, presetUiSpec } from "./specs/index.js";
 import type { UiSpec } from "./specs/types.js";
-import type { BasicFilterProps } from "./types.js";
+import type { BasicFilterBuilderProps } from "./types.js";
 
 export const FilterBuilder = <Data,>({
   schema,
@@ -22,7 +22,7 @@ export const FilterBuilder = <Data,>({
     views?: Partial<UiSpec["views"]>;
     primitives?: Partial<UiSpec["primitives"]>;
   };
-} & BasicFilterProps<Data>) => {
+} & BasicFilterBuilderProps<Data>) => {
   const FilterGroup = useView("FilterGroup");
 
   const normalizedSchema = {
