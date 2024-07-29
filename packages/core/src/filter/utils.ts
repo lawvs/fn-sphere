@@ -1,4 +1,4 @@
-import { ZodAny, ZodObject, z, type ZodType } from "zod";
+import { z, type ZodType } from "zod";
 import { isSameType } from "zod-compare";
 import type { GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
@@ -43,7 +43,7 @@ export const getFirstParameters = (fnSchema: StandardFnSchema) => {
     throw new Error("Invalid filter parameters!");
   }
 
-  return fullParameters.items.at(0) as ZodAny;
+  return fullParameters.items.at(0) as z.ZodTypeAny;
 };
 
 /**
@@ -56,7 +56,9 @@ export const getFirstParameters = (fnSchema: StandardFnSchema) => {
  * **Parameter** is the variable in the declaration of the function.
  * **Argument** is the actual value of this variable that gets passed to the function.
  */
-export const getParametersExceptFirst = (fnSchema: StandardFnSchema) => {
+export const getParametersExceptFirst = (
+  fnSchema: StandardFnSchema,
+): [] | [z.ZodTypeAny, ...z.ZodTypeAny[]] => {
   const fullParameters = fnSchema.define.parameters();
   if (!fullParameters.items.length) {
     console.error(
@@ -67,25 +69,21 @@ export const getParametersExceptFirst = (fnSchema: StandardFnSchema) => {
     throw new Error("Invalid fnSchema parameters!");
   }
 
-  const stillNeed = z.tuple(fullParameters.items.slice(1));
+  const stillNeed = fullParameters.items.slice(1);
   // zod not support function rest parameter yet
   // See https://github.com/colinhacks/zod/issues/2859
   // https://github.com/colinhacks/zod/blob/a5a9d31018f9c27000461529c582c50ade2d3937/src/types.ts#L3268
   const rest = fullParameters._def.rest;
   // ZodFunction will always have a unknown rest parameter
   // See https://github.com/colinhacks/zod/blob/4641f434f3bb3dab1bb8cb07f44dd2693c72e35e/src/types.ts#L3991
-  if (isSameType(rest, z.unknown())) {
-    return stillNeed;
-  }
-  if (!rest) {
+  if (!isSameType(rest, z.unknown())) {
     console.warn(
-      "No rest parameter found, try to report this issue to developer.",
+      "Rest parameter is not supported yet, try to report this issue to developer.",
       fnSchema,
       fullParameters,
     );
-    return stillNeed;
   }
-  return stillNeed.rest(rest);
+  return stillNeed;
 };
 
 export const countNumberOfRules = (
@@ -155,7 +153,7 @@ export const getSchemaAtPath = <T extends ZodType = ZodType>(
     if (result == null) {
       return defaultValue as T;
     }
-    if (!(result instanceof ZodObject)) {
+    if (!(result instanceof z.ZodObject)) {
       return defaultValue as T;
     }
     result = result.shape[path[i]];

@@ -1,4 +1,4 @@
-import { type ZodTypeAny } from "zod";
+import { z, type ZodTypeAny } from "zod";
 import { isSameType } from "zod-compare";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import { isGenericFilter, unreachable } from "../utils.js";
@@ -124,7 +124,7 @@ const validateStandardFnRule = ({
 
   const requiredParameters = getParametersExceptFirst(fnSchema);
   if (!fnSchema.skipValidate) {
-    const parseResult = requiredParameters.safeParse(rule.arguments);
+    const parseResult = z.tuple(requiredParameters).safeParse(rule.arguments);
     return parseResult;
   }
   return {

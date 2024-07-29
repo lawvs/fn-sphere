@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import * as z from "zod";
+import { isSameType } from "zod-compare";
 import type { FilterPath } from "./types.js";
-import { getSchemaAtPath, getValueAtPath } from "./utils.js";
+import {
+  getFirstParameters,
+  getParametersExceptFirst,
+  getSchemaAtPath,
+  getValueAtPath,
+} from "./utils.js";
 
 describe("getValueFromPath", () => {
   it("should return the correct value for a given path", () => {
@@ -62,6 +68,63 @@ describe("getSchemaFromPath", () => {
 
     expect(getSchemaAtPath(schema, [] as unknown as FilterPath)).toEqual(
       schema,
+    );
+  });
+});
+
+describe("getFirstParameters getParametersExceptFirst", () => {
+  it("should return the correct parameters except the first one", () => {
+    const schema = {
+      name: "test",
+      define: z.function().args(z.number(), z.boolean()).returns(z.void()),
+      implement: () => {},
+    };
+    expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
+    expect(
+      isSameType(
+        z.tuple(getParametersExceptFirst(schema)),
+        z.tuple([z.boolean()]),
+      ),
+    ).toEqual(true);
+  });
+
+  it("should return the parameters except the first one", () => {
+    const schema = {
+      name: "test",
+      define: z
+        .function()
+        .args(z.number(), z.boolean(), z.string())
+        .returns(z.void()),
+      implement: () => {},
+    };
+    expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
+    expect(
+      isSameType(
+        z.tuple(getParametersExceptFirst(schema)),
+        z.tuple([z.boolean(), z.string()]),
+      ),
+    ).toEqual(true);
+  });
+
+  it("should return empty array when only one parameter", () => {
+    const schema = {
+      name: "test",
+      define: z.function().args(z.number()).returns(z.void()),
+      implement: () => {},
+    };
+    expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
+    expect(getParametersExceptFirst(schema)).toEqual([]);
+  });
+
+  it("should throw an error when no parameters", () => {
+    const schema = {
+      name: "test",
+      define: z.function().args().returns(z.void()),
+      implement: () => {},
+    };
+    expect(() => getFirstParameters(schema)).toThrowError();
+    expect(() => getParametersExceptFirst(schema)).toThrowError(
+      "Invalid fnSchema parameters!",
     );
   });
 });
