@@ -1,10 +1,10 @@
-import { type FilterId, type LooseFilterGroup } from "@fn-sphere/core";
+import { type FilterGroup, type FilterId } from "@fn-sphere/core";
 import { describe, expect, it } from "vitest";
 import { fromFilterMap, getDepthOfRule, toFilterMap } from "./filter-map.js";
 
 describe("toFilterMap/fromFilterMap", () => {
   it("should toFilterMap handle FilterGroup", () => {
-    const filterGroup: LooseFilterGroup = {
+    const filterGroup: FilterGroup = {
       id: "1" as FilterId,
       type: "FilterGroup",
       op: "or",
@@ -25,7 +25,7 @@ describe("toFilterMap/fromFilterMap", () => {
   });
 
   it("should toFilterMap handle nested FilterGroup", () => {
-    const filterGroup: LooseFilterGroup = {
+    const filterGroup: FilterGroup = {
       id: "1" as FilterId,
       type: "FilterGroup",
       op: "or",
@@ -38,7 +38,7 @@ describe("toFilterMap/fromFilterMap", () => {
             {
               id: "3" as FilterId,
               type: "Filter",
-              arguments: [],
+              args: [],
             },
           ],
         },

@@ -1,4 +1,4 @@
-import type { LooseFilterGroup, LooseFilterRule } from "@fn-sphere/core";
+import type { FilterGroup, FilterRule } from "@fn-sphere/core";
 import {
   forwardRef,
   useCallback,
@@ -70,11 +70,8 @@ export const DataInputPlaceholder = forwardRef<HTMLInputElement>((_, ref) => {
 export const RuleJoiner = ({
   parent,
 }: {
-  parent: LooseFilterGroup;
-  joinBetween: [
-    LooseFilterRule | LooseFilterGroup,
-    LooseFilterRule | LooseFilterGroup,
-  ];
+  parent: FilterGroup;
+  joinBetween: [FilterRule, FilterRule];
 }) => {
   const operator = parent.op;
   return (
@@ -92,7 +89,7 @@ export const FilterGroupContainer = ({
   filterGroup,
   children,
 }: {
-  filterGroup: LooseFilterGroup;
+  filterGroup: FilterGroup;
   children?: ReactNode;
 }) => {
   // const {

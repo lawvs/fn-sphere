@@ -1,16 +1,17 @@
 import type {
+  FilterGroup,
   FilterId,
-  LooseFilterGroup,
-  LooseFilterRule,
+  FilterRule,
+  SingleFilter,
 } from "@fn-sphere/core";
 
 type RuleNode =
   | {
       type: "Filter";
-      data: LooseFilterRule;
+      data: SingleFilter;
       parentId: FilterId;
     }
-  | (Omit<LooseFilterGroup, "conditions"> & {
+  | (Omit<FilterGroup, "conditions"> & {
       // The root filter group's parent ID is itself
       parentId: FilterId;
       conditionIds: FilterId[];
@@ -43,17 +44,17 @@ const findRootFromMap = (map: FilterMap): FilterId => {
 };
 
 /**
- * Convert the {@link LooseFilterGroup} to {@link FilterMap}.
+ * Convert the {@link FilterGroup} to {@link FilterMap}.
  */
 export const toFilterMap = (
-  rootFilterGroup: LooseFilterGroup,
+  rootFilterGroup: FilterGroup,
   parentId?: FilterId,
 ): FilterMap => {
   const map: FilterMap = {};
   const parentMap: Record<FilterId, FilterId> = {
     [rootFilterGroup.id]: parentId ?? rootFilterGroup.id,
   };
-  const queue: (LooseFilterRule | LooseFilterGroup)[] = [rootFilterGroup];
+  const queue: FilterRule[] = [rootFilterGroup];
 
   while (queue.length) {
     const rule = queue.shift();
@@ -99,7 +100,7 @@ export const toFilterMap = (
 export const fromFilterMap = (
   map: FilterMap,
   rootKey = findRootFromMap(map),
-): LooseFilterGroup => {
+): FilterGroup => {
   if (!rootKey) {
     throw new Error("No root filter found");
   }
@@ -110,7 +111,7 @@ export const fromFilterMap = (
   if (root.type !== "FilterGroup") {
     throw new Error("Root filter is not a group");
   }
-  const result: LooseFilterGroup = {
+  const result: FilterGroup = {
     id: rootKey,
     type: root.type,
     op: root.op,

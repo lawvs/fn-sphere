@@ -1,12 +1,12 @@
-import type { LooseFilterGroup } from "@fn-sphere/core";
+import type { FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
 import { useFilterGroup } from "./hooks/use-filter-group.js";
 import { useView } from "./specs/hooks.js";
 
-export const FilterGroup = ({
+export const FilterGroupView = ({
   rule: filterGroup,
 }: {
-  rule: LooseFilterGroup;
+  rule: FilterGroup;
 }) => {
   const {
     ruleState: { isRoot },
@@ -70,7 +70,7 @@ export const FilterGroup = ({
                   ]}
                 />
               )}
-              <FilterGroup rule={childRule} />
+              <FilterGroupView rule={childRule} />
             </Fragment>
           );
         })}
@@ -78,4 +78,4 @@ export const FilterGroup = ({
     </div>
   );
 };
-FilterGroup.displayName = "FilterGroup";
+FilterGroupView.displayName = "FilterGroupView";

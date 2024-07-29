@@ -1,4 +1,4 @@
-import { createFilterPredicate, type LooseFilterGroup } from "@fn-sphere/core";
+import { createFilterPredicate, type FilterGroup } from "@fn-sphere/core";
 import { useState } from "react";
 import {
   defaultOptions,
@@ -33,7 +33,7 @@ export const useAdvancedFilter = <Data>(
     ...userOptions,
   };
   const [loading, setLoading] = useState(true);
-  const [rule, setRule] = useState<LooseFilterGroup>(() => {
+  const [rule, setRule] = useState<FilterGroup>(() => {
     const defaultState = options.defaultRule;
     const storageKey = options.storageKey;
     if (!storageKey) return defaultState;

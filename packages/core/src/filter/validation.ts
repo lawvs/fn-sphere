@@ -3,13 +3,14 @@ import { isSameType } from "zod-compare";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import { isGenericFilter, unreachable } from "../utils.js";
 import type {
-  LooseFilterGroup,
-  LooseFilterRule,
+  FilterGroup,
+  FilterRule,
+  SingleFilter,
   StrictFilterGroup,
   StrictFilterRule,
+  StrictSingleFilter,
 } from "./types.js";
 import {
-  genFilterId,
   getFirstParameters,
   getParametersExceptFirst,
   getSchemaAtPath,
@@ -39,7 +40,7 @@ const getRuleFilterSchemaResult = ({
 }: {
   filterList: FnSchema[];
   dataSchema: ZodTypeAny;
-  rule: StrictFilterRule;
+  rule: StrictSingleFilter;
 }): (ValidateSuccess & { data: StandardFnSchema }) | ValidateError => {
   const fnSchema = filterList.find((f) => f.name === rule.name);
   if (!fnSchema) {
@@ -76,7 +77,7 @@ const getRuleFilterSchemaResult = ({
 };
 
 export const getRuleFilterSchema = (payload: {
-  rule: StrictFilterRule;
+  rule: StrictSingleFilter;
   filterList: FnSchema[];
   dataSchema: ZodTypeAny;
 }) => {
@@ -94,7 +95,7 @@ const validateStandardFnRule = ({
 }: {
   fnSchema: StandardFnSchema;
   dataSchema: ZodTypeAny;
-  rule: StrictFilterRule;
+  rule: StrictSingleFilter;
 }): ValidateSuccess | ValidateError => {
   if (rule.name !== fnSchema.name) {
     return {
@@ -124,7 +125,7 @@ const validateStandardFnRule = ({
 
   const requiredParameters = getParametersExceptFirst(fnSchema);
   if (!fnSchema.skipValidate) {
-    const parseResult = z.tuple(requiredParameters).safeParse(rule.arguments);
+    const parseResult = z.tuple(requiredParameters).safeParse(rule.args);
     return parseResult;
   }
   return {
@@ -139,7 +140,7 @@ export const validateRule = ({
 }: {
   filterList: FnSchema[];
   dataSchema: ZodTypeAny;
-  rule: LooseFilterRule;
+  rule: SingleFilter;
 }): ValidateSuccess | ValidateError => {
   const fnSchema = filterList.find((f) => f.name === rule.name);
   if (!fnSchema) {
@@ -160,7 +161,7 @@ export const validateRule = ({
       error: new Error("rule.path not found"),
     };
   }
-  const strictRule: StrictFilterRule = {
+  const strictRule: StrictSingleFilter = {
     ...rule,
     name: rule.name,
     path: rule.path,
@@ -193,7 +194,7 @@ export const isValidRule = ({
 }: {
   filterList: FnSchema[];
   dataSchema: ZodTypeAny;
-  rule: LooseFilterRule;
+  rule: SingleFilter;
 }): boolean => {
   const result = validateRule({
     filterList,
@@ -210,7 +211,7 @@ export const validateGroup = ({
 }: {
   filterList: FnSchema[];
   dataSchema: ZodTypeAny;
-  ruleGroup: LooseFilterGroup;
+  ruleGroup: FilterGroup;
 }): ValidateSuccess | ValidateError => {
   for (const rule of ruleGroup.conditions) {
     if (rule.type === "FilterGroup") {
@@ -241,7 +242,6 @@ export const validateGroup = ({
 /**
  * - Remove empty group
  * - Remove invalid filter
- * - Fill missing filter id
  * - If filter is not ready, return `undefined`
  */
 export const normalizeFilter = ({
@@ -251,8 +251,8 @@ export const normalizeFilter = ({
 }: {
   filterList: FnSchema[];
   dataSchema: ZodTypeAny;
-  rule: LooseFilterGroup | LooseFilterRule;
-}): StrictFilterGroup | StrictFilterRule | undefined => {
+  rule: FilterRule;
+}): StrictFilterRule | undefined => {
   if (rule.type === "Filter") {
     // User may not select filter name or field
     if (!rule.name || !rule.path) return;
@@ -264,15 +264,14 @@ export const normalizeFilter = ({
     if (!result.success) return;
     return {
       ...rule,
-      id: rule.id ?? genFilterId(),
       name: rule.name,
       path: rule.path,
       invert: !!rule.invert,
-    };
+    } satisfies StrictSingleFilter;
   }
   if (rule.type === "FilterGroup") {
     // if (!rule.conditions.length) return;
-    const conditions: (StrictFilterGroup | StrictFilterRule)[] = rule.conditions
+    const conditions: StrictFilterRule[] = rule.conditions
       .map((condition) =>
         normalizeFilter({
           filterList,
@@ -280,16 +279,15 @@ export const normalizeFilter = ({
           rule: condition,
         }),
       )
-      .filter((i): i is StrictFilterGroup | StrictFilterRule => !!i);
+      .filter((i): i is StrictFilterRule => !!i);
     if (!conditions.length) {
       return;
     }
     return {
       ...rule,
-      id: rule.id ?? genFilterId(),
       conditions,
       invert: !!rule.invert,
-    };
+    } satisfies StrictFilterGroup;
   }
   unreachable(rule, "Invalid filter type!");
 };

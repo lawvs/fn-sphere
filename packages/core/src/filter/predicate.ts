@@ -2,10 +2,9 @@ import { z } from "zod";
 import type { FnSchema } from "../types.js";
 import { unreachable } from "../utils.js";
 import type {
-  LooseFilterGroup,
-  LooseFilterRule,
+  FilterRule,
   StrictFilterGroup,
-  StrictFilterRule,
+  StrictSingleFilter,
 } from "./types.js";
 import { getValueAtPath } from "./utils.js";
 import { getRuleFilterSchema, normalizeFilter } from "./validation.js";
@@ -19,8 +18,7 @@ type FilterPredicateOptions<T> = {
   /**
    * The filter rule.
    */
-  rule?: LooseFilterRule | LooseFilterGroup;
-  catch?: boolean;
+  rule?: FilterRule;
 };
 
 const trueFn = () => true;
@@ -30,7 +28,7 @@ const createSingleRulePredicate = <Data>({
   schema,
   rule,
 }: FilterPredicateOptions<Data> & {
-  rule: StrictFilterRule;
+  rule: StrictSingleFilter;
 }): ((data: Data) => boolean) => {
   const filterSchema = getRuleFilterSchema({
     rule,
@@ -50,7 +48,7 @@ const createSingleRulePredicate = <Data>({
 
   return (data: Data): boolean => {
     const target = getValueAtPath(data, rule.path);
-    const result = fnWithImplement(target, ...rule.arguments);
+    const result = fnWithImplement(target, ...rule.args);
     return rule.invert ? !result : result;
   };
 };

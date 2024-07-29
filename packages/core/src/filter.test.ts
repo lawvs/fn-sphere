@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { z } from "zod";
 import { createFilterSphere } from "./filter/index.js";
-import type { LooseFilterGroup } from "./filter/types.js";
+import type { FilterGroup } from "./filter/types.js";
 import {
   genFilterId,
   getParametersExceptFirst,
@@ -64,7 +64,7 @@ test("basic usage", () => {
     type: "Filter",
     path: firstField.path,
     name: firstFilter.name,
-    arguments: [],
+    args: [],
   });
 
   expect(filterData).toHaveLength(1);
@@ -115,7 +115,7 @@ test("filter nested obj", () => {
     type: "Filter" as const,
     name: firstFilterSchema.name,
     path: firstField.path,
-    arguments: [19],
+    args: [19],
   };
   expect(rule.name).toEqual("number equal");
 
@@ -155,7 +155,7 @@ test("FilterGroup usage", () => {
     (i) => i.name === "string equal",
   )!;
 
-  const filterGroup: LooseFilterGroup = {
+  const filterGroup: FilterGroup = {
     id: genFilterId(),
     type: "FilterGroup" as const,
     op: "and" as const,
@@ -165,14 +165,14 @@ test("FilterGroup usage", () => {
         type: "Filter" as const,
         name: nameFilter.name,
         path: nameField.path,
-        arguments: ["Alice"],
+        args: ["Alice"],
       },
       {
         id: genFilterId(),
         type: "Filter" as const,
         name: ageFilter.name,
         path: ageField.path,
-        arguments: [19],
+        args: [19],
       },
     ],
   };
@@ -198,7 +198,7 @@ test("FilterGroup usage", () => {
   expect(filterData[0].name).toEqual("Alice");
   expect(filterData[0].age).toEqual(19);
 
-  const orGroup: LooseFilterGroup = {
+  const orGroup: FilterGroup = {
     id: genFilterId(),
     type: "FilterGroup" as const,
     op: "or" as const,
@@ -208,14 +208,14 @@ test("FilterGroup usage", () => {
         type: "Filter" as const,
         name: nameFilter.name,
         path: nameField.path,
-        arguments: ["Bob"],
+        args: ["Bob"],
       },
       {
         id: genFilterId(),
         type: "Filter" as const,
         name: ageFilter.name,
         path: ageField.path,
-        arguments: [18],
+        args: [18],
       },
     ],
   };

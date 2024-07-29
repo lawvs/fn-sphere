@@ -1,15 +1,15 @@
-import { type LooseFilterRule } from "@fn-sphere/core";
+import { type SingleFilter } from "@fn-sphere/core";
 import { useFilterRule } from "../hooks/use-filter-rule.js";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../specs/index.js";
 import { createEmptyFilterGroup } from "../utils.js";
 import { FilterDataInput } from "./filter-data-input.js";
 
-type FilterRuleProps = {
-  rule: LooseFilterRule;
+type SingleFilterRuleProps = {
+  rule: SingleFilter;
 };
 
-export const FilterRule = ({ rule }: FilterRuleProps) => {
+export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
   const {
     ruleState: { isValid },
     filterableFields,
@@ -39,7 +39,7 @@ export const FilterRule = ({ rule }: FilterRuleProps) => {
             name: undefined,
             // name: newField.filterList[0].name,
             // Reset arguments when field changed
-            arguments: [],
+            args: [],
             path: newField.path,
           });
         }}
@@ -89,4 +89,4 @@ export const FilterRule = ({ rule }: FilterRuleProps) => {
     </div>
   );
 };
-FilterRule.displayName = "FilterRule";
+SingleFilterView.displayName = "SingleFilterView";

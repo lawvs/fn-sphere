@@ -1,8 +1,8 @@
 import type { ZodType } from "zod";
 import type { FnSchema } from "../types.js";
+import { findFilterableFields } from "./field.js";
 import { createFilterPredicate } from "./predicate.js";
-import { findFilterableFields } from "./pure.js";
-import type { LooseFilterGroup, LooseFilterRule } from "./types.js";
+import type { FilterRule } from "./types.js";
 
 export const createFilterSphere = <Data = unknown>(
   dataSchema: ZodType<Data>,
@@ -19,9 +19,7 @@ export const createFilterSphere = <Data = unknown>(
       maxDeep,
     });
 
-  const getFilterPredicate = (
-    rule: LooseFilterRule | LooseFilterGroup,
-  ): ((data: Data) => boolean) => {
+  const getFilterPredicate = (rule: FilterRule): ((data: Data) => boolean) => {
     return createFilterPredicate({
       schema: dataSchema,
       filterList: filterFnList,
@@ -29,10 +27,7 @@ export const createFilterSphere = <Data = unknown>(
     });
   };
 
-  const filterData = (
-    data: Data[],
-    rule: LooseFilterRule | LooseFilterGroup,
-  ): Data[] => {
+  const filterData = (data: Data[], rule: FilterRule): Data[] => {
     const predicate = getFilterPredicate(rule);
     return data.filter(predicate);
   };

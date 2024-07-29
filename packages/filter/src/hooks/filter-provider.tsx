@@ -1,6 +1,6 @@
 import {
   type FilterField,
-  type LooseFilterGroup,
+  type FilterGroup,
   findFilterableFields,
 } from "@fn-sphere/core";
 import { type ReactNode, createContext } from "react";
@@ -14,8 +14,8 @@ import {
 } from "../utils.js";
 
 type FilterContextType = {
-  filterRule: LooseFilterGroup;
-  onRuleChange?: (filterGroup: LooseFilterGroup) => void;
+  filterRule: FilterGroup;
+  onRuleChange?: (filterGroup: FilterGroup) => void;
 } & BasicFilterProps<unknown>;
 
 type NormalizedFilterContextType = Required<BasicFilterProps<unknown>> & {
