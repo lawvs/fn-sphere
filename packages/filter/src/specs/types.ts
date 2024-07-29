@@ -7,18 +7,20 @@ import type {
   RefAttributes,
   SelectHTMLAttributes,
 } from "react";
-import type { ZodTuple, z } from "zod";
+import type { z } from "zod";
 
 export type DataInputViewProps = {
   rule: LooseFilterRule;
-  inputSchema: ZodTuple;
+  requiredDataSchema: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]];
   onChange: (rule: LooseFilterRule) => void;
 } & RefAttributes<HTMLInputElement>;
 
 export type DataInputViewSpec = {
   name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  match: z.ZodTuple<any> | ((schema: z.ZodTuple<any>) => boolean);
+  match:
+    | []
+    | [z.ZodTypeAny, ...z.ZodTypeAny[]]
+    | ((parameterSchemas: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]]) => boolean);
   view: ComponentType<DataInputViewProps>;
 };
 

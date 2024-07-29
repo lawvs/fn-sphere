@@ -3,7 +3,6 @@ import {
   type StandardFnSchema,
   getParametersExceptFirst,
 } from "@fn-sphere/core";
-import { z } from "zod";
 import { useDataInputView, useView } from "../specs/index.js";
 
 type FilterDataInputProps = {
@@ -21,9 +20,7 @@ export const FilterDataInput = ({
   const requiredArguments = filterSchema
     ? getParametersExceptFirst(filterSchema)
     : undefined;
-  const DataInputView = useDataInputView(
-    requiredArguments ?? z.tuple([z.never()]),
-  );
+  const DataInputView = useDataInputView(requiredArguments);
 
   if (!requiredArguments) {
     return <Placeholder />;
@@ -32,7 +29,7 @@ export const FilterDataInput = ({
   return (
     <DataInputView
       rule={rule}
-      inputSchema={requiredArguments}
+      requiredDataSchema={requiredArguments}
       onChange={onChange}
     />
   );

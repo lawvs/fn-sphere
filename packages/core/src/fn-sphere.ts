@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { isSameType } from "zod-compare";
 import { createFilterSphere } from "./filter/index.js";
-import type { GenericFnSchema, StandardFnSchema, ZodAnyFn } from "./types.js";
+import type {
+  GenericFnSchema,
+  StandardFnSchema,
+  ZodAnyFunction,
+} from "./types.js";
 import { isFilterFn as isFilterSchema } from "./utils.js";
 
 export function defineTypedFn<
@@ -44,7 +48,7 @@ export const createFnSphere = () => {
     state.fnMap[fn.name] = fn;
   };
 
-  const registerFnList = <T extends ZodAnyFn>(
+  const registerFnList = <T extends ZodAnyFunction>(
     fnList: StandardFnSchema<NoInfer<T>>[],
   ) => {
     fnList.forEach((fn) => {

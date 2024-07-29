@@ -3,9 +3,9 @@ import type { TypeOf, ZodFunction, ZodTuple, ZodType, ZodTypeAny } from "zod";
 /**
  * @internal
  */
-export type ZodAnyFn = ZodFunction<ZodTuple<any, any>, ZodTypeAny>;
+export type ZodAnyFunction = ZodFunction<ZodTuple<any, any>, ZodTypeAny>;
 
-export type StandardFnSchema<T extends ZodAnyFn = ZodAnyFn> = {
+export type StandardFnSchema<T extends ZodAnyFunction = ZodAnyFunction> = {
   name: string;
   define: T;
   implement: TypeOf<T>;
@@ -15,7 +15,7 @@ export type StandardFnSchema<T extends ZodAnyFn = ZodAnyFn> = {
 
 export type GenericFnSchema<
   Generic extends ZodType = any,
-  Fn extends ZodAnyFn = ZodAnyFn,
+  Fn extends ZodAnyFunction = ZodAnyFunction,
 > = {
   name: string;
   genericLimit: (t: ZodType) => t is Generic;
