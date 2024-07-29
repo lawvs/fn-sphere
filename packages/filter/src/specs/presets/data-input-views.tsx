@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { forwardRef } from "react";
 import { z } from "zod";
 import { useView } from "../hooks.js";
