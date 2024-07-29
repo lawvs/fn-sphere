@@ -1,5 +1,11 @@
 # @fn-sphere/filter
 
+## 0.1.3
+
+### Patch Changes
+
+- 1670687: Export presetFilter
+
 ## 0.1.2
 
 ### Patch Changes
