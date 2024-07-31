@@ -15,7 +15,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "string",
     match: [z.string()],
-    view: forwardRef(({ requiredDataSchema, rule, onChange }, ref) => {
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }, ref) => {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -26,10 +26,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           type="text"
           value={(rule.args?.[0] as string) ?? ""}
           onChange={(value) => {
-            onChange({
-              ...rule,
-              args: [value],
-            });
+            updateInput([value]);
             return;
           }}
         />
@@ -39,7 +36,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "number",
     match: [z.number()],
-    view: forwardRef(({ requiredDataSchema, rule, onChange }, ref) => {
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }, ref) => {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -50,10 +47,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           type="number"
           value={(rule.args?.[0] as string) ?? ""}
           onChange={(value) => {
-            onChange({
-              ...rule,
-              args: [value],
-            });
+            updateInput([value]);
             return;
           }}
         />
@@ -63,7 +57,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "date",
     match: [z.date()],
-    view: forwardRef(({ requiredDataSchema, rule, onChange }, ref) => {
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }, ref) => {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -74,10 +68,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           type="date"
           value={(rule.args?.[0] as string) ?? ""}
           onChange={(value) => {
-            onChange({
-              ...rule,
-              args: [value],
-            });
+            updateInput([value]);
           }}
         />
       );
@@ -98,7 +89,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         (option: unknown) => option instanceof z.ZodLiteral,
       );
     },
-    view: function LiteralSelect({ requiredDataSchema, rule, onChange }) {
+    view: function LiteralSelect({ requiredDataSchema, rule, updateInput }) {
       const { Select: SelectView } = useView("components");
       const unionSchema = requiredDataSchema[0] as z.ZodUnion<
         [z.ZodLiteral<unknown>]
@@ -114,10 +105,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           options={options}
           value={rule.args?.[0]}
           onChange={(value) => {
-            onChange({
-              ...rule,
-              args: [value],
-            });
+            updateInput([value]);
           }}
         />
       );

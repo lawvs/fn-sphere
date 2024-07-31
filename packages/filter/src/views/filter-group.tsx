@@ -3,11 +3,11 @@ import { Fragment } from "react";
 import { useFilterGroup } from "../hooks/use-filter-group.js";
 import { useView } from "../specs/hooks.js";
 
-export const FilterGroupView = ({
-  rule: filterGroup,
-}: {
+export type FilterGroupProps = {
   rule: FilterGroup;
-}) => {
+};
+
+export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   const {
     ruleState: { isRoot },
     appendChildRule,

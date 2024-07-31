@@ -3,9 +3,9 @@ import {
   useCallback,
   type ButtonHTMLAttributes,
   type ChangeEvent,
+  type SelectHTMLAttributes,
 } from "react";
 import { usePrimitives } from "../specs/hooks.js";
-import type { SelectProps } from "../specs/types.js";
 
 export const ButtonView = forwardRef<
   HTMLButtonElement,
@@ -30,6 +30,15 @@ export const InputView = forwardRef<
   );
   return <InputPrimitive ref={ref} onChange={handleChange} {...props} />;
 });
+
+export type SelectProps<T> = Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "value" | "onChange" | "children"
+> & {
+  value?: T;
+  options?: { value: T; label: string }[];
+  onChange?: (value: T) => void;
+};
 
 export const SelectView = <T,>({
   options = [],

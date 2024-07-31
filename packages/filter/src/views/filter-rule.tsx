@@ -1,37 +1,29 @@
 import { type SingleFilter } from "@fn-sphere/core";
-import { useFilterRule } from "../../hooks/use-filter-rule.js";
-import { useRootRule } from "../../hooks/use-root-rule.js";
-import { useView } from "../../specs/index.js";
-import { createEmptyFilterGroup } from "../../utils.js";
-import { FilterDataInput } from "./filter-data-input.js";
+import { useFilterRule } from "../hooks/use-filter-rule.js";
+import { useRootRule } from "../hooks/use-root-rule.js";
+import { useView } from "../specs/index.js";
+import { createEmptyFilterGroup } from "../utils.js";
 
-type SingleFilterRuleProps = {
+export type SingleFilterRuleProps = {
   rule: SingleFilter;
 };
 
 export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
   const {
     ruleState: { isValid, isInvert },
-    selectedFilter,
-    updateRule,
     removeRule,
     appendRule,
   } = useFilterRule(rule);
   const { getRootRule, updateRootRule } = useRootRule();
   const { Button: ButtonView } = useView("components");
-  const { FieldSelect, FilterSelect } = useView("templates");
+  const { FieldSelect, FilterSelect, FilterDataInput } = useView("templates");
 
   return (
     <div>
       <FieldSelect rule={rule} />
       {isInvert ? "Not" : null}
       <FilterSelect rule={rule} />
-
-      <FilterDataInput
-        rule={rule}
-        filterSchema={selectedFilter}
-        onChange={updateRule}
-      />
+      <FilterDataInput rule={rule} />
 
       {isValid ? null : "!"}
       <ButtonView
