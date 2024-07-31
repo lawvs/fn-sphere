@@ -21,3 +21,5 @@ export {
   stringFilter,
 } from "@fn-sphere/core";
 export type { FilterGroup, FilterRule, SingleFilter } from "@fn-sphere/core";
+export { presetUiSpec } from "./preset.js";
+export { presetDataInputSpecs } from "./views/data-input-views.js";

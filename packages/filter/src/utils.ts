@@ -12,12 +12,15 @@ export const createEmptyFilterRule = () =>
     args: [],
   }) satisfies SingleFilter;
 
-export const createEmptyFilterGroup = (op: FilterGroup["op"]) =>
+export const createEmptyFilterGroup = (
+  op: FilterGroup["op"],
+  includeRule = true,
+) =>
   ({
     id: genFilterId(),
     type: "FilterGroup",
     op,
-    conditions: [createEmptyFilterRule()],
+    conditions: includeRule ? [createEmptyFilterRule()] : [],
   }) satisfies FilterGroup;
 
 export const isFlattenFilterGroup = (

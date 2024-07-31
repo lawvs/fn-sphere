@@ -1,8 +1,12 @@
 import { isSameType } from "@fn-sphere/core";
 import { useContext, type ComponentType } from "react";
 import { z } from "zod";
-import { ViewContext } from "./context.js";
+import { UiSpecContext } from "./context.js";
 import type { DataInputViewProps, UiSpec } from "./types.js";
+
+const useUiSpec = () => {
+  return useContext(UiSpecContext);
+};
 
 /**
  * @deprecated use `useView` instead
@@ -10,19 +14,19 @@ import type { DataInputViewProps, UiSpec } from "./types.js";
 export const usePrimitives = <T extends keyof UiSpec["primitives"]>(
   view: T,
 ) => {
-  const specs = useContext(ViewContext);
+  const specs = useUiSpec();
   return specs.primitives[view];
 };
 
 export const useView = <T extends keyof UiSpec>(type: T) => {
-  const specs = useContext(ViewContext);
+  const specs = useUiSpec();
   return specs[type];
 };
 
 export const useDataInputView = (
   schema?: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
 ): ComponentType<DataInputViewProps> => {
-  const specs = useContext(ViewContext);
+  const specs = useUiSpec();
   const dataInputViews = specs.dataInputViews;
   if (!schema) {
     return () => null;

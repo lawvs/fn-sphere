@@ -35,7 +35,6 @@ export const useFilterRule = (rule: SingleFilter) => {
   );
 
   // TODO ignore FilterId in user input
-  // TODO check input data match the schema
   const updateRule = (newRule: SingleFilter) => {
     onRuleChange({
       ...filterMap,

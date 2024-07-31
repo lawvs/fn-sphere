@@ -1,22 +1,25 @@
-import type { FilterGroup, SingleFilter } from "@fn-sphere/core";
+import type { SingleFilter } from "@fn-sphere/core";
 import type {
   ButtonHTMLAttributes,
   ComponentType,
   InputHTMLAttributes,
   ReactNode,
   RefAttributes,
-  SelectHTMLAttributes,
 } from "react";
 import type { z } from "zod";
+import type { SelectProps } from "../views/components.js";
 import type { FieldSelectProps } from "../views/field-select.js";
+import type { DataInputProps } from "../views/filter-data-input.js";
 import type { FilterGroupContainerProps } from "../views/filter-group-container.js";
+import type { FilterGroupProps } from "../views/filter-group.js";
+import type { SingleFilterRuleProps } from "../views/filter-rule.js";
 import type { FilterSelectProps } from "../views/filter-select.js";
 import type { RuleJoinerProps } from "../views/rule-joiner.js";
 
 export type DataInputViewProps = {
   rule: SingleFilter;
   requiredDataSchema: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]];
-  onChange: (rule: SingleFilter) => void;
+  updateInput: (input: unknown[]) => void;
 } & RefAttributes<HTMLInputElement>;
 
 export type DataInputViewSpec = {
@@ -26,18 +29,6 @@ export type DataInputViewSpec = {
     | [z.ZodTypeAny, ...z.ZodTypeAny[]]
     | ((parameterSchemas: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]]) => boolean);
   view: ComponentType<DataInputViewProps>;
-};
-
-/**
- * @internal
- */
-export type SelectProps<T> = Omit<
-  SelectHTMLAttributes<HTMLSelectElement>,
-  "value" | "onChange" | "children"
-> & {
-  value?: T;
-  options?: { value: T; label: string }[];
-  onChange?: (value: T) => void;
 };
 
 export type UiSpec = {
@@ -73,9 +64,9 @@ export type UiSpec = {
     RuleJoiner: ComponentType<RuleJoinerProps>;
     FieldSelect: ComponentType<FieldSelectProps>;
     FilterSelect: ComponentType<FilterSelectProps>;
-    DataInputPlaceholder: ComponentType<RefAttributes<HTMLInputElement>>;
-    SingleFilter: ComponentType<{ rule: SingleFilter }>;
-    FilterGroup: ComponentType<{ rule: FilterGroup }>;
+    FilterDataInput: ComponentType<DataInputProps>;
+    SingleFilter: ComponentType<SingleFilterRuleProps>;
+    FilterGroup: ComponentType<FilterGroupProps>;
   };
   dataInputViews: DataInputViewSpec[];
 };

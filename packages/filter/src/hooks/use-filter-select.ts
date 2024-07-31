@@ -6,15 +6,12 @@ import {
 } from "@fn-sphere/core";
 import { useContext } from "react";
 import { FilterBuilderContext } from "./filter-provider.js";
+import { useFilterRule } from "./use-filter-rule.js";
 
 export const useFilterSelect = (rule: SingleFilter) => {
-  const {
-    filterMap,
-    filterableFields,
-    mapFieldName,
-    mapFilterName,
-    onRuleChange,
-  } = useContext(FilterBuilderContext);
+  const { filterMap, filterableFields, mapFieldName, mapFilterName } =
+    useContext(FilterBuilderContext);
+  const { updateRule } = useFilterRule(rule);
 
   const ruleNode = filterMap[rule.id];
   if (!ruleNode) {
@@ -44,17 +41,6 @@ export const useFilterSelect = (rule: SingleFilter) => {
     label: mapFilterName(filter, selectedField),
     value: filter,
   }));
-
-  const updateRule = (newRule: SingleFilter) => {
-    onRuleChange({
-      ...filterMap,
-      [rule.id]: {
-        type: "Filter",
-        data: newRule,
-        parentId,
-      },
-    });
-  };
 
   const updateField = (newField: FilterField) => {
     updateRule({
