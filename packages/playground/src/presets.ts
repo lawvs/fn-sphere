@@ -9,7 +9,11 @@ export const presetSchema = z
     age: z.number().describe("Age"),
     status: z.boolean().describe("Status"),
     gender: z
-      .union([z.literal("male"), z.literal("female"), z.literal("other")])
+      .union([
+        z.literal("male").describe("Male"),
+        z.literal("female").describe("Female"),
+        z.literal("other").describe("Other"),
+      ])
       .describe("Gender"),
     detail: z.object({
       email: z.string().email().describe("Email"),
