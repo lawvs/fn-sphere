@@ -1,7 +1,7 @@
 import type { FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
-import { useFilterGroup } from "./hooks/use-filter-group.js";
-import { useView } from "./specs/hooks.js";
+import { useFilterGroup } from "../hooks/use-filter-group.js";
+import { useView } from "../specs/hooks.js";
 
 export const FilterGroupView = ({
   rule: filterGroup,
@@ -13,10 +13,12 @@ export const FilterGroupView = ({
     appendChildRule,
     appendChildGroup,
   } = useFilterGroup(filterGroup);
-  const ButtonView = useView("Button");
-  const RuleJoiner = useView("RuleJoiner");
-  const FilterGroupContainer = useView("FilterGroupContainer");
-  const FilterRuleView = useView("FilterRule");
+  const { Button: ButtonView } = useView("components");
+  const {
+    FilterGroupContainer,
+    SingleFilter: FilterRuleView,
+    RuleJoiner,
+  } = useView("templates");
   const count = filterGroup.conditions.length;
   if (count <= 0) {
     return (

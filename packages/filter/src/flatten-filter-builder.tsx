@@ -24,10 +24,12 @@ export const FlattenFilterBuilder = <Data,>({
   mapFilterName = defaultMapFilterName,
   onChange,
 }: FilterBuilderProps<Data>) => {
-  const RuleJoiner = useView("RuleJoiner");
-  const FilterGroupContainer = useView("FilterGroupContainer");
-  const FilterRule = useView("FilterRule");
-  const ButtonView = useView("Button");
+  const {
+    RuleJoiner,
+    FilterGroupContainer,
+    SingleFilter: FilterRule,
+  } = useView("templates");
+  const { Button: ButtonView } = useView("components");
   const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
 
   if (!isValidFlattenRule) {

@@ -19,19 +19,21 @@ export const FilterBuilder = <Data,>({
   onRuleChange?: (rule: FilterGroup) => void;
   uiSpec: {
     dataInputViews?: UiSpec["dataInputViews"];
-    views?: Partial<UiSpec["views"]>;
+    views?: Partial<UiSpec["components"]>;
     primitives?: Partial<UiSpec["primitives"]>;
+    templates?: Partial<UiSpec["templates"]>;
   };
 } & BasicFilterBuilderProps<Data>) => {
-  const FilterGroup = useView("FilterGroup");
+  const { FilterGroup } = useView("templates");
 
   const normalizedSchema = {
     dataInputViews: [
       ...(uiSpec.dataInputViews ?? []),
       ...presetUiSpec.dataInputViews,
     ],
-    views: { ...presetUiSpec.views, ...uiSpec.views },
+    components: { ...presetUiSpec.components, ...uiSpec.views },
     primitives: { ...presetUiSpec.primitives, ...uiSpec.primitives },
+    templates: { ...presetUiSpec.templates, ...uiSpec.templates },
   } satisfies UiSpec;
 
   return (
