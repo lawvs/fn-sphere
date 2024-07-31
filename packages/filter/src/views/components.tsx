@@ -1,14 +1,11 @@
-import type { FilterGroup, FilterRule } from "@fn-sphere/core";
 import {
   forwardRef,
   useCallback,
   type ButtonHTMLAttributes,
   type ChangeEvent,
-  type ReactNode,
 } from "react";
-import { usePrimitives } from "../hooks.js";
-import { useView } from "../index.js";
-import type { SelectProps } from "../types.js";
+import { usePrimitives } from "../specs/hooks.js";
+import type { SelectProps } from "../specs/types.js";
 
 export const ButtonView = forwardRef<
   HTMLButtonElement,
@@ -59,73 +56,5 @@ export const SelectView = <T,>({
         </OptionPrimitive>
       ))}
     </SelectPrimitive>
-  );
-};
-
-export const DataInputPlaceholder = forwardRef<HTMLInputElement>((_, ref) => {
-  const InputView = useView("Input");
-  return <InputView ref={ref} disabled />;
-});
-
-export const RuleJoiner = ({
-  parent,
-}: {
-  parent: FilterGroup;
-  joinBetween: [FilterRule, FilterRule];
-}) => {
-  const operator = parent.op;
-  return (
-    <div
-      style={{
-        margin: 8,
-      }}
-    >
-      {operator === "or" ? "Or" : "And"}
-    </div>
-  );
-};
-
-export const FilterGroupContainer = ({
-  filterGroup,
-  children,
-}: {
-  filterGroup: FilterGroup;
-  children?: ReactNode;
-}) => {
-  // const {
-  //   ruleState: { isRoot },
-  // } = useFilterGroup(filterGroup);
-  // if (isRoot) {
-  //   return children;
-  // }
-
-  const text = filterGroup.op === "or" ? "Or" : "And";
-  return (
-    <div
-      className="filter-builder-group-container"
-      style={{
-        display: "flex",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginRight: 12,
-        }}
-      >
-        {text}
-      </div>
-      <div
-        style={{
-          borderRadius: 4,
-          padding: 4,
-          background: "rgba(0, 0, 0, 0.05)",
-        }}
-      >
-        {children}
-      </div>
-    </div>
   );
 };

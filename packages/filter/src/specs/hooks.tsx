@@ -4,6 +4,9 @@ import { z } from "zod";
 import { ViewContext } from "./context.js";
 import type { DataInputViewProps, UiSpec } from "./types.js";
 
+/**
+ * @deprecated use `useView` instead
+ */
 export const usePrimitives = <T extends keyof UiSpec["primitives"]>(
   view: T,
 ) => {
@@ -11,9 +14,9 @@ export const usePrimitives = <T extends keyof UiSpec["primitives"]>(
   return specs.primitives[view];
 };
 
-export const useView = <T extends keyof UiSpec["views"]>(view: T) => {
+export const useView = <T extends keyof UiSpec>(type: T) => {
   const specs = useContext(ViewContext);
-  return specs.views[view];
+  return specs[type];
 };
 
 export const useDataInputView = (

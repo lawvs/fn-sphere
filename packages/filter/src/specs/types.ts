@@ -1,4 +1,4 @@
-import type { FilterGroup, FilterRule, SingleFilter } from "@fn-sphere/core";
+import type { FilterGroup, SingleFilter } from "@fn-sphere/core";
 import type {
   ButtonHTMLAttributes,
   ComponentType,
@@ -8,6 +8,10 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import type { z } from "zod";
+import type { FieldSelectProps } from "../views/field-select.js";
+import type { FilterGroupContainerProps } from "../views/filter-group-container.js";
+import type { FilterSelectProps } from "../views/filter-select.js";
+import type { RuleJoinerProps } from "../views/rule-joiner.js";
 
 export type DataInputViewProps = {
   rule: SingleFilter;
@@ -51,7 +55,7 @@ export type UiSpec = {
       InputHTMLAttributes<HTMLOptionElement> & RefAttributes<HTMLOptionElement>
     >;
   };
-  views: {
+  components: {
     Button: ComponentType<
       ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>
     >;
@@ -63,19 +67,15 @@ export type UiSpec = {
     >;
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
     Select: <T>(props: SelectProps<T>) => ReactNode;
-    FilterRule: ComponentType<{ rule: SingleFilter }>;
-    FilterGroup: ComponentType<{ rule: FilterGroup }>;
-    RuleJoiner: ComponentType<{
-      parent: FilterGroup;
-      joinBetween: [FilterRule, FilterRule];
-    }>;
-    DataInputPlaceholder: ComponentType<RefAttributes<HTMLInputElement>>;
-    FilterGroupContainer: ComponentType<{
-      filterGroup: FilterGroup;
-      isRoot: boolean;
-      children?: ReactNode;
-    }>;
   };
-
+  templates: {
+    FilterGroupContainer: ComponentType<FilterGroupContainerProps>;
+    RuleJoiner: ComponentType<RuleJoinerProps>;
+    FieldSelect: ComponentType<FieldSelectProps>;
+    FilterSelect: ComponentType<FilterSelectProps>;
+    DataInputPlaceholder: ComponentType<RefAttributes<HTMLInputElement>>;
+    SingleFilter: ComponentType<{ rule: SingleFilter }>;
+    FilterGroup: ComponentType<{ rule: FilterGroup }>;
+  };
   dataInputViews: DataInputViewSpec[];
 };

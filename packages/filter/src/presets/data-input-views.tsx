@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { z } from "zod";
-import { useView } from "../hooks.js";
-import type { DataInputViewSpec } from "../types.js";
+import { useView } from "../specs/hooks.js";
+import type { DataInputViewSpec } from "../specs/types.js";
 
 export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
@@ -16,7 +16,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     name: "string",
     match: [z.string()],
     view: forwardRef(({ requiredDataSchema, rule, onChange }, ref) => {
-      const InputView = useView("Input");
+      const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
       }
@@ -40,7 +40,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     name: "number",
     match: [z.number()],
     view: forwardRef(({ requiredDataSchema, rule, onChange }, ref) => {
-      const InputView = useView("Input");
+      const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
       }
@@ -64,7 +64,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     name: "date",
     match: [z.date()],
     view: forwardRef(({ requiredDataSchema, rule, onChange }, ref) => {
-      const InputView = useView("Input");
+      const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
       }
@@ -99,7 +99,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       );
     },
     view: function LiteralSelect({ requiredDataSchema, rule, onChange }) {
-      const SelectView = useView("Select");
+      const { Select: SelectView } = useView("components");
       const unionSchema = requiredDataSchema[0] as z.ZodUnion<
         [z.ZodLiteral<unknown>]
       >;
