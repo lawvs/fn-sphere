@@ -1,5 +1,15 @@
 # @fn-sphere/filter
 
+## 0.2.0
+
+### Minor Changes
+
+- 742c3af: Refactor API
+
+### Patch Changes
+
+- @fn-sphere/core@0.2.0
+
 ## 0.1.3
 
 ### Patch Changes
