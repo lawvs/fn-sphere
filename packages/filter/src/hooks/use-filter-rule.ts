@@ -29,18 +29,10 @@ export const useFilterRule = (rule: SingleFilter) => {
   const selectedField = rule.path
     ? filterableFields.find((field) => isEqualPath(field.path, rule.path!))
     : undefined;
-  // const fieldList = filterFields.map((field) => ({
-  //   name: mapFieldName(field),
-  //   value: field,
-  // }));
 
   const selectedFilter = selectedField?.filterList.find(
     (filter) => filter.name === rule.name,
   );
-  // const fieldFilterList = selectedField?.filterList.map((filter) => ({
-  //   name: mapFilterName(filter, selectedField),
-  //   value: filter,
-  // }));
 
   // TODO ignore FilterId in user input
   // TODO check input data match the schema
@@ -123,8 +115,6 @@ export const useFilterRule = (rule: SingleFilter) => {
           (id) => id !== targetRuleId,
         ),
       };
-      console.log(newFilterMap);
-
       onRuleChange(newFilterMap);
       return;
     }
@@ -149,6 +139,7 @@ export const useFilterRule = (rule: SingleFilter) => {
         filterList,
         rule,
       }),
+      isInvert: rule.invert,
       depth: getDepthOfRule(filterMap, rule.id),
     },
 
