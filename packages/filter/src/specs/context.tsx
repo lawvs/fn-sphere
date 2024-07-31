@@ -1,5 +1,5 @@
 import { createContext, type ReactNode } from "react";
-import { presetUiSpec } from "../preset.js";
+import { presetUiSpec } from "./preset.js";
 import type { UiSpec } from "./types.js";
 
 export const UiSpecContext = createContext<UiSpec>(presetUiSpec);
