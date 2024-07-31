@@ -3,7 +3,7 @@ import {
   type StandardFnSchema,
   getParametersExceptFirst,
 } from "@fn-sphere/core";
-import { useDataInputView, useView } from "../specs/index.js";
+import { useDataInputView, useView } from "../../specs/index.js";
 
 type FilterDataInputProps = {
   rule: SingleFilter;
@@ -16,14 +16,14 @@ export const FilterDataInput = ({
   filterSchema,
   onChange,
 }: FilterDataInputProps) => {
-  const Placeholder = useView("DataInputPlaceholder");
+  const { DataInputPlaceholder } = useView("templates");
   const requiredArguments = filterSchema
     ? getParametersExceptFirst(filterSchema)
     : undefined;
   const DataInputView = useDataInputView(requiredArguments);
 
   if (!requiredArguments) {
-    return <Placeholder />;
+    return <DataInputPlaceholder />;
   }
 
   return (
