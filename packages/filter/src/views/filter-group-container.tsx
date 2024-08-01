@@ -20,7 +20,7 @@ export const FilterGroupContainer = ({
   const text = filterGroup.op === "or" ? "Or" : "And";
   return (
     <div
-      className="filter-builder-group-container"
+      className="filter-group-container"
       style={{
         display: "flex",
       }}

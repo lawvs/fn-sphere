@@ -8,6 +8,7 @@ import { SingleFilterView } from "../views/filter-rule.js";
 import { FilterSelect } from "../views/filter-select.js";
 import { primitives } from "../views/primitives.js";
 import { RuleJoiner } from "../views/rule-joiner.js";
+import { SingleFilterContainer } from "../views/single-filter-container.js";
 import type { UiSpec } from "./index.js";
 
 export const presetUiSpec: UiSpec = {
@@ -25,6 +26,7 @@ export const presetUiSpec: UiSpec = {
     FilterSelect,
     FilterDataInput,
     FilterGroupContainer,
+    SingleFilterContainer,
   },
   dataInputViews: presetDataInputSpecs,
 } satisfies UiSpec;

@@ -22,7 +22,7 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   const count = filterGroup.conditions.length;
   if (count <= 0) {
     return (
-      <div className="filter-builder-container">
+      <FilterGroupContainer isRoot={isRoot} filterGroup={filterGroup}>
         <ButtonView
           onClick={() => {
             appendChildRule();
@@ -37,30 +37,14 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
         >
           Add Group
         </ButtonView>
-      </div>
+      </FilterGroupContainer>
     );
   }
 
   return (
-    <div className="filter-builder-container">
-      <FilterGroupContainer isRoot={isRoot} filterGroup={filterGroup}>
-        {filterGroup.conditions.map((childRule, groupIdx) => {
-          if (childRule.type === "Filter") {
-            return (
-              <Fragment key={childRule.id}>
-                {groupIdx > 0 && (
-                  <RuleJoiner
-                    parent={filterGroup}
-                    joinBetween={[
-                      filterGroup.conditions[groupIdx - 1],
-                      childRule,
-                    ]}
-                  />
-                )}
-                <FilterRuleView rule={childRule} />
-              </Fragment>
-            );
-          }
+    <FilterGroupContainer isRoot={isRoot} filterGroup={filterGroup}>
+      {filterGroup.conditions.map((childRule, groupIdx) => {
+        if (childRule.type === "Filter") {
           return (
             <Fragment key={childRule.id}>
               {groupIdx > 0 && (
@@ -72,12 +56,23 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
                   ]}
                 />
               )}
-              <FilterGroupView rule={childRule} />
+              <FilterRuleView rule={childRule} />
             </Fragment>
           );
-        })}
-      </FilterGroupContainer>
-    </div>
+        }
+        return (
+          <Fragment key={childRule.id}>
+            {groupIdx > 0 && (
+              <RuleJoiner
+                parent={filterGroup}
+                joinBetween={[filterGroup.conditions[groupIdx - 1], childRule]}
+              />
+            )}
+            <FilterGroupView rule={childRule} />
+          </Fragment>
+        );
+      })}
+    </FilterGroupContainer>
   );
 };
 FilterGroupView.displayName = "FilterGroupView";

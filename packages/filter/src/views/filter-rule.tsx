@@ -16,15 +16,15 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
   } = useFilterRule(rule);
   const { getRootRule, updateRootRule } = useRootRule();
   const { Button: ButtonView } = useView("components");
-  const { FieldSelect, FilterSelect, FilterDataInput } = useView("templates");
+  const { FieldSelect, FilterSelect, FilterDataInput, SingleFilterContainer } =
+    useView("templates");
 
   return (
-    <div>
+    <SingleFilterContainer rule={rule}>
       <FieldSelect rule={rule} />
       {isInvert ? "Not" : null}
       <FilterSelect rule={rule} />
       <FilterDataInput rule={rule} />
-
       {isValid ? null : "!"}
       <ButtonView
         onClick={() => {
@@ -45,7 +45,7 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
       <ButtonView aria-label="delete" onClick={() => removeRule(true)}>
         Delete
       </ButtonView>
-    </div>
+    </SingleFilterContainer>
   );
 };
 SingleFilterView.displayName = "SingleFilterView";

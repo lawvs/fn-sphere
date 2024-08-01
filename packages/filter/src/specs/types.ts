@@ -15,6 +15,7 @@ import type { FilterGroupProps } from "../views/filter-group.js";
 import type { SingleFilterRuleProps } from "../views/filter-rule.js";
 import type { FilterSelectProps } from "../views/filter-select.js";
 import type { RuleJoinerProps } from "../views/rule-joiner.js";
+import type { SingleFilterContainerProps } from "../views/single-filter-container.js";
 
 export type DataInputViewProps = {
   rule: SingleFilter;
@@ -61,6 +62,7 @@ export type UiSpec = {
   };
   templates: {
     FilterGroupContainer: ComponentType<FilterGroupContainerProps>;
+    SingleFilterContainer: ComponentType<SingleFilterContainerProps>;
     RuleJoiner: ComponentType<RuleJoinerProps>;
     FieldSelect: ComponentType<FieldSelectProps>;
     FilterSelect: ComponentType<FilterSelectProps>;
