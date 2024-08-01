@@ -2,14 +2,21 @@ import {
   genFilterId,
   type FilterGroup,
   type SingleFilter,
+  type SingleFilterInput,
 } from "@fn-sphere/core";
 import type { BasicFilterBuilderProps, FlattenFilterGroup } from "./types.js";
 
-export const createEmptyFilterRule = () =>
+export const createSingleFilter = (
+  { name, path, args = [] }: SingleFilterInput = {
+    args: [],
+  },
+) =>
   ({
     id: genFilterId(),
     type: "Filter",
-    args: [],
+    name,
+    path,
+    args,
   }) satisfies SingleFilter;
 
 export const createEmptyFilterGroup = (
@@ -20,7 +27,7 @@ export const createEmptyFilterGroup = (
     id: genFilterId(),
     type: "FilterGroup",
     op,
-    conditions: includeRule ? [createEmptyFilterRule()] : [],
+    conditions: includeRule ? [createSingleFilter()] : [],
   }) satisfies FilterGroup;
 
 export const isFlattenFilterGroup = (

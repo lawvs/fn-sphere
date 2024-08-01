@@ -8,7 +8,7 @@ export * from "./specs/index.js";
 export type { BasicFilterBuilderProps } from "./types.js";
 export {
   createEmptyFilterGroup,
-  createEmptyFilterRule,
+  createSingleFilter,
   defaultMapFieldName,
   defaultMapFilterName,
 } from "./utils.js";

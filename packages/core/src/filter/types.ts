@@ -18,7 +18,6 @@ export type FilterField = {
 };
 
 export interface SingleFilterInput {
-  type: "Filter";
   /**
    * Field path
    *
@@ -35,25 +34,30 @@ export interface SingleFilterInput {
   /**
    * Arguments for the filter function
    */
-  args: unknown[];
+  args?: unknown[];
   invert?: boolean;
 }
 
 export interface SingleFilter extends SingleFilterInput {
+  type: "Filter";
   /**
    * Unique id, used for tracking changes or resorting
    */
   id: FilterId;
+  /**
+   * Arguments for the filter function
+   */
+  args: unknown[];
 }
 
 export interface FilterGroupInput {
-  type: "FilterGroup";
   op: "and" | "or";
   conditions: (SingleFilter | FilterGroup)[];
   invert?: boolean;
 }
 
 export interface FilterGroup extends FilterGroupInput {
+  type: "FilterGroup";
   /**
    * Unique id, used for tracking changes or resorting
    */
