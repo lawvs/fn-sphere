@@ -9,7 +9,7 @@ import { z } from "zod";
 import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
 import type { BasicFilterBuilderProps } from "../types.js";
 import {
-  createEmptyFilterGroup,
+  createFilterGroup,
   defaultMapFieldName,
   defaultMapFilterName,
 } from "../utils.js";
@@ -36,7 +36,7 @@ const defaultContext: NormalizedFilterContextType = {
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
 
-  filterMap: toFilterMap(createEmptyFilterGroup("or")),
+  filterMap: toFilterMap(createFilterGroup()),
   filterableFields: [],
   onRuleChange: () => {},
 };

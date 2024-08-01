@@ -1,6 +1,6 @@
 import { type FilterGroup, type SingleFilter } from "@fn-sphere/core";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
-import { createEmptyFilterGroup, createSingleFilter } from "../utils.js";
+import { createFilterGroup, createSingleFilter } from "../utils.js";
 import { useFilterBuilderContext } from "./use-filter-builder-context.js";
 
 export const useFilterGroup = (ruleGroup: FilterGroup) => {
@@ -65,7 +65,10 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
   };
 
   const appendChildGroup = (
-    newFilterGroup: FilterGroup = createEmptyFilterGroup("and"),
+    newFilterGroup: FilterGroup = createFilterGroup({
+      op: "and",
+      conditions: [createSingleFilter()],
+    }),
     index = Infinity,
   ) => {
     onRuleChange({

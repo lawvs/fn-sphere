@@ -1,33 +1,31 @@
 import {
   genFilterId,
   type FilterGroup,
+  type FilterGroupInput,
   type SingleFilter,
   type SingleFilterInput,
 } from "@fn-sphere/core";
 import type { BasicFilterBuilderProps, FlattenFilterGroup } from "./types.js";
 
 export const createSingleFilter = (
-  { name, path, args = [] }: SingleFilterInput = {
+  ruleInput: SingleFilterInput = {
     args: [],
   },
 ) =>
   ({
     id: genFilterId(),
     type: "Filter",
-    name,
-    path,
-    args,
+    args: [],
+    ...ruleInput,
   }) satisfies SingleFilter;
 
-export const createEmptyFilterGroup = (
-  op: FilterGroup["op"],
-  includeRule = true,
-) =>
+export const createFilterGroup = (ruleInput?: FilterGroupInput) =>
   ({
     id: genFilterId(),
     type: "FilterGroup",
-    op,
-    conditions: includeRule ? [createSingleFilter()] : [],
+    op: "and",
+    conditions: [],
+    ...ruleInput,
   }) satisfies FilterGroup;
 
 export const isFlattenFilterGroup = (

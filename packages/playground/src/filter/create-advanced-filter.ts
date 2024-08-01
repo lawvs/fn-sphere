@@ -4,7 +4,8 @@ import {
   type FilterGroup,
 } from "@fn-sphere/core";
 import {
-  createEmptyFilterGroup,
+  createFilterGroup,
+  createSingleFilter,
   defaultMapFieldName,
   defaultMapFilterName,
   type BasicFilterBuilderProps,
@@ -116,7 +117,10 @@ export const defaultOptions = {
   storageKey: null,
   container: null,
   dialogProps: {},
-  defaultRule: createEmptyFilterGroup("or"),
+  defaultRule: createFilterGroup({
+    op: "or",
+    conditions: [createSingleFilter()],
+  }),
 } as const satisfies Required<CreateAdvancedFilterProps>;
 
 /**

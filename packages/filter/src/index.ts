@@ -7,7 +7,7 @@ export { useRootRule } from "./hooks/use-root-rule.js";
 export * from "./specs/index.js";
 export type { BasicFilterBuilderProps } from "./types.js";
 export {
-  createEmptyFilterGroup,
+  createFilterGroup,
   createSingleFilter,
   defaultMapFieldName,
   defaultMapFilterName,

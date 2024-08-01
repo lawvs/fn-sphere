@@ -4,7 +4,8 @@ import { FilterProvider } from "./hooks/use-filter-builder-context.js";
 import { useView } from "./specs/index.js";
 import type { BasicFilterBuilderProps } from "./types.js";
 import {
-  createEmptyFilterGroup,
+  createFilterGroup,
+createSingleFilter,
   defaultMapFieldName,
   defaultMapFilterName,
   isFlattenFilterGroup,
@@ -15,10 +16,21 @@ type FilterBuilderProps<Data = unknown> = BasicFilterBuilderProps<Data> & {
   onChange?: (rule: FilterGroup) => void;
 };
 
+const createFlattenFilterGroup = () =>
+  createFilterGroup({
+    op: "or",
+    conditions: [
+      createFilterGroup({
+        op: "and",
+        conditions: [createSingleFilter()],
+      }),
+    ],
+  });
+
 export const FlattenFilterBuilder = <Data,>({
   schema,
   filterList,
-  rule: filterGroup = createEmptyFilterGroup("or"),
+  rule: filterGroup = createFlattenFilterGroup(),
   fieldDeepLimit = 1,
   mapFieldName = defaultMapFieldName,
   mapFilterName = defaultMapFilterName,
@@ -38,7 +50,7 @@ export const FlattenFilterBuilder = <Data,>({
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
-            onChange?.(createEmptyFilterGroup("or"));
+            onChange?.(createFlattenFilterGroup());
           }}
         >
           Reset Filter
@@ -53,7 +65,7 @@ export const FlattenFilterBuilder = <Data,>({
       <div className="filter-builder-container">
         <ButtonView
           onClick={() => {
-            onChange?.(createEmptyFilterGroup("or"));
+            onChange?.(createFlattenFilterGroup());
           }}
         >
           Add Filter

@@ -4,7 +4,8 @@ import {
   type FilterGroup,
 } from "@fn-sphere/core";
 import {
-  createEmptyFilterGroup,
+  createFilterGroup,
+  createSingleFilter,
   FlattenFilterBuilder,
   type BasicFilterBuilderProps,
 } from "@fn-sphere/filter";
@@ -53,7 +54,12 @@ export const FlattenFilterDialog = <Data,>({
       {...dialogProps}
       onConfirm={() => {
         onConfirm?.({
-          rule: filterGroup ?? createEmptyFilterGroup("or"),
+          rule:
+            filterGroup ??
+            createFilterGroup({
+              op: "or",
+              conditions: [createSingleFilter()],
+            }),
           predicate: createFilterPredicate({
             schema: filterBuilder.schema,
             filterList,

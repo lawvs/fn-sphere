@@ -2,7 +2,7 @@ import { type SingleFilter } from "@fn-sphere/core";
 import { useFilterRule } from "../hooks/use-filter-rule.js";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../specs/index.js";
-import { createEmptyFilterGroup } from "../utils.js";
+import { createFilterGroup, createSingleFilter } from "../utils.js";
 
 export type SingleFilterRuleProps = {
   rule: SingleFilter;
@@ -36,7 +36,12 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
       <ButtonView
         onClick={() => {
           const rootRule = getRootRule();
-          rootRule.conditions.push(createEmptyFilterGroup("and"));
+          rootRule.conditions.push(
+            createFilterGroup({
+              op: "and",
+              conditions: [createSingleFilter()],
+            }),
+          );
           updateRootRule(rootRule);
         }}
       >
