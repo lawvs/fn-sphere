@@ -1,5 +1,5 @@
 import type { FilterGroup } from "@fn-sphere/core";
-import { FilterProvider } from "./hooks/filter-provider.js";
+import { FilterProvider } from "./hooks/use-filter-builder-context.js";
 import { useView } from "./specs/hooks.js";
 import type { UiSpec } from "./specs/index.js";
 import { FilterUiProvider, presetUiSpec } from "./specs/index.js";

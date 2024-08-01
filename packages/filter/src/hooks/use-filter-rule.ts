@@ -4,14 +4,13 @@ import {
   type FilterGroup,
   type SingleFilter,
 } from "@fn-sphere/core";
-import { useContext } from "react";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { createEmptyFilterGroup, createEmptyFilterRule } from "../utils.js";
-import { FilterBuilderContext } from "./filter-provider.js";
+import { useFilterBuilderContext } from "./use-filter-builder-context.js";
 
 export const useFilterRule = (rule: SingleFilter) => {
   const { schema, filterList, filterMap, filterableFields, onRuleChange } =
-    useContext(FilterBuilderContext);
+    useFilterBuilderContext();
 
   const ruleNode = filterMap[rule.id];
   if (!ruleNode) {

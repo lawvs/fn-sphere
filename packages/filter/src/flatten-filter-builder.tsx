@@ -1,6 +1,6 @@
 import { countNumberOfRules, type FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
-import { FilterProvider } from "./hooks/filter-provider.js";
+import { FilterProvider } from "./hooks/use-filter-builder-context.js";
 import { useView } from "./specs/index.js";
 import type { BasicFilterBuilderProps } from "./types.js";
 import {

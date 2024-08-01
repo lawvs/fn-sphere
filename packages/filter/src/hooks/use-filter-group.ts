@@ -1,11 +1,10 @@
 import { type FilterGroup, type SingleFilter } from "@fn-sphere/core";
-import { useContext } from "react";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { createEmptyFilterGroup, createEmptyFilterRule } from "../utils.js";
-import { FilterBuilderContext } from "./filter-provider.js";
+import { useFilterBuilderContext } from "./use-filter-builder-context.js";
 
 export const useFilterGroup = (ruleGroup: FilterGroup) => {
-  const { filterMap, onRuleChange } = useContext(FilterBuilderContext);
+  const { filterMap, onRuleChange } = useFilterBuilderContext();
   const ruleNode = filterMap[ruleGroup.id];
   if (!ruleNode) {
     console.error("Rule not found in filterMap", ruleGroup, filterMap);

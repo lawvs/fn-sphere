@@ -4,7 +4,7 @@ import {
   findFilterableFields,
   presetFilter,
 } from "@fn-sphere/core";
-import { createContext, type ReactNode } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 import { z } from "zod";
 import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
 import type { BasicFilterBuilderProps } from "../types.js";
@@ -41,8 +41,11 @@ const defaultContext: NormalizedFilterContextType = {
   onRuleChange: () => {},
 };
 
-export const FilterBuilderContext =
+const FilterBuilderContext =
   createContext<NormalizedFilterContextType>(defaultContext);
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useFilterBuilderContext = () => useContext(FilterBuilderContext);
 
 export const FilterProvider = ({
   value,

@@ -1,7 +1,6 @@
 import { type FilterGroup } from "@fn-sphere/core";
-import { useContext } from "react";
 import { fromFilterMap, toFilterMap } from "../filter-map.js";
-import { FilterBuilderContext } from "./filter-provider.js";
+import { useFilterBuilderContext } from "./use-filter-builder-context.js";
 
 export const useRootRule = () => {
   const {
@@ -11,7 +10,7 @@ export const useRootRule = () => {
     mapFieldName,
     mapFilterName,
     onRuleChange,
-  } = useContext(FilterBuilderContext);
+  } = useFilterBuilderContext();
 
   const getRootRule = () => {
     return fromFilterMap(filterMap);
