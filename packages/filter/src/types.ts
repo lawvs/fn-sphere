@@ -37,7 +37,7 @@ export type BasicFilterBuilderProps<Data = unknown> = {
    *
    * @default 1
    */
-  deepLimit?: number;
+  fieldDeepLimit?: number;
   /**
    * Map the filter field to the field name.
    *

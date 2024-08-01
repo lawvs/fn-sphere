@@ -110,7 +110,7 @@ export const openFlattenFilterDialog = async <Data>(
 export const defaultOptions = {
   schema: z.any(),
   filterList: presetFilter,
-  deepLimit: 1,
+  fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
   storageKey: null,
@@ -170,7 +170,7 @@ export const createAdvancedFilter = <Data>(
         filterBuilder: {
           schema: options.schema,
           filterList: options.filterList,
-          deepLimit: options.deepLimit,
+          fieldDeepLimit: options.fieldDeepLimit,
           mapFieldName: options.mapFieldName,
           mapFilterName: options.mapFilterName,
           defaultRule: r,

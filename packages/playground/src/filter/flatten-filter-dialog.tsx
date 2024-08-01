@@ -65,7 +65,7 @@ export const FlattenFilterDialog = <Data,>({
       <FlattenFilterBuilder
         schema={filterBuilder.schema}
         filterList={filterList}
-        deepLimit={filterBuilder.deepLimit}
+        fieldDeepLimit={filterBuilder.fieldDeepLimit}
         mapFieldName={filterBuilder.mapFieldName}
         mapFilterName={filterBuilder.mapFilterName}
         rule={controlled ? filterBuilder.rule : filterGroup}

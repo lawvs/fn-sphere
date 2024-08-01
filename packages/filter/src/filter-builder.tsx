@@ -12,7 +12,7 @@ export const FilterBuilder = <Data,>({
   onRuleChange,
   mapFieldName,
   mapFilterName,
-  deepLimit,
+  fieldDeepLimit,
   uiSpec,
 }: {
   rule: FilterGroup;
@@ -47,7 +47,7 @@ export const FilterBuilder = <Data,>({
 
           mapFieldName,
           mapFilterName,
-          deepLimit,
+          fieldDeepLimit,
         }}
       >
         <FilterGroup rule={rule} />

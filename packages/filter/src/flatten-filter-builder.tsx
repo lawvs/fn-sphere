@@ -19,7 +19,7 @@ export const FlattenFilterBuilder = <Data,>({
   schema,
   filterList,
   rule: filterGroup = createEmptyFilterGroup("or"),
-  deepLimit = 1,
+  fieldDeepLimit = 1,
   mapFieldName = defaultMapFieldName,
   mapFilterName = defaultMapFilterName,
   onChange,
@@ -72,7 +72,7 @@ export const FlattenFilterBuilder = <Data,>({
 
         mapFieldName,
         mapFilterName,
-        deepLimit,
+        fieldDeepLimit,
       }}
     >
       <div className="filter-builder-container">

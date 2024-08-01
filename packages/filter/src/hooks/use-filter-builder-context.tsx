@@ -32,7 +32,7 @@ type NormalizedFilterContextType = Required<
 const defaultContext: NormalizedFilterContextType = {
   schema: z.unknown(),
   filterList: presetFilter,
-  deepLimit: 1,
+  fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
 
@@ -59,11 +59,11 @@ export const FilterProvider = ({
   const filterableFields = findFilterableFields({
     schema: value.schema,
     filterList,
-    maxDeep: value.deepLimit,
+    maxDeep: value.fieldDeepLimit,
   });
 
   const contextValue = {
-    deepLimit: value.deepLimit ?? defaultContext.deepLimit,
+    fieldDeepLimit: value.fieldDeepLimit ?? defaultContext.fieldDeepLimit,
     mapFieldName: value.mapFieldName ?? defaultContext.mapFieldName,
     mapFilterName: value.mapFilterName ?? defaultContext.mapFilterName,
     filterList,

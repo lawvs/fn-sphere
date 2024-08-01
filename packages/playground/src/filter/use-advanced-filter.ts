@@ -78,7 +78,7 @@ export const useAdvancedFilter = <Data>(
           filterBuilder: {
             schema: options.schema,
             filterList: options.filterList,
-            deepLimit: options.deepLimit,
+            fieldDeepLimit: options.fieldDeepLimit,
             defaultRule: rule,
           },
           ...options,

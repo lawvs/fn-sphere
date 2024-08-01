@@ -16,7 +16,7 @@ export const App = () => {
     storageKey: "fn-sphere-flatten-filter",
     schema: presetSchema,
     filterList: dataFilters,
-    deepLimit: Infinity,
+    fieldDeepLimit: Infinity,
     dialogProps: {
       width: "600px",
     },
