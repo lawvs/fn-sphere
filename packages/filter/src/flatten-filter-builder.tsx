@@ -5,7 +5,7 @@ import { useView } from "./specs/index.js";
 import type { BasicFilterBuilderProps } from "./types.js";
 import {
   createFilterGroup,
-createSingleFilter,
+  createSingleFilter,
   defaultMapFieldName,
   defaultMapFilterName,
   isFlattenFilterGroup,
@@ -46,7 +46,7 @@ export const FlattenFilterBuilder = <Data,>({
 
   if (!isValidFlattenRule) {
     return (
-      <>
+      <FilterGroupContainer isRoot filterGroup={filterGroup}>
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
@@ -55,14 +55,14 @@ export const FlattenFilterBuilder = <Data,>({
         >
           Reset Filter
         </ButtonView>
-      </>
+      </FilterGroupContainer>
     );
   }
 
   const count = countNumberOfRules(filterGroup);
   if (count <= 0) {
     return (
-      <div className="filter-builder-container">
+      <FilterGroupContainer isRoot filterGroup={filterGroup}>
         <ButtonView
           onClick={() => {
             onChange?.(createFlattenFilterGroup());
@@ -70,7 +70,7 @@ export const FlattenFilterBuilder = <Data,>({
         >
           Add Filter
         </ButtonView>
-      </div>
+      </FilterGroupContainer>
     );
   }
 
@@ -87,40 +87,35 @@ export const FlattenFilterBuilder = <Data,>({
         fieldDeepLimit,
       }}
     >
-      <div className="filter-builder-container">
-        <FilterGroupContainer isRoot filterGroup={filterGroup}>
-          {filterGroup.conditions.map((andGroup, groupIdx) => {
-            return (
-              <Fragment key={andGroup.id}>
-                {groupIdx > 0 && (
-                  <RuleJoiner
-                    parent={filterGroup}
-                    joinBetween={[
-                      filterGroup.conditions[groupIdx - 1],
-                      andGroup,
-                    ]}
-                  />
-                )}
-                <FilterGroupContainer isRoot={false} filterGroup={andGroup}>
-                  {andGroup.conditions.map((rule, ruleIdx) => (
-                    <Fragment key={rule.id}>
-                      {ruleIdx > 0 && (
-                        <RuleJoiner
-                          parent={andGroup}
-                          joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
-                        />
-                      )}
-                      <div className="rule-container">
-                        {<FilterRule rule={rule} />}
-                      </div>
-                    </Fragment>
-                  ))}
-                </FilterGroupContainer>
-              </Fragment>
-            );
-          })}
-        </FilterGroupContainer>
-      </div>
+      <FilterGroupContainer isRoot filterGroup={filterGroup}>
+        {filterGroup.conditions.map((andGroup, groupIdx) => {
+          return (
+            <Fragment key={andGroup.id}>
+              {groupIdx > 0 && (
+                <RuleJoiner
+                  parent={filterGroup}
+                  joinBetween={[filterGroup.conditions[groupIdx - 1], andGroup]}
+                />
+              )}
+              <FilterGroupContainer isRoot={false} filterGroup={andGroup}>
+                {andGroup.conditions.map((rule, ruleIdx) => (
+                  <Fragment key={rule.id}>
+                    {ruleIdx > 0 && (
+                      <RuleJoiner
+                        parent={andGroup}
+                        joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
+                      />
+                    )}
+                    <div className="rule-container">
+                      {<FilterRule rule={rule} />}
+                    </div>
+                  </Fragment>
+                ))}
+              </FilterGroupContainer>
+            </Fragment>
+          );
+        })}
+      </FilterGroupContainer>
     </FilterProvider>
   );
 };
