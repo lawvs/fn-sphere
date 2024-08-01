@@ -19,7 +19,7 @@ export const FilterBuilder = <Data,>({
   onRuleChange?: (rule: FilterGroup) => void;
   uiSpec: {
     dataInputViews?: UiSpec["dataInputViews"];
-    views?: Partial<UiSpec["components"]>;
+    components?: Partial<UiSpec["components"]>;
     primitives?: Partial<UiSpec["primitives"]>;
     templates?: Partial<UiSpec["templates"]>;
   };
@@ -31,7 +31,7 @@ export const FilterBuilder = <Data,>({
       ...(uiSpec.dataInputViews ?? []),
       ...presetUiSpec.dataInputViews,
     ],
-    components: { ...presetUiSpec.components, ...uiSpec.views },
+    components: { ...presetUiSpec.components, ...uiSpec.components },
     primitives: { ...presetUiSpec.primitives, ...uiSpec.primitives },
     templates: { ...presetUiSpec.templates, ...uiSpec.templates },
   } satisfies UiSpec;
