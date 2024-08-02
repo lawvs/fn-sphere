@@ -23,7 +23,7 @@ export const createFilterSphere = <Data = unknown>(
     return createFilterPredicate({
       schema: dataSchema,
       filterList: filterFnList,
-      rule,
+      filterRule: rule,
     });
   };
 

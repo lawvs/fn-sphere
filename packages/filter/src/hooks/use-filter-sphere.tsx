@@ -15,12 +15,12 @@ import { useFilterSchemaContext } from "./use-filter-schema-context.js";
  * ```
  */
 export const useFilterSphere = <Data,>() => {
-  const { rule, schema, filterList } = useFilterSchemaContext();
+  const { filterRule, schema, filterList } = useFilterSchemaContext();
   const typedSchema = schema as z.ZodType<Data>;
   const predicate = createFilterPredicate({
     filterList,
     schema: typedSchema,
-    rule,
+    filterRule,
   });
-  return { rule, schema, predicate };
+  return { filterRule, schema, predicate };
 };

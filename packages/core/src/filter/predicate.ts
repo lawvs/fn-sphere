@@ -18,7 +18,7 @@ type FilterPredicateOptions<T> = {
   /**
    * The filter rule.
    */
-  rule?: FilterRule;
+  filterRule?: FilterRule;
 };
 
 const trueFn = () => true;
@@ -26,17 +26,17 @@ const trueFn = () => true;
 const createSingleRulePredicate = <Data>({
   filterList,
   schema,
-  rule,
-}: FilterPredicateOptions<Data> & {
-  rule: StrictSingleFilter;
+  strictSingleRule,
+}: Omit<FilterPredicateOptions<Data>, "filterRule"> & {
+  strictSingleRule: StrictSingleFilter;
 }): ((data: Data) => boolean) => {
   const filterSchema = getRuleFilterSchema({
-    rule,
+    rule: strictSingleRule,
     filterList,
     dataSchema: schema,
   });
   if (!filterSchema) {
-    console.error(schema, rule);
+    console.error(schema, strictSingleRule);
     throw new Error("Failed to get filter fn schema");
   }
   const skipValidate = filterSchema.skipValidate;
@@ -47,66 +47,69 @@ const createSingleRulePredicate = <Data>({
     : filterSchema.define.implement(filterSchema.implement);
 
   return (data: Data): boolean => {
-    const target = getValueAtPath(data, rule.path);
-    const result = fnWithImplement(target, ...rule.args);
-    return rule.invert ? !result : result;
+    const target = getValueAtPath(data, strictSingleRule.path);
+    const result = fnWithImplement(target, ...strictSingleRule.args);
+    return strictSingleRule.invert ? !result : result;
   };
 };
 
 const createGroupPredicate = <Data>({
   filterList,
   schema,
-  rule,
-}: Omit<FilterPredicateOptions<Data>, "rule"> & {
-  rule: StrictFilterGroup;
+  strictGroupRule,
+}: Omit<FilterPredicateOptions<Data>, "filterRule"> & {
+  strictGroupRule: StrictFilterGroup;
 }): ((data: Data) => boolean) => {
-  if (!rule.conditions.length) {
+  if (!strictGroupRule.conditions.length) {
     return trueFn;
   }
-  const predicateList = rule.conditions.map((condition) => {
+  const predicateList = strictGroupRule.conditions.map((condition) => {
     if (condition.type === "Filter") {
       return createSingleRulePredicate({
         filterList,
         schema,
-        rule: condition,
+        strictSingleRule: condition,
       });
     }
     if (condition.type === "FilterGroup") {
       return createGroupPredicate({
         filterList,
         schema,
-        rule: condition,
+        strictGroupRule: condition,
       });
     }
     unreachable(condition);
   });
-  if (rule.op === "or") {
+  if (strictGroupRule.op === "or") {
     return (data) => {
       const result = or<(data: Data) => boolean>(...predicateList)(data);
-      return rule.invert ? !result : result;
+      return strictGroupRule.invert ? !result : result;
     };
   }
-  if (rule.op === "and") {
+  if (strictGroupRule.op === "and") {
     return (data) => {
       const result = and<(data: Data) => boolean>(...predicateList)(data);
-      return rule.invert ? !result : result;
+      return strictGroupRule.invert ? !result : result;
     };
   }
-  unreachable(rule.op);
+  unreachable(strictGroupRule.op);
 };
 
+/**
+ * Creates a filter predicate function based on the provided filter rule.
+ */
 export const createFilterPredicate = <Data>({
   filterList,
   schema,
-  rule: looseRule,
+  filterRule,
 }: FilterPredicateOptions<Data>) => {
-  if (!looseRule) {
+  if (!filterRule) {
     return trueFn;
   }
   const normalizedRule = normalizeFilter({
     filterList,
     dataSchema: schema,
-    rule: looseRule,
+    rule: filterRule,
   });
   if (!normalizedRule) {
     // Not available rule
@@ -116,14 +119,14 @@ export const createFilterPredicate = <Data>({
     return createSingleRulePredicate({
       filterList,
       schema,
-      rule: normalizedRule,
+      strictSingleRule: normalizedRule,
     });
   }
   if (normalizedRule.type === "FilterGroup") {
     return createGroupPredicate({
       filterList,
       schema,
-      rule: normalizedRule,
+      strictGroupRule: normalizedRule,
     });
   }
   unreachable(normalizedRule);
