@@ -9,7 +9,7 @@ import { createFilterGroup, createSingleFilter } from "../utils.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterRule = (rule: SingleFilter) => {
-  const { schema, filterList, filterMap, filterableFields, onRuleChange } =
+  const { schema, filterList, filterMap, filterableFields, onFilterMapChange } =
     useFilterSchemaContext();
 
   const ruleNode = filterMap[rule.id];
@@ -35,7 +35,7 @@ export const useFilterRule = (rule: SingleFilter) => {
 
   // TODO ignore FilterId in user input
   const updateRule = (newRule: SingleFilter) => {
-    onRuleChange({
+    onFilterMapChange({
       ...filterMap,
       [rule.id]: {
         type: "Filter",
@@ -46,7 +46,7 @@ export const useFilterRule = (rule: SingleFilter) => {
   };
 
   const appendRule = (newRule: SingleFilter = createSingleFilter()) => {
-    onRuleChange({
+    onFilterMapChange({
       ...filterMap,
       [parentId]: {
         ...parent,
@@ -70,7 +70,7 @@ export const useFilterRule = (rule: SingleFilter) => {
       conditions: [createSingleFilter()],
     }),
   ) => {
-    onRuleChange({
+    onFilterMapChange({
       ...filterMap,
       [parentId]: {
         ...parent,
@@ -116,7 +116,7 @@ export const useFilterRule = (rule: SingleFilter) => {
           (id) => id !== targetRuleId,
         ),
       };
-      onRuleChange(newFilterMap);
+      onFilterMapChange(newFilterMap);
       return;
     }
     const newFilterMap = {
@@ -127,7 +127,7 @@ export const useFilterRule = (rule: SingleFilter) => {
       },
     };
     delete newFilterMap[rule.id];
-    onRuleChange(newFilterMap);
+    onFilterMapChange(newFilterMap);
   };
 
   return {

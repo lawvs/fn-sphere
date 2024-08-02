@@ -5,7 +5,7 @@ import {
   type SingleFilter,
   type SingleFilterInput,
 } from "@fn-sphere/core";
-import type { BasicFilterBuilderProps, FlattenFilterGroup } from "./types.js";
+import type { BasicFilterSphereProps, FlattenFilterGroup } from "./types.js";
 
 export const createSingleFilter = (
   ruleInput: SingleFilterInput = {
@@ -28,6 +28,9 @@ export const createFilterGroup = (ruleInput?: FilterGroupInput) =>
     ...ruleInput,
   }) satisfies FilterGroup;
 
+/**
+ * @deprecated
+ */
 export const isFlattenFilterGroup = (
   filterGroup: FilterGroup,
 ): filterGroup is FlattenFilterGroup => {
@@ -43,9 +46,9 @@ export const isFlattenFilterGroup = (
   );
 };
 
-export const defaultMapFieldName: NonNullable<
-  BasicFilterBuilderProps["mapFieldName"]
-> = (field) => {
+export const defaultMapFieldName: BasicFilterSphereProps["mapFieldName"] = (
+  field,
+) => {
   if (field.fieldSchema.description) {
     return field.fieldSchema.description;
   }
@@ -55,8 +58,8 @@ export const defaultMapFieldName: NonNullable<
   return "root";
 };
 
-export const defaultMapFilterName: NonNullable<
-  BasicFilterBuilderProps["mapFilterName"]
-> = (filterSchema) => {
+export const defaultMapFilterName: BasicFilterSphereProps["mapFilterName"] = (
+  filterSchema,
+) => {
   return filterSchema.name;
 };

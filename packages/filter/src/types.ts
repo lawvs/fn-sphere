@@ -1,5 +1,6 @@
 import type {
   FilterField,
+  FilterGroup,
   FilterId,
   FnSchema,
   SingleFilter,
@@ -23,8 +24,20 @@ export type FlattenFilterGroup = {
   }[];
 };
 
-export type BasicFilterBuilderProps<Data = unknown> = {
+export interface BasicFilterSphereInput<Data = unknown> {
+  /**
+   * The filter rule.
+   */
+  filterRule: FilterGroup;
+  /**
+   * The schema of the data to be filtered.
+   */
   schema: ZodType<Data>;
+  /**
+   * The list of filter functions schema.
+   *
+   * If not provided, the `presetFilter` will be used.
+   */
   filterList?: FnSchema[];
   /**
    * The maximum nesting depth limit of the filter rule.
@@ -57,4 +70,12 @@ export type BasicFilterBuilderProps<Data = unknown> = {
     filterSchema: StandardFnSchema,
     field: FilterField,
   ) => string;
-};
+  /**
+   * The callback when the filter rule changes.
+   */
+  onRuleChange?: (rule: FilterGroup) => void;
+}
+
+export type BasicFilterSphereProps<Data = unknown> = Required<
+  BasicFilterSphereInput<Data>
+>;

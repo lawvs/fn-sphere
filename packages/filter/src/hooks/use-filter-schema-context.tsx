@@ -7,40 +7,39 @@ import {
 import { createContext, type ReactNode, useContext } from "react";
 import { z } from "zod";
 import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
-import type { BasicFilterBuilderProps } from "../types.js";
+import type {
+  BasicFilterSphereInput,
+  BasicFilterSphereProps,
+} from "../types.js";
 import {
   createFilterGroup,
   defaultMapFieldName,
   defaultMapFilterName,
 } from "../utils.js";
 
-type FilterContextType = {
-  filterRule: FilterGroup;
-  onRuleChange?: (filterGroup: FilterGroup) => void;
-} & BasicFilterBuilderProps<unknown>;
+type FilterContextType = BasicFilterSphereInput<unknown>;
 
-type NormalizedFilterContextType = Required<
-  BasicFilterBuilderProps<unknown>
-> & {
-  rule: FilterGroup;
-  onRuleChange: (filterMap: FilterMap) => void;
+interface NormalizedFilterContextType
+  extends Omit<BasicFilterSphereProps<unknown>, "onRuleChange"> {
+  filterRule: FilterGroup;
+  onFilterMapChange: (filterMap: FilterMap) => void;
 
   // derived properties
   filterMap: FilterMap;
   filterableFields: FilterField[];
-};
+}
 
 const defaultContext: NormalizedFilterContextType = {
   schema: z.unknown(),
   filterList: presetFilter,
-  rule: createFilterGroup(),
+  filterRule: createFilterGroup(),
   fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
 
   filterMap: toFilterMap(createFilterGroup()),
   filterableFields: [],
-  onRuleChange: () => {},
+  onFilterMapChange: () => {},
 };
 
 const FilterSchemaContext =
@@ -68,19 +67,19 @@ export const FilterSchemaProvider = ({
     maxDeep: fieldDeepLimit,
   });
 
-  const contextValue = {
-    rule: value.filterRule,
+  const contextValue: NormalizedFilterContextType = {
+    filterRule: value.filterRule,
     filterList,
     fieldDeepLimit: fieldDeepLimit,
     mapFieldName: value.mapFieldName ?? defaultContext.mapFieldName,
     mapFilterName: value.mapFilterName ?? defaultContext.mapFilterName,
     schema: value.schema,
-    onRuleChange: (filterMap: FilterMap) => {
+    onFilterMapChange: (filterMap: FilterMap) => {
       value.onRuleChange?.(fromFilterMap(filterMap));
     },
     filterMap: toFilterMap(value.filterRule),
     filterableFields,
-  } satisfies NormalizedFilterContextType;
+  };
 
   return (
     <FilterSchemaContext.Provider value={contextValue}>

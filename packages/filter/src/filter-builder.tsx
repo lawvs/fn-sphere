@@ -1,57 +1,55 @@
-import type { FilterGroup } from "@fn-sphere/core";
-import { FilterProvider } from "./hooks/use-filter-builder-context.js";
-import { useView } from "./specs/hooks.js";
-import type { UiSpec } from "./specs/index.js";
-import { FilterUiProvider, presetUiSpec } from "./specs/index.js";
-import type { BasicFilterBuilderProps } from "./types.js";
+import { FilterSchemaProvider } from "./hooks/use-filter-schema-context.js";
+import { useView } from "./theme/hooks.js";
+import type { ThemeSpec } from "./theme/index.js";
+import { FilterThemeProvider, presetTheme } from "./theme/index.js";
+import type { BasicFilterSphereInput } from "./types.js";
+
+interface FilterBuilderProps<Data> extends BasicFilterSphereInput<Data> {
+  theme: {
+    dataInputViews?: ThemeSpec["dataInputViews"];
+    components?: Partial<ThemeSpec["components"]>;
+    primitives?: Partial<ThemeSpec["primitives"]>;
+    templates?: Partial<ThemeSpec["templates"]>;
+  };
+}
 
 export const FilterBuilder = <Data,>({
   schema,
   filterList,
-  rule,
+  filterRule,
   onRuleChange,
   mapFieldName,
   mapFilterName,
   fieldDeepLimit,
-  uiSpec,
-}: {
-  rule: FilterGroup;
-  onRuleChange?: (rule: FilterGroup) => void;
-  uiSpec: {
-    dataInputViews?: UiSpec["dataInputViews"];
-    components?: Partial<UiSpec["components"]>;
-    primitives?: Partial<UiSpec["primitives"]>;
-    templates?: Partial<UiSpec["templates"]>;
-  };
-} & BasicFilterBuilderProps<Data>) => {
+  theme,
+}: FilterBuilderProps<Data>) => {
   const { FilterGroup } = useView("templates");
 
   const normalizedSchema = {
     dataInputViews: [
-      ...(uiSpec.dataInputViews ?? []),
-      ...presetUiSpec.dataInputViews,
+      ...(theme.dataInputViews ?? []),
+      ...presetTheme.dataInputViews,
     ],
-    components: { ...presetUiSpec.components, ...uiSpec.components },
-    primitives: { ...presetUiSpec.primitives, ...uiSpec.primitives },
-    templates: { ...presetUiSpec.templates, ...uiSpec.templates },
-  } satisfies UiSpec;
+    components: { ...presetTheme.components, ...theme.components },
+    primitives: { ...presetTheme.primitives, ...theme.primitives },
+    templates: { ...presetTheme.templates, ...theme.templates },
+  } satisfies ThemeSpec;
 
   return (
-    <FilterUiProvider spec={normalizedSchema}>
-      <FilterProvider
+    <FilterThemeProvider spec={normalizedSchema}>
+      <FilterSchemaProvider
         value={{
           schema,
           filterList,
-          filterRule: rule,
+          filterRule: filterRule,
           onRuleChange,
-
           mapFieldName,
           mapFilterName,
           fieldDeepLimit,
         }}
       >
-        <FilterGroup rule={rule} />
-      </FilterProvider>
-    </FilterUiProvider>
+        <FilterGroup rule={filterRule} />
+      </FilterSchemaProvider>
+    </FilterThemeProvider>
   );
 };

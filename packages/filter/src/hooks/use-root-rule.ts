@@ -9,7 +9,7 @@ export const useRootRule = () => {
     filterMap,
     mapFieldName,
     mapFilterName,
-    onRuleChange,
+    onFilterMapChange,
   } = useFilterSchemaContext();
 
   const getRootRule = () => {
@@ -17,7 +17,7 @@ export const useRootRule = () => {
   };
 
   const updateRootRule = (rootGroup: FilterGroup) => {
-    onRuleChange(toFilterMap(rootGroup));
+    onFilterMapChange(toFilterMap(rootGroup));
   };
 
   return {

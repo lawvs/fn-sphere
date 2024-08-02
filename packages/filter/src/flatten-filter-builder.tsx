@@ -1,8 +1,8 @@
-import { countNumberOfRules, type FilterGroup } from "@fn-sphere/core";
+import { countNumberOfRules } from "@fn-sphere/core";
 import { Fragment } from "react";
 import { FilterSchemaProvider } from "./hooks/use-filter-schema-context.js";
 import { useView } from "./theme/index.js";
-import type { BasicFilterBuilderProps } from "./types.js";
+import type { BasicFilterSphereInput } from "./types.js";
 import {
   createFilterGroup,
   createSingleFilter,
@@ -11,10 +11,7 @@ import {
   isFlattenFilterGroup,
 } from "./utils.js";
 
-type FilterBuilderProps<Data = unknown> = BasicFilterBuilderProps<Data> & {
-  rule?: FilterGroup;
-  onChange?: (rule: FilterGroup) => void;
-};
+type FilterBuilderProps<Data = unknown> = BasicFilterSphereInput<Data>;
 
 const createFlattenFilterGroup = () =>
   createFilterGroup({
@@ -30,11 +27,11 @@ const createFlattenFilterGroup = () =>
 export const FlattenFilterBuilder = <Data,>({
   schema,
   filterList,
-  rule: filterGroup = createFlattenFilterGroup(),
+  filterRule: filterGroup = createFlattenFilterGroup(),
   fieldDeepLimit = 1,
   mapFieldName = defaultMapFieldName,
   mapFilterName = defaultMapFilterName,
-  onChange,
+  onRuleChange,
 }: FilterBuilderProps<Data>) => {
   const {
     RuleJoiner,
@@ -50,7 +47,7 @@ export const FlattenFilterBuilder = <Data,>({
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
-            onChange?.(createFlattenFilterGroup());
+            onRuleChange?.(createFlattenFilterGroup());
           }}
         >
           Reset Filter
@@ -65,7 +62,7 @@ export const FlattenFilterBuilder = <Data,>({
       <FilterGroupContainer isRoot filterGroup={filterGroup}>
         <ButtonView
           onClick={() => {
-            onChange?.(createFlattenFilterGroup());
+            onRuleChange?.(createFlattenFilterGroup());
           }}
         >
           Add Filter
@@ -80,7 +77,7 @@ export const FlattenFilterBuilder = <Data,>({
         schema,
         filterList,
         filterRule: filterGroup,
-        onRuleChange: onChange,
+        onRuleChange,
 
         mapFieldName,
         mapFilterName,
