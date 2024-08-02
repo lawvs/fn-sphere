@@ -6,7 +6,7 @@ import type {
   StrictFilterGroup,
   StrictSingleFilter,
 } from "./types.js";
-import { getValueAtPath } from "./utils.js";
+import { and, getValueAtPath, or } from "./utils.js";
 import { getRuleFilterSchema, normalizeFilter } from "./validation.js";
 
 type FilterPredicateOptions<T> = {
@@ -82,13 +82,13 @@ const createGroupPredicate = <Data>({
   });
   if (rule.op === "or") {
     return (data) => {
-      const result = predicateList.some((fn) => fn(data));
+      const result = or<(data: Data) => boolean>(...predicateList)(data);
       return rule.invert ? !result : result;
     };
   }
   if (rule.op === "and") {
     return (data) => {
-      const result = predicateList.every((fn) => fn(data));
+      const result = and<(data: Data) => boolean>(...predicateList)(data);
       return rule.invert ? !result : result;
     };
   }

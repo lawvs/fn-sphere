@@ -52,7 +52,7 @@ export interface SingleFilter extends SingleFilterInput {
 
 export interface FilterGroupInput {
   op: "and" | "or";
-  conditions: (SingleFilter | FilterGroup)[];
+  conditions?: FilterRule[];
   invert?: boolean;
 }
 
@@ -62,6 +62,7 @@ export interface FilterGroup extends FilterGroupInput {
    * Unique id, used for tracking changes or resorting
    */
   id: FilterId;
+  conditions: FilterRule[];
 }
 
 export type FilterRule = SingleFilter | FilterGroup;

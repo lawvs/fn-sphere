@@ -4,6 +4,16 @@ import type { GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
 import type { FilterId, FilterPath, FilterRule } from "./types.js";
 
+export const and =
+  <T extends (...args: any[]) => boolean>(...fnArray: NoInfer<T>[]) =>
+  (...args: Parameters<T>) =>
+    fnArray.every((fn) => fn(...args));
+
+export const or =
+  <T extends (...args: any[]) => boolean>(...fnArray: NoInfer<T>[]) =>
+  (...args: Parameters<T>) =>
+    fnArray.some((fn) => fn(...args));
+
 export const instantiateGenericFn = (
   schema: ZodType,
   genericFn: GenericFnSchema,
