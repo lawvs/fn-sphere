@@ -32,7 +32,7 @@ export type DataInputViewSpec = {
   view: ComponentType<DataInputViewProps>;
 };
 
-export type UiSpec = {
+export type ThemeSpec = {
   primitives: {
     button: ComponentType<
       ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>

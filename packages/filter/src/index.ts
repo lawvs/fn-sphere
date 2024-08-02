@@ -4,7 +4,7 @@ export { useFilterGroup } from "./hooks/use-filter-group.js";
 export { useFilterRule } from "./hooks/use-filter-rule.js";
 export { useFilterSelect } from "./hooks/use-filter-select.js";
 export { useRootRule } from "./hooks/use-root-rule.js";
-export * from "./specs/index.js";
+export * from "./theme/index.js";
 export type { BasicFilterBuilderProps } from "./types.js";
 export {
   createFilterGroup,
@@ -23,5 +23,4 @@ export {
   stringFilter,
 } from "@fn-sphere/core";
 export type { FilterGroup, FilterRule, SingleFilter } from "@fn-sphere/core";
-export { presetUiSpec } from "./specs/index.js";
 export { presetDataInputSpecs } from "./views/data-input-views.js";

@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { z } from "zod";
-import { useView } from "../specs/hooks.js";
-import type { DataInputViewSpec } from "../specs/types.js";
+import { useView } from "../theme/hooks.js";
+import type { DataInputViewSpec } from "../theme/types.js";
 
 export const presetDataInputSpecs: DataInputViewSpec[] = [
   {

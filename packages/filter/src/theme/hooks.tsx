@@ -1,33 +1,35 @@
 import { isSameType } from "@fn-sphere/core";
-import { useContext, type ComponentType } from "react";
+import { type ComponentType } from "react";
 import { z } from "zod";
-import { UiSpecContext } from "./context.js";
-import type { DataInputViewProps, UiSpec } from "./types.js";
-
-const useUiSpec = () => {
-  return useContext(UiSpecContext);
-};
+import { useFilterTheme } from "./context.js";
+import type { DataInputViewProps, ThemeSpec } from "./types.js";
 
 /**
  * @deprecated use `useView` instead
+ * @internal
  */
-export const usePrimitives = <T extends keyof UiSpec["primitives"]>(
+export const usePrimitives = <T extends keyof ThemeSpec["primitives"]>(
   view: T,
 ) => {
-  const specs = useUiSpec();
+  const specs = useFilterTheme();
   return specs.primitives[view];
 };
 
-export const useView = <T extends keyof UiSpec>(type: T) => {
-  const specs = useUiSpec();
+/**
+ * Must be used within a `FilterThemeProvider` component.
+ */
+export const useView = <T extends keyof ThemeSpec>(type: T) => {
+  const specs = useFilterTheme();
   return specs[type];
 };
 
+/**
+ * Must be used within a `FilterThemeProvider` component.
+ */
 export const useDataInputView = (
   schema?: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
 ): ComponentType<DataInputViewProps> => {
-  const specs = useUiSpec();
-  const dataInputViews = specs.dataInputViews;
+  const dataInputViews = useView("dataInputViews");
   if (!schema) {
     return () => null;
   }
@@ -38,7 +40,7 @@ export const useDataInputView = (
     return isSameType(z.tuple(spec.match), z.tuple(schema));
   });
   if (!targetSpec) {
-    console.error("no view spec found for", schema, specs);
+    console.error("no view spec found for", schema, dataInputViews);
     return () => (
       <div>
         No view spec found for&nbsp;

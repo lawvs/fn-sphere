@@ -1,6 +1,6 @@
 import type { SingleFilter } from "@fn-sphere/core";
 import { useFilterSelect } from "../hooks/use-filter-select.js";
-import { useView } from "../specs/index.js";
+import { useView } from "../theme/index.js";
 
 export type FieldSelectProps = {
   rule: SingleFilter;

@@ -1,7 +1,7 @@
 import { getParametersExceptFirst, type SingleFilter } from "@fn-sphere/core";
 import { forwardRef } from "react";
 import { useFilterRule } from "../hooks/use-filter-rule.js";
-import { useDataInputView, useView } from "../specs/hooks.js";
+import { useDataInputView, useView } from "../theme/hooks.js";
 
 export type DataInputProps = {
   rule: SingleFilter;

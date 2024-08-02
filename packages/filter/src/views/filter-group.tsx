@@ -1,7 +1,7 @@
 import type { FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
 import { useFilterGroup } from "../hooks/use-filter-group.js";
-import { useView } from "../specs/hooks.js";
+import { useView } from "../theme/hooks.js";
 
 export type FilterGroupProps = {
   rule: FilterGroup;

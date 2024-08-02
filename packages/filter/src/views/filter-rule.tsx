@@ -1,7 +1,7 @@
 import { type SingleFilter } from "@fn-sphere/core";
 import { useFilterRule } from "../hooks/use-filter-rule.js";
 import { useRootRule } from "../hooks/use-root-rule.js";
-import { useView } from "../specs/index.js";
+import { useView } from "../theme/index.js";
 import { createFilterGroup, createSingleFilter } from "../utils.js";
 
 export type SingleFilterRuleProps = {

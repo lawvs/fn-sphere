@@ -5,7 +5,7 @@ import {
   type ChangeEvent,
   type SelectHTMLAttributes,
 } from "react";
-import { usePrimitives } from "../specs/hooks.js";
+import { usePrimitives } from "../theme/hooks.js";
 
 export const ButtonView = forwardRef<
   HTMLButtonElement,
