@@ -9,8 +9,8 @@ import { useFilterSchemaContext } from "./use-filter-schema-context.js";
  * Must be used within a `FilterSchemaProvider` or `FilterSphereProvider` component.
  *
  * @example
- * ```
- * const { rule, schema, predicate } = useFilterSphere<YourData>();
+ * ```ts
+ * const { filterRule, schema, predicate } = useFilterSphere<YourData>();
  * const filteredData = data.filter(predicate);
  * ```
  */

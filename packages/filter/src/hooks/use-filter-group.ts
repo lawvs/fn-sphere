@@ -4,7 +4,7 @@ import { createFilterGroup, createSingleFilter } from "../utils.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterGroup = (ruleGroup: FilterGroup) => {
-  const { filterMap, onRuleChange } = useFilterSchemaContext();
+  const { filterMap, onFilterMapChange } = useFilterSchemaContext();
   const ruleNode = filterMap[ruleGroup.id];
   if (!ruleNode) {
     console.error("Rule not found in filterMap", ruleGroup, filterMap);
@@ -33,7 +33,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
     if (oldOp === newOp) {
       return;
     }
-    onRuleChange({
+    onFilterMapChange({
       ...filterMap,
       [ruleGroup.id]: {
         ...ruleNode,
@@ -46,7 +46,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
     newRule: SingleFilter = createSingleFilter(),
     index = Infinity,
   ) => {
-    onRuleChange({
+    onFilterMapChange({
       ...filterMap,
       [ruleNode.id]: {
         ...ruleNode,
@@ -71,7 +71,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
     }),
     index = Infinity,
   ) => {
-    onRuleChange({
+    onFilterMapChange({
       ...filterMap,
       [ruleNode.id]: {
         ...ruleNode,
@@ -97,7 +97,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
       delete newFilterMap[id];
     });
     delete newFilterMap[ruleNode.id];
-    onRuleChange(newFilterMap);
+    onFilterMapChange(newFilterMap);
   };
 
   return {

@@ -13,14 +13,14 @@ export const useFilterTheme = () => {
 };
 
 export const FilterThemeProvider = ({
-  spec,
+  theme,
   children,
 }: {
-  spec: ThemeSpec;
-  children: ReactNode;
+  theme: ThemeSpec;
+  children?: ReactNode;
 }) => {
   return (
-    <FilterThemeContext.Provider value={spec}>
+    <FilterThemeContext.Provider value={theme}>
       {children}
     </FilterThemeContext.Provider>
   );
