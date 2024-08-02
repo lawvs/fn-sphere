@@ -1,7 +1,7 @@
 import { countNumberOfRules, type FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
-import { FilterProvider } from "./hooks/use-filter-builder-context.js";
-import { useView } from "./specs/index.js";
+import { FilterSchemaProvider } from "./hooks/use-filter-schema-context.js";
+import { useView } from "./theme/index.js";
 import type { BasicFilterBuilderProps } from "./types.js";
 import {
   createFilterGroup,
@@ -75,7 +75,7 @@ export const FlattenFilterBuilder = <Data,>({
   }
 
   return (
-    <FilterProvider
+    <FilterSchemaProvider
       value={{
         schema,
         filterList,
@@ -116,7 +116,7 @@ export const FlattenFilterBuilder = <Data,>({
           );
         })}
       </FilterGroupContainer>
-    </FilterProvider>
+    </FilterSchemaProvider>
   );
 };
 FlattenFilterBuilder.displayName = "FlattenFilterBuilder";

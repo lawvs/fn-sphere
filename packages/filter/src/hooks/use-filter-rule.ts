@@ -6,11 +6,11 @@ import {
 } from "@fn-sphere/core";
 import { getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { createFilterGroup, createSingleFilter } from "../utils.js";
-import { useFilterBuilderContext } from "./use-filter-builder-context.js";
+import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterRule = (rule: SingleFilter) => {
   const { schema, filterList, filterMap, filterableFields, onRuleChange } =
-    useFilterBuilderContext();
+    useFilterSchemaContext();
 
   const ruleNode = filterMap[rule.id];
   if (!ruleNode) {

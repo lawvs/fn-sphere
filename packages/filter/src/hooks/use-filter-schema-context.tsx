@@ -22,6 +22,7 @@ type FilterContextType = {
 type NormalizedFilterContextType = Required<
   BasicFilterBuilderProps<unknown>
 > & {
+  rule: FilterGroup;
   onRuleChange: (filterMap: FilterMap) => void;
 
   // derived properties
@@ -32,6 +33,7 @@ type NormalizedFilterContextType = Required<
 const defaultContext: NormalizedFilterContextType = {
   schema: z.unknown(),
   filterList: presetFilter,
+  rule: createFilterGroup(),
   fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
@@ -41,32 +43,37 @@ const defaultContext: NormalizedFilterContextType = {
   onRuleChange: () => {},
 };
 
-const FilterBuilderContext =
+const FilterSchemaContext =
   createContext<NormalizedFilterContextType>(defaultContext);
 
+/**
+ * @internal
+ */
 // eslint-disable-next-line react-refresh/only-export-components
-export const useFilterBuilderContext = () => useContext(FilterBuilderContext);
+export const useFilterSchemaContext = () => useContext(FilterSchemaContext);
 
-export const FilterProvider = ({
+export const FilterSchemaProvider = ({
   value,
   children,
 }: {
   value: FilterContextType;
-  children: ReactNode;
+  children?: ReactNode;
 }) => {
-  const filterList = value.filterList ?? presetFilter;
+  const filterList = value.filterList ?? defaultContext.filterList;
+  const fieldDeepLimit = value.fieldDeepLimit ?? defaultContext.fieldDeepLimit;
 
   const filterableFields = findFilterableFields({
     schema: value.schema,
     filterList,
-    maxDeep: value.fieldDeepLimit,
+    maxDeep: fieldDeepLimit,
   });
 
   const contextValue = {
-    fieldDeepLimit: value.fieldDeepLimit ?? defaultContext.fieldDeepLimit,
+    rule: value.filterRule,
+    filterList,
+    fieldDeepLimit: fieldDeepLimit,
     mapFieldName: value.mapFieldName ?? defaultContext.mapFieldName,
     mapFilterName: value.mapFilterName ?? defaultContext.mapFilterName,
-    filterList,
     schema: value.schema,
     onRuleChange: (filterMap: FilterMap) => {
       value.onRuleChange?.(fromFilterMap(filterMap));
@@ -76,8 +83,8 @@ export const FilterProvider = ({
   } satisfies NormalizedFilterContextType;
 
   return (
-    <FilterBuilderContext.Provider value={contextValue}>
+    <FilterSchemaContext.Provider value={contextValue}>
       {children}
-    </FilterBuilderContext.Provider>
+    </FilterSchemaContext.Provider>
   );
 };

@@ -4,12 +4,12 @@ import {
   type SingleFilter,
   type StandardFnSchema,
 } from "@fn-sphere/core";
-import { useFilterBuilderContext } from "./use-filter-builder-context.js";
 import { useFilterRule } from "./use-filter-rule.js";
+import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterSelect = (rule: SingleFilter) => {
   const { filterMap, filterableFields, mapFieldName, mapFilterName } =
-    useFilterBuilderContext();
+    useFilterSchemaContext();
   const { updateRule } = useFilterRule(rule);
 
   const ruleNode = filterMap[rule.id];

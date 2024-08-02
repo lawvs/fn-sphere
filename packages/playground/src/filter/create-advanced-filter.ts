@@ -119,7 +119,9 @@ export const defaultOptions = {
   dialogProps: {},
   defaultRule: createFilterGroup({
     op: "or",
-    conditions: [createSingleFilter()],
+    conditions: [
+      createFilterGroup({ op: "and", conditions: [createSingleFilter()] }),
+    ],
   }),
 } as const satisfies Required<CreateAdvancedFilterProps>;
 
