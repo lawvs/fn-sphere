@@ -1,38 +1,20 @@
 import type {
   FilterField,
   FilterGroup,
-  FilterId,
   FnSchema,
-  SingleFilter,
   StandardFnSchema,
 } from "@fn-sphere/core";
-import type { ZodType } from "zod";
-
-/**
- * @internal
- * @deprecated
- */
-export type FlattenFilterGroup = {
-  id: FilterId;
-  type: "FilterGroup";
-  op: "or";
-  conditions: {
-    id: FilterId;
-    type: "FilterGroup";
-    op: "and";
-    conditions: SingleFilter[];
-  }[];
-};
+import type { z } from "zod";
 
 export interface BasicFilterSphereInput<Data = unknown> {
   /**
-   * The filter rule.
-   */
-  filterRule: FilterGroup;
-  /**
    * The schema of the data to be filtered.
    */
-  schema: ZodType<Data>;
+  schema: z.ZodType<Data>;
+  /**
+   * The filter rule.
+   */
+  // filterRule?: FilterGroup;
   /**
    * The list of filter functions schema.
    *
@@ -75,7 +57,3 @@ export interface BasicFilterSphereInput<Data = unknown> {
    */
   onRuleChange?: (rule: FilterGroup) => void;
 }
-
-export type BasicFilterSphereProps<Data = unknown> = Required<
-  BasicFilterSphereInput<Data>
->;

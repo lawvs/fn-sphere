@@ -1,11 +1,13 @@
 import { Fragment, type PropsWithChildren } from "react";
-import { FilterSchemaProvider } from "./hooks/use-filter-schema-context.js";
+import {
+  FilterSchemaProvider,
+  type FilterSchemaContext,
+} from "./hooks/use-filter-schema-context.js";
 import {
   FilterThemeProvider,
   presetTheme,
   type ThemeSpec,
 } from "./theme/index.js";
-import type { BasicFilterSphereInput } from "./types.js";
 
 export type FilterThemeInput = {
   dataInputViews?: ThemeSpec["dataInputViews"];
@@ -15,20 +17,14 @@ export type FilterThemeInput = {
 };
 
 export interface FilterSphereProviderProps<Data>
-  extends BasicFilterSphereInput<Data> {
+  extends FilterSchemaContext<Data> {
   theme?: FilterThemeInput;
 }
 
 export const FilterSphereProvider = <Data,>({
-  schema,
-  filterFnList,
-  filterRule,
-  onRuleChange,
-  mapFieldName,
-  mapFilterName,
-  fieldDeepLimit,
   theme,
   children,
+  ...context
 }: PropsWithChildren<FilterSphereProviderProps<Data>>) => {
   const MaybeThemeProviderWithChildren = theme ? (
     <FilterThemeProvider
@@ -49,17 +45,7 @@ export const FilterSphereProvider = <Data,>({
   );
 
   return (
-    <FilterSchemaProvider
-      value={{
-        schema,
-        filterFnList,
-        filterRule,
-        onRuleChange,
-        mapFieldName,
-        mapFilterName,
-        fieldDeepLimit,
-      }}
-    >
+    <FilterSchemaProvider value={context}>
       {MaybeThemeProviderWithChildren}
     </FilterSchemaProvider>
   );

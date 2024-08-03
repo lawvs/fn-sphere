@@ -1,11 +1,14 @@
 import {
   genFilterId,
+  type FilterField,
   type FilterGroup,
   type FilterGroupInput,
   type SingleFilter,
   type SingleFilterInput,
+  type StandardFnSchema,
 } from "@fn-sphere/core";
-import type { BasicFilterSphereProps, FlattenFilterGroup } from "./types.js";
+
+export const noop = () => {};
 
 export const createSingleFilter = (
   ruleInput: SingleFilterInput = {
@@ -28,27 +31,7 @@ export const createFilterGroup = (ruleInput?: FilterGroupInput) =>
     ...ruleInput,
   }) satisfies FilterGroup;
 
-/**
- * @deprecated
- */
-export const isFlattenFilterGroup = (
-  filterGroup: FilterGroup,
-): filterGroup is FlattenFilterGroup => {
-  if (filterGroup.op === "and") {
-    return false;
-  }
-
-  return filterGroup.conditions.every(
-    (group) =>
-      group.type === "FilterGroup" &&
-      group.op === "and" &&
-      group.conditions.every((rule) => rule.type === "Filter"),
-  );
-};
-
-export const defaultMapFieldName: BasicFilterSphereProps["mapFieldName"] = (
-  field,
-) => {
+export const defaultMapFieldName: (field: FilterField) => string = (field) => {
   if (field.fieldSchema.description) {
     return field.fieldSchema.description;
   }
@@ -58,8 +41,9 @@ export const defaultMapFieldName: BasicFilterSphereProps["mapFieldName"] = (
   return "root";
 };
 
-export const defaultMapFilterName: BasicFilterSphereProps["mapFilterName"] = (
-  filterSchema,
-) => {
+export const defaultMapFilterName: (
+  filterSchema: StandardFnSchema,
+  field: FilterField,
+) => string = (filterSchema) => {
   return filterSchema.name;
 };
