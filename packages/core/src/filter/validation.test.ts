@@ -6,7 +6,7 @@ import type { FilterId, SingleFilter } from "./types.js";
 import { isValidRule } from "./validation.js";
 
 describe("isValidRule", () => {
-  const filterList: FnSchema[] = [...booleanFilter, ...stringFilter];
+  const filterFnList: FnSchema[] = [...booleanFilter, ...stringFilter];
 
   const mockDataSchema = z.object({
     name: z.string(),
@@ -23,7 +23,7 @@ describe("isValidRule", () => {
     };
 
     const result = isValidRule({
-      filterList: filterList,
+      filterFnList: filterFnList,
       dataSchema: mockDataSchema,
       rule,
     });
@@ -41,7 +41,7 @@ describe("isValidRule", () => {
     };
 
     const result = isValidRule({
-      filterList: filterList,
+      filterFnList: filterFnList,
       dataSchema: mockDataSchema,
       rule,
     });
@@ -59,7 +59,7 @@ describe("isValidRule", () => {
     };
 
     const result = isValidRule({
-      filterList: filterList,
+      filterFnList: filterFnList,
       dataSchema: mockDataSchema,
       rule,
     });
@@ -77,7 +77,7 @@ describe("isValidRule", () => {
     };
 
     const result = isValidRule({
-      filterList: filterList,
+      filterFnList: filterFnList,
       dataSchema: mockDataSchema,
       rule,
     });
@@ -95,7 +95,7 @@ describe("isValidRule", () => {
     };
 
     const result = isValidRule({
-      filterList: filterList,
+      filterFnList: filterFnList,
       dataSchema: mockDataSchema,
       rule,
     });
@@ -113,7 +113,7 @@ describe("isValidRule", () => {
     };
 
     const result = isValidRule({
-      filterList: filterList,
+      filterFnList: filterFnList,
       dataSchema: mockDataSchema,
       rule,
     });

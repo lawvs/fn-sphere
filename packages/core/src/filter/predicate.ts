@@ -10,7 +10,7 @@ import { and, getValueAtPath, or } from "./utils.js";
 import { getRuleFilterSchema, normalizeFilter } from "./validation.js";
 
 type FilterPredicateOptions<T> = {
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   /**
    * The schema of the data.
    */
@@ -24,7 +24,7 @@ type FilterPredicateOptions<T> = {
 const trueFn = () => true;
 
 const createSingleRulePredicate = <Data>({
-  filterList,
+  filterFnList,
   schema,
   strictSingleRule,
 }: Omit<FilterPredicateOptions<Data>, "filterRule"> & {
@@ -32,7 +32,7 @@ const createSingleRulePredicate = <Data>({
 }): ((data: Data) => boolean) => {
   const filterSchema = getRuleFilterSchema({
     rule: strictSingleRule,
-    filterList,
+    filterFnList: filterFnList,
     dataSchema: schema,
   });
   if (!filterSchema) {
@@ -54,7 +54,7 @@ const createSingleRulePredicate = <Data>({
 };
 
 const createGroupPredicate = <Data>({
-  filterList,
+  filterFnList,
   schema,
   strictGroupRule,
 }: Omit<FilterPredicateOptions<Data>, "filterRule"> & {
@@ -66,14 +66,14 @@ const createGroupPredicate = <Data>({
   const predicateList = strictGroupRule.conditions.map((condition) => {
     if (condition.type === "Filter") {
       return createSingleRulePredicate({
-        filterList,
+        filterFnList,
         schema,
         strictSingleRule: condition,
       });
     }
     if (condition.type === "FilterGroup") {
       return createGroupPredicate({
-        filterList,
+        filterFnList,
         schema,
         strictGroupRule: condition,
       });
@@ -99,7 +99,7 @@ const createGroupPredicate = <Data>({
  * Creates a filter predicate function based on the provided filter rule.
  */
 export const createFilterPredicate = <Data>({
-  filterList,
+  filterFnList,
   schema,
   filterRule,
 }: FilterPredicateOptions<Data>) => {
@@ -107,7 +107,7 @@ export const createFilterPredicate = <Data>({
     return trueFn;
   }
   const normalizedRule = normalizeFilter({
-    filterList,
+    filterFnList: filterFnList,
     dataSchema: schema,
     rule: filterRule,
   });
@@ -117,14 +117,14 @@ export const createFilterPredicate = <Data>({
   }
   if (normalizedRule.type === "Filter") {
     return createSingleRulePredicate({
-      filterList,
+      filterFnList,
       schema,
       strictSingleRule: normalizedRule,
     });
   }
   if (normalizedRule.type === "FilterGroup") {
     return createGroupPredicate({
-      filterList,
+      filterFnList,
       schema,
       strictGroupRule: normalizedRule,
     });

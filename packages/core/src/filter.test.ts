@@ -38,7 +38,7 @@ test("basic usage", () => {
   expect(fields.map((i) => i.path)).toEqual([[], ["age"]]);
 
   const firstField = fields[0];
-  const availableFilter = firstField.filterList;
+  const availableFilter = firstField.filterFnList;
   expect(availableFilter).toHaveLength(1);
 
   const firstFilter = availableFilter[0];
@@ -92,7 +92,7 @@ test("filter nested obj", () => {
   expect(fields.map((i) => i.path)).toEqual([["age"]]);
 
   const firstField = fields[0];
-  const availableFilter = firstField.filterList;
+  const availableFilter = firstField.filterFnList;
   expect(availableFilter).toHaveLength(1);
 
   const firstFilterSchema = availableFilter[0];
@@ -150,8 +150,10 @@ test("FilterGroup usage", () => {
   const ageField = fields.find((i) => isEqualPath(i.path, ["age"]))!;
   const nameField = fields.find((i) => isEqualPath(i.path, ["name"]))!;
 
-  const ageFilter = ageField.filterList.find((i) => i.name === "number equal")!;
-  const nameFilter = nameField.filterList.find(
+  const ageFilter = ageField.filterFnList.find(
+    (i) => i.name === "number equal",
+  )!;
+  const nameFilter = nameField.filterFnList.find(
     (i) => i.name === "string equal",
   )!;
 

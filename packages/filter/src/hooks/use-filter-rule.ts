@@ -9,8 +9,13 @@ import { createFilterGroup, createSingleFilter } from "../utils.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterRule = (rule: SingleFilter) => {
-  const { schema, filterList, filterMap, filterableFields, onFilterMapChange } =
-    useFilterSchemaContext();
+  const {
+    schema,
+    filterFnList,
+    filterMap,
+    filterableFields,
+    onFilterMapChange,
+  } = useFilterSchemaContext();
 
   const ruleNode = filterMap[rule.id];
   if (!ruleNode) {
@@ -29,7 +34,7 @@ export const useFilterRule = (rule: SingleFilter) => {
     ? filterableFields.find((field) => isEqualPath(field.path, rule.path!))
     : undefined;
 
-  const selectedFilter = selectedField?.filterList.find(
+  const selectedFilter = selectedField?.filterFnList.find(
     (filter) => filter.name === rule.name,
   );
 
@@ -137,7 +142,7 @@ export const useFilterRule = (rule: SingleFilter) => {
       isLastRule: index === parent.conditionIds.length - 1,
       isValid: isValidRule({
         dataSchema: schema,
-        filterList,
+        filterFnList,
         rule,
       }),
       isInvert: rule.invert,
@@ -145,8 +150,6 @@ export const useFilterRule = (rule: SingleFilter) => {
     },
 
     filterableFields,
-    // fieldList,
-    // fieldFilterList,
     selectedField,
     selectedFilter,
 

@@ -38,7 +38,7 @@ export interface BasicFilterSphereInput<Data = unknown> {
    *
    * If not provided, the `presetFilter` will be used.
    */
-  filterList?: FnSchema[];
+  filterFnList?: FnSchema[];
   /**
    * The maximum nesting depth limit of the filter rule.
    *

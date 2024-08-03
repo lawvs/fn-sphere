@@ -10,7 +10,7 @@ Export new type `BasicFilterSphereProps`.
 export interface BasicFilterSphereInput<Data = unknown> {
   filterRule: FilterGroup;
   schema: ZodType<Data>;
-  filterList?: FnSchema[];
+  filterFnList?: FnSchema[];
   fieldDeepLimit?: number;
   mapFieldName?: (field: FilterField) => string;
   mapFilterName?: (

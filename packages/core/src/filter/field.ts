@@ -42,21 +42,21 @@ const bfsSchemaField = (
 };
 
 /**
- * Find all fields that can be filtered based on the given schema and filterList.
+ * Find all fields that can be filtered based on the given schema and filterFnList.
  */
 export const findFilterableFields = <Data>({
   schema,
-  filterList,
+  filterFnList,
   maxDeep = 1,
 }: {
   schema: ZodType<Data>;
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   maxDeep?: number;
 }): FilterField[] => {
   const result: FilterField[] = [];
 
   const walk = (fieldSchema: ZodType, path: FilterPath) => {
-    const instantiationFilter: StandardFnSchema[] = filterList
+    const instantiationFilter: StandardFnSchema[] = filterFnList
       .map((fnSchema): StandardFnSchema | undefined => {
         if (!isGenericFilter(fnSchema)) {
           // Standard filter
@@ -84,7 +84,7 @@ export const findFilterableFields = <Data>({
       result.push({
         path,
         fieldSchema,
-        filterList: availableFilter,
+        filterFnList: availableFilter,
       });
     }
   };

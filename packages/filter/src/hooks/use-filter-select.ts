@@ -33,10 +33,10 @@ export const useFilterSelect = (rule: SingleFilter) => {
     value: field,
   }));
 
-  const selectedFilter = selectedField?.filterList.find(
+  const selectedFilter = selectedField?.filterFnList.find(
     (filter) => filter.name === rule.name,
   );
-  const filterOptions = selectedField?.filterList.map((filter) => ({
+  const filterOptions = selectedField?.filterFnList.map((filter) => ({
     label: mapFilterName(filter, selectedField),
     value: filter,
   }));
@@ -47,7 +47,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
       path: newField.path,
       // Clear filter name when field changed
       name: undefined,
-      // name: newField.filterList[0].name,
+      // name: newField.filterFnList[0].name,
       // Reset arguments when field changed
       args: [],
     });

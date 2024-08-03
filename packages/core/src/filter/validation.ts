@@ -27,26 +27,26 @@ type ValidateError = {
 };
 
 /**
- * find filterFnSchema from `filterList` base `rule.name`
+ * find filterFnSchema from `filterFnList` base `rule.name`
  *
  * If filterFnSchema is a generic fn schema,
  * try instantiate generic fn to a StandardFnSchema.
  * The generic type is `getSchemaAtPath(dataSchema, rule.path)`
  */
 const getRuleFilterSchemaResult = ({
-  filterList,
+  filterFnList,
   dataSchema,
   rule,
 }: {
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   dataSchema: ZodTypeAny;
   rule: StrictSingleFilter;
 }): (ValidateSuccess & { data: StandardFnSchema }) | ValidateError => {
-  const fnSchema = filterList.find((f) => f.name === rule.name);
+  const fnSchema = filterFnList.find((f) => f.name === rule.name);
   if (!fnSchema) {
     return {
       success: false,
-      error: new Error(`filterList not have filter: ${rule.name}`),
+      error: new Error(`filterFnList not have filter: ${rule.name}`),
     };
   }
   const isGeneric = isGenericFilter(fnSchema);
@@ -78,7 +78,7 @@ const getRuleFilterSchemaResult = ({
 
 export const getRuleFilterSchema = (payload: {
   rule: StrictSingleFilter;
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   dataSchema: ZodTypeAny;
 }) => {
   const result = getRuleFilterSchemaResult(payload);
@@ -134,19 +134,19 @@ const validateStandardFnRule = ({
 };
 
 export const validateRule = ({
-  filterList,
+  filterFnList,
   dataSchema,
   rule,
 }: {
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   dataSchema: ZodTypeAny;
   rule: SingleFilter;
 }): ValidateSuccess | ValidateError => {
-  const fnSchema = filterList.find((f) => f.name === rule.name);
+  const fnSchema = filterFnList.find((f) => f.name === rule.name);
   if (!fnSchema) {
     return {
       success: false,
-      error: new Error(`filterList not have filter: ${rule.name}`),
+      error: new Error(`filterFnList not have filter: ${rule.name}`),
     };
   }
   if (!rule.name) {
@@ -168,7 +168,7 @@ export const validateRule = ({
     invert: !!rule.invert,
   };
   const standardFnResult = getRuleFilterSchemaResult({
-    filterList,
+    filterFnList,
     dataSchema,
     rule: strictRule,
   });
@@ -188,16 +188,16 @@ export const validateRule = ({
 };
 
 export const isValidRule = ({
-  filterList,
+  filterFnList,
   dataSchema,
   rule,
 }: {
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   dataSchema: ZodTypeAny;
   rule: SingleFilter;
 }): boolean => {
   const result = validateRule({
-    filterList,
+    filterFnList,
     dataSchema,
     rule,
   });
@@ -205,18 +205,18 @@ export const isValidRule = ({
 };
 
 export const validateGroup = ({
-  filterList,
+  filterFnList,
   dataSchema,
   ruleGroup,
 }: {
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   dataSchema: ZodTypeAny;
   ruleGroup: FilterGroup;
 }): ValidateSuccess | ValidateError => {
   for (const rule of ruleGroup.conditions) {
     if (rule.type === "FilterGroup") {
       const result = validateGroup({
-        filterList,
+        filterFnList,
         dataSchema,
         ruleGroup: rule,
       });
@@ -226,7 +226,7 @@ export const validateGroup = ({
       return result;
     }
     const result = validateRule({
-      filterList,
+      filterFnList,
       dataSchema,
       rule,
     });
@@ -245,11 +245,11 @@ export const validateGroup = ({
  * - If filter is not ready, return `undefined`
  */
 export const normalizeFilter = ({
-  filterList,
+  filterFnList,
   dataSchema,
   rule,
 }: {
-  filterList: FnSchema[];
+  filterFnList: FnSchema[];
   dataSchema: ZodTypeAny;
   rule: FilterRule;
 }): StrictFilterRule | undefined => {
@@ -257,7 +257,7 @@ export const normalizeFilter = ({
     // User may not select filter name or field
     if (!rule.name || !rule.path) return;
     const result = validateRule({
-      filterList,
+      filterFnList,
       dataSchema,
       rule,
     });
@@ -274,7 +274,7 @@ export const normalizeFilter = ({
     const conditions: StrictFilterRule[] = rule.conditions
       .map((condition) =>
         normalizeFilter({
-          filterList,
+          filterFnList,
           dataSchema,
           rule: condition,
         }),

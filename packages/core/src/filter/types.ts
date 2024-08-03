@@ -14,7 +14,7 @@ export type FilterField = {
    */
   path: FilterPath;
   fieldSchema: ZodType;
-  filterList: StandardFnSchema[];
+  filterFnList: StandardFnSchema[];
 };
 
 export interface SingleFilterInput {

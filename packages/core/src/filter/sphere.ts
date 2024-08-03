@@ -15,14 +15,14 @@ export const createFilterSphere = <Data = unknown>(
   } = {}) =>
     findFilterableFields({
       schema: dataSchema,
-      filterList: filterFnList,
+      filterFnList,
       maxDeep,
     });
 
   const getFilterPredicate = (rule: FilterRule): ((data: Data) => boolean) => {
     return createFilterPredicate({
       schema: dataSchema,
-      filterList: filterFnList,
+      filterFnList,
       filterRule: rule,
     });
   };

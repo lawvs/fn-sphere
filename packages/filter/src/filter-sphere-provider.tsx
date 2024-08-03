@@ -21,7 +21,7 @@ export interface FilterSphereProviderProps<Data>
 
 export const FilterSphereProvider = <Data,>({
   schema,
-  filterList,
+  filterFnList,
   filterRule,
   onRuleChange,
   mapFieldName,
@@ -52,7 +52,7 @@ export const FilterSphereProvider = <Data,>({
     <FilterSchemaProvider
       value={{
         schema,
-        filterList,
+        filterFnList,
         filterRule,
         onRuleChange,
         mapFieldName,

@@ -5,7 +5,7 @@ import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 export const useRootRule = () => {
   const {
     schema,
-    filterList,
+    filterFnList,
     filterMap,
     mapFieldName,
     mapFilterName,
@@ -22,7 +22,7 @@ export const useRootRule = () => {
 
   return {
     schema,
-    filterList,
+    filterFnList,
     numberOfRules: Object.keys(filterMap).length,
 
     mapFieldName,
