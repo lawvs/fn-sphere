@@ -31,7 +31,7 @@ type OpenFilterProps<Data = unknown> = {
 
 export type CreateAdvancedFilterProps<Data = unknown> =
   BasicFilterSphereInput<Data> & {
-    defaultRule?: FilterGroup | undefined;
+    defaultRule?: FilterGroup;
     /**
      *
      * Set `null` to disable storage.
@@ -42,7 +42,7 @@ export type CreateAdvancedFilterProps<Data = unknown> =
      */
     storageKey?: string | null;
     dialogProps?: OpenFilterProps<Data>["dialogProps"];
-    container?: OpenFilterProps<Data>["container"];
+    container?: NonNullable<OpenFilterProps<Data>["container"]> | null;
   };
 
 export const openFlattenFilterDialog = async <Data>(
@@ -161,11 +161,11 @@ export const createAdvancedFilter = <Data>(
   return {
     getRule,
     getPredicate,
-    openFilterDialog: async ({
-      abortSignal,
-    }: {
-      abortSignal?: AbortSignal;
-    } = {}) => {
+    openFilterDialog: async (
+      props: {
+        abortSignal?: AbortSignal;
+      } = {},
+    ) => {
       const r = await getRule();
       const result = await openFlattenFilterDialog({
         filterBuilder: {
@@ -177,7 +177,7 @@ export const createAdvancedFilter = <Data>(
           defaultRule: r,
         },
         ...options,
-        abortSignal,
+        ...props,
       });
       rule = result.rule;
       if (options.storageKey) {

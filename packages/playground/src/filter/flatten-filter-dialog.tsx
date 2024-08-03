@@ -10,7 +10,10 @@ import {
 } from "@fn-sphere/filter";
 import { useState } from "react";
 import { Dialog, type DialogProps } from "tdesign-react";
-import { FlattenFilterBuilder } from "./flatten-filter-builder";
+import {
+  createFlattenFilterGroup,
+  FlattenFilterBuilder,
+} from "./flatten-filter-builder";
 
 type FilterValue<Data> = {
   rule: FilterGroup;
@@ -20,7 +23,7 @@ type FilterValue<Data> = {
 export type FlattenFilterDialogProps<Data> = {
   filterBuilder: BasicFilterSphereInput<Data> & {
     rule?: FilterGroup;
-    defaultRule?: FilterGroup;
+    defaultRule?: FilterGroup | undefined;
   };
   open: DialogProps["visible"];
   dialogProps?: Omit<DialogProps, "visible" | "onConfirm">;
@@ -43,15 +46,22 @@ export const FlattenFilterDialog = <Data,>({
   onConfirm,
   onRuleChange,
 }: FlattenFilterDialogProps<Data>) => {
-  const controlled = filterBuilder.rule !== undefined;
+  const {
+    defaultRule,
+    rule: filterBuilderRule,
+    ...filterBuilderProps
+  } = filterBuilder;
   // This state will be used only when the dialog is uncontrolled.
-  const [filterGroup, setFilterGroup] = useState(filterBuilder.defaultRule);
+  const [filterGroup, setFilterGroup] = useState(
+    defaultRule ?? createFlattenFilterGroup(),
+  );
   const filterFnList = filterBuilder.filterFnList ?? presetFilter;
-  const realRule = controlled ? filterBuilder.rule : filterGroup;
+  const controlled = filterBuilderRule !== undefined;
+  const realRule = controlled ? filterBuilderRule : filterGroup;
 
   return (
     <Dialog
-      visible={open}
+      visible={!!open}
       header={"Advanced Filter"}
       {...dialogProps}
       onConfirm={() => {
@@ -71,12 +81,9 @@ export const FlattenFilterDialog = <Data,>({
       }}
     >
       <FlattenFilterBuilder
-        schema={filterBuilder.schema}
         filterFnList={filterFnList}
-        fieldDeepLimit={filterBuilder.fieldDeepLimit}
-        mapFieldName={filterBuilder.mapFieldName}
-        mapFilterName={filterBuilder.mapFilterName}
         filterRule={realRule}
+        {...filterBuilderProps}
         onRuleChange={(newRule) => {
           onRuleChange?.({
             rule: newRule,

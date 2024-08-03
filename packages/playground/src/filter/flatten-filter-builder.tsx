@@ -15,7 +15,7 @@ import { Fragment } from "react";
 
 interface FlattenFilterBuilderProps<Data = unknown>
   extends BasicFilterSphereInput<Data> {
-  filterRule?: FilterGroup;
+  filterRule: FilterGroup;
   onRuleChange?: (rule: FilterGroup) => void;
 }
 
@@ -46,7 +46,8 @@ const isFlattenFilterGroup = (
   );
 };
 
-const createFlattenFilterGroup = () =>
+// eslint-disable-next-line react-refresh/only-export-components
+export const createFlattenFilterGroup = () =>
   createFilterGroup({
     op: "or",
     conditions: [
@@ -58,11 +59,11 @@ const createFlattenFilterGroup = () =>
   });
 
 export const FlattenFilterBuilder = <Data,>({
-  filterRule: filterGroup = createFlattenFilterGroup(),
+  filterRule,
   ...props
 }: FlattenFilterBuilderProps<Data>) => {
   const { context } = useFilterSphere({
-    ruleValue: filterGroup,
+    ruleValue: filterRule,
     ...props,
   });
   const {
@@ -71,11 +72,11 @@ export const FlattenFilterBuilder = <Data,>({
     SingleFilter: FilterRule,
   } = useView("templates");
   const { Button: ButtonView } = useView("components");
-  const isValidFlattenRule = isFlattenFilterGroup(filterGroup);
+  const isValidFlattenRule = isFlattenFilterGroup(filterRule);
 
   if (!isValidFlattenRule) {
     return (
-      <FilterGroupContainer isRoot filterGroup={filterGroup}>
+      <FilterGroupContainer isRoot filterGroup={filterRule}>
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
@@ -88,10 +89,10 @@ export const FlattenFilterBuilder = <Data,>({
     );
   }
 
-  const count = countNumberOfRules(filterGroup);
+  const count = countNumberOfRules(filterRule);
   if (count <= 0) {
     return (
-      <FilterGroupContainer isRoot filterGroup={filterGroup}>
+      <FilterGroupContainer isRoot filterGroup={filterRule}>
         <ButtonView
           onClick={() => {
             props.onRuleChange?.(createFlattenFilterGroup());
@@ -105,14 +106,14 @@ export const FlattenFilterBuilder = <Data,>({
 
   return (
     <FilterSchemaProvider value={context}>
-      <FilterGroupContainer isRoot filterGroup={filterGroup}>
-        {filterGroup.conditions.map((andGroup, groupIdx) => {
+      <FilterGroupContainer isRoot filterGroup={filterRule}>
+        {filterRule.conditions.map((andGroup, groupIdx) => {
           return (
             <Fragment key={andGroup.id}>
               {groupIdx > 0 && (
                 <RuleJoiner
-                  parent={filterGroup}
-                  joinBetween={[filterGroup.conditions[groupIdx - 1], andGroup]}
+                  parent={filterRule}
+                  joinBetween={[filterRule.conditions[groupIdx - 1], andGroup]}
                 />
               )}
               <FilterGroupContainer isRoot={false} filterGroup={andGroup}>

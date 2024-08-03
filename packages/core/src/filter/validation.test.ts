@@ -36,7 +36,6 @@ describe("isValidRule", () => {
       id: "1" as FilterId,
       type: "Filter",
       name: "Starts with",
-      path: undefined,
       args: [],
     };
 

@@ -60,11 +60,11 @@ export const useAdvancedFilter = <Data>(
       filterFnList: options.filterFnList,
       filterRule: rule,
     }),
-    openFilterDialog: async ({
-      abortSignal,
-    }: {
-      abortSignal?: AbortSignal;
-    } = {}) => {
+    openFilterDialog: async (
+      props: {
+        abortSignal?: AbortSignal;
+      } = {},
+    ) => {
       if (isOpen) {
         console.error("The filter dialog is already open.");
         return;
@@ -82,7 +82,7 @@ export const useAdvancedFilter = <Data>(
             defaultRule: rule,
           },
           ...options,
-          abortSignal,
+          ...props,
         });
         setRule(data.rule);
         if (options.storageKey) {

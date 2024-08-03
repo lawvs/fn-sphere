@@ -30,7 +30,7 @@ export interface SingleFilterInput {
    *
    * If not provided, it means user didn't select a filter.
    */
-  name?: string;
+  name?: string | undefined;
   /**
    * Arguments for the filter function
    */

@@ -10,7 +10,7 @@ export type StandardFnSchema<T extends ZodAnyFunction = ZodAnyFunction> = {
   define: T;
   implement: TypeOf<T>;
   // context?: Record<string, unknown>;
-  skipValidate?: boolean;
+  skipValidate?: boolean | undefined;
 };
 
 export type GenericFnSchema<

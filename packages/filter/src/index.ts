@@ -5,7 +5,10 @@ export {
 } from "./filter-sphere-provider.js";
 export { useFilterGroup } from "./hooks/use-filter-group.js";
 export { useFilterRule } from "./hooks/use-filter-rule.js";
-export { FilterSchemaProvider } from "./hooks/use-filter-schema-context.js";
+export {
+  FilterSchemaProvider,
+  type FilterSchemaContext,
+} from "./hooks/use-filter-schema-context.js";
 export { useFilterSelect } from "./hooks/use-filter-select.js";
 export {
   useFilterSphere,

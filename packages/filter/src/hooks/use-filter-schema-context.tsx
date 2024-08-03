@@ -15,9 +15,9 @@ import {
 } from "../utils.js";
 
 export interface FilterSchemaContext<Data = unknown>
-  extends Required<BasicFilterSphereInput<Data>> {
-  filterRule: FilterGroup;
-  onRuleChange?: (rule: FilterGroup) => void;
+  extends Readonly<Required<BasicFilterSphereInput<Data>>> {
+  readonly filterRule: FilterGroup;
+  readonly onRuleChange?: (rule: FilterGroup) => void;
 }
 
 interface InternalFilterContextType extends FilterSchemaContext {

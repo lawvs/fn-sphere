@@ -35,8 +35,8 @@ export type SelectProps<T> = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   "value" | "onChange" | "children"
 > & {
-  value?: T;
-  options?: { value: T; label: string }[];
+  value?: T | undefined;
+  options?: { value: T; label: string }[] | undefined;
   onChange?: (value: T) => void;
 };
 
