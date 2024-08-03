@@ -15,7 +15,7 @@ export const App = () => {
   const { rule, predicate, openFilterDialog } = useAdvancedFilter({
     storageKey: "fn-sphere-flatten-filter",
     schema: presetSchema,
-    filterList: dataFilters,
+    filterFnList: dataFilters,
     fieldDeepLimit: Infinity,
     dialogProps: {
       width: "600px",

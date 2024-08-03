@@ -8,7 +8,7 @@ import {
   createSingleFilter,
   defaultMapFieldName,
   defaultMapFilterName,
-  type BasicFilterBuilderProps,
+  type BasicFilterSphereInput,
 } from "@fn-sphere/filter";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
@@ -20,7 +20,7 @@ import {
 } from "./flatten-filter-dialog.js";
 
 type OpenFilterProps<Data = unknown> = {
-  filterBuilder: BasicFilterBuilderProps<Data> & {
+  filterBuilder: BasicFilterSphereInput<Data> & {
     // uncontrolled mode only for the dialog
     defaultRule: FilterGroup | undefined;
   };
@@ -29,26 +29,21 @@ type OpenFilterProps<Data = unknown> = {
   abortSignal?: AbortSignal;
 };
 
-// See https://stackoverflow.com/questions/43159887/make-a-single-property-optional-in-typescript
-type PartialBy<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
-
-export type CreateAdvancedFilterProps<Data = unknown> = PartialBy<
-  BasicFilterBuilderProps<Data>,
-  "filterList"
-> & {
-  defaultRule?: FilterGroup | undefined;
-  /**
-   *
-   * Set `null` to disable storage.
-   *
-   * The default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
-   *
-   * @default null
-   */
-  storageKey?: string | null;
-  dialogProps?: OpenFilterProps<Data>["dialogProps"];
-  container?: OpenFilterProps<Data>["container"];
-};
+export type CreateAdvancedFilterProps<Data = unknown> =
+  BasicFilterSphereInput<Data> & {
+    defaultRule?: FilterGroup | undefined;
+    /**
+     *
+     * Set `null` to disable storage.
+     *
+     * The default storage implementation uses `localStorage` for storage/retrieval, `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
+     *
+     * @default null
+     */
+    storageKey?: string | null;
+    dialogProps?: OpenFilterProps<Data>["dialogProps"];
+    container?: OpenFilterProps<Data>["container"];
+  };
 
 export const openFlattenFilterDialog = async <Data>(
   options: OpenFilterProps<Data>,
@@ -110,7 +105,7 @@ export const openFlattenFilterDialog = async <Data>(
 
 export const defaultOptions = {
   schema: z.any(),
-  filterList: presetFilter,
+  filterFnList: presetFilter,
   fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
@@ -157,8 +152,8 @@ export const createAdvancedFilter = <Data>(
     const rule = await getRule();
     const predicate = createFilterPredicate({
       schema: options.schema,
-      filterList: options.filterList,
-      rule,
+      filterFnList: options.filterFnList,
+      filterRule: rule,
     });
     return predicate;
   };
@@ -175,7 +170,7 @@ export const createAdvancedFilter = <Data>(
       const result = await openFlattenFilterDialog({
         filterBuilder: {
           schema: options.schema,
-          filterList: options.filterList,
+          filterFnList: options.filterFnList,
           fieldDeepLimit: options.fieldDeepLimit,
           mapFieldName: options.mapFieldName,
           mapFilterName: options.mapFilterName,

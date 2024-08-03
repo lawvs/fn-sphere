@@ -18,7 +18,7 @@ export type UseAdvancedFilterProps<Data = unknown> =
  * ```tsx
  * const { rule, predicate, openFilter } = useFilter({
  *   schema: schema,
- *   filterList: filterList,
+ *   filterFnList: filterFnList,
  * });
  *
  * await openFilter();
@@ -57,8 +57,8 @@ export const useAdvancedFilter = <Data>(
     rule,
     predicate: createFilterPredicate({
       schema: options.schema,
-      filterList: options.filterList,
-      rule,
+      filterFnList: options.filterFnList,
+      filterRule: rule,
     }),
     openFilterDialog: async ({
       abortSignal,
@@ -77,7 +77,7 @@ export const useAdvancedFilter = <Data>(
         const data = await openFlattenFilterDialog({
           filterBuilder: {
             schema: options.schema,
-            filterList: options.filterList,
+            filterFnList: options.filterFnList,
             fieldDeepLimit: options.fieldDeepLimit,
             defaultRule: rule,
           },

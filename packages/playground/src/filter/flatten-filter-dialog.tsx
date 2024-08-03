@@ -6,11 +6,11 @@ import {
 import {
   createFilterGroup,
   createSingleFilter,
-  FlattenFilterBuilder,
-  type BasicFilterBuilderProps,
+  type BasicFilterSphereInput,
 } from "@fn-sphere/filter";
 import { useState } from "react";
 import { Dialog, type DialogProps } from "tdesign-react";
+import { FlattenFilterBuilder } from "./flatten-filter-builder";
 
 type FilterValue<Data> = {
   rule: FilterGroup;
@@ -18,7 +18,7 @@ type FilterValue<Data> = {
 };
 
 export type FlattenFilterDialogProps<Data> = {
-  filterBuilder: BasicFilterBuilderProps<Data> & {
+  filterBuilder: BasicFilterSphereInput<Data> & {
     rule?: FilterGroup;
     defaultRule?: FilterGroup;
   };
@@ -46,7 +46,9 @@ export const FlattenFilterDialog = <Data,>({
   const controlled = filterBuilder.rule !== undefined;
   // This state will be used only when the dialog is uncontrolled.
   const [filterGroup, setFilterGroup] = useState(filterBuilder.defaultRule);
-  const filterList = filterBuilder.filterList ?? presetFilter;
+  const filterFnList = filterBuilder.filterFnList ?? presetFilter;
+  const realRule = controlled ? filterBuilder.rule : filterGroup;
+
   return (
     <Dialog
       visible={open}
@@ -62,26 +64,26 @@ export const FlattenFilterDialog = <Data,>({
             }),
           predicate: createFilterPredicate({
             schema: filterBuilder.schema,
-            filterList,
-            rule: filterGroup,
+            filterFnList,
+            filterRule: filterGroup,
           }),
         });
       }}
     >
       <FlattenFilterBuilder
         schema={filterBuilder.schema}
-        filterList={filterList}
+        filterFnList={filterFnList}
         fieldDeepLimit={filterBuilder.fieldDeepLimit}
         mapFieldName={filterBuilder.mapFieldName}
         mapFilterName={filterBuilder.mapFilterName}
-        rule={controlled ? filterBuilder.rule : filterGroup}
-        onChange={(newRule) => {
+        filterRule={realRule}
+        onRuleChange={(newRule) => {
           onRuleChange?.({
             rule: newRule,
             predicate: createFilterPredicate({
               schema: filterBuilder.schema,
-              filterList,
-              rule: newRule,
+              filterFnList,
+              filterRule: newRule,
             }),
           });
           if (!controlled) {

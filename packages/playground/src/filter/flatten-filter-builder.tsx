@@ -1,17 +1,50 @@
-import { countNumberOfRules } from "@fn-sphere/core";
-import { Fragment } from "react";
-import { FilterSchemaProvider } from "./hooks/use-filter-schema-context.js";
-import { useView } from "./theme/index.js";
-import type { BasicFilterSphereInput } from "./types.js";
+import { countNumberOfRules, type FilterId } from "@fn-sphere/core";
+import type {
+  BasicFilterSphereInput,
+  FilterGroup,
+  SingleFilter,
+} from "@fn-sphere/filter";
 import {
   createFilterGroup,
   createSingleFilter,
-  defaultMapFieldName,
-  defaultMapFilterName,
-  isFlattenFilterGroup,
-} from "./utils.js";
+  FilterSchemaProvider,
+  useFilterSphere,
+  useView,
+} from "@fn-sphere/filter";
+import { Fragment } from "react";
 
-type FilterBuilderProps<Data = unknown> = BasicFilterSphereInput<Data>;
+interface FlattenFilterBuilderProps<Data = unknown>
+  extends BasicFilterSphereInput<Data> {
+  filterRule?: FilterGroup;
+  onRuleChange?: (rule: FilterGroup) => void;
+}
+
+export type FlattenFilterGroup = {
+  id: FilterId;
+  type: "FilterGroup";
+  op: "or";
+  conditions: {
+    id: FilterId;
+    type: "FilterGroup";
+    op: "and";
+    conditions: SingleFilter[];
+  }[];
+};
+
+const isFlattenFilterGroup = (
+  filterGroup: FilterGroup,
+): filterGroup is FlattenFilterGroup => {
+  if (filterGroup.op === "and") {
+    return false;
+  }
+
+  return filterGroup.conditions.every(
+    (group) =>
+      group.type === "FilterGroup" &&
+      group.op === "and" &&
+      group.conditions.every((rule) => rule.type === "Filter"),
+  );
+};
 
 const createFlattenFilterGroup = () =>
   createFilterGroup({
@@ -25,14 +58,13 @@ const createFlattenFilterGroup = () =>
   });
 
 export const FlattenFilterBuilder = <Data,>({
-  schema,
-  filterList,
   filterRule: filterGroup = createFlattenFilterGroup(),
-  fieldDeepLimit = 1,
-  mapFieldName = defaultMapFieldName,
-  mapFilterName = defaultMapFilterName,
-  onRuleChange,
-}: FilterBuilderProps<Data>) => {
+  ...props
+}: FlattenFilterBuilderProps<Data>) => {
+  const { context } = useFilterSphere({
+    ruleValue: filterGroup,
+    ...props,
+  });
   const {
     RuleJoiner,
     FilterGroupContainer,
@@ -47,7 +79,7 @@ export const FlattenFilterBuilder = <Data,>({
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
-            onRuleChange?.(createFlattenFilterGroup());
+            props.onRuleChange?.(createFlattenFilterGroup());
           }}
         >
           Reset Filter
@@ -62,7 +94,7 @@ export const FlattenFilterBuilder = <Data,>({
       <FilterGroupContainer isRoot filterGroup={filterGroup}>
         <ButtonView
           onClick={() => {
-            onRuleChange?.(createFlattenFilterGroup());
+            props.onRuleChange?.(createFlattenFilterGroup());
           }}
         >
           Add Filter
@@ -72,18 +104,7 @@ export const FlattenFilterBuilder = <Data,>({
   }
 
   return (
-    <FilterSchemaProvider
-      value={{
-        schema,
-        filterList,
-        filterRule: filterGroup,
-        onRuleChange,
-
-        mapFieldName,
-        mapFilterName,
-        fieldDeepLimit,
-      }}
-    >
+    <FilterSchemaProvider value={context}>
       <FilterGroupContainer isRoot filterGroup={filterGroup}>
         {filterGroup.conditions.map((andGroup, groupIdx) => {
           return (
