@@ -4,7 +4,7 @@ import {
   type FilterGroup,
   type SingleFilter,
 } from "@fn-sphere/core";
-import { getDepthOfRule, toFilterMap } from "../filter-map.js";
+import { fromFilterMap, getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { createFilterGroup, createSingleFilter } from "../utils.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
@@ -23,12 +23,12 @@ export const useFilterRule = (rule: SingleFilter) => {
     throw new Error("Rule not found in filterMap");
   }
   const parentId = ruleNode.parentId;
-  const parent = filterMap[parentId];
-  if (parent?.type !== "FilterGroup") {
+  const parentNode = filterMap[parentId];
+  if (parentNode?.type !== "FilterGroup") {
     console.error("Parent rule is not a group", filterMap, rule);
     throw new Error("Parent rule is not a group");
   }
-  const index = parent.conditionIds.indexOf(rule.id);
+  const index = parentNode.conditionIds.indexOf(rule.id);
 
   const selectedField = rule.path
     ? filterableFields.find((field) => isEqualPath(field.path, rule.path!))
@@ -54,11 +54,11 @@ export const useFilterRule = (rule: SingleFilter) => {
     onFilterMapChange({
       ...filterMap,
       [parentId]: {
-        ...parent,
+        ...parentNode,
         conditionIds: [
-          ...parent.conditionIds.slice(0, index + 1),
+          ...parentNode.conditionIds.slice(0, index + 1),
           newRule.id,
-          ...parent.conditionIds.slice(index + 1),
+          ...parentNode.conditionIds.slice(index + 1),
         ],
       },
       [newRule.id]: {
@@ -78,11 +78,11 @@ export const useFilterRule = (rule: SingleFilter) => {
     onFilterMapChange({
       ...filterMap,
       [parentId]: {
-        ...parent,
+        ...parentNode,
         conditionIds: [
-          ...parent.conditionIds.slice(0, index + 1),
+          ...parentNode.conditionIds.slice(0, index + 1),
           newFilterGroup.id,
-          ...parent.conditionIds.slice(index + 1),
+          ...parentNode.conditionIds.slice(index + 1),
         ],
       },
       ...toFilterMap(newFilterGroup, parentId),
@@ -97,7 +97,7 @@ export const useFilterRule = (rule: SingleFilter) => {
   const removeRule = (removeEmptyGroup = false) => {
     if (removeEmptyGroup) {
       let targetRuleId = rule.id;
-      let targetParent = parent;
+      let targetParent = parentNode;
       const newFilterMap = { ...filterMap };
       delete newFilterMap[targetRuleId];
       // Remove empty group recursively
@@ -127,26 +127,39 @@ export const useFilterRule = (rule: SingleFilter) => {
     const newFilterMap = {
       ...filterMap,
       [parentId]: {
-        ...parent,
-        conditionIds: parent.conditionIds.filter((id) => id !== rule.id),
+        ...parentNode,
+        conditionIds: parentNode.conditionIds.filter((id) => id !== rule.id),
       },
     };
     delete newFilterMap[rule.id];
     onFilterMapChange(newFilterMap);
   };
 
+  const isLastRule = index === parentNode.conditionIds.length - 1;
+
   return {
     ruleState: {
       index,
       isFirstRule: index === 0,
-      isLastRule: index === parent.conditionIds.length - 1,
-      isValid: isValidRule({
-        dataSchema: schema,
-        filterFnList,
-        rule,
-      }),
+      /**
+       * If the rule is the last rule in the group
+       */
+      isLastRule,
+      // isLastRuleInAllGroups: isLastRule && parentNode.isLastGroup,
+      get isValid() {
+        return isValidRule({
+          dataSchema: schema,
+          filterFnList,
+          rule,
+        });
+      },
       isInvert: rule.invert,
-      depth: getDepthOfRule(filterMap, rule.id),
+      get depth() {
+        return getDepthOfRule(filterMap, rule.id);
+      },
+      get parentGroup() {
+        return fromFilterMap(filterMap, parentId);
+      },
     },
 
     filterableFields,
@@ -159,6 +172,6 @@ export const useFilterRule = (rule: SingleFilter) => {
     removeRule,
     // moveRule,
     // duplicateRule,
-    // wrapInGroup,
+    // turnIntoGroup,
   };
 };
