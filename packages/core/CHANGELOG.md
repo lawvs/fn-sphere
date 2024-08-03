@@ -1,5 +1,11 @@
 # @fn-sphere/core
 
+## 0.3.0
+
+### Patch Changes
+
+- b31b201: Rename `filterList` to `filterFnList`
+
 ## 0.2.0
 
 ## 0.1.2

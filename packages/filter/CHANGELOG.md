@@ -1,5 +1,64 @@
 # @fn-sphere/filter
 
+## 0.3.0
+
+### Minor Changes
+
+- 49df2cd: Add new `FilterSphereProvider` component to provide filter context to children components.
+
+  Add `useFilterSphere` hook to access filter predicate.
+
+  The `FilterBuilder` component no longer adds a provider to its child components.
+
+  ```ts
+  const { filterRule, schema, predicate } = useFilterSphere<YourData>();
+  const filteredData = data.filter(predicate);
+  ```
+
+- c66db35: Redesign `useFilterSphere` hook to return a `getPredicate` function and a `context` object.
+
+  ```ts
+  import { useFilterSphere } from "@fn-sphere/filter";
+
+  const { getPredicate, context } = useFilterSphere<YourData>({
+    schema: yourDataSchema,
+  });
+  const predicate = getPredicate();
+  const filteredData = data.filter(predicate);
+  ```
+
+### Patch Changes
+
+- 1c4bfae: Rename `BasicFilterBuilderProps` to `BasicFilterSphereInput` and update type definitions.
+
+  Export new type `BasicFilterSphereProps`.
+
+  ```ts
+  export interface BasicFilterSphereInput<Data = unknown> {
+    filterRule: FilterGroup;
+    schema: ZodType<Data>;
+    filterFnList?: FnSchema[];
+    fieldDeepLimit?: number;
+    mapFieldName?: (field: FilterField) => string;
+    mapFilterName?: (
+      filterSchema: StandardFnSchema,
+      field: FilterField,
+    ) => string;
+    onRuleChange?: (rule: FilterGroup) => void;
+  }
+
+  export type BasicFilterSphereProps<Data = unknown> = Required<
+    BasicFilterSphereInput<Data>
+  >;
+  ```
+
+- 1ac1c43: Rename `createEmptyFilter` to `createEmptySingleFilter` and `createEmptyFilterGroup` to `createFilterGroup`.
+- 1ac1c43: Add `SingleFilterContainer` to template.
+- 991d8e7: Export `useRootRule` and `useFilterSelect` hooks.
+- b31b201: Rename `filterList` to `filterFnList`
+- Updated dependencies [b31b201]
+  - @fn-sphere/core@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
