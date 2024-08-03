@@ -1,9 +1,4 @@
-import type {
-  FilterField,
-  FilterGroup,
-  FnSchema,
-  StandardFnSchema,
-} from "@fn-sphere/core";
+import type { FilterField, FnSchema, StandardFnSchema } from "@fn-sphere/core";
 import type { z } from "zod";
 
 export interface BasicFilterSphereInput<Data = unknown> {
@@ -55,5 +50,5 @@ export interface BasicFilterSphereInput<Data = unknown> {
   /**
    * The callback when the filter rule changes.
    */
-  onRuleChange?: (rule: FilterGroup) => void;
+  // onRuleChange?: (rule: FilterGroup) => void;
 }

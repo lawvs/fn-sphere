@@ -17,10 +17,10 @@ import {
 export interface FilterSchemaContext<Data = unknown>
   extends Required<BasicFilterSphereInput<Data>> {
   filterRule: FilterGroup;
+  onRuleChange?: (rule: FilterGroup) => void;
 }
 
-interface InternalFilterContextType
-  extends Omit<FilterSchemaContext, "onRuleChange"> {
+interface InternalFilterContextType extends FilterSchemaContext {
   filterRule: FilterGroup;
   onFilterMapChange: (filterMap: FilterMap) => void;
 
