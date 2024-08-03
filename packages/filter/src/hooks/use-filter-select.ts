@@ -57,6 +57,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
     updateRule({
       ...rule,
       name: filterSchema.name,
+      args: [],
     });
   };
 
