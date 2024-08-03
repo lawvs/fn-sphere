@@ -19,13 +19,18 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
     throw new Error("Rule id does not match");
   }
   const parentId = ruleNode.parentId;
-  const parent = filterMap[parentId];
-  if (parent?.type !== "FilterGroup") {
+  const maybeParentNode = filterMap[parentId];
+  if (!maybeParentNode) {
+    console.error("Parent node not found", parentId, ruleGroup, filterMap);
+    throw new Error("Parent node not found");
+  }
+  const parentNode = parentId === ruleGroup.id ? null : maybeParentNode;
+  const isRoot = !parentNode;
+  if (parentNode && parentNode.type !== "FilterGroup") {
     console.error("Parent rule is not a group", filterMap, ruleGroup);
     throw new Error("Parent rule is not a group");
   }
-  const isRoot = parent.parentId === ruleGroup.id;
-  const ruleIndex = parent.conditionIds.indexOf(ruleGroup.id);
+  const ruleIndex = isRoot ? 0 : parentNode.conditionIds.indexOf(ruleGroup.id);
 
   const toggleGroupOp = (op?: FilterGroup["op"]) => {
     const oldOp = ruleGroup.op;
@@ -86,11 +91,17 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
   };
 
   const removeGroup = () => {
+    if (isRoot) {
+      console.error("Cannot remove root group");
+      throw new Error("Cannot remove root group");
+    }
     const newFilterMap = {
       ...filterMap,
       [parentId]: {
-        ...parent,
-        conditionIds: parent.conditionIds.filter((id) => id !== ruleGroup.id),
+        ...parentNode,
+        conditionIds: parentNode.conditionIds.filter(
+          (id) => id !== ruleGroup.id,
+        ),
       },
     };
     ruleNode.conditionIds.forEach((id) => {
@@ -104,17 +115,20 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
     ruleState: {
       isRoot,
       index: ruleIndex,
-      isFirstRule: ruleIndex === 0,
-      isLastRule: ruleIndex === parent.conditionIds.length - 1,
+      isFirstGroup: ruleIndex === 0,
+      isLastGroup: isRoot
+        ? true
+        : ruleIndex === parentNode.conditionIds.length - 1,
 
-      depth: getDepthOfRule(filterMap, ruleGroup.id),
+      get depth() {
+        return getDepthOfRule(filterMap, ruleGroup.id);
+      },
     },
 
     toggleGroupOp,
     appendChildRule,
     appendChildGroup,
     removeGroup,
-    // duplicateRule,
-    // wrapWithGroup,
+    // duplicateGroup,
   };
 };
