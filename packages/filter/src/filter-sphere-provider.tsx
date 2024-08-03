@@ -16,15 +16,15 @@ export type FilterThemeInput = {
   templates?: Partial<ThemeSpec["templates"]>;
 };
 
-export interface FilterSphereProviderProps<Data>
-  extends FilterSchemaContext<Data> {
+export interface FilterSphereProviderProps<Data> {
+  context: FilterSchemaContext<Data>;
   theme?: FilterThemeInput;
 }
 
 export const FilterSphereProvider = <Data,>({
   theme,
+  context,
   children,
-  ...context
 }: PropsWithChildren<FilterSphereProviderProps<Data>>) => {
   const MaybeThemeProviderWithChildren = theme ? (
     <FilterThemeProvider
