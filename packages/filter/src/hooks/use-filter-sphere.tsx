@@ -1,4 +1,5 @@
 import {
+  countNumberOfRules,
   createFilterPredicate,
   presetFilter,
   type FilterGroup,
@@ -106,5 +107,7 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
       filterRule: realRule,
     });
 
-  return { filterRule: realRule, getPredicate, context };
+  const countTotalRules = () => countNumberOfRules(realRule);
+
+  return { filterRule: realRule, countTotalRules, getPredicate, context };
 };
