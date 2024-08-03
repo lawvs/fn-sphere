@@ -1,5 +1,15 @@
 # @fn-sphere/filter
 
+## 0.3.1
+
+### Patch Changes
+
+- aef8fbc: Fix `numberOfRules` should only count the SingleRule and not the RuleGroup.
+
+  Return `countTotalRules` function to `useFilterSphere` hook.
+
+  - @fn-sphere/core@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
