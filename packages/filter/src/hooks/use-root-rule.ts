@@ -20,10 +20,14 @@ export const useRootRule = () => {
     onFilterMapChange(toFilterMap(rootGroup));
   };
 
+  const numberOfRules = Object.values(filterMap).filter(
+    (v) => v?.type === "Filter",
+  ).length;
+
   return {
     schema,
     filterFnList,
-    numberOfRules: Object.keys(filterMap).length,
+    numberOfRules,
 
     mapFieldName,
     mapFilterName,
