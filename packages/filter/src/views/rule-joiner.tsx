@@ -9,11 +9,10 @@ export const RuleJoiner = ({ parent }: RuleJoinerProps) => {
   const operator = parent.op;
   return (
     <div
+      className={`rule-joiner-${operator}`}
       style={{
-        margin: 8,
+        margin: 4,
       }}
-    >
-      {operator === "or" ? "Or" : "And"}
-    </div>
+    ></div>
   );
 };

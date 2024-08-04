@@ -125,9 +125,7 @@ export const FlattenFilterBuilder = <Data,>({
                         joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
                       />
                     )}
-                    <div className="rule-container">
-                      {<FilterRule rule={rule} />}
-                    </div>
+                    <FilterRule rule={rule} />
                   </Fragment>
                 ))}
               </FilterGroupContainer>

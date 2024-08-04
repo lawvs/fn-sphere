@@ -23,27 +23,22 @@ export const FilterGroupContainer = ({
       className="filter-group-container"
       style={{
         display: "flex",
+        flexDirection: "column",
+        borderRadius: 4,
+        padding: 4,
+        background: "rgba(0, 0, 0, 0.05)",
       }}
     >
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           marginRight: 12,
+          whiteSpace: "nowrap",
         }}
       >
         {text}
       </div>
-      <div
-        style={{
-          borderRadius: 4,
-          padding: 4,
-          background: "rgba(0, 0, 0, 0.05)",
-        }}
-      >
-        {children}
-      </div>
+      {children}
     </div>
   );
 };

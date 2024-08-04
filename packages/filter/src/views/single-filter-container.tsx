@@ -14,6 +14,7 @@ export const SingleFilterContainer = ({
       className="single-filter-container"
       style={{
         display: "flex",
+        gap: 4,
       }}
     >
       {children}
