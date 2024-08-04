@@ -1,5 +1,13 @@
 # @fn-sphere/filter
 
+## 0.3.2
+
+### Patch Changes
+
+- 2a8d304: Add new `reset` method to `useFilterSphere` hook
+- 3ccf45a: Update styles for default templates
+  - @fn-sphere/core@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
