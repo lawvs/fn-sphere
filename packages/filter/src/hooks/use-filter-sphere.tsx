@@ -109,5 +109,15 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
 
   const countTotalRules = () => countNumberOfRules(realRule);
 
-  return { filterRule: realRule, countTotalRules, getPredicate, context };
+  const reset = (newRule: FilterGroup = defaultRule) => {
+    onRuleChangeInternal(newRule);
+  };
+
+  return {
+    filterRule: realRule,
+    countTotalRules,
+    getPredicate,
+    reset,
+    context,
+  };
 };
