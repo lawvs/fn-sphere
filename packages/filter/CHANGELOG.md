@@ -1,5 +1,18 @@
 # @fn-sphere/filter
 
+## 0.3.3
+
+### Patch Changes
+
+- caeeb9c: Move `createFilterGroup` and `createSingleFilter` to core package.
+
+  Add `getFilterRule` method to `createFilterSphere`.
+
+- 79abaa0: Update readme
+- Updated dependencies [caeeb9c]
+- Updated dependencies [79abaa0]
+  - @fn-sphere/core@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
