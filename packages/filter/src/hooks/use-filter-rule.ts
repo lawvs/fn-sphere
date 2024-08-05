@@ -1,11 +1,12 @@
 import {
+  createFilterGroup,
+  createSingleFilter,
   isEqualPath,
   isValidRule,
   type FilterGroup,
   type SingleFilter,
 } from "@fn-sphere/core";
 import { fromFilterMap, getDepthOfRule, toFilterMap } from "../filter-map.js";
-import { createFilterGroup, createSingleFilter } from "../utils.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterRule = (rule: SingleFilter) => {

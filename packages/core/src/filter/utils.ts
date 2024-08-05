@@ -2,7 +2,15 @@ import { z, type ZodType } from "zod";
 import { isSameType } from "zod-compare";
 import type { GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
-import type { FilterId, FilterPath, FilterRule } from "./types.js";
+import type {
+  FilterGroup,
+  FilterGroupInput,
+  FilterId,
+  FilterPath,
+  FilterRule,
+  SingleFilter,
+  SingleFilterInput,
+} from "./types.js";
 
 export const and =
   <T extends (...args: any[]) => boolean>(...fnArray: NoInfer<T>[]) =>
@@ -104,6 +112,27 @@ export const countNumberOfRules = (rule: FilterRule): number => {
 export function genFilterId(): FilterId {
   return Math.random().toString(36).slice(2, 9) as FilterId;
 }
+
+export const createSingleFilter = (
+  ruleInput: SingleFilterInput = {
+    args: [],
+  },
+) =>
+  ({
+    id: genFilterId(),
+    type: "Filter",
+    args: [],
+    ...ruleInput,
+  }) satisfies SingleFilter;
+
+export const createFilterGroup = (ruleInput?: FilterGroupInput) =>
+  ({
+    id: genFilterId(),
+    type: "FilterGroup",
+    op: "and",
+    conditions: [],
+    ...ruleInput,
+  }) satisfies FilterGroup;
 
 export const isEqualPath = (a: FilterPath, b: FilterPath): boolean => {
   if (a.length !== b.length) {

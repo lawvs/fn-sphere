@@ -1,4 +1,5 @@
 import {
+  createFilterGroup,
   type FilterField,
   type FilterGroup,
   findFilterableFields,
@@ -7,12 +8,7 @@ import { createContext, type ReactNode, useContext } from "react";
 import { z } from "zod";
 import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
 import type { BasicFilterSphereInput } from "../types.js";
-import {
-  createFilterGroup,
-  defaultMapFieldName,
-  defaultMapFilterName,
-  noop,
-} from "../utils.js";
+import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
 
 export interface FilterSchemaContext<Data = unknown>
   extends Readonly<Required<BasicFilterSphereInput<Data>>> {

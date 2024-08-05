@@ -1,3 +1,4 @@
+export { createFilterGroup, createSingleFilter } from "@fn-sphere/core";
 export {
   FilterSphereProvider,
   type FilterSphereProviderProps,
@@ -17,12 +18,7 @@ export {
 export { useRootRule } from "./hooks/use-root-rule.js";
 export * from "./theme/index.js";
 export type { BasicFilterSphereInput } from "./types.js";
-export {
-  createFilterGroup,
-  createSingleFilter,
-  defaultMapFieldName,
-  defaultMapFilterName,
-} from "./utils.js";
+export { defaultMapFieldName, defaultMapFilterName } from "./utils.js";
 export { FilterBuilder } from "./views/filter-builder.js";
 
 export {

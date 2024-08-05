@@ -1,19 +1,15 @@
 import {
   countNumberOfRules,
+  createFilterGroup,
   createFilterPredicate,
+  createSingleFilter,
   presetFilter,
   type FilterGroup,
 } from "@fn-sphere/core";
 import { useState } from "react";
 import { z } from "zod";
 import type { BasicFilterSphereInput } from "../types.js";
-import {
-  createFilterGroup,
-  createSingleFilter,
-  defaultMapFieldName,
-  defaultMapFilterName,
-  noop,
-} from "../utils.js";
+import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
 import type { FilterSchemaContext } from "./use-filter-schema-context.js";
 
 export interface FilterSphereInput<Data> extends BasicFilterSphereInput<Data> {
