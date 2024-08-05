@@ -31,8 +31,9 @@ export const useFilterRule = (rule: SingleFilter) => {
   }
   const index = parentNode.conditionIds.indexOf(rule.id);
 
-  const selectedField = rule.path
-    ? filterableFields.find((field) => isEqualPath(field.path, rule.path!))
+  const rulePath = rule.path;
+  const selectedField = rulePath
+    ? filterableFields.find((field) => isEqualPath(field.path, rulePath))
     : undefined;
 
   const selectedFilter = selectedField?.filterFnList.find(
@@ -68,6 +69,7 @@ export const useFilterRule = (rule: SingleFilter) => {
         parentId,
       },
     });
+    return newRule;
   };
 
   const appendGroup = (
@@ -88,6 +90,7 @@ export const useFilterRule = (rule: SingleFilter) => {
       },
       ...toFilterMap(newFilterGroup, parentId),
     });
+    return newFilterGroup;
   };
 
   /**
