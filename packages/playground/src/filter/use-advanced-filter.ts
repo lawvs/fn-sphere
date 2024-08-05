@@ -44,7 +44,7 @@ export const useAdvancedFilter = <Data>(
         if (abortController.signal.aborted) return;
         setRule(rule);
       } catch (error) {
-        // console.error("Failed to get filter rule from storage", error);
+        console.error("Failed to get filter rule from storage", error);
       } finally {
         setLoading(false);
       }
@@ -88,7 +88,7 @@ export const useAdvancedFilter = <Data>(
         if (options.storageKey) {
           defaultStorage.setItem(options.storageKey, data.rule);
         }
-      } catch (error) {
+      } catch {
         // console.error("User closed the filter dialog", error);
         return;
       } finally {
