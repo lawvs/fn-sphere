@@ -25,7 +25,7 @@ npm install zod
 You can use the `useFilterSphere` hook to create a filter:
 
 ```tsx
-import { useFilter } from "@fn-sphere/filter";
+import { useFilterSphere } from "@fn-sphere/filter";
 import { z } from "zod";
 
 const YOUR_DATA_SCHEMA = z.object({
@@ -41,7 +41,7 @@ const YOUR_DATA: z.infer<typeof YOUR_DATA_SCHEMA>[] = [
 ];
 
 const Filter = () => {
-  const { rule, getPredicate, context } = useFilter({
+  const { rule, getPredicate, context } = useFilterSphere({
     schema: YOUR_DATA_SCHEMA,
     onPredicateChange: (predicate) => {
       const filteredData = YOUR_DATA.filter(predicate);
