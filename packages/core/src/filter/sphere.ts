@@ -1,8 +1,14 @@
-import type { ZodType } from "zod";
-import type { FnSchema } from "../types.js";
+import { z, type ZodType } from "zod";
+import type { FnSchema, StandardFnSchema } from "../types.js";
 import { findFilterableFields } from "./field.js";
 import { createFilterPredicate } from "./predicate.js";
-import type { FilterRule } from "./types.js";
+import type {
+  FilterField,
+  FilterRule,
+  SingleFilter,
+  SingleFilterInput,
+} from "./types.js";
+import { createSingleFilter, getParametersExceptFirst } from "./utils.js";
 
 export const createFilterSphere = <Data = unknown>(
   dataSchema: ZodType<Data>,
@@ -18,6 +24,28 @@ export const createFilterSphere = <Data = unknown>(
       filterFnList,
       maxDeep,
     });
+
+  const getFilterRule = (
+    filterField: FilterField,
+    fnSchema: StandardFnSchema,
+    input: unknown[] = [],
+    options?: Omit<SingleFilterInput, "name" | "path" | "args">,
+  ): SingleFilter => {
+    if (filterField.filterFnList.find((fn) => fn === fnSchema) === undefined) {
+      throw new Error("Filter function is not allowed.");
+    }
+    const requiredParameters = getParametersExceptFirst(fnSchema);
+    if (!fnSchema.skipValidate) {
+      z.tuple(requiredParameters).parse(input);
+    }
+
+    return createSingleFilter({
+      path: filterField.path,
+      name: fnSchema.name,
+      args: input,
+      ...options,
+    });
+  };
 
   const getFilterPredicate = (rule: FilterRule): ((data: Data) => boolean) => {
     return createFilterPredicate({
@@ -35,6 +63,7 @@ export const createFilterSphere = <Data = unknown>(
   return {
     findFilterableField,
     getFilterPredicate,
+    getFilterRule,
     filterData,
   };
 };
