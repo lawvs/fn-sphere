@@ -1,5 +1,12 @@
 # @fn-sphere/filter
 
+## 0.3.4
+
+### Patch Changes
+
+- 51abfaa: Export `FilterField`
+  - @fn-sphere/core@0.3.4
+
 ## 0.3.3
 
 ### Patch Changes
