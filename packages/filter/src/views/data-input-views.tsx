@@ -26,6 +26,10 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           type="text"
           value={(rule.args?.[0] as string) ?? ""}
           onChange={(value) => {
+            if (!value.length) {
+              updateInput([]);
+              return;
+            }
             updateInput([value]);
             return;
           }}
