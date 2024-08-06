@@ -1,6 +1,6 @@
 {
   "name": "@fn-sphere/core",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "",
   "type": "module",
   "main": "src/index.ts",

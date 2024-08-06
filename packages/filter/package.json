@@ -1,6 +1,6 @@
 {
   "name": "@fn-sphere/filter",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
