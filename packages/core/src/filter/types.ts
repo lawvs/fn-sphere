@@ -24,7 +24,7 @@ export interface SingleFilterInput {
    * If it's a empty array, it means the root object.
    * If not provided, it means user didn't select a field.
    */
-  path?: FilterPath;
+  path?: FilterPath | undefined;
   /**
    * Filter name
    *
@@ -67,7 +67,12 @@ export interface FilterGroup extends FilterGroupInput {
 
 export type FilterRule = SingleFilter | FilterGroup;
 
-export type StrictSingleFilter = Readonly<Required<SingleFilter>>;
+export type StrictSingleFilter = Readonly<
+  Required<SingleFilter> & {
+    name: string;
+    path: FilterPath;
+  }
+>;
 export type StrictFilterGroup = Readonly<{
   /**
    * Unique id, used for tracking changes or resorting

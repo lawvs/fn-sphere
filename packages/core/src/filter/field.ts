@@ -14,7 +14,7 @@ const bfsSchemaField = (
   const queue = [
     {
       schema,
-      path: [] as unknown as FilterPath,
+      path: [] as FilterPath,
       deep: 0,
     },
   ];
