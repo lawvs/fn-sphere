@@ -27,6 +27,8 @@ export {
   countNumberOfRules,
   createFilterPredicate,
   dateFilter,
+  defineGenericFn,
+  defineTypedFn,
   genericFilter,
   numberFilter,
   presetFilter,
@@ -36,6 +38,9 @@ export type {
   FilterField,
   FilterGroup,
   FilterRule,
+  FnSchema,
+  GenericFnSchema,
   SingleFilter,
+  StandardFnSchema,
 } from "@fn-sphere/core";
 export { presetDataInputSpecs } from "./views/data-input-views.js";

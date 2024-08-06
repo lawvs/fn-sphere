@@ -12,7 +12,7 @@ export {
   getParametersExceptFirst,
   isEqualPath,
 } from "./filter/utils.js";
-export { createFnSphere, defineTypedFn } from "./fn-sphere.js";
+export { createFnSphere, defineGenericFn, defineTypedFn } from "./fn-sphere.js";
 export {
   booleanFilter,
   commonFilters,
