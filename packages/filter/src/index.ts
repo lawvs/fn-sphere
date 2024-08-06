@@ -32,5 +32,10 @@ export {
   presetFilter,
   stringFilter,
 } from "@fn-sphere/core";
-export type { FilterGroup, FilterRule, SingleFilter } from "@fn-sphere/core";
+export type {
+  FilterField,
+  FilterGroup,
+  FilterRule,
+  SingleFilter,
+} from "@fn-sphere/core";
 export { presetDataInputSpecs } from "./views/data-input-views.js";
