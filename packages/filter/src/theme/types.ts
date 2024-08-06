@@ -28,7 +28,10 @@ export type DataInputViewSpec = {
   match:
     | []
     | [z.ZodTypeAny, ...z.ZodTypeAny[]]
-    | ((parameterSchemas: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]]) => boolean);
+    | ((
+        parameterSchemas: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
+        fieldSchema?: z.ZodTypeAny,
+      ) => boolean);
   view: ComponentType<DataInputViewProps>;
 };
 

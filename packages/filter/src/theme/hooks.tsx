@@ -27,24 +27,25 @@ export const useView = <T extends keyof ThemeSpec>(type: T) => {
  * Must be used within a `FilterThemeProvider` component.
  */
 export const useDataInputView = (
-  schema?: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
+  fnParamsSchema?: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
+  fieldSchema?: z.ZodTypeAny,
 ): ComponentType<DataInputViewProps> => {
   const dataInputViews = useView("dataInputViews");
-  if (!schema) {
+  if (!fnParamsSchema) {
     return () => null;
   }
   const targetSpec = dataInputViews.find((spec) => {
     if (typeof spec.match === "function") {
-      return spec.match(schema);
+      return spec.match(fnParamsSchema, fieldSchema);
     }
-    return isSameType(z.tuple(spec.match), z.tuple(schema));
+    return isSameType(z.tuple(spec.match), z.tuple(fnParamsSchema));
   });
   if (!targetSpec) {
-    console.error("no view spec found for", schema, dataInputViews);
+    console.error("no view spec found for", fnParamsSchema, dataInputViews);
     return () => (
       <div>
         No view spec found for&nbsp;
-        {"<" + schema.map((i) => i._def.typeName).join(", ") + ">"}
+        {"<" + fnParamsSchema.map((i) => i._def.typeName).join(", ") + ">"}
       </div>
     );
   }
