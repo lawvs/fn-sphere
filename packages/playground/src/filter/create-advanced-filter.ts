@@ -109,6 +109,7 @@ export const defaultOptions = {
   fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
+  getLocaleText: (key) => key,
   storageKey: null,
   container: null,
   dialogProps: {},

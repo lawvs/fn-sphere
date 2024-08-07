@@ -76,7 +76,7 @@ export const FlattenFilterBuilder = <Data,>({
 
   if (!isValidFlattenRule) {
     return (
-      <FilterGroupContainer isRoot filterGroup={filterRule}>
+      <FilterGroupContainer filterGroup={filterRule}>
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
@@ -92,7 +92,7 @@ export const FlattenFilterBuilder = <Data,>({
   const count = countNumberOfRules(filterRule);
   if (count <= 0) {
     return (
-      <FilterGroupContainer isRoot filterGroup={filterRule}>
+      <FilterGroupContainer filterGroup={filterRule}>
         <ButtonView
           onClick={() => {
             props.onRuleChange?.(createFlattenFilterGroup());
@@ -106,7 +106,7 @@ export const FlattenFilterBuilder = <Data,>({
 
   return (
     <FilterSchemaProvider value={context}>
-      <FilterGroupContainer isRoot filterGroup={filterRule}>
+      <FilterGroupContainer filterGroup={filterRule}>
         {filterRule.conditions.map((andGroup, groupIdx) => {
           return (
             <Fragment key={andGroup.id}>
@@ -116,7 +116,7 @@ export const FlattenFilterBuilder = <Data,>({
                   joinBetween={[filterRule.conditions[groupIdx - 1], andGroup]}
                 />
               )}
-              <FilterGroupContainer isRoot={false} filterGroup={andGroup}>
+              <FilterGroupContainer filterGroup={andGroup}>
                 {andGroup.conditions.map((rule, ruleIdx) => (
                   <Fragment key={rule.id}>
                     {ruleIdx > 0 && (
