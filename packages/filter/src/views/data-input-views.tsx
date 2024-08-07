@@ -20,17 +20,18 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       if (!requiredDataSchema.length) {
         return null;
       }
+      const value = rule.args?.[0] as string | undefined;
       return (
         <InputView
           ref={ref}
           type="text"
-          value={(rule.args?.[0] as string) ?? ""}
-          onChange={(value) => {
-            if (!value.length) {
+          value={value}
+          onChange={(newValue) => {
+            if (!newValue.length) {
               updateInput([]);
               return;
             }
-            updateInput([value]);
+            updateInput([newValue]);
             return;
           }}
         />
@@ -45,13 +46,18 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       if (!requiredDataSchema.length) {
         return null;
       }
+      const value = (rule.args?.[0] as number) ?? "";
       return (
         <InputView
           ref={ref}
           type="number"
-          value={(rule.args?.[0] as string) ?? ""}
-          onChange={(value) => {
-            updateInput([value]);
+          value={value}
+          onChange={(newValue) => {
+            if (!newValue.length) {
+              updateInput([]);
+              return;
+            }
+            updateInput([+newValue]);
             return;
           }}
         />
@@ -66,13 +72,20 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       if (!requiredDataSchema.length) {
         return null;
       }
+      const value =
+        (rule.args?.[0] as Date | undefined)?.toISOString().slice(0, 10) ?? "";
       return (
         <InputView
           ref={ref}
           type="date"
-          value={(rule.args?.[0] as string) ?? ""}
-          onChange={(value) => {
-            updateInput([value]);
+          // "yyyy-MM-dd"
+          value={value}
+          onChange={(newValue) => {
+            if (!newValue) {
+              updateInput([]);
+              return;
+            }
+            updateInput([new Date(newValue)]);
           }}
         />
       );
