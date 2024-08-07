@@ -8,11 +8,7 @@ export type FilterGroupProps = {
 };
 
 export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
-  const {
-    ruleState: { isRoot },
-    appendChildRule,
-    appendChildGroup,
-  } = useFilterGroup(filterGroup);
+  const { appendChildRule, appendChildGroup } = useFilterGroup(filterGroup);
   const { Button: ButtonView } = useView("components");
   const {
     FilterGroupContainer,
@@ -22,7 +18,7 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   const count = filterGroup.conditions.length;
   if (count <= 0) {
     return (
-      <FilterGroupContainer isRoot={isRoot} filterGroup={filterGroup}>
+      <FilterGroupContainer filterGroup={filterGroup}>
         <ButtonView
           onClick={() => {
             appendChildRule();
@@ -42,7 +38,7 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   }
 
   return (
-    <FilterGroupContainer isRoot={isRoot} filterGroup={filterGroup}>
+    <FilterGroupContainer filterGroup={filterGroup}>
       {filterGroup.conditions.map((childRule, groupIdx) => {
         if (childRule.type === "Filter") {
           return (

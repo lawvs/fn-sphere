@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 
 export type FilterGroupContainerProps = {
   filterGroup: FilterGroup;
-  isRoot: boolean;
   children?: ReactNode;
 };
 
