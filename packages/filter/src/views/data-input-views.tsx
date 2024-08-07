@@ -73,8 +73,11 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       if (!requiredDataSchema.length) {
         return null;
       }
-      const value =
-        (rule.args?.[0] as Date | undefined)?.toISOString().slice(0, 10) ?? "";
+
+      const value = rule.args?.[0]
+        ? new Date(rule.args?.[0] as Date).toISOString().slice(0, 10)
+        : "";
+
       return (
         <InputView
           ref={ref}
