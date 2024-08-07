@@ -45,7 +45,7 @@ export const FilterSphereProvider = <Data,>({
   );
 
   return (
-    <FilterSchemaProvider value={context}>
+    <FilterSchemaProvider context={context}>
       {MaybeThemeProviderWithChildren}
     </FilterSchemaProvider>
   );

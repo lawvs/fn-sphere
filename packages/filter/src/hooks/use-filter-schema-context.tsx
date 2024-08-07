@@ -53,27 +53,29 @@ const FilterSchemaContext =
 // eslint-disable-next-line react-refresh/only-export-components
 export const useFilterSchemaContext = () => useContext(FilterSchemaContext);
 
-export const FilterSchemaProvider = ({
-  value,
-  children,
-}: {
-  value: FilterSchemaContext;
+type FilterSchemaProviderProps = {
+  context: FilterSchemaContext;
   children?: ReactNode;
-}) => {
+};
+
+export const FilterSchemaProvider = ({
+  context,
+  children,
+}: FilterSchemaProviderProps) => {
   const filterableFields = findFilterableFields({
-    schema: value.schema,
-    filterFnList: value.filterFnList,
-    maxDeep: value.fieldDeepLimit,
+    schema: context.schema,
+    filterFnList: context.filterFnList,
+    maxDeep: context.fieldDeepLimit,
   });
 
-  const { onRuleChange, ...valueWithoutRuleChange } = value;
+  const { onRuleChange, ...valueWithoutRuleChange } = context;
 
   const contextValue: InternalFilterContextType = {
     ...valueWithoutRuleChange,
     onFilterMapChange: (filterMap: FilterMap) => {
       onRuleChange?.(fromFilterMap(filterMap));
     },
-    filterMap: toFilterMap(value.filterRule),
+    filterMap: toFilterMap(context.filterRule),
     filterableFields,
   };
 
