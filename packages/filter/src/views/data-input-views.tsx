@@ -21,7 +21,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       if (!requiredDataSchema.length) {
         return null;
       }
-      const value = rule.args?.[0] as string | undefined;
+      const value = (rule.args?.[0] as string | undefined) ?? "";
       return (
         <InputView
           ref={ref}
