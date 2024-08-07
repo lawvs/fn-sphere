@@ -124,6 +124,16 @@ const validateStandardFnRule = ({
   }
 
   const requiredParameters = getParametersExceptFirst(fnSchema);
+
+  if (requiredParameters.length !== rule.args.length) {
+    return {
+      success: false,
+      error: new Error(
+        `rule.args length not match required parameters length, ${rule.args.length} !== ${requiredParameters.length}`,
+      ),
+    };
+  }
+
   if (!fnSchema.skipValidate) {
     const parseResult = z.tuple(requiredParameters).safeParse(rule.args);
     return parseResult;
