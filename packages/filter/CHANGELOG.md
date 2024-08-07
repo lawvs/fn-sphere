@@ -1,5 +1,12 @@
 # @fn-sphere/filter
 
+## 0.3.7
+
+### Patch Changes
+
+- 715e792: Add `getLocaleText` API
+  - @fn-sphere/core@0.3.7
+
 ## 0.3.6
 
 ### Patch Changes
