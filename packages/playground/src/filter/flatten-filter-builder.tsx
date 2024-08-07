@@ -1,4 +1,4 @@
-import { countNumberOfRules, type FilterId } from "@fn-sphere/core";
+import { type FilterId } from "@fn-sphere/core";
 import type {
   BasicFilterSphereInput,
   FilterGroup,
@@ -7,11 +7,12 @@ import type {
 import {
   createFilterGroup,
   createSingleFilter,
-  FilterSchemaProvider,
+  FilterSphereProvider,
   useFilterSphere,
   useView,
 } from "@fn-sphere/filter";
-import { Fragment } from "react";
+import { FlattenFilterGroupContainer } from "./filter-group-container";
+import { FlattenSingleFilterView } from "./filter-rule";
 
 interface FlattenFilterBuilderProps<Data = unknown>
   extends BasicFilterSphereInput<Data> {
@@ -62,21 +63,17 @@ export const FlattenFilterBuilder = <Data,>({
   filterRule,
   ...props
 }: FlattenFilterBuilderProps<Data>) => {
-  const { context } = useFilterSphere({
+  const { context, countTotalRules } = useFilterSphere({
     ruleValue: filterRule,
     ...props,
   });
-  const {
-    RuleJoiner,
-    FilterGroupContainer,
-    SingleFilter: FilterRule,
-  } = useView("templates");
   const { Button: ButtonView } = useView("components");
+  const { FilterGroup } = useView("templates");
   const isValidFlattenRule = isFlattenFilterGroup(filterRule);
 
   if (!isValidFlattenRule) {
     return (
-      <FilterGroupContainer filterGroup={filterRule}>
+      <div>
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
@@ -85,14 +82,13 @@ export const FlattenFilterBuilder = <Data,>({
         >
           Reset Filter
         </ButtonView>
-      </FilterGroupContainer>
+      </div>
     );
   }
 
-  const count = countNumberOfRules(filterRule);
-  if (count <= 0) {
+  if (countTotalRules() <= 0) {
     return (
-      <FilterGroupContainer filterGroup={filterRule}>
+      <div>
         <ButtonView
           onClick={() => {
             props.onRuleChange?.(createFlattenFilterGroup());
@@ -100,40 +96,22 @@ export const FlattenFilterBuilder = <Data,>({
         >
           Add Filter
         </ButtonView>
-      </FilterGroupContainer>
+      </div>
     );
   }
 
   return (
-    <FilterSchemaProvider value={context}>
-      <FilterGroupContainer filterGroup={filterRule}>
-        {filterRule.conditions.map((andGroup, groupIdx) => {
-          return (
-            <Fragment key={andGroup.id}>
-              {groupIdx > 0 && (
-                <RuleJoiner
-                  parent={filterRule}
-                  joinBetween={[filterRule.conditions[groupIdx - 1], andGroup]}
-                />
-              )}
-              <FilterGroupContainer filterGroup={andGroup}>
-                {andGroup.conditions.map((rule, ruleIdx) => (
-                  <Fragment key={rule.id}>
-                    {ruleIdx > 0 && (
-                      <RuleJoiner
-                        parent={andGroup}
-                        joinBetween={[andGroup.conditions[ruleIdx - 1], rule]}
-                      />
-                    )}
-                    <FilterRule rule={rule} />
-                  </Fragment>
-                ))}
-              </FilterGroupContainer>
-            </Fragment>
-          );
-        })}
-      </FilterGroupContainer>
-    </FilterSchemaProvider>
+    <FilterSphereProvider
+      context={context}
+      theme={{
+        templates: {
+          FilterGroupContainer: FlattenFilterGroupContainer,
+          SingleFilter: FlattenSingleFilterView,
+        },
+      }}
+    >
+      <FilterGroup rule={filterRule} />
+    </FilterSphereProvider>
   );
 };
 FlattenFilterBuilder.displayName = "FlattenFilterBuilder";

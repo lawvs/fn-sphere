@@ -114,10 +114,10 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       const { Select: SelectView } = useView("components");
       const { getLocaleText } = useRootRule();
       const unionSchema = requiredDataSchema[0] as z.ZodUnion<
-        [z.ZodLiteral<unknown>]
+        [z.ZodLiteral<z.Primitive>]
       >;
       const options = unionSchema.options.map(
-        (item: z.ZodLiteral<unknown>) => ({
+        (item: z.ZodLiteral<z.Primitive>) => ({
           label: getLocaleText(item.description ?? String(item.value)),
           value: item.value,
         }),

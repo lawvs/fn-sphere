@@ -7,12 +7,5 @@ export type RuleJoinerProps = {
 
 export const RuleJoiner = ({ parent }: RuleJoinerProps) => {
   const operator = parent.op;
-  return (
-    <div
-      className={`rule-joiner-${operator}`}
-      style={{
-        margin: 4,
-      }}
-    ></div>
-  );
+  return <div className={`filter-sphere-rule-joiner-${operator}`}></div>;
 };

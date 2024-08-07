@@ -1,19 +1,17 @@
 import type { FilterGroup } from "@fn-sphere/core";
+import { useRootRule } from "@fn-sphere/filter";
 import type { ReactNode } from "react";
-import { useFilterGroup } from "../hooks/use-filter-group.js";
-import { useRootRule } from "../hooks/use-root-rule.js";
 
-export type FilterGroupContainerProps = {
+type FlattenFilterGroupContainerProps = {
   filterGroup: FilterGroup;
   children?: ReactNode;
 };
 
-export const FilterGroupContainer = ({
+export const FlattenFilterGroupContainer = ({
   filterGroup,
   children,
-}: FilterGroupContainerProps) => {
+}: FlattenFilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
-  const { toggleGroupOp } = useFilterGroup(filterGroup);
 
   const text =
     filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
@@ -31,17 +29,14 @@ export const FilterGroupContainer = ({
         background: "rgba(0, 0, 0, 0.05)",
       }}
     >
-      <button
-        onClick={() => {
-          toggleGroupOp();
-        }}
+      <div
         style={{
           marginRight: 12,
           whiteSpace: "nowrap",
         }}
       >
         {text}
-      </button>
+      </div>
       {children}
     </div>
   );

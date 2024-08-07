@@ -11,7 +11,7 @@ export const SingleFilterContainer = ({
 }: SingleFilterContainerProps) => {
   return (
     <div
-      className="single-filter-container"
+      className="filter-sphere-single-filter-container"
       style={{
         display: "flex",
         gap: 4,

@@ -1,20 +1,23 @@
-import { type SingleFilter } from "@fn-sphere/core";
-import { useFilterRule } from "../hooks/use-filter-rule.js";
-import { useRootRule } from "../hooks/use-root-rule.js";
-import { useView } from "../theme/index.js";
+import {
+  createFilterGroup,
+  createSingleFilter,
+  type SingleFilter,
+} from "@fn-sphere/core";
+import { useFilterRule, useRootRule, useView } from "@fn-sphere/filter";
 
-export type SingleFilterRuleProps = {
+type FlattenSingleFilterRuleProps = {
   rule: SingleFilter;
 };
 
-export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
+export const FlattenSingleFilterView = ({
+  rule,
+}: FlattenSingleFilterRuleProps) => {
   const {
     ruleState: { isValid, isInvert },
     removeRule,
     appendRule,
-    appendGroup,
   } = useFilterRule(rule);
-  const { getLocaleText } = useRootRule();
+  const { getLocaleText, getRootRule, updateRootRule } = useRootRule();
   const { Button: ButtonView } = useView("components");
   const { FieldSelect, FilterSelect, FilterDataInput, SingleFilterContainer } =
     useView("templates");
@@ -31,14 +34,21 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
           appendRule();
         }}
       >
-        {getLocaleText("Add condition")}
+        {getLocaleText("And")}
       </ButtonView>
       <ButtonView
         onClick={() => {
-          appendGroup();
+          const rootRule = getRootRule();
+          rootRule.conditions.push(
+            createFilterGroup({
+              op: "and",
+              conditions: [createSingleFilter()],
+            }),
+          );
+          updateRootRule(rootRule);
         }}
       >
-        {getLocaleText("Add group")}
+        {getLocaleText("Or")}
       </ButtonView>
       <ButtonView aria-label="delete" onClick={() => removeRule(true)}>
         {getLocaleText("Delete")}
@@ -46,4 +56,4 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
     </SingleFilterContainer>
   );
 };
-SingleFilterView.displayName = "SingleFilterView";
+FlattenSingleFilterView.displayName = "FlattenSingleFilterView";
