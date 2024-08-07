@@ -8,8 +8,13 @@ import { useFilterRule } from "./use-filter-rule.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterSelect = (rule: SingleFilter) => {
-  const { filterMap, filterableFields, mapFieldName, mapFilterName } =
-    useFilterSchemaContext();
+  const {
+    filterMap,
+    filterableFields,
+    mapFieldName,
+    mapFilterName,
+    getLocaleText,
+  } = useFilterSchemaContext();
   const { updateRule } = useFilterRule(rule);
 
   const ruleNode = filterMap[rule.id];
@@ -29,7 +34,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
     : undefined;
 
   const fieldOptions = filterableFields.map((field) => ({
-    label: mapFieldName(field),
+    label: getLocaleText(mapFieldName(field)),
     value: field,
   }));
 
@@ -37,7 +42,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
     (filter) => filter.name === rule.name,
   );
   const filterOptions = selectedField?.filterFnList.map((filter) => ({
-    label: mapFilterName(filter, selectedField),
+    label: getLocaleText(mapFilterName(filter, selectedField)),
     value: filter,
   }));
 

@@ -9,7 +9,12 @@ import {
 import { useState } from "react";
 import { z } from "zod";
 import type { BasicFilterSphereInput } from "../types.js";
-import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
+import {
+  defaultGetLocaleText,
+  defaultMapFieldName,
+  defaultMapFilterName,
+  noop,
+} from "../utils.js";
 import type { FilterSchemaContext } from "./use-filter-schema-context.js";
 
 export interface FilterSphereInput<Data> extends BasicFilterSphereInput<Data> {
@@ -40,6 +45,7 @@ export const defaultContext: FilterSchemaContext = {
   fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
+  getLocaleText: defaultGetLocaleText,
   onRuleChange: noop,
 };
 

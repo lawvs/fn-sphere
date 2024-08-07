@@ -17,7 +17,7 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
     removeRule,
     appendRule,
   } = useFilterRule(rule);
-  const { getRootRule, updateRootRule } = useRootRule();
+  const { getLocaleText, getRootRule, updateRootRule } = useRootRule();
   const { Button: ButtonView } = useView("components");
   const { FieldSelect, FilterSelect, FilterDataInput, SingleFilterContainer } =
     useView("templates");
@@ -25,7 +25,7 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
   return (
     <SingleFilterContainer rule={rule}>
       <FieldSelect rule={rule} />
-      {isInvert ? "Not" : null}
+      {isInvert ? getLocaleText("Not") : null}
       <FilterSelect rule={rule} />
       <FilterDataInput rule={rule} />
       {isValid ? null : "!"}
@@ -34,7 +34,7 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
           appendRule();
         }}
       >
-        And
+        {getLocaleText("And")}
       </ButtonView>
       <ButtonView
         onClick={() => {
@@ -48,10 +48,10 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
           updateRootRule(rootRule);
         }}
       >
-        Or
+        {getLocaleText("Or")}
       </ButtonView>
       <ButtonView aria-label="delete" onClick={() => removeRule(true)}>
-        Delete
+        {getLocaleText("Delete")}
       </ButtonView>
     </SingleFilterContainer>
   );

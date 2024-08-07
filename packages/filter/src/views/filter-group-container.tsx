@@ -1,5 +1,6 @@
 import type { FilterGroup } from "@fn-sphere/core";
 import type { ReactNode } from "react";
+import { useRootRule } from "../hooks/use-root-rule.js";
 
 export type FilterGroupContainerProps = {
   filterGroup: FilterGroup;
@@ -10,13 +11,15 @@ export const FilterGroupContainer = ({
   filterGroup,
   children,
 }: FilterGroupContainerProps) => {
+  const { getLocaleText } = useRootRule();
   // const {
   //   ruleState: { isRoot },
   // } = useFilterGroup(filterGroup);
   // if (isRoot) {
   //   return children;
   // }
-  const text = filterGroup.op === "or" ? "Or" : "And";
+  const text =
+    filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
   return (
     <div
       className="filter-group-container"

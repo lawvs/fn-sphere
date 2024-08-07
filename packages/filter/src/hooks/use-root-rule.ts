@@ -9,6 +9,7 @@ export const useRootRule = () => {
     filterMap,
     mapFieldName,
     mapFilterName,
+    getLocaleText,
     onFilterMapChange,
   } = useFilterSchemaContext();
 
@@ -31,6 +32,7 @@ export const useRootRule = () => {
 
     mapFieldName,
     mapFilterName,
+    getLocaleText,
     getRootRule,
     updateRootRule,
   };

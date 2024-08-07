@@ -18,3 +18,5 @@ export const defaultMapFilterName: (
 ) => string = (filterSchema) => {
   return filterSchema.name;
 };
+
+export const defaultGetLocaleText = (key: string) => key;

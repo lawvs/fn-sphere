@@ -48,7 +48,7 @@ export interface BasicFilterSphereInput<Data = unknown> {
     field: FilterField,
   ) => string;
   /**
-   * The callback when the filter rule changes.
+   * Returns the translation for the key.
    */
-  // onRuleChange?: (rule: FilterGroup) => void;
+  getLocaleText?: (key: string) => string;
 }

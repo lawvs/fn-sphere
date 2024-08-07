@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { z } from "zod";
+import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
 import type { DataInputViewSpec } from "../theme/types.js";
 
@@ -108,12 +109,13 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     },
     view: function LiteralSelect({ requiredDataSchema, rule, updateInput }) {
       const { Select: SelectView } = useView("components");
+      const { getLocaleText } = useRootRule();
       const unionSchema = requiredDataSchema[0] as z.ZodUnion<
         [z.ZodLiteral<unknown>]
       >;
       const options = unionSchema.options.map(
         (item: z.ZodLiteral<unknown>) => ({
-          label: item.description ?? String(item.value),
+          label: getLocaleText(item.description ?? String(item.value)),
           value: item.value,
         }),
       );

@@ -8,7 +8,12 @@ import { createContext, type ReactNode, useContext } from "react";
 import { z } from "zod";
 import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
 import type { BasicFilterSphereInput } from "../types.js";
-import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
+import {
+  defaultGetLocaleText,
+  defaultMapFieldName,
+  defaultMapFilterName,
+  noop,
+} from "../utils.js";
 
 export interface FilterSchemaContext<Data = unknown>
   extends Readonly<Required<BasicFilterSphereInput<Data>>> {
@@ -32,6 +37,7 @@ const defaultContext: InternalFilterContextType = {
   fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
+  getLocaleText: defaultGetLocaleText,
 
   filterMap: {},
   filterableFields: [],
