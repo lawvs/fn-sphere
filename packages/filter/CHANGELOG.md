@@ -1,5 +1,12 @@
 # @fn-sphere/filter
 
+## 0.3.8
+
+### Patch Changes
+
+- 19e8e38: Update preset templates
+  - @fn-sphere/core@0.3.8
+
 ## 0.3.7
 
 ### Patch Changes
