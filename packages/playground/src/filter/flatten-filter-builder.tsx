@@ -6,6 +6,7 @@ import type {
 } from "@fn-sphere/filter";
 import {
   createFilterGroup,
+  createFilterTheme,
   createSingleFilter,
   FilterSphereProvider,
   useFilterSphere,
@@ -59,6 +60,13 @@ export const createFlattenFilterGroup = () =>
     ],
   });
 
+const theme = createFilterTheme({
+  templates: {
+    FilterGroupContainer: FlattenFilterGroupContainer,
+    SingleFilter: FlattenSingleFilterView,
+  },
+});
+
 export const FlattenFilterBuilder = <Data,>({
   filterRule,
   ...props
@@ -101,15 +109,7 @@ export const FlattenFilterBuilder = <Data,>({
   }
 
   return (
-    <FilterSphereProvider
-      context={context}
-      theme={{
-        templates: {
-          FilterGroupContainer: FlattenFilterGroupContainer,
-          SingleFilter: FlattenSingleFilterView,
-        },
-      }}
-    >
+    <FilterSphereProvider context={context} theme={theme}>
       <FilterGroup rule={filterRule} />
     </FilterSphereProvider>
   );

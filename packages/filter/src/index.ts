@@ -2,7 +2,6 @@ export { createFilterGroup, createSingleFilter } from "@fn-sphere/core";
 export {
   FilterSphereProvider,
   type FilterSphereProviderProps,
-  type FilterThemeInput,
 } from "./filter-sphere-provider.js";
 export { useFilterGroup } from "./hooks/use-filter-group.js";
 export { useFilterRule } from "./hooks/use-filter-rule.js";
