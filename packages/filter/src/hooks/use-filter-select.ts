@@ -7,6 +7,27 @@ import {
 import { useFilterRule } from "./use-filter-rule.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
+export type UpdateFieldOptions = {
+  /**
+   * Try to continue using the current filter when the field is changed.
+   *
+   * @default true
+   */
+  tryRetainFilter?: boolean;
+  /**
+   * Automatically select the first filter when the field is changed and the filter is not retained.
+   *
+   * @default true
+   */
+  autoSelectFirstFilter?: boolean;
+  /**
+   * Try to continue using the current args when the field is changed.
+   *
+   * @default true
+   */
+  tryRetainArgs?: boolean;
+};
+
 export const useFilterSelect = (rule: SingleFilter) => {
   const {
     filterMap,
@@ -46,15 +67,39 @@ export const useFilterSelect = (rule: SingleFilter) => {
     value: filter,
   }));
 
-  const updateField = (newField: FilterField) => {
+  const updateField = (
+    newField: FilterField,
+    {
+      tryRetainFilter = true,
+      autoSelectFirstFilter = true,
+      tryRetainArgs = true,
+    }: UpdateFieldOptions = {},
+  ) => {
+    if (!newField.filterFnList.length) {
+      console.error("Field has no filter", newField);
+      throw new Error("Field has no filter");
+    }
+    // Retain filter when possible
+    const canRetainFilter = newField.filterFnList.some(
+      (filter) => filter.name === rule.name,
+    );
+    const needRetainFilter = tryRetainFilter && canRetainFilter;
+    const fallbackFilter = autoSelectFirstFilter
+      ? newField.filterFnList[0].name
+      : undefined;
+
+    // TODO check if the arguments are matched new filter when autoSelectFirstFilter enabled
+    const needRetainArgs = tryRetainArgs && needRetainFilter;
+
     updateRule({
       ...rule,
       path: newField.path,
-      // Clear filter name when field changed
-      name: undefined,
-      // name: newField.filterFnList[0].name,
-      // Reset arguments when field changed
-      args: [],
+      name: needRetainFilter ? rule.name : fallbackFilter,
+      // If the filter is retained, keep the arguments
+      args: needRetainArgs
+        ? rule.args
+        : // Reset arguments when field changed
+          [],
     });
   };
 
