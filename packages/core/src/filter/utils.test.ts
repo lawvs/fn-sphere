@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
 import * as z from "zod";
 import { isSameType } from "zod-compare";
+import { defineTypedFn } from "../fn-sphere.js";
+import type { FnSchema } from "../types.js";
 import type { FilterPath } from "./types.js";
 import {
+  countNumberOfRules,
+  countValidRules,
+  createFilterGroup,
+  createSingleFilter,
   getFirstParameters,
   getParametersExceptFirst,
   getSchemaAtPath,
@@ -126,5 +132,126 @@ describe("getFirstParameters getParametersExceptFirst", () => {
     expect(() => getParametersExceptFirst(schema)).toThrowError(
       "Invalid fnSchema parameters!",
     );
+  });
+});
+
+describe("countNumberOfRules", () => {
+  it("should return 0 for empty filter group", () => {
+    const rule = createFilterGroup();
+    const result = countNumberOfRules(rule);
+    expect(result).toBe(0);
+
+    const rule2 = createFilterGroup({
+      op: "and",
+      conditions: [
+        createFilterGroup({
+          op: "or",
+          conditions: [
+            createFilterGroup({
+              op: "or",
+              conditions: [],
+            }),
+          ],
+        }),
+      ],
+    });
+    expect(countNumberOfRules(rule2)).toBe(0);
+  });
+
+  it("should return 1 for a single rule", () => {
+    const rule = createSingleFilter();
+    expect(countNumberOfRules(rule)).toBe(1);
+  });
+
+  it("should return 2 for a group with 2 rules", () => {
+    const rule = createFilterGroup({
+      op: "and",
+      conditions: [createSingleFilter(), createSingleFilter()],
+    });
+    expect(countNumberOfRules(rule)).toBe(2);
+  });
+
+  it("should return 3 for a group with 2 rules and a group with 1 rule", () => {
+    const rule = createFilterGroup({
+      op: "and",
+      conditions: [
+        createSingleFilter(),
+        createSingleFilter(),
+        createFilterGroup({
+          op: "or",
+          conditions: [createSingleFilter()],
+        }),
+      ],
+    });
+    expect(countNumberOfRules(rule)).toBe(3);
+  });
+
+  it("should return 1 for a nested rule", () => {
+    const rule = createFilterGroup({
+      op: "and",
+      conditions: [
+        createFilterGroup({
+          op: "or",
+          conditions: [
+            createFilterGroup({
+              op: "or",
+              conditions: [
+                createFilterGroup({
+                  op: "or",
+                  conditions: [createSingleFilter()],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+    expect(countNumberOfRules(rule)).toBe(1);
+  });
+});
+
+describe("countValidRules", () => {
+  const mockDataSchema = z.object({
+    name: z.string(),
+    boolean: z.boolean(),
+  });
+
+  const filterFnList: FnSchema[] = [
+    defineTypedFn({
+      name: "Starts with",
+      define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+      implement: (value, target) => value.startsWith(target),
+      skipValidate: true,
+    }),
+    defineTypedFn({
+      name: "Is checked",
+      define: z.function().args(z.boolean()).returns(z.boolean()),
+      implement: (value) => value === true,
+      skipValidate: true,
+    }),
+  ];
+
+  it("should return 0 for a no input rule", () => {
+    const rule = createSingleFilter();
+    const result = countValidRules({
+      filterFnList,
+      dataSchema: mockDataSchema,
+      rule,
+    });
+    expect(result).toBe(0);
+  });
+
+  it("should return 1 for a valid rule", () => {
+    const rule = createSingleFilter({
+      name: "Starts with",
+      path: ["name"],
+      args: ["test"],
+    });
+    const result = countValidRules({
+      filterFnList,
+      dataSchema: mockDataSchema,
+      rule,
+    });
+    expect(result).toBe(1);
   });
 });

@@ -3,7 +3,8 @@ import { z } from "zod";
 import { defineGenericFn, defineTypedFn } from "../fn-sphere.js";
 import type { FnSchema } from "../types.js";
 import type { FilterId, SingleFilter } from "./types.js";
-import { isValidRule } from "./validation.js";
+import { createFilterGroup, createSingleFilter } from "./utils.js";
+import { isValidRule, normalizeFilter } from "./validation.js";
 
 describe("isValidRule", () => {
   const filterFnList: FnSchema[] = [
@@ -198,5 +199,110 @@ describe("isValidRule", () => {
       rule,
     });
     expect(newResult).toBe(true);
+  });
+});
+
+describe("normalizeFilter", () => {
+  const filterFnList: FnSchema[] = [
+    defineTypedFn({
+      name: "Starts with",
+      define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+      implement: (value, target) => value.startsWith(target),
+      skipValidate: true,
+    }),
+    defineTypedFn({
+      name: "Is checked",
+      define: z.function().args(z.boolean()).returns(z.boolean()),
+      implement: (value) => value === true,
+      skipValidate: true,
+    }),
+  ];
+
+  const mockDataSchema = z.object({
+    name: z.string(),
+    boolean: z.boolean(),
+  });
+
+  it("should return undefined for a empty rule", () => {
+    const rule = createSingleFilter();
+    expect(
+      normalizeFilter({ filterFnList, dataSchema: mockDataSchema, rule }),
+    ).toBeUndefined();
+
+    const group = createFilterGroup({
+      op: "and",
+      conditions: [rule],
+    });
+    expect(
+      normalizeFilter({
+        filterFnList,
+        dataSchema: mockDataSchema,
+        rule: group,
+      }),
+    ).toBeUndefined();
+  });
+
+  it("should return itself for a valid rule", () => {
+    const rule = createSingleFilter({
+      name: "Starts with",
+      path: ["name"],
+      args: ["str"],
+    });
+    expect(
+      normalizeFilter({ filterFnList, dataSchema: mockDataSchema, rule }),
+    ).toEqual({
+      ...rule,
+      invert: false,
+    });
+
+    const group = createFilterGroup({
+      op: "and",
+      conditions: [rule],
+    });
+    expect(
+      normalizeFilter({
+        filterFnList,
+        dataSchema: mockDataSchema,
+        rule: group,
+      }),
+    ).toEqual({
+      ...group,
+      invert: false,
+      conditions: [
+        {
+          ...rule,
+          invert: false,
+        },
+      ],
+    });
+  });
+
+  it("should return filter without invalid rule", () => {
+    const rule = createSingleFilter({
+      name: "Starts with",
+      path: ["name"],
+      args: ["str"],
+    });
+
+    const group = createFilterGroup({
+      op: "and",
+      conditions: [createSingleFilter(), rule],
+    });
+    expect(
+      normalizeFilter({
+        filterFnList,
+        dataSchema: mockDataSchema,
+        rule: group,
+      }),
+    ).toEqual({
+      ...group,
+      invert: false,
+      conditions: [
+        {
+          ...rule,
+          invert: false,
+        },
+      ],
+    });
   });
 });
