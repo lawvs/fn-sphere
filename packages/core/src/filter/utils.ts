@@ -1,6 +1,6 @@
-import { z, type ZodType } from "zod";
+import { z, type ZodType, type ZodTypeAny } from "zod";
 import { isSameType } from "zod-compare";
-import type { GenericFnSchema, StandardFnSchema } from "../types.js";
+import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
 import type {
   FilterGroup,
@@ -11,6 +11,7 @@ import type {
   SingleFilter,
   SingleFilterInput,
 } from "./types.js";
+import { normalizeFilter } from "./validation.js";
 
 export const and =
   <T extends (...args: any[]) => boolean>(...fnArray: NoInfer<T>[]) =>
@@ -107,6 +108,26 @@ export const countNumberOfRules = (rule: FilterRule): number => {
     return rule.conditions.reduce((acc, r) => acc + countNumberOfRules(r), 0);
   }
   unreachable(rule);
+};
+
+export const countValidRules = ({
+  filterFnList,
+  dataSchema,
+  rule,
+}: {
+  filterFnList: FnSchema[];
+  dataSchema: ZodTypeAny;
+  rule: FilterRule;
+}): number => {
+  const strictRule = normalizeFilter({
+    filterFnList,
+    dataSchema,
+    rule,
+  });
+  if (!strictRule) {
+    return 0;
+  }
+  return countNumberOfRules(strictRule);
 };
 
 export function genFilterId(): FilterId {
