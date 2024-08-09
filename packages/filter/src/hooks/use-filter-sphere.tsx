@@ -1,5 +1,6 @@
 import {
   countNumberOfRules,
+  countValidRules,
   createFilterGroup,
   createFilterPredicate,
   createSingleFilter,
@@ -118,6 +119,12 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
   return {
     filterRule: realRule,
     countTotalRules,
+    countValidRules: () =>
+      countValidRules({
+        dataSchema: schema,
+        filterFnList,
+        rule: realRule,
+      }),
     getPredicate,
     reset,
     context,
