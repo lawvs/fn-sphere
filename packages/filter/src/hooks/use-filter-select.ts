@@ -1,5 +1,6 @@
 import {
   isEqualPath,
+  isSameType,
   type FilterField,
   type SingleFilter,
   type StandardFnSchema,
@@ -7,7 +8,16 @@ import {
 import { useFilterRule } from "./use-filter-rule.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
-export type UpdateFieldOptions = {
+export interface UpdateFilterOptions {
+  /**
+   * Try to continue using the current args when the field is changed.
+   *
+   * @default true
+   */
+  tryRetainArgs?: boolean;
+}
+
+export interface UpdateFieldOptions extends UpdateFilterOptions {
   /**
    * Try to continue using the current filter when the field is changed.
    *
@@ -20,13 +30,7 @@ export type UpdateFieldOptions = {
    * @default true
    */
   autoSelectFirstFilter?: boolean;
-  /**
-   * Try to continue using the current args when the field is changed.
-   *
-   * @default true
-   */
-  tryRetainArgs?: boolean;
-};
+}
 
 export const useFilterSelect = (rule: SingleFilter) => {
   const {
@@ -67,6 +71,28 @@ export const useFilterSelect = (rule: SingleFilter) => {
     value: filter,
   }));
 
+  /**
+   * Checks if the new filter schema has the same arguments as the current filter schema.
+   */
+  const canRetainArgs = (newFilterSchema: StandardFnSchema) => {
+    if (!selectedField) {
+      // This should not happen since the field should be selected before the filter
+      console.error("Field not found", rule);
+      return false;
+    }
+    const currentFilterSchema = selectedField.filterFnList.find(
+      (filter) => filter.name === rule.name,
+    );
+    if (!currentFilterSchema) {
+      // Select filter first time
+      return false;
+    }
+    return isSameType(
+      newFilterSchema.define.parameters(),
+      currentFilterSchema.define.parameters(),
+    );
+  };
+
   const updateField = (
     newField: FilterField,
     {
@@ -79,7 +105,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
       console.error("Field has no filter", newField);
       throw new Error("Field has no filter");
     }
-    // Retain filter when possible
+    // If new field has the same filter, it can be retained
     const canRetainFilter = newField.filterFnList.some(
       (filter) => filter.name === rule.name,
     );
@@ -88,13 +114,16 @@ export const useFilterSelect = (rule: SingleFilter) => {
       ? newField.filterFnList[0].name
       : undefined;
 
-    // TODO check if the arguments are matched new filter when autoSelectFirstFilter enabled
-    const needRetainArgs = tryRetainArgs && needRetainFilter;
+    const newFilterSchema = needRetainFilter ? rule.name : fallbackFilter;
+
+    const needRetainArgs =
+      tryRetainArgs &&
+      (needRetainFilter || canRetainArgs(newField.filterFnList[0]));
 
     updateRule({
       ...rule,
       path: newField.path,
-      name: needRetainFilter ? rule.name : fallbackFilter,
+      name: newFilterSchema,
       // If the filter is retained, keep the arguments
       args: needRetainArgs
         ? rule.args
@@ -103,11 +132,15 @@ export const useFilterSelect = (rule: SingleFilter) => {
     });
   };
 
-  const updateFilter = (filterSchema: StandardFnSchema) => {
+  const updateFilter = (
+    filterSchema: StandardFnSchema,
+    { tryRetainArgs = true }: UpdateFilterOptions = {},
+  ) => {
+    const needRetainArgs = tryRetainArgs && canRetainArgs(filterSchema);
     updateRule({
       ...rule,
       name: filterSchema.name,
-      args: [],
+      args: needRetainArgs ? rule.args : [],
     });
   };
 

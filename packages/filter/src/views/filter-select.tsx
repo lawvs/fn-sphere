@@ -1,12 +1,18 @@
 import type { SingleFilter } from "@fn-sphere/core";
-import { useFilterSelect } from "../hooks/use-filter-select.js";
+import {
+  useFilterSelect,
+  type UpdateFilterOptions,
+} from "../hooks/use-filter-select.js";
 import { useView } from "../theme/index.js";
 
 export type FilterSelectProps = {
   rule: SingleFilter;
-};
+} & UpdateFilterOptions;
 
-export const FilterSelect = ({ rule }: FilterSelectProps) => {
+export const FilterSelect = ({
+  rule,
+  ...updateFilterOptions
+}: FilterSelectProps) => {
   const { Select: SelectView } = useView("components");
   const { selectedField, selectedFilter, filterOptions, updateFilter } =
     useFilterSelect(rule);
@@ -16,7 +22,7 @@ export const FilterSelect = ({ rule }: FilterSelectProps) => {
       value={selectedFilter}
       disabled={!selectedField}
       options={filterOptions}
-      onChange={updateFilter}
+      onChange={(val) => updateFilter(val, updateFilterOptions)}
     />
   );
 };
