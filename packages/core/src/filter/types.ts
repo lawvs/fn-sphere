@@ -36,6 +36,7 @@ export interface SingleFilterInput {
    */
   args?: unknown[];
   invert?: boolean;
+  meta?: Record<string, unknown>;
 }
 
 export interface SingleFilter extends SingleFilterInput {
@@ -54,6 +55,7 @@ export interface FilterGroupInput {
   op: "and" | "or";
   conditions?: FilterRule[];
   invert?: boolean;
+  meta?: Record<string, unknown>;
 }
 
 export interface FilterGroup extends FilterGroupInput {
@@ -68,9 +70,10 @@ export interface FilterGroup extends FilterGroupInput {
 export type FilterRule = SingleFilter | FilterGroup;
 
 export type StrictSingleFilter = Readonly<
-  Required<SingleFilter> & {
+  Required<Omit<SingleFilter, "meta">> & {
     name: string;
     path: FilterPath;
+    meta?: Record<string, unknown>;
   }
 >;
 export type StrictFilterGroup = Readonly<{
@@ -82,6 +85,7 @@ export type StrictFilterGroup = Readonly<{
   op: "and" | "or";
   conditions: StrictFilterRule[];
   invert: boolean;
+  meta?: Record<string, unknown>;
 }>;
 
 export type StrictFilterRule = StrictSingleFilter | StrictFilterGroup;
