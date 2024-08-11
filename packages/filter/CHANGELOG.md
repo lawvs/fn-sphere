@@ -1,5 +1,98 @@
 # @fn-sphere/filter
 
+## 0.4.0
+
+### Minor Changes
+
+- 55b7fb1: - In `useFilterSelect`:
+  - The `updateField` function has been deprecated and replaced with `setField` for clarity and consistency.
+  - The `updateFilter` function has been deprecated and replaced with `setFilter`.
+  - In `useFilterRule`:
+    - The `updateRule` function has been renamed to `setRule`
+    - Added a new `duplicateRule` function to duplicate a rule.
+    - Added a new `invertRule` function.
+  - In `useFilterGroup` and `useFilterRule`:
+    - The parameter `SingleFilter` has been changed to `SingleFilterInput` for simplicity.
+    - The parameter `FilterGroup` has been changed to `FilterGroupInput` for simplicity.
+- e05bcbe: Removed inline theme merging logic from `FilterSphereProvider`.
+
+  Introduced `createFilterTheme` for theme merging.
+
+  Migration guide:
+
+  ```diff
+  -  <FilterSphereProvider theme={customTheme}>
+  + const theme = createFilterTheme(customTheme);
+  +  <FilterSphereProvider theme={theme}>
+  ```
+
+### Patch Changes
+
+- 0ce4129: Add `tryRetainArgs` to allow retaining `args` when filter is changed
+- d4c6a7d: - Update `useFilterSphere` hook to use `predicate` instead of `getPredicate`:
+
+  ```diff
+  import { useFilterSphere } from "@fn-sphere/filter";
+
+  - const { rule, predicate, context } = useFilterSphere({
+  + const { rule, getPredicate, context } = useFilterSphere({
+    schema: YOUR_DATA_SCHEMA,
+  });
+
+  - const filteredData = YOUR_DATA.filter(getPredicate());
+  + const filteredData = YOUR_DATA.filter(predicate);
+  ```
+
+  - Update `countTotalRules()` to `get totalRuleCount` in `useFilterSphere` hook
+  - Add `validRuleCount` to `useFilterSphere` hook to get the count of valid rules
+
+- c5ad41a: Add `countValidRules` function to `useFilterSphere` hook
+
+  ```ts
+  const { countValidRules } = useFilterSphere();
+  const validRulesCount = countValidRules();
+  ```
+
+- 311f306: - Added the ability to retain the current filter and arguments when the field is changed in the `useFilterSelect` hook.
+
+  - Introduced the `UpdateFieldOptions` type to specify the behavior when updating the field.
+  - Updated the `FieldSelect` component to pass the `updateFieldOptions` to the `updateField` function.
+
+  ```tsx
+  export type UpdateFieldOptions = {
+    /**
+     * Try to continue using the current filter when the field is changed.
+     *
+     * @default true
+     */
+    tryRetainFilter?: boolean;
+    /**
+     * Automatically select the first filter when the field is changed and the filter is not retained.
+     *
+     * @default true
+     */
+    autoSelectFirstFilter?: boolean;
+    /**
+     * Try to continue using the current args when the field is changed.
+     *
+     * @default true
+     */
+    tryRetainArgs?: boolean;
+  };
+
+  <FieldSelect
+    rule={rule}
+    tryRetainFilter
+    autoSelectFirstFilter
+    tryRetainArgs
+  />;
+  ```
+
+- Updated dependencies [e0f5632]
+- Updated dependencies [744b13e]
+- Updated dependencies [b042713]
+  - @fn-sphere/core@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes

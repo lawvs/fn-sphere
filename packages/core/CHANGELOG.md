@@ -1,5 +1,16 @@
 # @fn-sphere/core
 
+## 0.4.0
+
+### Patch Changes
+
+- e0f5632: Fix `isValidRule` incorrectly returned `false` for functions with `skipValidate` enabled
+
+  Now, even if `skipValidate` is enabled, the input data is still checked for length.
+
+- 744b13e: Allow attaching meta to filter rule
+- b042713: Add countValidRules function
+
 ## 0.3.8
 
 ## 0.3.7
