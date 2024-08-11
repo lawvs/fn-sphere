@@ -8,7 +8,7 @@ Introduced `createFilterTheme` for theme merging.
 
 Migration guide:
 
-```tsx
+```diff
 -  <FilterSphereProvider theme={customTheme}>
 + const theme = createFilterTheme(customTheme);
 +  <FilterSphereProvider theme={theme}>
