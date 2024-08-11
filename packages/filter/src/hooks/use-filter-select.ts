@@ -76,8 +76,6 @@ export const useFilterSelect = (rule: SingleFilter) => {
    */
   const canRetainArgs = (newFilterSchema: StandardFnSchema) => {
     if (!selectedField) {
-      // This should not happen since the field should be selected before the filter
-      console.error("Field not found", rule);
       return false;
     }
     const currentFilterSchema = selectedField.filterFnList.find(

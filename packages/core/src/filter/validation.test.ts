@@ -200,6 +200,43 @@ describe("isValidRule", () => {
     });
     expect(newResult).toBe(true);
   });
+
+  it("should check extra zod options when validate generic fn", () => {
+    const emailSchema = z.object({
+      email: z.string().email(),
+    });
+    const rule: SingleFilter = {
+      id: "1" as FilterId,
+      type: "Filter",
+      name: "Equals",
+      path: ["email"],
+      args: [],
+    };
+
+    const genericFn = defineGenericFn({
+      name: "Equals",
+      genericLimit: (t): t is z.ZodString | z.ZodNumber => true,
+      define: (t) => z.function().args(t, t).returns(z.boolean()),
+      implement: (value: z.Primitive, target: z.Primitive) => value === target,
+    });
+
+    rule.args = ["not email"];
+    const result = isValidRule({
+      filterFnList: [genericFn],
+      dataSchema: emailSchema,
+      rule,
+    });
+
+    expect(result).toBe(false);
+
+    rule.args = ["foo@example.com"];
+    const newResult = isValidRule({
+      filterFnList: [genericFn],
+      dataSchema: emailSchema,
+      rule,
+    });
+    expect(newResult).toBe(true);
+  });
 });
 
 describe("normalizeFilter", () => {

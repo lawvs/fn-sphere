@@ -21,7 +21,7 @@ type FilterPredicateOptions<T> = {
   filterRule?: FilterRule;
 };
 
-const trueFn = () => true;
+const trueFn = () => true as const;
 
 const createSingleRulePredicate = <Data>({
   filterFnList,
