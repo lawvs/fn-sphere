@@ -3,8 +3,9 @@ import {
   createSingleFilter,
   isEqualPath,
   isValidRule,
-  type FilterGroup,
+  type FilterGroupInput,
   type SingleFilter,
+  type SingleFilterInput,
 } from "@fn-sphere/core";
 import { fromFilterMap, getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
@@ -40,19 +41,27 @@ export const useFilterRule = (rule: SingleFilter) => {
     (filter) => filter.name === rule.name,
   );
 
-  // TODO ignore FilterId in user input
-  const updateRule = (newRule: SingleFilter) => {
+  const setRule = (input: SingleFilterInput) => {
     onFilterMapChange({
       ...filterMap,
       [rule.id]: {
         type: "Filter",
-        data: newRule,
+        data: {
+          ...createSingleFilter(input),
+          id: rule.id,
+        },
         parentId,
       },
     });
   };
 
-  const appendRule = (newRule: SingleFilter = createSingleFilter()) => {
+  /**
+   * @deprecated Use {@link setRule} instead
+   */
+  const updateRule = setRule;
+
+  const appendRule = (input?: SingleFilterInput) => {
+    const newRule = createSingleFilter(input);
     onFilterMapChange({
       ...filterMap,
       [parentId]: {
@@ -72,12 +81,20 @@ export const useFilterRule = (rule: SingleFilter) => {
     return newRule;
   };
 
+  const duplicateRule = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, ...ruleWithoutId } = rule;
+    const newRule = createSingleFilter(ruleWithoutId);
+    return appendRule(newRule);
+  };
+
   const appendGroup = (
-    newFilterGroup: FilterGroup = createFilterGroup({
+    input: FilterGroupInput = {
       op: "and",
       conditions: [createSingleFilter()],
-    }),
+    },
   ) => {
+    const newFilterGroup = createFilterGroup(input);
     onFilterMapChange({
       ...filterMap,
       [parentId]: {
@@ -139,6 +156,15 @@ export const useFilterRule = (rule: SingleFilter) => {
     onFilterMapChange(newFilterMap);
   };
 
+  const invertRule = (invert?: SingleFilter["invert"]) => {
+    const oldInvert = rule.invert;
+    const newInvert = invert === undefined ? !oldInvert : invert;
+    if (oldInvert === newInvert) {
+      return;
+    }
+    setRule({ ...rule, invert: newInvert });
+  };
+
   const isLastRule = index === parentNode.conditionIds.length - 1;
 
   return {
@@ -170,12 +196,17 @@ export const useFilterRule = (rule: SingleFilter) => {
     selectedField,
     selectedFilter,
 
+    setRule,
+    /**
+     * @deprecated Use {@link setRule} instead
+     */
     updateRule,
     appendRule,
     appendGroup,
     removeRule,
     // moveRule,
-    // duplicateRule,
+    duplicateRule,
+    invertRule,
     // turnIntoGroup,
   };
 };

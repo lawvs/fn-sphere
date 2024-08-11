@@ -40,7 +40,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
     mapFilterName,
     getLocaleText,
   } = useFilterSchemaContext();
-  const { updateRule } = useFilterRule(rule);
+  const { setRule } = useFilterRule(rule);
 
   const ruleNode = filterMap[rule.id];
   if (!ruleNode) {
@@ -93,7 +93,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
     );
   };
 
-  const updateField = (
+  const setField = (
     newField: FilterField,
     {
       tryRetainFilter = true,
@@ -120,7 +120,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
       tryRetainArgs &&
       (needRetainFilter || canRetainArgs(newField.filterFnList[0]));
 
-    updateRule({
+    setRule({
       ...rule,
       path: newField.path,
       name: newFilterSchema,
@@ -132,17 +132,27 @@ export const useFilterSelect = (rule: SingleFilter) => {
     });
   };
 
-  const updateFilter = (
+  /**
+   * @deprecated Use {@link setField} instead
+   */
+  const updateField = setField;
+
+  const setFilter = (
     filterSchema: StandardFnSchema,
     { tryRetainArgs = true }: UpdateFilterOptions = {},
   ) => {
     const needRetainArgs = tryRetainArgs && canRetainArgs(filterSchema);
-    updateRule({
+    setRule({
       ...rule,
       name: filterSchema.name,
       args: needRetainArgs ? rule.args : [],
     });
   };
+
+  /**
+   * @deprecated Use {@link setFilter} instead
+   */
+  const updateFilter = setFilter;
 
   return {
     filterableFields,
@@ -151,7 +161,16 @@ export const useFilterSelect = (rule: SingleFilter) => {
     fieldOptions,
     filterOptions,
 
+    setField,
+    setFilter,
+
+    /**
+     * @deprecated Use {@link setField} instead
+     */
     updateField,
+    /**
+     * @deprecated Use {@link setFilter} instead
+     */
     updateFilter,
   };
 };

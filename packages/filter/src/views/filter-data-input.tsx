@@ -10,7 +10,7 @@ export type DataInputProps = {
 export const FilterDataInput = forwardRef<HTMLInputElement, DataInputProps>(
   ({ rule }, ref) => {
     const { Input: InputView } = useView("components");
-    const { selectedField, selectedFilter, updateRule } = useFilterRule(rule);
+    const { selectedField, selectedFilter, setRule } = useFilterRule(rule);
     const requiredArguments = selectedFilter
       ? getParametersExceptFirst(selectedFilter)
       : undefined;
@@ -19,8 +19,8 @@ export const FilterDataInput = forwardRef<HTMLInputElement, DataInputProps>(
       selectedField?.fieldSchema,
     );
 
-    const updateInput = (value: unknown[]) => {
-      updateRule({
+    const setRuleArgs = (value: unknown[]) => {
+      setRule({
         ...rule,
         args: value,
       });
@@ -35,7 +35,7 @@ export const FilterDataInput = forwardRef<HTMLInputElement, DataInputProps>(
         ref={ref}
         rule={rule}
         requiredDataSchema={requiredArguments}
-        updateInput={updateInput}
+        updateInput={setRuleArgs}
       />
     );
   },

@@ -14,13 +14,13 @@ export const FieldSelect = ({
   ...updateFieldOptions
 }: FieldSelectProps) => {
   const { Select: SelectView } = useView("components");
-  const { selectedField, fieldOptions, updateField } = useFilterSelect(rule);
+  const { selectedField, fieldOptions, setField } = useFilterSelect(rule);
 
   return (
     <SelectView
       value={selectedField}
       options={fieldOptions}
-      onChange={(field) => updateField(field, updateFieldOptions)}
+      onChange={(field) => setField(field, updateFieldOptions)}
     />
   );
 };

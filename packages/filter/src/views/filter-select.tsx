@@ -14,7 +14,7 @@ export const FilterSelect = ({
   ...updateFilterOptions
 }: FilterSelectProps) => {
   const { Select: SelectView } = useView("components");
-  const { selectedField, selectedFilter, filterOptions, updateFilter } =
+  const { selectedField, selectedFilter, filterOptions, setFilter } =
     useFilterSelect(rule);
 
   return (
@@ -22,7 +22,7 @@ export const FilterSelect = ({
       value={selectedFilter}
       disabled={!selectedField}
       options={filterOptions}
-      onChange={(val) => updateFilter(val, updateFilterOptions)}
+      onChange={(val) => setFilter(val, updateFilterOptions)}
     />
   );
 };
