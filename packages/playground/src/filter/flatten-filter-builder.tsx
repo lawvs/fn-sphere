@@ -71,7 +71,7 @@ export const FlattenFilterBuilder = <Data,>({
   filterRule,
   ...props
 }: FlattenFilterBuilderProps<Data>) => {
-  const { context, countTotalRules } = useFilterSphere({
+  const { context, totalRuleCount } = useFilterSphere({
     ruleValue: filterRule,
     ...props,
   });
@@ -94,7 +94,7 @@ export const FlattenFilterBuilder = <Data,>({
     );
   }
 
-  if (countTotalRules() <= 0) {
+  if (totalRuleCount <= 0) {
     return (
       <div>
         <ButtonView

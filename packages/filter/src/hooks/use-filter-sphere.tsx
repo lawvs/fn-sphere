@@ -58,8 +58,7 @@ export const defaultContext: FilterSchemaContext = {
  *
  * @example
  * ```ts
- * const { getPredicate, context } = useFilterSphere<YourData>({ schema: yourDataSchema });
- * const predicate = getPredicate();
+ * const { predicate, context } = useFilterSphere<YourData>({ schema: yourDataSchema });
  * const filteredData = data.filter(predicate);
  * ```
  */
@@ -118,14 +117,28 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
 
   return {
     filterRule: realRule,
+
+    /**
+     * @deprecated Use `countTotalRules` directly.
+     */
     countTotalRules,
-    countValidRules: () =>
-      countValidRules({
+    get totalRuleCount() {
+      return countNumberOfRules(realRule);
+    },
+    get validRuleCount() {
+      return countValidRules({
         dataSchema: schema,
         filterFnList,
         rule: realRule,
-      }),
+      });
+    },
+    /**
+     * @deprecated Use `predicate` directly.
+     */
     getPredicate,
+    get predicate() {
+      return getPredicate();
+    },
     reset,
     context,
   };

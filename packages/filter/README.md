@@ -41,13 +41,11 @@ const YOUR_DATA: z.infer<typeof YOUR_DATA_SCHEMA>[] = [
 ];
 
 const Filter = () => {
-  const { rule, getPredicate, context } = useFilterSphere({
+  const { rule, predicate, context } = useFilterSphere({
     schema: YOUR_DATA_SCHEMA,
-    onPredicateChange: (predicate) => {
-      const filteredData = YOUR_DATA.filter(predicate);
-      console.log(filteredData);
-    },
   });
+  const filteredData = YOUR_DATA.filter(predicate);
+  console.log(filteredData);
 
   return (
     <FilterSphereProvider context={context}>
