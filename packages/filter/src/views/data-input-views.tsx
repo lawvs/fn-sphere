@@ -122,12 +122,55 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       return (
         <SelectView
           options={options}
-          value={rule.args?.[0]}
+          value={rule.args?.[0] as z.Primitive}
           onChange={(value) => {
             updateInput([value]);
           }}
         />
       );
+    }),
+  },
+  {
+    name: "literal array",
+    match: (parameterSchemas) => {
+      if (parameterSchemas.length !== 1) {
+        return false;
+      }
+      const [item] = parameterSchemas;
+      return (
+        item instanceof z.ZodArray &&
+        item.element instanceof z.ZodUnion &&
+        item.element.options.every(
+          (op: z.ZodType) => op instanceof z.ZodLiteral,
+        )
+      );
     },
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
+      const { Select: SelectView } = useView("components");
+      const { getLocaleText } = useRootRule();
+      const arraySchema = requiredDataSchema[0] as z.ZodArray<
+        z.ZodUnion<[z.ZodLiteral<z.Primitive>]>
+      >;
+      const unionSchema = arraySchema.element;
+      const options = unionSchema.options.map((item) => ({
+        label: getLocaleText(item.description ?? String(item.value)),
+        value: item.value,
+      }));
+      const value = (rule.args?.[0] ?? []) as z.Primitive[];
+      return (
+        <SelectView<z.Primitive>
+          multiple
+          value={value}
+          options={options}
+          onChange={(newValue) => {
+            if (!newValue?.length) {
+              updateInput([]);
+              return;
+            }
+            updateInput([newValue]);
+          }}
+        />
+      );
+    }),
   },
 ] satisfies DataInputViewSpec[];
