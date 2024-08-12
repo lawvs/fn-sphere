@@ -17,7 +17,7 @@ export const FilterDataInput = ({ rule }: DataInputProps) => {
     selectedField?.fieldSchema,
   );
 
-  const setRuleArgs = (value: unknown[]) => {
+  const setRuleArgs = (...value: unknown[]) => {
     // Can not check the schema here because the input value is not always valid
     // For example, z.string().email() will throw an error when user types before the user types the complete email
     // const requiredArgsSchema = z.tuple(requiredArguments);

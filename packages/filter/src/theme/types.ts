@@ -21,7 +21,7 @@ import type { SingleFilterContainerProps } from "../views/single-filter-containe
 export type DataInputViewProps = {
   rule: SingleFilter;
   requiredDataSchema: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]];
-  updateInput: (input: unknown[]) => void;
+  updateInput: (...input: unknown[]) => void;
 };
 
 export type DataInputViewSpec = {
@@ -63,6 +63,9 @@ export type ThemeSpec = {
     >;
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
     Select: <T>(
+      props: SelectProps<T> & { ref?: Ref<HTMLSelectElement> },
+    ) => ReactNode;
+    MultipleSelect: <T>(
       props: SelectProps<T> & { ref?: Ref<HTMLSelectElement> },
     ) => ReactNode;
   };

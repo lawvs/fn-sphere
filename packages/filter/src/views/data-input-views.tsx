@@ -28,10 +28,10 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           value={value}
           onChange={(newValue) => {
             if (!newValue.length) {
-              updateInput([]);
+              updateInput();
               return;
             }
-            updateInput([newValue]);
+            updateInput(newValue);
             return;
           }}
         />
@@ -53,10 +53,10 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           value={value}
           onChange={(newValue) => {
             if (!newValue.length) {
-              updateInput([]);
+              updateInput();
               return;
             }
-            updateInput([+newValue]);
+            updateInput(+newValue);
             return;
           }}
         />
@@ -83,10 +83,10 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           value={value}
           onChange={(newValue) => {
             if (!newValue) {
-              updateInput([]);
+              updateInput();
               return;
             }
-            updateInput([new Date(newValue)]);
+            updateInput(new Date(newValue));
           }}
         />
       );
@@ -124,7 +124,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           options={options}
           value={rule.args?.[0] as z.Primitive}
           onChange={(value) => {
-            updateInput([value]);
+            updateInput(value);
           }}
         />
       );
@@ -164,10 +164,10 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           options={options}
           onChange={(newValue) => {
             if (!newValue?.length) {
-              updateInput([]);
+              updateInput();
               return;
             }
-            updateInput([newValue]);
+            updateInput(newValue);
           }}
         />
       );
