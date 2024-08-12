@@ -189,13 +189,16 @@ const genericEqualFilter = defineGenericFn([
     name: "Equals",
     genericLimit: (
       t,
-    ): t is z.ZodString | z.ZodNumber | z.ZodUnion<[z.ZodLiteral<any>]> =>
+    ): t is
+      | z.ZodString
+      | z.ZodNumber
+      | z.ZodUnion<[z.ZodLiteral<z.Primitive>]> =>
       t instanceof z.ZodString ||
       t instanceof z.ZodNumber ||
       (t instanceof z.ZodUnion &&
         t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
     define: (t) => z.function().args(t, t).returns(z.boolean()),
-    implement: (value: z.Primitive, target: z.Primitive) => {
+    implement: (value: unknown, target: unknown) => {
       return value === target;
     },
   },
@@ -203,13 +206,16 @@ const genericEqualFilter = defineGenericFn([
     name: "Not equal",
     genericLimit: (
       t,
-    ): t is z.ZodString | z.ZodNumber | z.ZodUnion<[z.ZodLiteral<any>]> =>
+    ): t is
+      | z.ZodString
+      | z.ZodNumber
+      | z.ZodUnion<[z.ZodLiteral<z.Primitive>]> =>
       t instanceof z.ZodString ||
       t instanceof z.ZodNumber ||
       (t instanceof z.ZodUnion &&
         t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
     define: (t) => z.function().args(t, t).returns(z.boolean()),
-    implement: (value: z.Primitive, target: z.Primitive) => {
+    implement: (value: unknown, target: unknown) => {
       return value !== target;
     },
   },
@@ -237,14 +243,33 @@ const genericBlankFilter = defineGenericFn([
 const genericContainFilter = defineGenericFn([
   {
     name: "Contains",
-    genericLimit: (t): t is z.ZodArray<z.ZodType> | z.ZodString =>
-      t instanceof z.ZodArray || t instanceof z.ZodString,
-    define: (t) =>
-      z
-        .function()
-        .args(t, t instanceof z.ZodString ? t : t.element)
-        .returns(z.boolean()),
-    implement: (value: string | unknown[], target: string | unknown) => {
+    genericLimit: (
+      t,
+    ): t is
+      | z.ZodString
+      | z.ZodArray<z.ZodType>
+      | z.ZodUnion<[z.ZodLiteral<z.Primitive>]> =>
+      t instanceof z.ZodString ||
+      t instanceof z.ZodArray ||
+      (t instanceof z.ZodUnion &&
+        t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
+    define: (t) => {
+      if (t instanceof z.ZodString) {
+        return z.function().args(t, t).returns(z.boolean());
+      }
+      if (t instanceof z.ZodArray) {
+        return z.function().args(t, t.element).returns(z.boolean());
+      }
+      return z.function().args(t, z.array(t)).returns(z.boolean());
+    },
+    implement: (
+      value: z.infer<
+        | z.ZodString
+        | z.ZodArray<z.ZodType>
+        | z.ZodUnion<[z.ZodLiteral<z.Primitive>]>
+      >,
+      target: string | unknown | unknown[],
+    ) => {
       if (typeof value === "string" && typeof target === "string") {
         return value.includes(target);
       }
@@ -256,14 +281,29 @@ const genericContainFilter = defineGenericFn([
   },
   {
     name: "Does not contains",
-    genericLimit: (t): t is z.ZodArray<z.ZodType> | z.ZodString =>
-      t instanceof z.ZodArray || t instanceof z.ZodString,
-    define: (t) =>
-      z
-        .function()
-        .args(t, t instanceof z.ZodString ? t : t.element)
-        .returns(z.boolean()),
-    implement: (value: string | unknown[], target: string | unknown) => {
+    genericLimit: (
+      t,
+    ): t is
+      | z.ZodString
+      | z.ZodArray<z.ZodType>
+      | z.ZodUnion<[z.ZodLiteral<z.Primitive>]> =>
+      t instanceof z.ZodArray ||
+      t instanceof z.ZodString ||
+      (t instanceof z.ZodUnion &&
+        t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
+    define: (t) => {
+      if (t instanceof z.ZodString) {
+        return z.function().args(t, t).returns(z.boolean());
+      }
+      if (t instanceof z.ZodArray) {
+        return z.function().args(t, t.element).returns(z.boolean());
+      }
+      return z.function().args(t, z.array(t)).returns(z.boolean());
+    },
+    implement: (
+      value: string | unknown[],
+      target: string | unknown | unknown[],
+    ) => {
       if (typeof value === "string" && typeof target === "string") {
         return !value.includes(target);
       }
