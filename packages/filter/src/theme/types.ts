@@ -22,7 +22,7 @@ export type DataInputViewProps = {
   rule: SingleFilter;
   requiredDataSchema: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]];
   updateInput: (input: unknown[]) => void;
-} & RefAttributes<HTMLInputElement>;
+};
 
 export type DataInputViewSpec = {
   name: string;

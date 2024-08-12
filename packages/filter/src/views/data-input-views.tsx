@@ -16,7 +16,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "string",
     match: [z.string()],
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }, ref) => {
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -24,7 +24,6 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       const value = (rule.args?.[0] as string | undefined) ?? "";
       return (
         <InputView
-          ref={ref}
           type="text"
           value={value}
           onChange={(newValue) => {
@@ -42,7 +41,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "number",
     match: [z.number()],
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }, ref) => {
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -50,7 +49,6 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       const value = (rule.args?.[0] as number) ?? "";
       return (
         <InputView
-          ref={ref}
           type="number"
           value={value}
           onChange={(newValue) => {
@@ -68,7 +66,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "date",
     match: [z.date()],
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }, ref) => {
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -80,7 +78,6 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
 
       return (
         <InputView
-          ref={ref}
           type="date"
           // "yyyy-MM-dd"
           value={value}
@@ -110,7 +107,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         (option: unknown) => option instanceof z.ZodLiteral,
       );
     },
-    view: function LiteralSelect({ requiredDataSchema, rule, updateInput }) {
+    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
       const { Select: SelectView } = useView("components");
       const { getLocaleText } = useRootRule();
       const unionSchema = requiredDataSchema[0] as z.ZodUnion<
