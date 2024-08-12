@@ -4,6 +4,7 @@ import type {
   ComponentType,
   InputHTMLAttributes,
   ReactNode,
+  Ref,
   RefAttributes,
 } from "react";
 import type { z } from "zod";
@@ -61,7 +62,9 @@ export type ThemeSpec = {
         }
     >;
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
-    Select: <T>(props: SelectProps<T>) => ReactNode;
+    Select: <T>(
+      props: SelectProps<T> & { ref?: Ref<HTMLSelectElement> },
+    ) => ReactNode;
   };
   templates: {
     FilterGroupContainer: ComponentType<FilterGroupContainerProps>;

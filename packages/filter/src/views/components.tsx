@@ -3,6 +3,8 @@ import {
   useCallback,
   type ButtonHTMLAttributes,
   type ChangeEvent,
+  type ReactNode,
+  type Ref,
   type SelectHTMLAttributes,
 } from "react";
 import { usePrimitives } from "../theme/hooks.js";
@@ -40,12 +42,10 @@ export type SelectProps<T> = Omit<
   onChange?: (value: T) => void;
 };
 
-export const SelectView = <T,>({
-  options = [],
-  value,
-  onChange,
-  ...props
-}: SelectProps<T>) => {
+const SelectViewWithoutRef = <T,>(
+  { options = [], value, onChange, ...props }: SelectProps<T>,
+  ref?: Ref<HTMLSelectElement>,
+) => {
   const SelectPrimitive = usePrimitives("select");
   const OptionPrimitive = usePrimitives("option");
   const selectedIdx = options.findIndex((option) => option.value === value);
@@ -57,7 +57,12 @@ export const SelectView = <T,>({
     [options, onChange],
   );
   return (
-    <SelectPrimitive value={selectedIdx} onChange={handleChange} {...props}>
+    <SelectPrimitive
+      ref={ref}
+      value={selectedIdx}
+      onChange={handleChange}
+      {...props}
+    >
       <OptionPrimitive key={-1} value={-1} disabled></OptionPrimitive>
       {options.map(({ label }, index) => (
         <OptionPrimitive key={label} value={index}>
@@ -67,3 +72,7 @@ export const SelectView = <T,>({
     </SelectPrimitive>
   );
 };
+
+export const SelectView = forwardRef(SelectViewWithoutRef) as <T>(
+  p: SelectProps<T> & { ref?: Ref<HTMLSelectElement> },
+) => ReactNode;
