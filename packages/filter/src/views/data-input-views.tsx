@@ -146,7 +146,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       );
     },
     view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
-      const { Select: SelectView } = useView("components");
+      const { MultipleSelect: MultipleSelectView } = useView("components");
       const { getLocaleText } = useRootRule();
       const arraySchema = requiredDataSchema[0] as z.ZodArray<
         z.ZodUnion<[z.ZodLiteral<z.Primitive>]>
@@ -158,8 +158,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       }));
       const value = (rule.args?.[0] ?? []) as z.Primitive[];
       return (
-        <SelectView<z.Primitive>
-          multiple
+        <MultipleSelectView<z.Primitive>
           value={value}
           options={options}
           onChange={(newValue) => {

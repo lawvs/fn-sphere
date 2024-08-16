@@ -1,4 +1,9 @@
-import { ButtonView, InputView, SelectView } from "../views/components.js";
+import {
+  ButtonView,
+  InputView,
+  SingleSelectView,
+  MultiSelectView,
+} from "../views/components.js";
 import { presetDataInputSpecs } from "../views/data-input-views.js";
 import { FieldSelect } from "../views/field-select.js";
 import { FilterDataInput } from "../views/filter-data-input.js";
@@ -16,7 +21,8 @@ export const presetTheme: ThemeSpec = {
   components: {
     Button: ButtonView,
     Input: InputView,
-    Select: SelectView,
+    Select: SingleSelectView,
+    MultipleSelect: MultiSelectView,
   },
   templates: {
     SingleFilter: SingleFilterView,
