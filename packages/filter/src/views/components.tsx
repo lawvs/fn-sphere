@@ -108,6 +108,7 @@ export const MultiSelectView = forwardRef<
       ref={ref}
       value={selectedIndices}
       onChange={handleChange}
+      multiple
       {...props}
     >
       {options.map(({ label }, index) => (
