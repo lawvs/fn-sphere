@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { z } from "zod";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
@@ -9,14 +8,14 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     // Use when user selects a field with no input
     name: "no need input",
     match: [],
-    view: forwardRef(() => {
+    view: function View() {
       return null;
-    }),
+    },
   },
   {
     name: "string",
     match: [z.string()],
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
+    view: function View({ requiredDataSchema, rule, updateInput }) {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -36,12 +35,12 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           }}
         />
       );
-    }),
+    },
   },
   {
     name: "number",
     match: [z.number()],
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
+    view: function View({ requiredDataSchema, rule, updateInput }) {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -61,12 +60,12 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           }}
         />
       );
-    }),
+    },
   },
   {
     name: "date",
     match: [z.date()],
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
+    view: function View({ requiredDataSchema, rule, updateInput }) {
       const { Input: InputView } = useView("components");
       if (!requiredDataSchema.length) {
         return null;
@@ -90,7 +89,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           }}
         />
       );
-    }),
+    },
   },
   {
     name: "literal union",
@@ -107,7 +106,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         (option: unknown) => option instanceof z.ZodLiteral,
       );
     },
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
+    view: function View({ requiredDataSchema, rule, updateInput }) {
       const { MultipleSelect } = useView("components");
       const { getLocaleText } = useRootRule();
       const unionSchema = requiredDataSchema[0] as z.ZodUnion<
@@ -128,7 +127,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           }}
         />
       );
-    }),
+    },
   },
   {
     name: "literal array",
@@ -145,7 +144,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         )
       );
     },
-    view: forwardRef(({ requiredDataSchema, rule, updateInput }) => {
+    view: function View({ requiredDataSchema, rule, updateInput }) {
       const { MultipleSelect: MultipleSelectView } = useView("components");
       const { getLocaleText } = useRootRule();
       const arraySchema = requiredDataSchema[0] as z.ZodArray<
@@ -170,6 +169,6 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
           }}
         />
       );
-    }),
+    },
   },
 ] satisfies DataInputViewSpec[];
