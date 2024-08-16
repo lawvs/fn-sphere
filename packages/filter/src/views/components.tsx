@@ -33,29 +33,58 @@ export const InputView = forwardRef<
   return <InputPrimitive ref={ref} onChange={handleChange} {...props} />;
 });
 
-export type SelectProps<T> = SingleSelectProps<T> | MultiSelectProps<T>;
-
-type SingleSelectProps<T> = Omit<
+export type SingleSelectProps<T> = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
-  "value" | "onChange" | "children"
+  "value" | "onChange" | "children" | "multiple"
 > & {
-  multiple?: false | undefined;
   value?: T | undefined;
   options?: { value: T; label: string }[] | undefined;
   onChange?: (value: T) => void;
 };
 
-type MultiSelectProps<T> = Omit<
+export type MultiSelectProps<T> = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
-  "value" | "onChange" | "children"
+  "value" | "onChange" | "children" | "multiple"
 > & {
-  multiple: true;
   value?: T[] | undefined;
   options?: { value: T; label: string }[] | undefined;
   onChange?: (value: T[]) => void;
 };
 
-const MultiSelectView = forwardRef<
+export const SingleSelectView = forwardRef<
+  HTMLSelectElement,
+  SingleSelectProps<unknown>
+>(({ options = [], value, onChange, ...props }, ref) => {
+  const SelectPrimitive = usePrimitives("select");
+  const OptionPrimitive = usePrimitives("option");
+  const selectedIdx = options.findIndex((option) => option.value === value);
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      const index = Number(e.target.value);
+      onChange?.(options[index].value);
+    },
+    [options, onChange],
+  );
+  return (
+    <SelectPrimitive
+      ref={ref}
+      value={selectedIdx}
+      onChange={handleChange}
+      {...props}
+    >
+      <OptionPrimitive key={-1} value={-1} disabled></OptionPrimitive>
+      {options.map(({ label }, index) => (
+        <OptionPrimitive key={label} value={index}>
+          {label}
+        </OptionPrimitive>
+      ))}
+    </SelectPrimitive>
+  );
+}) as <T>(
+  p: SingleSelectProps<T> & { ref?: Ref<HTMLSelectElement> },
+) => ReactNode;
+
+export const MultiSelectView = forwardRef<
   HTMLSelectElement,
   MultiSelectProps<unknown>
 >(({ options = [], value = [], onChange, ...props }, ref) => {
@@ -88,44 +117,6 @@ const MultiSelectView = forwardRef<
       ))}
     </SelectPrimitive>
   );
-});
-
-const SingleSelectView = forwardRef<
-  HTMLSelectElement,
-  SingleSelectProps<unknown>
->(({ options = [], value, onChange, ...props }, ref) => {
-  const SelectPrimitive = usePrimitives("select");
-  const OptionPrimitive = usePrimitives("option");
-  const selectedIdx = options.findIndex((option) => option.value === value);
-  const handleChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      const index = Number(e.target.value);
-      onChange?.(options[index].value);
-    },
-    [options, onChange],
-  );
-  return (
-    <SelectPrimitive
-      ref={ref}
-      value={selectedIdx}
-      onChange={handleChange}
-      {...props}
-    >
-      <OptionPrimitive key={-1} value={-1} disabled></OptionPrimitive>
-      {options.map(({ label }, index) => (
-        <OptionPrimitive key={label} value={index}>
-          {label}
-        </OptionPrimitive>
-      ))}
-    </SelectPrimitive>
-  );
-});
-
-export const SelectView = forwardRef<HTMLSelectElement, SelectProps<unknown>>(
-  (props, ref) => {
-    if (props.multiple) {
-      return <MultiSelectView ref={ref} {...props} />;
-    }
-    return <SingleSelectView ref={ref} {...props} />;
-  },
-) as <T>(p: SelectProps<T> & { ref?: Ref<HTMLSelectElement> }) => ReactNode;
+}) as <T>(
+  p: MultiSelectProps<T> & { ref?: Ref<HTMLSelectElement> },
+) => ReactNode;

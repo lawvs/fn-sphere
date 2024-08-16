@@ -8,7 +8,10 @@ import type {
   RefAttributes,
 } from "react";
 import type { z } from "zod";
-import type { SelectProps } from "../views/components.js";
+import type {
+  SingleSelectProps,
+  MultiSelectProps,
+} from "../views/components.js";
 import type { FieldSelectProps } from "../views/field-select.js";
 import type { DataInputProps } from "../views/filter-data-input.js";
 import type { FilterGroupContainerProps } from "../views/filter-group-container.js";
@@ -63,10 +66,10 @@ export type ThemeSpec = {
     >;
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
     Select: <T>(
-      props: SelectProps<T> & { ref?: Ref<HTMLSelectElement> },
+      props: SingleSelectProps<T> & { ref?: Ref<HTMLSelectElement> },
     ) => ReactNode;
     MultipleSelect: <T>(
-      props: SelectProps<T> & { ref?: Ref<HTMLSelectElement> },
+      props: MultiSelectProps<T> & { ref?: Ref<HTMLSelectElement> },
     ) => ReactNode;
   };
   templates: {
