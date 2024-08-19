@@ -1,0 +1,41 @@
+---
+title: Introduction
+description: Introduction to the Filter Sphere
+---
+
+Filter Sphere is a powerful and flexible library for creating dynamic filtering interfaces in your web applications. It provides a set of tools and components to help you build intuitive and customizable filtering experiences for your users.
+
+Here is a minimal example:
+
+```jsx live props={{ "client:load": true }}
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+export default () => {
+  const { filterRule, predicate, context } = useFilterSphere({ schema });
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+      <button onClick={() => console.log(filterRule, predicate)}>Log</button>
+    </FilterSphereProvider>
+  );
+};
+```
+
+## Key Features
+
+- **Easy Integration**: Seamlessly integrate Filter Sphere into your existing projects.
+- **Customizable Themes**: Create your own themes or use pre-built ones to match your application's design.
+- **Flexible Data Input**: Support for various data input views to accommodate different filtering needs.
+- **Component-Based Architecture**: Build complex filtering interfaces using modular components.
+- **Progressive Enhancement**: Start with basic components and gradually expand functionality to create sophisticated filtering experiences
+- **TypeScript Support**: Filter Sphere is built with TypeScript, providing type safety and autocompletion for your filtering code.
