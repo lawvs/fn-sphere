@@ -282,7 +282,8 @@ const genericContainFilter = defineGenericFn([
         // z.ZodUnion<[z.ZodLiteral<z.Primitive>]>
         return target.includes(value);
       }
-      throw new Error("Invalid input type!");
+      console.error("Invalid input type!");
+      return false;
     },
   },
   {
@@ -319,7 +320,8 @@ const genericContainFilter = defineGenericFn([
       if (typeof value === "string" && Array.isArray(target)) {
         return target.includes(value);
       }
-      throw new Error("Invalid input type!");
+      console.error("Invalid input type!");
+      return false;
     },
   },
 ]);
