@@ -1,0 +1,53 @@
+---
+title: Getting Started
+description: Getting Started with Filter Sphere
+sidebar:
+  order: 1
+---
+
+## Installation
+
+import { Steps } from "@astrojs/starlight/components";
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+
+<Steps>
+
+1. Install the Filter Sphere package using your favorite package manager:
+
+   <Tabs syncKey="package-manager">
+     <TabItem label="pnpm">
+       <Code lang="bash" code="pnpm add @fn-sphere/filter" />
+     </TabItem>
+     <TabItem label="npm">
+       <Code lang="bash" code="npm install @fn-sphere/filter" />
+     </TabItem>
+     <TabItem label="yarn">
+       <Code lang="bash" code="yarn add @fn-sphere/filter" />
+     </TabItem>
+   </Tabs>
+
+1. Filter Sphere uses [zod](https://zod.dev/) to define your data schema. If not installed, run the following command:
+
+   <Tabs syncKey="package-manager">
+     <TabItem label="pnpm">
+       <Code lang="bash" code="pnpm add zod" />
+     </TabItem>
+     <TabItem label="npm">
+       <Code lang="bash" code="npm install zod" />
+     </TabItem>
+     <TabItem label="yarn">
+       <Code lang="bash" code="yarn add zod" />
+     </TabItem>
+   </Tabs>
+
+1. Start building your filtering interface with Filter Sphere components.
+
+</Steps>
+
+## Next Steps
+
+- Install one of the out-of-the-box themes or create your own.
+- Check out our [Example Guide](/guides/example) for practical implementations.
+- Explore the [API Reference](/reference) for detailed component information.
+- Visit the [Usage Guide](/usage) for in-depth explanations and best practices.

@@ -1,3 +1,9 @@
 button {
   white-space: nowrap;
 }
+
+@media (min-width: 768px) {
+  .tagline {
+    font-size: 24px;
+  }
+}
