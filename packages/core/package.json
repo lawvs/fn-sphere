@@ -3,7 +3,6 @@
   "version": "0.4.0",
   "description": "",
   "type": "module",
-  "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "typeCheck": "tsc --noEmit",
@@ -21,10 +20,17 @@
   "peerDependencies": {
     "zod": "^3.0.0"
   },
+  "exports": "./src/index.ts",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    }
   }
 }
