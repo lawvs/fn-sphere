@@ -104,24 +104,31 @@ export const useFilterSelect = (rule: SingleFilter) => {
       throw new Error("Field has no filter");
     }
     // If new field has the same filter, it can be retained
-    const canRetainFilter = newField.filterFnList.some(
+    const theSameFilterInNewField = newField.filterFnList.find(
       (filter) => filter.name === rule.name,
     );
+    const canRetainFilter = !!theSameFilterInNewField;
     const needRetainFilter = tryRetainFilter && canRetainFilter;
     const fallbackFilter = autoSelectFirstFilter
-      ? newField.filterFnList[0].name
+      ? newField.filterFnList[0]
       : undefined;
 
-    const newFilterSchema = needRetainFilter ? rule.name : fallbackFilter;
+    const newFilterSchema = needRetainFilter
+      ? theSameFilterInNewField
+      : fallbackFilter;
 
     const needRetainArgs =
       tryRetainArgs &&
-      (needRetainFilter || canRetainArgs(newField.filterFnList[0]));
+      newFilterSchema &&
+      // For generic filter, the new filter schema is not the same as the current filter schema
+      // even if the filter name is the same, eg. Equels string -> Equels number
+      // needRetainFilter &&
+      canRetainArgs(newFilterSchema);
 
     setRule({
       ...rule,
       path: newField.path,
-      name: newFilterSchema,
+      name: newFilterSchema?.name,
       // If the filter is retained, keep the arguments
       args: needRetainArgs
         ? rule.args
