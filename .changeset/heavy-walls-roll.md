@@ -1,10 +1,12 @@
 ---
-"@fn-sphere/filter": patch
+"@fn-sphere/filter": minor
 ---
 
-`updateInput` in `DataInputViewProps` now use spread parameter to accept new values.
+- BREAKING CHANGES
 
-```diff
-- updateInput([newValue]);
-+ updateInput(newValue);
-```
+  - `updateInput` in `DataInputViewProps` now use spread parameter to accept new values.
+
+  ```diff
+  - updateInput([newValue]);
+  + updateInput(newValue);
+  ```

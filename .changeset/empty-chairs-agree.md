@@ -2,33 +2,31 @@
 "@fn-sphere/filter": minor
 ---
 
-### Minor Changes
-
 - Deprecated `onPredicateChange` in `useFilterSphere`
+- ⚠️ BREAKING CHANGES
 
-### ⚠️ BREAKING CHANGES
+  - The `onRuleChange` callback in `useFilterSphere` now receives an object with both `filterRule` and `predicate` properties, instead of just the `filterRule`.
+  - The `onPredicateChange` callback has been removed. Use the `predicate` property in the `onRuleChange` callback instead.
 
-- The `onRuleChange` callback in `useFilterSphere` now receives an object with both `filterRule` and `predicate` properties, instead of just the `filterRule`.
-- The `onPredicateChange` callback has been removed. Use the `predicate` property in the `onRuleChange` callback instead.
+  ```ts
+  export interface FilterSphereInput<Data>
+    extends BasicFilterSphereInput<Data> {
+    onRuleChange?: (data: {
+      filterRule: FilterGroup;
+      predicate: (data: Data) => boolean;
+    }) => void;
+  }
 
-```ts
-export interface FilterSphereInput<Data> extends BasicFilterSphereInput<Data> {
-  onRuleChange?: (data: {
-    filterRule: FilterGroup;
-    predicate: (data: Data) => boolean;
-  }) => void;
-}
+  const { context } = useFilterSphere({
+    schema: YOUR_DATA_SCHEMA,
+    onRuleChange: ({ predicate }) => {
+      const filteredData = YOUR_DATA.filter(predicate);
+      console.log(filteredData);
+    },
+  });
+  ```
 
-const { context } = useFilterSphere({
-  schema: YOUR_DATA_SCHEMA,
-  onRuleChange: ({ predicate }) => {
-    const filteredData = YOUR_DATA.filter(predicate);
-    console.log(filteredData);
-  },
-});
-```
-
-#### Migration Guide
+- Migration Guide
 
 ```diff
 const { context } = useFilterSphere({
