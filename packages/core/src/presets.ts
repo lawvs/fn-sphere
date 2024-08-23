@@ -318,7 +318,7 @@ const genericContainFilter = defineGenericFn([
         return !value.includes(target);
       }
       if (typeof value === "string" && Array.isArray(target)) {
-        return target.includes(value);
+        return !target.includes(value);
       }
       console.error("Invalid input type!");
       return false;
