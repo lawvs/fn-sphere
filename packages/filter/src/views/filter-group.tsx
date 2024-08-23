@@ -21,20 +21,22 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   if (count <= 0) {
     return (
       <FilterGroupContainer filterGroup={filterGroup}>
-        <ButtonView
-          onClick={() => {
-            appendChildRule();
-          }}
-        >
-          {getLocaleText("Add Filter")}
-        </ButtonView>
-        <ButtonView
-          onClick={() => {
-            appendChildGroup();
-          }}
-        >
-          {getLocaleText("Add Group")}
-        </ButtonView>
+        <div style={{ display: "flex", gap: "4px" }}>
+          <ButtonView
+            onClick={() => {
+              appendChildRule();
+            }}
+          >
+            {getLocaleText("Add Filter")}
+          </ButtonView>
+          <ButtonView
+            onClick={() => {
+              appendChildGroup();
+            }}
+          >
+            {getLocaleText("Add Group")}
+          </ButtonView>
+        </div>
       </FilterGroupContainer>
     );
   }
