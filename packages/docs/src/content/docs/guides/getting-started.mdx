@@ -5,6 +5,10 @@ sidebar:
   order: 1
 ---
 
+## Overview
+
+Filter Sphere is a library for building filtering interfaces. It provides a set of components that you can use to build your own filtering interface.
+
 ## Installation
 
 import { Steps } from "@astrojs/starlight/components";
@@ -27,7 +31,7 @@ import { Code } from "@astrojs/starlight/components";
      </TabItem>
    </Tabs>
 
-1. Filter Sphere uses [zod](https://zod.dev/) to define your data schema. If not installed, run the following command:
+1. Filter Sphere uses <a href="https://zod.dev/" target="_blank">zod</a> to define your data schema. If not installed, run the following command:
 
    <Tabs syncKey="package-manager">
      <TabItem label="pnpm">
@@ -42,6 +46,29 @@ import { Code } from "@astrojs/starlight/components";
    </Tabs>
 
 1. Start building your filtering interface with Filter Sphere components.
+
+   ```tsx live
+   import {
+     FilterSphereProvider,
+     FilterBuilder,
+     useFilterSphere,
+   } from "@fn-sphere/filter";
+   import { z } from "zod";
+
+   const schema = z.object({
+     id: z.number(),
+     name: z.string(),
+   });
+
+   export default function AdvancedFilter() {
+     const { filterRule, predicate, context } = useFilterSphere({ schema });
+     return (
+       <FilterSphereProvider context={context}>
+         <FilterBuilder />
+       </FilterSphereProvider>
+     );
+   }
+   ```
 
 </Steps>
 
