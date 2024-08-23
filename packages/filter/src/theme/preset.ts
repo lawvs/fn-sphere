@@ -1,8 +1,8 @@
 import {
   ButtonView,
   InputView,
-  SingleSelectView,
   MultiSelectView,
+  SingleSelectView,
 } from "../views/components.js";
 import { presetDataInputSpecs } from "../views/data-input-views.js";
 import { FieldSelect } from "../views/field-select.js";
@@ -14,9 +14,9 @@ import { FilterSelect } from "../views/filter-select.js";
 import { primitives } from "../views/primitives.js";
 import { RuleJoiner } from "../views/rule-joiner.js";
 import { SingleFilterContainer } from "../views/single-filter-container.js";
-import type { ThemeSpec } from "./index.js";
+import type { FilterTheme } from "./index.js";
 
-export const presetTheme: ThemeSpec = {
+export const presetTheme: FilterTheme = {
   primitives,
   components: {
     Button: ButtonView,
@@ -35,4 +35,4 @@ export const presetTheme: ThemeSpec = {
     SingleFilterContainer,
   },
   dataInputViews: presetDataInputSpecs,
-} satisfies ThemeSpec;
+};

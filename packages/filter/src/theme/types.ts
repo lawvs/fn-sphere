@@ -9,8 +9,8 @@ import type {
 } from "react";
 import type { z } from "zod";
 import type {
-  SingleSelectProps,
   MultiSelectProps,
+  SingleSelectProps,
 } from "../views/components.js";
 import type { FieldSelectProps } from "../views/field-select.js";
 import type { DataInputProps } from "../views/filter-data-input.js";
@@ -39,7 +39,7 @@ export type DataInputViewSpec = {
   view: ComponentType<DataInputViewProps>;
 };
 
-export type ThemeSpec = {
+export type FilterTheme = {
   primitives: {
     button: ComponentType<
       ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>
@@ -84,3 +84,8 @@ export type ThemeSpec = {
   };
   dataInputViews: DataInputViewSpec[];
 };
+
+/**
+ * @deprecated use {@link FilterTheme} instead
+ */
+export type ThemeSpec = FilterTheme;
