@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "pnpm --filter playground run dev",
     "build": "pnpm --recursive run build",
+    "dev:docs": "pnpm --filter @fn-sphere/docs run dev",
     "typeCheck": "pnpm --recursive run typeCheck",
     "lint": "pnpm --recursive run lint",
     "format": "prettier --check .",

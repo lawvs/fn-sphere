@@ -1,0 +1,22 @@
+---
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+
+interface Props {
+  package: string;
+}
+
+const { package: packageName } = Astro.props;
+---
+
+<Tabs syncKey="package-manager">
+  <TabItem label="pnpm">
+    <Code lang="bash" code={`pnpm add ${packageName}`} />
+  </TabItem>
+  <TabItem label="npm">
+    <Code lang="bash" code={`npm install ${packageName}`} />
+  </TabItem>
+  <TabItem label="yarn">
+    <Code lang="bash" code={`yarn add ${packageName}`} />
+  </TabItem>
+</Tabs>

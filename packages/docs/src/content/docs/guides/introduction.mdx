@@ -1,0 +1,40 @@
+---
+title: Introduction
+description: Introduction to the Filter Sphere
+sidebar:
+  order: 0
+---
+
+Filter Sphere is a powerful and flexible library for creating dynamic filtering interfaces in your web applications. It provides a set of tools and components to help you build intuitive and customizable filtering interfaces.
+
+Here's a basic example:
+
+import { AdvancedFilter } from "/src/components/intro-example/code";
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+import importedCode from "/src/components/intro-example/code?raw";
+
+<Tabs>
+  <TabItem label="Preview">
+    <AdvancedFilter client:load />
+  </TabItem>
+  <TabItem label="Code">
+    <Code code={importedCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+## Key Features
+
+- **Easy Integration**: Seamlessly integrate Filter Sphere into your existing projects.
+- **Customizable Themes**: Create your own themes or use pre-built ones to match your application's design.
+- **Flexible Data Input**: Support for various data input views to accommodate different filtering needs.
+- **Progressive Enhancement**: Start with basic components and gradually expand functionality to create sophisticated filtering experiences
+- **TypeScript Support**: Filter Sphere is built with TypeScript, providing type safety and autocompletion for your filtering code.
+
+## Show case
+
+These are some of the sites using Filter Sphere:
+
+import ShowcaseSites from "/src/components/showcase-sites.astro";
+
+<ShowcaseSites />
