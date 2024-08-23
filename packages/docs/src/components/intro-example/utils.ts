@@ -3,8 +3,7 @@ import type { Data } from "./code";
 export function sample<T>(arr: T[]): T {
   if (!arr.length) throw new Error("Array is empty");
   const index = Math.floor(Math.random() * arr.length);
-  const item = arr[index];
-  if (!item) throw new Error("Item is undefined");
+  const item = arr[index]!;
   return item;
 }
 
