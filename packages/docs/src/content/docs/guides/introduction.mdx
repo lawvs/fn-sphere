@@ -9,7 +9,7 @@ Filter Sphere is a powerful and flexible library for creating dynamic filtering 
 
 Here is a minimal example:
 
-```jsx live props={{ "client:load": true }}
+```tsx live
 import {
   FilterSphereProvider,
   FilterBuilder,
@@ -18,8 +18,14 @@ import {
 import { z } from "zod";
 
 const schema = z.object({
+  id: z.number(),
   name: z.string(),
-  age: z.number(),
+  status: z.union([
+    z.literal("pending"),
+    z.literal("completed"),
+    z.literal("cancelled"),
+  ]),
+  createdAt: z.date(),
 });
 
 export default () => {

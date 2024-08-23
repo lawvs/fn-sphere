@@ -34,6 +34,9 @@ export default defineConfig({
     react(),
     liveCode({
       wrapper: "/src/components/code-wrapper.tsx",
+      defaultProps: {
+        "client:load": true,
+      },
     }),
   ],
 });
