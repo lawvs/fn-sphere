@@ -18,7 +18,10 @@ import { FlattenSingleFilterView } from "./filter-rule";
 interface FlattenFilterBuilderProps<Data = unknown>
   extends BasicFilterSphereInput<Data> {
   filterRule: FilterGroup;
-  onRuleChange?: (rule: FilterGroup) => void;
+  onRuleChange?: (value: {
+    filterRule: FilterGroup;
+    predicate: (data: Data) => boolean;
+  }) => void;
 }
 
 export type FlattenFilterGroup = {
@@ -85,7 +88,10 @@ export const FlattenFilterBuilder = <Data,>({
         <div>Invalid Rule</div>
         <ButtonView
           onClick={() => {
-            props.onRuleChange?.(createFlattenFilterGroup());
+            props.onRuleChange?.({
+              filterRule: createFlattenFilterGroup(),
+              predicate: () => true,
+            });
           }}
         >
           Reset Filter
@@ -99,7 +105,10 @@ export const FlattenFilterBuilder = <Data,>({
       <div>
         <ButtonView
           onClick={() => {
-            props.onRuleChange?.(createFlattenFilterGroup());
+            props.onRuleChange?.({
+              filterRule: createFlattenFilterGroup(),
+              predicate: () => true,
+            });
           }}
         >
           Add Filter

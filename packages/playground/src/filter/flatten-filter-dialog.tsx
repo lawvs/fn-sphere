@@ -84,17 +84,13 @@ export const FlattenFilterDialog = <Data,>({
         filterFnList={filterFnList}
         filterRule={realRule}
         {...filterBuilderProps}
-        onRuleChange={(newRule) => {
+        onRuleChange={({ filterRule, predicate }) => {
           onRuleChange?.({
-            rule: newRule,
-            predicate: createFilterPredicate({
-              schema: filterBuilder.schema,
-              filterFnList,
-              filterRule: newRule,
-            }),
+            rule: filterRule,
+            predicate,
           });
           if (!controlled) {
-            setFilterGroup(newRule);
+            setFilterGroup(filterRule);
           }
         }}
       />

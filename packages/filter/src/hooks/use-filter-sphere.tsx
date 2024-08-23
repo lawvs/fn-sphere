@@ -32,9 +32,14 @@ export interface FilterSphereInput<Data> extends BasicFilterSphereInput<Data> {
   /**
    * The callback when the filter rule changes.
    */
-  onRuleChange?: (rule: FilterGroup) => void;
+  onRuleChange?: (data: {
+    filterRule: FilterGroup;
+    predicate: (data: Data) => boolean;
+  }) => void;
   /**
    * Same as `onRuleChange`, but receives the predicate function.
+   *
+   * @deprecated Use `onRuleChange` instead.
    */
   onPredicateChange?: (predicate: (data: Data) => boolean) => void;
 }
@@ -82,7 +87,18 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
   const onRuleChangeInternal = (newRule: FilterGroup) => {
     // if (!isControlled)
     setRuleState(newRule);
-    onRuleChange?.(newRule);
+    onRuleChange?.({
+      filterRule: newRule,
+      get predicate() {
+        return createFilterPredicate({
+          schema,
+          filterFnList,
+          filterRule: newRule,
+        });
+      },
+    });
+
+    // deprecated
     if (onPredicateChange) {
       const predicate = createFilterPredicate({
         schema,
@@ -91,6 +107,7 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
       });
       onPredicateChange(predicate);
     }
+    // end deprecated
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
