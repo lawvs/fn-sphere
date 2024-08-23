@@ -61,7 +61,9 @@ export const SingleSelectView = forwardRef<
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
       const index = Number(e.target.value);
-      onChange?.(options[index].value);
+      const selectedOption = options[index];
+      if (!selectedOption) return;
+      onChange?.(selectedOption.value);
     },
     [options, onChange],
   );
@@ -95,10 +97,12 @@ export const MultiSelectView = forwardRef<
   );
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
-      const selectedOptions = Array.from(
-        e.target.selectedOptions,
-        (option) => options[Number(option.value)].value,
-      );
+      const selectedOptions = Array.from(e.target.selectedOptions, (option) => {
+        const index = Number(option.value);
+        const selectedOption = options[index];
+        if (!selectedOption) return;
+        return selectedOption.value;
+      }).filter(Boolean);
       onChange?.(selectedOptions);
     },
     [options, onChange],

@@ -51,7 +51,7 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
                 <RuleJoiner
                   parent={filterGroup}
                   joinBetween={[
-                    filterGroup.conditions[groupIdx - 1],
+                    filterGroup.conditions[groupIdx - 1]!,
                     childRule,
                   ]}
                 />
@@ -65,7 +65,7 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
             {groupIdx > 0 && (
               <RuleJoiner
                 parent={filterGroup}
-                joinBetween={[filterGroup.conditions[groupIdx - 1], childRule]}
+                joinBetween={[filterGroup.conditions[groupIdx - 1]!, childRule]}
               />
             )}
             <FilterGroupView rule={childRule} />

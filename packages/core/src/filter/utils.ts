@@ -176,16 +176,16 @@ export const isEqualPath = (a: FilterPath, b: FilterPath): boolean => {
  * get(obj, ["selector", "to", "val"]); // "val"
  * get(obj, ["target", 2, "a"]); // "test"
  */
-export const getValueAtPath = <R = unknown>(data: any, path: FilterPath): R => {
+export const getValueAtPath = <R = unknown>(obj: any, path: FilterPath): R => {
   if (!path || path.length === 0) {
-    return data;
+    return obj;
   }
-  let result = data;
-  for (let i = 0; i < path.length; i++) {
+  let result = obj;
+  for (const key of path) {
     if (result == null) {
       return result;
     }
-    result = result[path[i]];
+    result = result[key];
   }
   return result;
 };
@@ -202,14 +202,14 @@ export const getSchemaAtPath = <T extends ZodType = ZodType>(
     return schema as T;
   }
   let result = schema;
-  for (let i = 0; i < path.length; i++) {
+  for (const key of path) {
     if (result == null) {
       return defaultValue as T;
     }
     if (!(result instanceof z.ZodObject)) {
       return defaultValue as T;
     }
-    result = result.shape[path[i]];
+    result = result.shape[key];
   }
   return result as T;
 };

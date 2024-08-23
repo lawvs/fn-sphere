@@ -37,10 +37,12 @@ test("basic usage", () => {
   expect(fields.map((i) => i.path)).toEqual([[], ["age"]]);
 
   const firstField = fields[0];
+  if (!firstField) throw new Error("firstField is undefined");
   const availableFilter = firstField.filterFnList;
   expect(availableFilter).toHaveLength(1);
 
   const firstFilter = availableFilter[0];
+  if (!firstFilter) throw new Error("firstFilter is undefined");
   expect(firstFilter.name).toEqual("is admin");
   const requiredParameters = getParametersExceptFirst(firstFilter);
   expect(requiredParameters).toHaveLength(0);
@@ -63,7 +65,7 @@ test("basic usage", () => {
   const filterData = filterSphere.filterData(data, rule);
 
   expect(filterData).toHaveLength(1);
-  expect(filterData[0].id).toEqual("admin");
+  expect(filterData[0]?.id).toEqual("admin");
 });
 
 test("filter nested obj", () => {
@@ -87,10 +89,12 @@ test("filter nested obj", () => {
   expect(fields.map((i) => i.path)).toEqual([["age"]]);
 
   const firstField = fields[0];
+  if (!firstField) throw new Error("firstField is undefined");
   const availableFilter = firstField.filterFnList;
   expect(availableFilter).toHaveLength(1);
 
   const firstFilterSchema = availableFilter[0];
+  if (!firstFilterSchema) throw new Error("firstFilterSchema is undefined");
   expect(firstFilterSchema.name).toEqual("number equal");
   const requiredParameters = getParametersExceptFirst(firstFilterSchema);
   expect(requiredParameters).toHaveLength(1);
@@ -113,7 +117,7 @@ test("filter nested obj", () => {
   const filterData = filterSphere.filterData(data, rule);
 
   expect(filterData).toHaveLength(1);
-  expect(filterData[0].age).toEqual(19);
+  expect(filterData[0]?.age).toEqual(19);
 });
 
 test("FilterGroup usage", () => {
@@ -174,8 +178,8 @@ test("FilterGroup usage", () => {
   const filterData = filterSphere.filterData(data, filterGroup);
 
   expect(filterData).toHaveLength(1);
-  expect(filterData[0].name).toEqual("Alice");
-  expect(filterData[0].age).toEqual(19);
+  expect(filterData[0]?.name).toEqual("Alice");
+  expect(filterData[0]?.age).toEqual(19);
 
   const orGroup = createFilterGroup({
     op: "or",
@@ -187,8 +191,8 @@ test("FilterGroup usage", () => {
   const orFilterData = filterSphere.filterData(data, orGroup);
 
   expect(orFilterData).toHaveLength(2);
-  expect(orFilterData[0].name).toEqual("Bob");
-  expect(orFilterData[0].age).toEqual(19);
-  expect(orFilterData[1].name).toEqual("Carol");
-  expect(orFilterData[1].age).toEqual(18);
+  expect(orFilterData[0]?.name).toEqual("Bob");
+  expect(orFilterData[0]?.age).toEqual(19);
+  expect(orFilterData[1]?.name).toEqual("Carol");
+  expect(orFilterData[1]?.age).toEqual(18);
 });

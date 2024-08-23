@@ -48,11 +48,11 @@ const findRootFromMap = (map: FilterMap): FilterId => {
  */
 export const toFilterMap = (
   rootFilterGroup: FilterGroup,
-  parentId?: FilterId,
+  parent?: FilterId,
 ): FilterMap => {
   const map: FilterMap = {};
   const parentMap: Record<FilterId, FilterId> = {
-    [rootFilterGroup.id]: parentId ?? rootFilterGroup.id,
+    [rootFilterGroup.id]: parent ?? rootFilterGroup.id,
   };
   const queue: FilterRule[] = [rootFilterGroup];
 
@@ -61,11 +61,11 @@ export const toFilterMap = (
     if (!rule) {
       continue;
     }
+    const parentId = parentMap[rule.id];
+    if (!parentId) {
+      throw new Error("Invalid parent ID! Filter must have a parent");
+    }
     if (rule.type === "Filter") {
-      const parentId = parentMap[rule.id];
-      if (!parentId) {
-        throw new Error("Invalid parent ID! Filter must have a parent");
-      }
       map[rule.id] = {
         type: "Filter",
         data: rule,
@@ -81,7 +81,7 @@ export const toFilterMap = (
       map[rule.id] = {
         ...rest,
         conditionIds: rule.conditions.map((condition) => condition.id),
-        parentId: parentMap[rule.id],
+        parentId,
       };
       // Add conditions to the queue for further processing
       queue.push(...rule.conditions);

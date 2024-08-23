@@ -1,7 +1,12 @@
 export const genId = () => Math.random().toString(36).substring(7);
 
-export const sample = <T>(arr: T[]) =>
-  arr[Math.floor(Math.random() * arr.length)];
+export function sample<T>(arr: T[]): T {
+  if (!arr.length) throw new Error("Array is empty");
+  const index = Math.floor(Math.random() * arr.length);
+  const item = arr[index];
+  if (!item) throw new Error("Item is undefined");
+  return item;
+}
 
 export const genFakeName = () =>
   sample([
