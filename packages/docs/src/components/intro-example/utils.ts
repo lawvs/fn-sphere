@@ -1,15 +1,25 @@
 import type { Data } from "./code";
 
+// Poor man's random number generator
+// See https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
+//
+// Prevent hydration errors
+let seed = 1;
+function random() {
+  var x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
 export function sample<T>(arr: T[]): T {
   if (!arr.length) throw new Error("Array is empty");
-  const index = Math.floor(Math.random() * arr.length);
+  const index = Math.floor(random() * arr.length);
   const item = arr[index]!;
   return item;
 }
 
 export function randomDate(start: Date, end: Date) {
   return new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+    start.getTime() + random() * (end.getTime() - start.getTime()),
   );
 }
 
