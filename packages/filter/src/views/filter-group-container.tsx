@@ -2,6 +2,7 @@ import type { FilterGroup } from "@fn-sphere/core";
 import type { ReactNode } from "react";
 import { useFilterGroup } from "../hooks/use-filter-group.js";
 import { useRootRule } from "../hooks/use-root-rule.js";
+import { useView } from "../theme/hooks.js";
 
 export type FilterGroupContainerProps = {
   filterGroup: FilterGroup;
@@ -14,6 +15,7 @@ export const FilterGroupContainer = ({
 }: FilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
   const { toggleGroupOp } = useFilterGroup(filterGroup);
+  const { Button } = useView("components");
 
   const text =
     filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
@@ -31,7 +33,7 @@ export const FilterGroupContainer = ({
         background: "rgba(0, 0, 0, 0.05)",
       }}
     >
-      <button
+      <Button
         onClick={() => {
           toggleGroupOp();
         }}
@@ -41,7 +43,7 @@ export const FilterGroupContainer = ({
         }}
       >
         {text}
-      </button>
+      </Button>
       {children}
     </div>
   );
