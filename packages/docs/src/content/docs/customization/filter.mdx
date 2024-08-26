@@ -1,0 +1,104 @@
+---
+title: Customizing filters
+description: Customizing the available filters in Filter Sphere
+---
+
+Filter Sphere allow you to extend the default filtering capabilities with your own specific logic. This feature is particularly useful when you need to implement complex or domain-specific filtering that isn't covered by the built-in filters.
+
+## Defining a Custom Filter
+
+To add custom filters to Filter Sphere, you can use the `defineTypedFn` function. This allows you to create type-safe, custom filter functions.
+
+Use `defineTypedFn` to create a custom filter:
+
+```ts
+const customFilter = defineTypedFn({
+  name: "your filter name",
+  define: z
+    .function()
+    .args(schemaToFilter, optionalUserInputSchema)
+    .returns(z.boolean()),
+  implement: (value, userInput?) => {
+    // Your filter logic here
+    return boolean;
+  },
+});
+```
+
+- name: A string describing your filter.
+  - By default, the name will be used as the filter label in the UI. You can override this by overriding the `mapFilterName` property in the `useFilterSphere` hook.
+- define: A Zod schema defining the function signature.
+  - First argument: The schema of the data being filtered.
+  - Second argument (optional): The schema for user input, if required.
+- implement: The actual filter logic.
+
+## Using Custom Filters
+
+Add your custom filters to the filterFnList when using the useFilterSphere hook:
+
+```ts
+const { predicate, context } = useFilterSphere({
+  schema: yourSchema,
+  filterFnList: [
+    customFilter,
+    // Other custom filters...
+    ...presetFilter, // Include preset filters if needed
+  ],
+});
+```
+
+This approach allows you to extend Filter Sphere's functionality with your own custom filtering logic while maintaining type safety and integration with the existing system.
+
+Here is an example of using a custom filter function to calculate the average of an array of numbers:
+
+```tsx live {17-29} {38}
+import { z } from "zod";
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+  presetFilter,
+  defineTypedFn,
+  type FnSchema,
+} from "@fn-sphere/filter";
+
+const schema = z.object({
+  scores: z.array(z.number()),
+});
+
+const dataFilters: FnSchema[] = [
+  // Define a custom filter function
+  defineTypedFn({
+    name: "Average score is greater than",
+    define: z
+      .function()
+      // The first argument is the schema that needs filtering
+      // and the second argument is the user input
+      .args(z.array(z.number()), z.number())
+      .returns(z.boolean()),
+    implement: (value, input) => {
+      // Implement the filter logic
+      return value.reduce((acc, curr) => acc + curr, 0) / value.length > input;
+    },
+  }),
+  // Preset filters contains all the built-in filters
+  ...presetFilter,
+];
+
+export default function AdvancedFilter() {
+  const { predicate, context } = useFilterSphere({
+    schema,
+    // Pass the custom filters to the filterFnList
+    filterFnList: dataFilters,
+  });
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+## 🚧 Define a generic filter
+
+WIP

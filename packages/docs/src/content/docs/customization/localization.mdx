@@ -1,0 +1,102 @@
+---
+title: Localization
+description: Localize the UI
+---
+
+Filter Sphere provides a variety of ways to localize the UI. This is useful when you want to display the UI in a different language.
+
+## getLocaleText
+
+You can use the `getLocaleText` function to translate the filter UI.
+
+```tsx live {8-10} {20}
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+import { z } from "zod";
+
+const customGetLocaleText = (key: string) => {
+  return `key-${key}`;
+};
+
+const schema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export default function AdvancedFilter() {
+  const { filterRule, predicate, context } = useFilterSphere({
+    schema,
+    getLocaleText: customGetLocaleText,
+  });
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+## mapFieldName / mapFilterName
+
+You can customize the field name and filter name by providing the `mapFieldName` and `mapFilterName` functions.
+
+```tsx live
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+import { z } from "zod";
+
+const customMapFieldName = (field: FilterField) => {
+  return field.fieldSchema.description;
+};
+
+const customMapFilterName = (filterSchema: StandardFnSchema) => {
+  return filterSchema.name.toUpperCase();
+};
+
+const schema = z.object({
+  id: z.number().describe("ID"),
+  name: z.string().describe("Name"),
+});
+
+export default function AdvancedFilter() {
+  const { filterRule, predicate, context } = useFilterSphere({
+    schema,
+    mapFilterName: customMapFilterName,
+    mapFieldName: customMapFieldName,
+  });
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+Filter Sphere provides default implementations for the `mapFieldName` and `mapFilterName` functions.
+
+```ts
+export const defaultMapFieldName: (field: FilterField) => string = (field) => {
+  // By default, filter sphere uses the field description as the field name.
+  if (field.fieldSchema.description) {
+    return field.fieldSchema.description;
+  }
+  // If the field description is not provided, the field path is used as the field name.
+  if (field.path.length) {
+    return field.path.join(".");
+  }
+  return "root";
+};
+
+export const defaultMapFilterName: (
+  filterSchema: StandardFnSchema,
+  field: FilterField,
+) => string = (filterSchema) => {
+  return filterSchema.name;
+};
+```
