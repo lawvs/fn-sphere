@@ -20,6 +20,12 @@ export default defineConfig({
           },
         },
         {
+          label: "Customization",
+          autogenerate: {
+            directory: "customization",
+          },
+        },
+        {
           label: "Reference",
           autogenerate: {
             directory: "reference",
@@ -39,4 +45,10 @@ export default defineConfig({
       },
     }),
   ],
+  vite: {
+    ssr: {
+      // Workaround for https://github.com/mui/material-ui/issues/42848
+      noExternal: /@mui\/.*?/,
+    },
+  },
 });

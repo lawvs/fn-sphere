@@ -1,0 +1,98 @@
+---
+title: Theme
+description: Customizing the theme of the Filter Sphere
+---
+
+Filter Sphere provides a set of themes that you can use to customize the look and feel of the Filter Sphere.
+
+## Preset Themes
+
+import PackageManagerTabs from "/src/components/package-manager-tabs.astro";
+
+### Material UI
+
+The Material UI theme provides a sleek, modern look for your Filter Sphere components, based on [MUI Material UI](https://mui.com/material-ui/).
+
+<PackageManagerTabs package="@fn-sphere/theme-mui-material" />
+
+```tsx live  wrapper="/src/components/mui-theme-wrapper.tsx" {2} {13}
+// 1. Import the MUI Material theme
+import { filterTheme } from "@fn-sphere/theme-mui-material";
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+
+export default function AdvancedFilter({ schema }) {
+  const { predicate, context } = useFilterSphere({ schema });
+  return (
+    // 2. Set the theme for the Filter Sphere
+    <FilterSphereProvider context={context} theme={filterTheme}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+## Anatomy of the theme
+
+The theme is a set of components and templates that are used to render the Filter Sphere. You can see the constructor of the theme by clicking on the following tabs.
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { ThemeAnatomy } from "/src/components/theme-anatomy.tsx";
+
+<Tabs>
+  <TabItem label="components" icon="seti:svg">
+    <ThemeAnatomy target="components" client:load />
+  </TabItem>
+  <TabItem label="templates" icon="seti:plan">
+    <ThemeAnatomy target="templates" client:load />
+  </TabItem>
+</Tabs>
+
+## Overriding the theme
+
+You can override Filter Sphere's built-in components by replacing them with your own custom components or templates within the theme.
+
+The following example shows how to override the Filter Sphere's build-in theme to use a custom component.
+
+```tsx live wrapper="/src/components/mui-theme-wrapper.tsx"
+import { filterTheme } from "@fn-sphere/theme-mui-material";
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+
+const customTheme = {
+  ...filterTheme,
+  components: {
+    ...filterTheme.components,
+    Button: ({ children, ...props }) => (
+      <button {...props}>⏳{children}</button>
+    ),
+  },
+  templates: {
+    ...filterTheme.templates,
+    SingleFilter: (props) => {
+      const MuiSingleFilter = filterTheme.templates.SingleFilter;
+      return (
+        <div>
+          🔥
+          <MuiSingleFilter {...props} />
+        </div>
+      );
+    },
+  },
+};
+
+export default function AdvancedFilter({ schema }) {
+  const { predicate, context } = useFilterSphere({ schema });
+  return (
+    <FilterSphereProvider context={context} theme={customTheme}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```

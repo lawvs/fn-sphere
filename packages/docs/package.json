@@ -15,14 +15,20 @@
     "@astrojs/check": "^0.9.3",
     "@astrojs/react": "^3.6.2",
     "@astrojs/starlight": "^0.26.1",
-    "@fn-sphere/filter": "workspace:*",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "astro": "^4.10.2",
     "astro-live-code": "^0.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sharp": "^0.32.5",
+    "sharp": "^0.32.5"
+  },
+  "devDependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@fn-sphere/filter": "workspace:*",
+    "@fn-sphere/theme-mui-material": "workspace:*",
+    "@mui/material": "6.0.0-rc.0",
     "zod": "^3.23.8"
   }
 }
