@@ -10,13 +10,13 @@ const { package: packageName } = Astro.props;
 ---
 
 <Tabs syncKey="package-manager">
-  <TabItem label="pnpm">
+  <TabItem label="pnpm" icon="pnpm">
     <Code lang="bash" code={`pnpm add ${packageName}`} />
   </TabItem>
-  <TabItem label="npm">
+  <TabItem label="npm" icon="seti:npm">
     <Code lang="bash" code={`npm install ${packageName}`} />
   </TabItem>
-  <TabItem label="yarn">
+  <TabItem label="yarn" icon="seti:yarn">
     <Code lang="bash" code={`yarn add ${packageName}`} />
   </TabItem>
 </Tabs>

@@ -39,7 +39,7 @@ const genSampleData = (total = 30) => {
     sampleData.push({
       id: i + 1,
       name: generateName(),
-      createdAt: randomDate(new Date(2012, 0, 1), new Date()),
+      createdAt: randomDate(new Date(2012, 0, 1), new Date(2024, 0, 1)),
       status: sample(["pending", "completed", "cancelled"]),
     });
   }

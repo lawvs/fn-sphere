@@ -1,5 +1,12 @@
-button {
-  white-space: nowrap;
+.filter-sphere-filter-group-container {
+  button {
+    white-space: nowrap;
+  }
+
+  select {
+    min-height: 34px;
+    min-width: 48px;
+  }
 }
 
 @media (min-width: 768px) {

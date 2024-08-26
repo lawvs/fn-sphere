@@ -31,16 +31,12 @@ export const FilterGroupContainer = ({
         borderRadius: 4,
         padding: 8,
         gap: 8,
-        background: "rgba(0, 0, 0, 0.1)",
+        background: "rgba(0, 0, 0, 0.05)",
       }}
     >
       <Button
         onClick={() => {
           toggleGroupOp();
-        }}
-        style={{
-          marginRight: 12,
-          whiteSpace: "nowrap",
         }}
       >
         {text}
