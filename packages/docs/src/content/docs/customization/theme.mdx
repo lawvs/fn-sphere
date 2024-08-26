@@ -59,27 +59,35 @@ The following example shows how to override the Filter Sphere's build-in theme t
 
 ```tsx live wrapper="/src/components/mui-theme-wrapper.tsx"
 import { filterTheme } from "@fn-sphere/theme-mui-material";
+import { Button } from "@mui/material";
 import {
   FilterSphereProvider,
   FilterBuilder,
   useFilterSphere,
+  useFilterRule,
 } from "@fn-sphere/filter";
 
 const customTheme = {
   ...filterTheme,
   components: {
     ...filterTheme.components,
-    Button: ({ children, ...props }) => (
-      <button {...props}>⏳{children}</button>
+    Button: (props) => (
+      <Button variant="outlined" color="success" size="small" {...props} />
     ),
   },
   templates: {
     ...filterTheme.templates,
     SingleFilter: (props) => {
       const MuiSingleFilter = filterTheme.templates.SingleFilter;
+      const {
+        ruleState: { isFirstRule, parentGroup },
+      } = useFilterRule(props.rule);
       return (
-        <div>
-          🔥
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {isFirstRule && <span style={{ marginRight: "8px" }}>Where</span>}
+          {!isFirstRule && (
+            <span style={{ marginRight: "8px" }}>{parentGroup.op}</span>
+          )}
           <MuiSingleFilter {...props} />
         </div>
       );

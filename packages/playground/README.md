@@ -1,4 +1,4 @@
-# Fn Sphere Playground
+# Filter Sphere Playground
 
 ## Development
 
