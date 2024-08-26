@@ -1,8 +1,8 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { presetTheme } from "./preset.js";
-import type { ThemeSpec } from "./types.js";
+import type { FilterTheme } from "./types.js";
 
-const FilterThemeContext = createContext<ThemeSpec>(presetTheme);
+const FilterThemeContext = createContext<FilterTheme>(presetTheme);
 
 /**
  * @internal
@@ -21,7 +21,7 @@ export const FilterThemeProvider = ({
   theme,
   children,
 }: {
-  theme: ThemeSpec;
+  theme: FilterTheme;
   children?: ReactNode;
 }) => {
   return (

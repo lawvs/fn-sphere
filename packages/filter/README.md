@@ -60,9 +60,9 @@ const Filter = () => {
 You can provide custom styles for the filter styles by using the `FilterThemeProvider` component:
 
 ```tsx
-import { FilterThemeProvider, ThemeSpec } from "@fn-sphere/filter";
+import { FilterThemeProvider, FilterTheme } from "@fn-sphere/filter";
 
-const theme: ThemeSpec = {};
+const theme: FilterTheme = {};
 
 const App = () => {
   return (

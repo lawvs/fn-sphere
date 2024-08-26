@@ -3,10 +3,10 @@ import {
   FilterSchemaProvider,
   type FilterSchemaContext,
 } from "./hooks/use-filter-schema-context.js";
-import { FilterThemeProvider, type ThemeSpec } from "./theme/index.js";
+import { FilterThemeProvider, type FilterTheme } from "./theme/index.js";
 export interface FilterSphereProviderProps<Data> {
   context: FilterSchemaContext<Data>;
-  theme?: ThemeSpec;
+  theme?: FilterTheme;
 }
 
 export const FilterSphereProvider = <Data,>({

@@ -2,13 +2,13 @@ import { isSameType } from "@fn-sphere/core";
 import { type ComponentType } from "react";
 import { z } from "zod";
 import { useFilterTheme } from "./context.js";
-import type { DataInputViewProps, ThemeSpec } from "./types.js";
+import type { DataInputViewProps, FilterTheme } from "./types.js";
 
 /**
  * @deprecated use `useView` instead
  * @internal
  */
-export const usePrimitives = <T extends keyof ThemeSpec["primitives"]>(
+export const usePrimitives = <T extends keyof FilterTheme["primitives"]>(
   view: T,
 ) => {
   const specs = useFilterTheme();
@@ -18,7 +18,7 @@ export const usePrimitives = <T extends keyof ThemeSpec["primitives"]>(
 /**
  * Must be used within a `FilterThemeProvider` component.
  */
-export const useView = <T extends keyof ThemeSpec>(type: T) => {
+export const useView = <T extends keyof FilterTheme>(type: T) => {
   const specs = useFilterTheme();
   return specs[type];
 };

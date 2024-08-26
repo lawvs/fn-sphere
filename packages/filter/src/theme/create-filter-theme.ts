@@ -1,19 +1,19 @@
 import { presetTheme } from "./preset.js";
-import type { ThemeSpec } from "./types.js";
+import type { FilterTheme } from "./types.js";
 
 export type FilterThemeInput = {
-  dataInputViews?: ThemeSpec["dataInputViews"];
-  components?: Partial<ThemeSpec["components"]>;
-  primitives?: Partial<ThemeSpec["primitives"]>;
-  templates?: Partial<ThemeSpec["templates"]>;
+  dataInputViews?: FilterTheme["dataInputViews"];
+  components?: Partial<FilterTheme["components"]>;
+  primitives?: Partial<FilterTheme["primitives"]>;
+  templates?: Partial<FilterTheme["templates"]>;
 };
 
 /**
  * Takes an incomplete theme object and generates a complete theme object
  *
- * The returned `ThemeSpec` should be passed to `FilterThemeProvider` or `FilterSphereProvider`
+ * The returned `FilterTheme` should be passed to `FilterThemeProvider` or `FilterSphereProvider`
  */
-export const createFilterTheme = (theme: FilterThemeInput): ThemeSpec => {
+export const createFilterTheme = (theme: FilterThemeInput): FilterTheme => {
   return {
     dataInputViews: [
       ...(theme.dataInputViews ?? []),
