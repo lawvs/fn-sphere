@@ -1,5 +1,5 @@
 import type { FilterGroup } from "@fn-sphere/core";
-import type { ReactNode } from "react";
+import { useCallback, type ReactNode } from "react";
 import { useFilterGroup } from "../hooks/use-filter-group.js";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
@@ -20,6 +20,14 @@ export const FilterGroupContainer = ({
 
   const text =
     filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
+
+  const handleAddCondition = useCallback(() => {
+    appendChildRule();
+  }, [appendChildRule]);
+
+  const handleAddGroup = useCallback(() => {
+    appendChildGroup();
+  }, [appendChildGroup]);
 
   return (
     <div
@@ -49,20 +57,10 @@ export const FilterGroupContainer = ({
           gap: 8,
         }}
       >
-        <Button
-          onClick={() => {
-            appendChildRule();
-          }}
-        >
+        <Button onClick={handleAddCondition}>
           {getLocaleText("Add condition")}
         </Button>
-        <Button
-          onClick={() => {
-            appendChildGroup();
-          }}
-        >
-          {getLocaleText("Add group")}
-        </Button>
+        <Button onClick={handleAddGroup}>{getLocaleText("Add group")}</Button>
       </div>
     </div>
   );

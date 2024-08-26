@@ -16,22 +16,6 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   return (
     <FilterGroupContainer filterGroup={filterGroup}>
       {filterGroup.conditions.map((childRule, groupIdx) => {
-        if (childRule.type === "Filter") {
-          return (
-            <Fragment key={childRule.id}>
-              {groupIdx > 0 && (
-                <RuleJoiner
-                  parent={filterGroup}
-                  joinBetween={[
-                    filterGroup.conditions[groupIdx - 1]!,
-                    childRule,
-                  ]}
-                />
-              )}
-              <FilterRuleView rule={childRule} />
-            </Fragment>
-          );
-        }
         return (
           <Fragment key={childRule.id}>
             {groupIdx > 0 && (
@@ -40,7 +24,11 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
                 joinBetween={[filterGroup.conditions[groupIdx - 1]!, childRule]}
               />
             )}
-            <FilterGroupView rule={childRule} />
+            {childRule.type === "Filter" ? (
+              <FilterRuleView rule={childRule} />
+            ) : (
+              <FilterGroupView rule={childRule} />
+            )}
           </Fragment>
         );
       })}
