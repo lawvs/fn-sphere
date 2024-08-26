@@ -14,7 +14,8 @@ export const SingleFilterContainer = ({
       className="filter-sphere-single-filter-container"
       style={{
         display: "flex",
-        gap: 4,
+        alignItems: "center",
+        gap: 8,
       }}
     >
       {children}

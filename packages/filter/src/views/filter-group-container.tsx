@@ -14,7 +14,8 @@ export const FilterGroupContainer = ({
   children,
 }: FilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
-  const { toggleGroupOp } = useFilterGroup(filterGroup);
+  const { toggleGroupOp, appendChildRule, appendChildGroup } =
+    useFilterGroup(filterGroup);
   const { Button } = useView("components");
 
   const text =
@@ -28,9 +29,9 @@ export const FilterGroupContainer = ({
         flexDirection: "column",
         alignItems: "flex-start",
         borderRadius: 4,
-        padding: 4,
-        gap: 4,
-        background: "rgba(0, 0, 0, 0.05)",
+        padding: 8,
+        gap: 8,
+        background: "rgba(0, 0, 0, 0.1)",
       }}
     >
       <Button
@@ -45,6 +46,28 @@ export const FilterGroupContainer = ({
         {text}
       </Button>
       {children}
+      <div
+        className="filter-sphere-filter-group-container-actions"
+        style={{
+          display: "flex",
+          gap: 8,
+        }}
+      >
+        <Button
+          onClick={() => {
+            appendChildRule();
+          }}
+        >
+          {getLocaleText("Add condition")}
+        </Button>
+        <Button
+          onClick={() => {
+            appendChildGroup();
+          }}
+        >
+          {getLocaleText("Add group")}
+        </Button>
+      </div>
     </div>
   );
 };

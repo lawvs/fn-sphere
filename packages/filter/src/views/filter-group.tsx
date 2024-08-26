@@ -1,7 +1,5 @@
 import type { FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
-import { useFilterGroup } from "../hooks/use-filter-group.js";
-import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
 
 export type FilterGroupProps = {
@@ -9,37 +7,11 @@ export type FilterGroupProps = {
 };
 
 export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
-  const { appendChildRule, appendChildGroup } = useFilterGroup(filterGroup);
-  const { Button: ButtonView } = useView("components");
-  const { getLocaleText } = useRootRule();
   const {
     FilterGroupContainer,
     SingleFilter: FilterRuleView,
     RuleJoiner,
   } = useView("templates");
-  const count = filterGroup.conditions.length;
-  if (count <= 0) {
-    return (
-      <FilterGroupContainer filterGroup={filterGroup}>
-        <div style={{ display: "flex", gap: "4px" }}>
-          <ButtonView
-            onClick={() => {
-              appendChildRule();
-            }}
-          >
-            {getLocaleText("Add Filter")}
-          </ButtonView>
-          <ButtonView
-            onClick={() => {
-              appendChildGroup();
-            }}
-          >
-            {getLocaleText("Add Group")}
-          </ButtonView>
-        </div>
-      </FilterGroupContainer>
-    );
-  }
 
   return (
     <FilterGroupContainer filterGroup={filterGroup}>

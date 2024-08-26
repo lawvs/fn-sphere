@@ -9,10 +9,8 @@ export type SingleFilterRuleProps = {
 
 export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
   const {
-    ruleState: { isValid, isInvert },
+    ruleState: { isInvert },
     removeRule,
-    appendRule,
-    appendGroup,
   } = useFilterRule(rule);
   const { getLocaleText } = useRootRule();
   const { Button: ButtonView } = useView("components");
@@ -25,21 +23,7 @@ export const SingleFilterView = ({ rule }: SingleFilterRuleProps) => {
       {isInvert ? getLocaleText("Not") : null}
       <FilterSelect rule={rule} />
       <FilterDataInput rule={rule} />
-      {isValid ? null : "!"}
-      <ButtonView
-        onClick={() => {
-          appendRule();
-        }}
-      >
-        {getLocaleText("Add condition")}
-      </ButtonView>
-      <ButtonView
-        onClick={() => {
-          appendGroup();
-        }}
-      >
-        {getLocaleText("Add group")}
-      </ButtonView>
+      {/* {isValid ? null : "!"} */}
       <ButtonView aria-label="delete" onClick={() => removeRule(true)}>
         {getLocaleText("Delete")}
       </ButtonView>
