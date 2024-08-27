@@ -2,9 +2,12 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.2/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "linked": [["@fn-sphere/*"]],
+  "fixed": [["@fn-sphere/core", "@fn-sphere/filter"]],
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
+  },
   "ignore": ["playground", "docs"]
 }

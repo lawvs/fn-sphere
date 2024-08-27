@@ -207,6 +207,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.0.0
         version: 11.13.0(@emotion/react@11.13.3(@types/react@18.3.4)(react@18.3.1))(@types/react@18.3.4)(react@18.3.1)
+      '@fn-sphere/filter':
+        specifier: workspace:^0
+        version: link:../filter
       '@mui/icons-material':
         specifier: ^6.0.0
         version: 6.0.0(@mui/material@6.0.0-rc.0(@emotion/react@11.13.3(@types/react@18.3.4)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.4)(react@18.3.1))(@types/react@18.3.4)(react@18.3.1))(@types/react@18.3.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.4)(react@18.3.1)
@@ -214,9 +217,6 @@ importers:
         specifier: 6.0.0-rc.0
         version: 6.0.0-rc.0(@emotion/react@11.13.3(@types/react@18.3.4)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.4)(react@18.3.1))(@types/react@18.3.4)(react@18.3.1))(@types/react@18.3.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
-      '@fn-sphere/filter':
-        specifier: workspace:^
-        version: link:../filter
       '@types/react':
         specifier: ^18.3.4
         version: 18.3.4
