@@ -7,7 +7,7 @@ Filter Sphere provides a set of themes that you can use to customize the look an
 
 ## Preset Themes
 
-import PackageManagerTabs from "/src/components/package-manager-tabs.astro";
+import PackageManagerTabs from "~/components/package-manager-tabs.astro";
 
 ### Material UI
 
@@ -15,7 +15,7 @@ The Material UI theme provides a sleek, modern look for your Filter Sphere compo
 
 <PackageManagerTabs package="@fn-sphere/theme-mui-material" />
 
-```tsx live  wrapper="/src/components/mui-theme-wrapper.tsx" {2} {13}
+```tsx live  wrapper="~/components/mui-theme-wrapper.tsx" {2} {13}
 // 1. Import the MUI Material theme
 import { filterTheme } from "@fn-sphere/theme-mui-material";
 import {
@@ -40,7 +40,7 @@ export default function AdvancedFilter({ schema }) {
 The theme is a set of components and templates that are used to render the Filter Sphere. You can see the constructor of the theme by clicking on the following tabs.
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
-import { ThemeAnatomy } from "/src/components/theme-anatomy.tsx";
+import { ThemeAnatomy } from "~/components/theme-anatomy.tsx";
 
 <Tabs>
   <TabItem label="components" icon="seti:svg">
@@ -57,7 +57,7 @@ You can override Filter Sphere's built-in components by replacing them with your
 
 The following example shows how to override the Filter Sphere's build-in theme to use a custom component.
 
-```tsx live wrapper="/src/components/mui-theme-wrapper.tsx"
+```tsx live wrapper="~/components/mui-theme-wrapper.tsx"
 import { filterTheme } from "@fn-sphere/theme-mui-material";
 import { Button } from "@mui/material";
 import {

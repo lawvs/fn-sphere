@@ -34,12 +34,12 @@ export default defineConfig({
       ],
       customCss: [
         // Relative path to your custom CSS file
-        "./src/styles/custom.css",
+        "~/styles/custom.css",
       ],
     }),
     react(),
     liveCode({
-      wrapper: "/src/components/code-wrapper.tsx",
+      wrapper: "~/components/code-wrapper.tsx",
       defaultProps: {
         "client:load": true,
       },
