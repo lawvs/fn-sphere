@@ -4,7 +4,7 @@ import {
   useFilterSphere,
 } from "@fn-sphere/filter";
 import { z } from "zod";
-import { Table } from "./table";
+import { Table } from "../table";
 import { data } from "./utils";
 
 // 1. define the schema for your data
