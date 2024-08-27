@@ -1,5 +1,78 @@
 # @fn-sphere/filter
 
+## 0.5.0
+
+### Minor Changes
+
+- ab1a0c6: - Deprecated `onPredicateChange` in `useFilterSphere`
+
+  - ⚠️ BREAKING CHANGES
+
+    - The `onRuleChange` callback in `useFilterSphere` now receives an object with both `filterRule` and `predicate` properties, instead of just the `filterRule`.
+    - The `onPredicateChange` callback has been removed. Use the `predicate` property in the `onRuleChange` callback instead.
+
+    ```ts
+    export interface FilterSphereInput<Data>
+      extends BasicFilterSphereInput<Data> {
+      onRuleChange?: (data: {
+        filterRule: FilterGroup;
+        predicate: (data: Data) => boolean;
+      }) => void;
+    }
+
+    const { context } = useFilterSphere({
+      schema: YOUR_DATA_SCHEMA,
+      onRuleChange: ({ predicate }) => {
+        const filteredData = YOUR_DATA.filter(predicate);
+        console.log(filteredData);
+      },
+    });
+    ```
+
+  - Migration Guide
+
+  ```diff
+  const { context } = useFilterSphere({
+    schema: YOUR_DATA_SCHEMA,
+  -  onRuleChange: (filterRule) => {
+  -    console.log(filterRule);
+  -  },
+  -  onPredicateChange: (predicate) => {
+  -    const filteredData = YOUR_DATA.filter(predicate);
+  -    console.log(filteredData);
+  -  },
+  +  onRuleChange: ({ filterRule, predicate }) => {
+  +    const filteredData = YOUR_DATA.filter(predicate);
+  +    console.log(filterRule, filteredData);
+  +  },
+  });
+  ```
+
+- 87acc5e: - BREAKING CHANGES
+
+  - `updateInput` in `DataInputViewProps` now use spread parameter to accept new values.
+
+  ```diff
+  - updateInput([newValue]);
+  + updateInput(newValue);
+  ```
+
+- 70565bc: - BREAKING CHANGES
+  - Increased spacing in templates
+  - Enhanced `SingleFilterContainer` styling:
+    - Improved vertical alignment of child elements
+  - Remove `isValid` flag from `FilterRule`
+  - Move `Add Condition` and `Add Group` buttons to the `FilterGroupContainer`
+
+### Patch Changes
+
+- 4a6e88a: Support multiple select for literal union
+- 03624b8: Add multiple select
+- f03f6e2: Remove unnecessary ref prop from data input views
+- Updated dependencies [f5eae65]
+- Updated dependencies [2b17977]
+  - @fn-sphere/core@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes
