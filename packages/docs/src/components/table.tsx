@@ -15,8 +15,9 @@ export function Table({ data }: { data: Record<string, unknown>[] }) {
   const keys = Object.keys(data[0] ?? {});
   return (
     <table
+      className="example-table"
       style={{
-        maxHeight: "200px",
+        maxHeight: "250px",
       }}
     >
       <thead>

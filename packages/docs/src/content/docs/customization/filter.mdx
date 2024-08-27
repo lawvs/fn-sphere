@@ -3,7 +3,7 @@ title: Customizing filters
 description: Customizing the available filters in Filter Sphere
 ---
 
-Filter Sphere allow you to extend the default filtering capabilities with your own specific logic. This feature is particularly useful when you need to implement complex or domain-specific filtering that isn't covered by the built-in filters.
+Filter Sphere allows you to extend the default filtering capabilities with your own specific logic. This feature is particularly useful when you need to implement complex or domain-specific filtering that isn't covered by the built-in filters.
 
 ## Defining a Custom Filter
 
@@ -18,14 +18,14 @@ const customFilter = defineTypedFn({
     .function()
     .args(schemaToFilter, optionalUserInputSchema)
     .returns(z.boolean()),
-  implement: (value, userInput?) => {
+  implement: (value, userInput) => {
     // Your filter logic here
-    return boolean;
+    return value === userInput;
   },
 });
 ```
 
-- name: A string describing your filter.
+- name: A string describing your filter. Ensure it is unique and doesn't duplicate any built-in filter names.
   - By default, the name will be used as the filter label in the UI. You can override this by overriding the `mapFilterName` property in the `useFilterSphere` hook.
 - define: A Zod schema defining the function signature.
   - First argument: The schema of the data being filtered.
@@ -49,10 +49,11 @@ const { predicate, context } = useFilterSphere({
 
 This approach allows you to extend Filter Sphere's functionality with your own custom filtering logic while maintaining type safety and integration with the existing system.
 
-Here is an example of using a custom filter function to calculate the average of an array of numbers:
+Here's an example of using a custom filter function to calculate the average of an array of numbers:
 
-```tsx live
+```tsx live {28-41} {50}
 import { z } from "zod";
+import { Table } from "~/components/table";
 import {
   FilterSphereProvider,
   FilterBuilder,
@@ -61,7 +62,6 @@ import {
   defineTypedFn,
   type FnSchema,
 } from "@fn-sphere/filter";
-import { Table } from "~/components/table";
 
 const data = [
   { scores: [1] },
@@ -70,8 +70,7 @@ const data = [
   { scores: [6, 7, 8, 9, 10] },
 ].map((item, index) => ({
   ...item,
-  average:
-    item.scores.reduce((acc, curr) => acc + curr, 0) / item.scores.length,
+  average: item.scores.reduce((acc, curr) => acc + curr) / item.scores.length,
 }));
 
 const schema = z.object({
@@ -90,7 +89,8 @@ const dataFilters: FnSchema[] = [
       .returns(z.boolean()),
     implement: (value, input) => {
       // Implement the filter logic
-      return value.reduce((acc, curr) => acc + curr, 0) / value.length > input;
+      const sum = value.reduce((acc, cur) => acc + cur);
+      return sum / value.length > input;
     },
   }),
   // Preset filters contains all the built-in filters

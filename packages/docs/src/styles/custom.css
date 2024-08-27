@@ -22,3 +22,50 @@
   max-width: 100%;
   overflow: auto;
 }
+
+/*
+ * Ported from https://github.com/withastro/starlight/blob/df2319c0e3b5f9759276f59f334a373326aea01f/packages/starlight/style/markdown.css#L103-L137
+ *
+ * @license MIT
+ *
+ * Remove .no-content class to see the original table styles.
+ */
+.example-table {
+  display: block;
+  overflow: auto;
+  border-spacing: 0;
+
+  :is(th, td) {
+    border-bottom: 1px solid var(--sl-color-gray-5);
+    padding: 0.5rem 1rem;
+    /* Align text to the top of the row in multiline tables. */
+    vertical-align: baseline;
+  }
+  :is(th:first-child, td:first-child) {
+    padding-inline-start: 0;
+  }
+  :is(th:last-child, td:last-child) {
+    padding-inline-end: 0;
+  }
+  th {
+    color: var(--sl-color-white);
+    font-weight: 600;
+  }
+  /* Align headings to the start of the line unless set by the `align` attribute. */
+  th:not([align]) {
+    text-align: start;
+  }
+
+  @supports (
+    border-color:
+      color-mix(in srgb, var(--sl-color-asides-text-accent) 30%, transparent)
+  ) {
+    .starlight-aside :is(th, td, hr, blockquote) {
+      border-color: color-mix(
+        in srgb,
+        var(--sl-color-asides-text-accent) 30%,
+        transparent
+      );
+    }
+  }
+}
