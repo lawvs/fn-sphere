@@ -16,10 +16,10 @@ import type { FieldSelectProps } from "../views/field-select.js";
 import type { DataInputProps } from "../views/filter-data-input.js";
 import type { FilterGroupContainerProps } from "../views/filter-group-container.js";
 import type { FilterGroupProps } from "../views/filter-group.js";
-import type { SingleFilterRuleProps } from "../views/filter-rule.js";
 import type { FilterSelectProps } from "../views/filter-select.js";
 import type { RuleJoinerProps } from "../views/rule-joiner.js";
 import type { SingleFilterContainerProps } from "../views/single-filter-container.js";
+import type { SingleFilterRuleProps } from "../views/single-filter.js";
 
 export type DataInputViewProps = {
   rule: SingleFilter;

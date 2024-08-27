@@ -1,6 +1,6 @@
 ---
-title: 🚧 API
-description: Technical descriptions of the Filter Sphere API
+title: 🚧 Example
+description: Practical implementations of Filter Sphere
 ---
 
 WIP
