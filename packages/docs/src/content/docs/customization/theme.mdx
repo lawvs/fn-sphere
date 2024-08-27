@@ -3,7 +3,9 @@ title: Theme
 description: Customizing the theme of the Filter Sphere
 ---
 
-Filter Sphere provides a set of themes that you can use to customize the look and feel of the Filter Sphere.
+Filter Sphere provides a set of themes that allowing you to tailor them to your specific preferences or project needs.
+
+Furthermore, you have the option to create your own theme based on the default ones.
 
 ## Preset Themes
 
@@ -35,27 +37,46 @@ export default function AdvancedFilter({ schema }) {
 }
 ```
 
-## Anatomy of the theme
+## Creating a custom theme
 
-The theme is a set of components and templates that are used to render the Filter Sphere. You can see the constructor of the theme by clicking on the following tabs.
+### Customizing components
 
-import { Tabs, TabItem } from "@astrojs/starlight/components";
-import { ThemeAnatomy } from "~/components/theme-anatomy.tsx";
+You can modify a component by overriding the specific component in the theme.
 
-<Tabs>
-  <TabItem label="components" icon="seti:svg">
-    <ThemeAnatomy target="components" client:load />
-  </TabItem>
-  <TabItem label="templates" icon="seti:plan">
-    <ThemeAnatomy target="templates" client:load />
-  </TabItem>
-</Tabs>
+```tsx live
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+  useFilterRule,
+  createFilterTheme,
+} from "@fn-sphere/filter";
+import { z } from "zod";
 
-## Overriding the theme
+const schema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+const customTheme = createFilterTheme({
+  components: {
+    Button: (props) => <button style={{ borderRadius: "10px" }} {...props} />,
+  },
+});
+
+export default function AdvancedFilter() {
+  const { predicate, context } = useFilterSphere({ schema });
+  return (
+    <FilterSphereProvider context={context} theme={customTheme}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+### Overriding the theme
 
 You can override Filter Sphere's built-in components by replacing them with your own custom components or templates within the theme.
-
-The following example shows how to override the Filter Sphere's build-in theme to use a custom component.
 
 ```tsx live wrapper="~/components/mui-theme-wrapper.tsx"
 import { filterTheme } from "@fn-sphere/theme-mui-material";
@@ -69,18 +90,14 @@ import {
 
 const customTheme = {
   ...filterTheme,
-  components: {
-    ...filterTheme.components,
-    Button: (props) => (
-      <Button variant="outlined" color="success" size="small" {...props} />
-    ),
-  },
   templates: {
     ...filterTheme.templates,
+    FilterGroupContainer: (props) => props.children,
     SingleFilter: (props) => {
       const MuiSingleFilter = filterTheme.templates.SingleFilter;
       const {
         ruleState: { isFirstRule, parentGroup },
+        appendRule,
       } = useFilterRule(props.rule);
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -89,6 +106,7 @@ const customTheme = {
             <span style={{ marginRight: "8px" }}>{parentGroup.op}</span>
           )}
           <MuiSingleFilter {...props} />
+          <Button onClick={() => appendRule()}>Add</Button>
         </div>
       );
     },
@@ -104,3 +122,19 @@ export default function AdvancedFilter({ schema }) {
   );
 }
 ```
+
+## Anatomy of the theme
+
+The theme is a set of components and templates that are used to render the Filter Sphere. You can see the constructor of the theme by clicking on the following tabs.
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { ThemeAnatomy } from "~/components/theme-anatomy.tsx";
+
+<Tabs>
+  <TabItem label="components" icon="seti:svg">
+    <ThemeAnatomy target="components" client:load />
+  </TabItem>
+  <TabItem label="templates" icon="seti:plan">
+    <ThemeAnatomy target="templates" client:load />
+  </TabItem>
+</Tabs>

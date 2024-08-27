@@ -1,6 +1,11 @@
-import { createFilterTheme } from "@fn-sphere/filter";
+import { createFilterTheme, useFilterRule, useView } from "@fn-sphere/filter";
+import {
+  Delete as DeleteIcon,
+  ErrorOutline as ErrorOutlineIcon,
+} from "@mui/icons-material";
 import {
   Button,
+  IconButton,
   Input,
   MenuItem,
   Select,
@@ -98,6 +103,36 @@ export const filterTheme = createFilterTheme({
             </MenuItem>
           ))}
         </Select>
+      );
+    },
+  },
+  templates: {
+    SingleFilter: ({ rule }) => {
+      const {
+        ruleState: { isValid },
+        removeRule,
+      } = useFilterRule(rule);
+      const {
+        FieldSelect,
+        FilterSelect,
+        FilterDataInput,
+        SingleFilterContainer,
+      } = useView("templates");
+
+      const handleClickDelete = useCallback(() => {
+        removeRule(true);
+      }, [removeRule]);
+
+      return (
+        <SingleFilterContainer rule={rule}>
+          <FieldSelect rule={rule} />
+          <FilterSelect rule={rule} />
+          <FilterDataInput rule={rule} />
+          {isValid ? null : <ErrorOutlineIcon fontSize="small" />}
+          <IconButton aria-label="delete" onClick={handleClickDelete}>
+            <DeleteIcon fontSize="inherit" />
+          </IconButton>
+        </SingleFilterContainer>
       );
     },
   },

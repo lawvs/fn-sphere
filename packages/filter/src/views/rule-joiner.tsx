@@ -5,8 +5,8 @@ export type RuleJoinerProps = {
   joinBetween: [FilterRule, FilterRule];
 };
 
-export const RuleJoiner = ({ parent }: RuleJoinerProps) => {
-  const operator = parent.op;
-  return <div className={`filter-sphere-rule-joiner-${operator}`}></div>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const RuleJoiner = (_props: RuleJoinerProps) => {
+  return null;
 };
 RuleJoiner.displayName = "RuleJoiner";
