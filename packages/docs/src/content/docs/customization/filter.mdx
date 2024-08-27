@@ -51,7 +51,7 @@ This approach allows you to extend Filter Sphere's functionality with your own c
 
 Here is an example of using a custom filter function to calculate the average of an array of numbers:
 
-```tsx live {17-29} {38}
+```tsx live
 import { z } from "zod";
 import {
   FilterSphereProvider,
@@ -61,6 +61,18 @@ import {
   defineTypedFn,
   type FnSchema,
 } from "@fn-sphere/filter";
+import { Table } from "~/components/table";
+
+const data = [
+  { scores: [1] },
+  { scores: [1, 10] },
+  { scores: [1, 2, 3, 4, 5] },
+  { scores: [6, 7, 8, 9, 10] },
+].map((item, index) => ({
+  ...item,
+  average:
+    item.scores.reduce((acc, curr) => acc + curr, 0) / item.scores.length,
+}));
 
 const schema = z.object({
   scores: z.array(z.number()),
@@ -94,6 +106,7 @@ export default function AdvancedFilter() {
   return (
     <FilterSphereProvider context={context}>
       <FilterBuilder />
+      <Table data={data.filter(predicate)} />
     </FilterSphereProvider>
   );
 }
