@@ -1,5 +1,12 @@
 # @fn-sphere/core
 
+## 0.5.0
+
+### Patch Changes
+
+- f5eae65: Remove throw statements in filterFn
+- 2b17977: Support literal union in preset fn
+
 ## 0.4.0
 
 ### Patch Changes
