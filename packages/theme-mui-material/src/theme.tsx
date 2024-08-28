@@ -1,6 +1,14 @@
-import { createFilterTheme, useFilterRule, useView } from "@fn-sphere/filter";
 import {
-  Delete as DeleteIcon,
+  createFilterTheme,
+  useFilterGroup,
+  useFilterRule,
+  useRootRule,
+  useView,
+} from "@fn-sphere/filter";
+import {
+  Add as AddIcon,
+  Clear as ClearIcon,
+  CreateNewFolderOutlined as CreateNewFolderIcon,
   ErrorOutline as ErrorOutlineIcon,
 } from "@mui/icons-material";
 import {
@@ -9,15 +17,14 @@ import {
   Input,
   MenuItem,
   Select,
+  Stack,
   type SelectChangeEvent,
 } from "@mui/material";
 import { useCallback, type ChangeEvent } from "react";
 
 export const filterTheme = createFilterTheme({
   components: {
-    Button: ({ ref, color, ...props }) => (
-      <Button variant="contained" {...props} />
-    ),
+    Button: ({ ref, color, ...props }) => <Button {...props} />,
     Input: ({ ref, color, size, onChange, ...props }) => {
       const handleChange = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +114,56 @@ export const filterTheme = createFilterTheme({
     },
   },
   templates: {
+    FilterGroupContainer: ({ filterGroup, children }) => {
+      const { getLocaleText } = useRootRule();
+      const {
+        ruleState: { isRoot },
+        toggleGroupOp,
+        appendChildRule,
+        appendChildGroup,
+      } = useFilterGroup(filterGroup);
+
+      const text =
+        filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
+
+      const handleToggleGroupOp = useCallback(() => {
+        toggleGroupOp();
+      }, [toggleGroupOp]);
+
+      const handleAddCondition = useCallback(() => {
+        appendChildRule();
+      }, [appendChildRule]);
+
+      const handleAddGroup = useCallback(() => {
+        appendChildGroup();
+      }, [appendChildGroup]);
+
+      return (
+        <Stack
+          spacing={2}
+          sx={{
+            alignItems: "flex-start",
+            paddingLeft: isRoot ? 0 : 4,
+          }}
+        >
+          <Button variant="outlined" onClick={handleToggleGroupOp}>
+            {text}
+          </Button>
+          {children}
+          <Stack direction="row" spacing={1}>
+            <Button startIcon={<AddIcon />} onClick={handleAddCondition}>
+              {getLocaleText("Add condition")}
+            </Button>
+            <Button
+              startIcon={<CreateNewFolderIcon />}
+              onClick={handleAddGroup}
+            >
+              {getLocaleText("Add group")}
+            </Button>
+          </Stack>
+        </Stack>
+      );
+    },
     SingleFilter: ({ rule }) => {
       const {
         ruleState: { isValid },
@@ -128,9 +185,11 @@ export const filterTheme = createFilterTheme({
           <FieldSelect rule={rule} />
           <FilterSelect rule={rule} />
           <FilterDataInput rule={rule} />
-          {isValid ? null : <ErrorOutlineIcon fontSize="small" />}
+          {isValid ? null : (
+            <ErrorOutlineIcon color="disabled" fontSize="small" />
+          )}
           <IconButton aria-label="delete" onClick={handleClickDelete}>
-            <DeleteIcon fontSize="inherit" />
+            <ClearIcon fontSize="small" />
           </IconButton>
         </SingleFilterContainer>
       );
