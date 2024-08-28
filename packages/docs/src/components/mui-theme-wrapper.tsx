@@ -43,15 +43,17 @@ function useThemeMode(): "light" | "dark" {
 
 // Define your data schema
 const schema = z.object({
-  id: z.number(),
-  name: z.string(),
-  createdAt: z.date(),
-  checked: z.boolean(),
-  status: z.union([
-    z.literal("pending"),
-    z.literal("completed"),
-    z.literal("cancelled"),
-  ]),
+  id: z.number().describe("ID"),
+  name: z.string().describe("Name"),
+  createdAt: z.date().describe("Created At"),
+  checked: z.boolean().describe("Checked"),
+  status: z
+    .union([
+      z.literal("pending").describe("Pending"),
+      z.literal("completed").describe("Completed"),
+      z.literal("cancelled").describe("Cancelled"),
+    ])
+    .describe("Status"),
 });
 
 export default function MuiThemeWrapper({ children }: { children: ReactNode }) {

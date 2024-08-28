@@ -21,6 +21,10 @@ export const FilterGroupContainer = ({
   const text =
     filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
 
+  const handleToggleGroupOp = useCallback(() => {
+    toggleGroupOp();
+  }, [toggleGroupOp]);
+
   const handleAddCondition = useCallback(() => {
     appendChildRule();
   }, [appendChildRule]);
@@ -42,13 +46,7 @@ export const FilterGroupContainer = ({
         background: "rgba(0, 0, 0, 0.05)",
       }}
     >
-      <Button
-        onClick={() => {
-          toggleGroupOp();
-        }}
-      >
-        {text}
-      </Button>
+      <Button onClick={handleToggleGroupOp}>{text}</Button>
       {children}
       <div
         className="filter-sphere-filter-group-container-actions"

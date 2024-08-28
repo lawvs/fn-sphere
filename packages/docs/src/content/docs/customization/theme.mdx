@@ -39,8 +39,6 @@ export default function AdvancedFilter({ schema }) {
 
 ## Creating a custom theme
 
-### Customizing components
-
 You can modify a component by overriding the specific component in the theme.
 
 ```tsx live
@@ -74,9 +72,9 @@ export default function AdvancedFilter() {
 }
 ```
 
-### Overriding the theme
+## Overriding a existing theme
 
-You can override Filter Sphere's built-in components by replacing them with your own custom components or templates within the theme.
+You can override existing theme by replacing them with your own custom components or templates.
 
 ```tsx live wrapper="~/components/mui-theme-wrapper.tsx"
 import { filterTheme } from "@fn-sphere/theme-mui-material";
@@ -101,8 +99,9 @@ const customTheme = {
       } = useFilterRule(props.rule);
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          {isFirstRule && <span style={{ marginRight: "8px" }}>Where</span>}
-          {!isFirstRule && (
+          {isFirstRule ? (
+            <span style={{ marginRight: "8px" }}>Where</span>
+          ) : (
             <span style={{ marginRight: "8px" }}>{parentGroup.op}</span>
           )}
           <MuiSingleFilter {...props} />
