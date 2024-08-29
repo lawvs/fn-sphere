@@ -3,6 +3,7 @@ import {
   createSingleFilter,
   isEqualPath,
   isValidRule,
+  type FilterGroup,
   type FilterGroupInput,
   type SingleFilter,
   type SingleFilterInput,
@@ -165,6 +166,51 @@ export const useFilterRule = (rule: SingleFilter) => {
     setRule({ ...rule, invert: newInvert });
   };
 
+  /**
+   * Moves itself at specific position of Group
+   */
+  const moveRule = (target: FilterGroup, index: number) => {
+    if (target.id === parentId) {
+      const conditionWithoutSelf = parentNode.conditionIds.filter(
+        (id) => id !== rule.id,
+      );
+      const newConditionIds = [
+        ...conditionWithoutSelf.slice(0, index),
+        rule.id,
+        ...conditionWithoutSelf.slice(index),
+      ];
+      onFilterMapChange({
+        ...filterMap,
+        [parentId]: {
+          ...parentNode,
+          conditionIds: newConditionIds,
+        },
+      });
+      return;
+    }
+    const targetNode = filterMap[target.id];
+    if (!targetNode || targetNode.type !== "FilterGroup") {
+      console.error("Target rule is not a group", filterMap, rule);
+      throw new Error("Target rule is not a group");
+    }
+    const newFilterMap = {
+      ...filterMap,
+      [parentId]: {
+        ...parentNode,
+        conditionIds: parentNode.conditionIds.filter((id) => id !== rule.id),
+      },
+      [targetNode.id]: {
+        ...targetNode,
+        conditionIds: [
+          ...targetNode.conditionIds.slice(0, index),
+          rule.id,
+          ...targetNode.conditionIds.slice(index),
+        ],
+      },
+    };
+    onFilterMapChange(newFilterMap);
+  };
+
   const isLastRule = index === parentNode.conditionIds.length - 1;
 
   return {
@@ -204,7 +250,7 @@ export const useFilterRule = (rule: SingleFilter) => {
     appendRule,
     appendGroup,
     removeRule,
-    // moveRule,
+    moveRule,
     duplicateRule,
     invertRule,
     // turnIntoGroup,
