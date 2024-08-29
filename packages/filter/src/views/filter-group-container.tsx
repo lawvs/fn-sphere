@@ -14,12 +14,19 @@ export const FilterGroupContainer = ({
   children,
 }: FilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
-  const { toggleGroupOp, appendChildRule, appendChildGroup } =
-    useFilterGroup(filterGroup);
+  const {
+    ruleState: { isRoot },
+    toggleGroupOp,
+    appendChildRule,
+    appendChildGroup,
+    removeGroup,
+  } = useFilterGroup(filterGroup);
   const { Button } = useView("components");
 
   const text =
-    filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
+    filterGroup.op === "or"
+      ? getLocaleText("operatorOr")
+      : getLocaleText("operatorAnd");
 
   const handleToggleGroupOp = useCallback(() => {
     toggleGroupOp();
@@ -32,6 +39,10 @@ export const FilterGroupContainer = ({
   const handleAddGroup = useCallback(() => {
     appendChildGroup();
   }, [appendChildGroup]);
+
+  const handleDeleteGroup = useCallback(() => {
+    removeGroup();
+  }, [removeGroup]);
 
   return (
     <div
@@ -55,10 +66,13 @@ export const FilterGroupContainer = ({
           gap: 8,
         }}
       >
-        <Button onClick={handleAddCondition}>
-          {getLocaleText("Add condition")}
-        </Button>
-        <Button onClick={handleAddGroup}>{getLocaleText("Add group")}</Button>
+        <Button onClick={handleAddCondition}>{getLocaleText("addRule")}</Button>
+        <Button onClick={handleAddGroup}>{getLocaleText("addGroup")}</Button>
+        {!isRoot && (
+          <Button onClick={handleDeleteGroup}>
+            {getLocaleText("deleteGroup")}
+          </Button>
+        )}
       </div>
     </div>
   );

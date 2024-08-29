@@ -14,7 +14,9 @@ export const FlattenFilterGroupContainer = ({
   const { getLocaleText } = useRootRule();
 
   const text =
-    filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
+    filterGroup.op === "or"
+      ? getLocaleText("operatorOr")
+      : getLocaleText("operatorAnd");
 
   return (
     <div

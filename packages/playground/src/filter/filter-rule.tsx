@@ -25,7 +25,7 @@ export const FlattenSingleFilterView = ({
   return (
     <SingleFilterContainer rule={rule}>
       <FieldSelect rule={rule} />
-      {isInvert ? getLocaleText("Not") : null}
+      {isInvert ? getLocaleText("operatorNot") : null}
       <FilterSelect rule={rule} />
       <FilterDataInput rule={rule} />
       {isValid ? null : "!"}
@@ -34,7 +34,7 @@ export const FlattenSingleFilterView = ({
           appendRule();
         }}
       >
-        {getLocaleText("And")}
+        {getLocaleText("operatorAnd")}
       </ButtonView>
       <ButtonView
         onClick={() => {
@@ -48,10 +48,10 @@ export const FlattenSingleFilterView = ({
           updateRootRule(rootRule);
         }}
       >
-        {getLocaleText("Or")}
+        {getLocaleText("operatorOr")}
       </ButtonView>
-      <ButtonView aria-label="delete" onClick={() => removeRule(true)}>
-        {getLocaleText("Delete")}
+      <ButtonView onClick={() => removeRule(true)}>
+        {getLocaleText("deleteRule")}
       </ButtonView>
     </SingleFilterContainer>
   );
