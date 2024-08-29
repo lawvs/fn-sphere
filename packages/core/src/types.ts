@@ -9,19 +9,20 @@ export type StandardFnSchema<T extends ZodAnyFunction = ZodAnyFunction> = {
   name: string;
   define: T;
   implement: TypeOf<T>;
-  // context?: Record<string, unknown>;
   skipValidate?: boolean | undefined;
+  meta?: Record<string, unknown>;
 };
 
 export type GenericFnSchema<
-  Generic extends ZodType = any,
+  DataType extends ZodType = any,
   Fn extends ZodAnyFunction = ZodAnyFunction,
 > = {
   name: string;
-  genericLimit: (t: ZodType) => t is Generic;
-  define: (t: Generic) => Fn;
+  genericLimit: (t: ZodType) => t is DataType;
+  define: (t: DataType) => Fn;
   implement: TypeOf<Fn>;
   skipValidate?: boolean;
+  meta?: Record<string, unknown>;
 };
 
 export type FnSchema = StandardFnSchema | GenericFnSchema;

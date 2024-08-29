@@ -37,6 +37,7 @@ export type DataInputViewSpec = {
         fieldSchema?: z.ZodTypeAny,
       ) => boolean);
   view: ComponentType<DataInputViewProps>;
+  meta?: Record<string, unknown>;
 };
 
 export type FilterTheme = {

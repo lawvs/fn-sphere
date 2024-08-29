@@ -35,10 +35,12 @@ export const instantiateGenericFn = (
     define: genericFn.define(schema),
     implement: genericFn.implement,
     skipValidate: genericFn.skipValidate,
+    meta: {
+      ...genericFn.meta,
+      datatype: schema,
+      genericFn: genericFn,
+    },
   };
-  // For debug
-  (instantiationFn as any).__generic = schema;
-  (instantiationFn as any).__genericFn = genericFn;
   const isFilter = isFilterFn(instantiationFn);
   if (!isFilter) {
     return;
