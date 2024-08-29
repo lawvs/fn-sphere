@@ -9,13 +9,9 @@ import {
 } from "@fn-sphere/core";
 import { useState } from "react";
 import { z } from "zod";
+import { defaultGetLocaleText } from "../locales/index.js";
 import type { BasicFilterSphereInput } from "../types.js";
-import {
-  defaultGetLocaleText,
-  defaultMapFieldName,
-  defaultMapFilterName,
-  noop,
-} from "../utils.js";
+import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
 import type { FilterSchemaContext } from "./use-filter-schema-context.js";
 
 export interface FilterSphereInput<Data> extends BasicFilterSphereInput<Data> {
