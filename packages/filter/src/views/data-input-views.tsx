@@ -13,6 +13,27 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     },
   },
   {
+    name: "boolean",
+    match: [z.boolean()],
+    view: function View({ rule, updateInput }) {
+      const { getLocaleText } = useRootRule();
+      const { Select } = useView("components");
+      const options = [
+        { label: getLocaleText("valueTrue"), value: true },
+        { label: getLocaleText("valueFalse"), value: false },
+      ];
+      return (
+        <Select
+          options={options}
+          value={rule.args?.[0] as boolean}
+          onChange={(value) => {
+            updateInput(value);
+          }}
+        />
+      );
+    },
+  },
+  {
     name: "string",
     match: [z.string()],
     view: function View({ requiredDataSchema, rule, updateInput }) {
