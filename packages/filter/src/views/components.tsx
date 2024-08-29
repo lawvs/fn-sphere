@@ -102,7 +102,7 @@ export const MultiSelectView = forwardRef<
         const selectedOption = options[index];
         if (!selectedOption) return;
         return selectedOption.value;
-      }).filter(Boolean);
+      }).filter((i) => i !== undefined);
       onChange?.(selectedOptions);
     },
     [options, onChange],

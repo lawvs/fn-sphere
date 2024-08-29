@@ -24,7 +24,16 @@ import PackageManagerTabs from "~/components/package-manager-tabs.astro";
 
    <PackageManagerTabs package="zod" />
 
-1. You can now use Filter Sphere in your project. You can start building your filtering interface with Filter Sphere components.
+1. Define your data with zod. For example
+
+   ```ts
+   const YOUR_DATA_SCHEMA = z.object({
+     id: z.number(),
+     name: z.string(),
+   });
+   ```
+
+1. Start building your filtering interface with Filter Sphere components.
 
    ```tsx live
    import {
