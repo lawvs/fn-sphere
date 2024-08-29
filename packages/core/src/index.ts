@@ -2,7 +2,6 @@ export * from "./filter/index.js";
 
 export { createFnSphere, defineGenericFn, defineTypedFn } from "./fn-sphere.js";
 export {
-  booleanFilter,
   commonFilters,
   dateFilter,
   genericFilter,

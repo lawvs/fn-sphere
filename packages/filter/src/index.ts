@@ -21,7 +21,6 @@ export { defaultMapFieldName, defaultMapFilterName } from "./utils.js";
 export { FilterBuilder } from "./views/filter-builder.js";
 
 export {
-  booleanFilter,
   commonFilters,
   countNumberOfRules,
   createFilterPredicate,
