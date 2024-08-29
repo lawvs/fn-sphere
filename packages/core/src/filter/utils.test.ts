@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import * as z from "zod";
+import z from "zod";
 import { isSameType } from "zod-compare";
-import { defineTypedFn } from "../fn-sphere.js";
+import { defineGenericFn, defineTypedFn } from "../fn-sphere.js";
 import type { FnSchema } from "../types.js";
 import type { FilterPath } from "./types.js";
 import {
@@ -13,6 +13,7 @@ import {
   getParametersExceptFirst,
   getSchemaAtPath,
   getValueAtPath,
+  instantiateGenericFn,
 } from "./utils.js";
 
 describe("getValueFromPath", () => {
@@ -253,5 +254,69 @@ describe("countValidRules", () => {
       rule,
     });
     expect(result).toBe(1);
+  });
+});
+
+describe("instantiateGenericFn", () => {
+  it("should return undefined if genericLimit is not satisfied", () => {
+    const schema = z.string(); // Example schema
+    const genericFn = defineGenericFn({
+      name: "Test Function",
+      genericLimit: (t: z.ZodType): t is never => false, // Always returns false
+      define: (t: z.ZodType) => z.function(),
+      implement: () => {},
+    });
+
+    const result = instantiateGenericFn(schema, genericFn);
+    expect(result).toBeUndefined();
+  });
+
+  it("should return instantiated function if genericLimit is satisfied", () => {
+    const schema = z.string(); // Example schema
+    const genericFn = defineGenericFn({
+      name: "Test Function",
+      genericLimit: (t): t is any => true, // Always returns true
+      define: (t) => z.function().args(t).returns(z.boolean()),
+      implement: (value) => !!value,
+    });
+
+    const result = instantiateGenericFn(schema, genericFn);
+    expect(result).toBeDefined();
+    expect(result?.name).toBe("Test Function");
+    expect(result?.implement).toBeInstanceOf(Function);
+    expect(
+      isSameType(
+        result!.define,
+        z.function().args(schema).returns(z.boolean()),
+      ),
+    ).toBe(true);
+  });
+
+  it("should return undefined if instantiated function is not a filter", () => {
+    const schema = z.string(); // Example schema
+    const genericFn = defineGenericFn({
+      name: "Non-Filter Function",
+      genericLimit: (t: z.ZodType): t is any => true,
+      define: (t: z.ZodType) => z.function(), // Not a filter
+      implement: () => {},
+    });
+
+    const result = instantiateGenericFn(schema, genericFn);
+    expect(result).toBeUndefined();
+  });
+
+  it("should keep meta information when instantiating a function", () => {
+    const schema = z.string(); // Example schema
+    const genericFn = defineGenericFn({
+      name: "Test Function",
+      genericLimit: (t: z.ZodType): t is any => true,
+      define: (t) => z.function().args(t).returns(z.boolean()),
+      implement: (value) => !!value,
+      meta: { test: "test" },
+    });
+
+    const result = instantiateGenericFn(schema, genericFn);
+    expect(result).toBeDefined();
+    expect(result?.meta).toEqual({ test: "test", datatype: schema, genericFn });
   });
 });
