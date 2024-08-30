@@ -117,7 +117,7 @@ export const filterTheme = createFilterTheme({
     FilterGroupContainer: ({ filterGroup, children }) => {
       const { getLocaleText } = useRootRule();
       const {
-        ruleState: { isRoot },
+        ruleState: { isRoot, depth },
         toggleGroupOp,
         appendChildRule,
         appendChildGroup,
@@ -156,12 +156,14 @@ export const filterTheme = createFilterTheme({
             <Button startIcon={<AddIcon />} onClick={handleAddCondition}>
               {getLocaleText("addRule")}
             </Button>
-            <Button
-              startIcon={<CreateNewFolderIcon />}
-              onClick={handleAddGroup}
-            >
-              {getLocaleText("addGroup")}
-            </Button>
+            {depth < 3 && (
+              <Button
+                startIcon={<CreateNewFolderIcon />}
+                onClick={handleAddGroup}
+              >
+                {getLocaleText("addGroup")}
+              </Button>
+            )}
           </Stack>
         </Stack>
       );

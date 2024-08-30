@@ -15,7 +15,7 @@ export const FilterGroupContainer = ({
 }: FilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
   const {
-    ruleState: { isRoot },
+    ruleState: { isRoot, depth },
     toggleGroupOp,
     appendChildRule,
     appendChildGroup,
@@ -67,7 +67,9 @@ export const FilterGroupContainer = ({
         }}
       >
         <Button onClick={handleAddCondition}>{getLocaleText("addRule")}</Button>
-        <Button onClick={handleAddGroup}>{getLocaleText("addGroup")}</Button>
+        {depth < 3 && (
+          <Button onClick={handleAddGroup}>{getLocaleText("addGroup")}</Button>
+        )}
         {!isRoot && (
           <Button onClick={handleDeleteGroup}>
             {getLocaleText("deleteGroup")}
