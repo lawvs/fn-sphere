@@ -9,17 +9,21 @@ Filter Sphere provides a variety of ways to localize the UI. This is useful when
 
 You can use the `getLocaleText` function to translate the filter UI.
 
-```tsx live {8-10} {20}
+```tsx live
 import {
   FilterSphereProvider,
   FilterBuilder,
   useFilterSphere,
 } from "@fn-sphere/filter";
+import { enUS, jaJP, zhCN } from "@fn-sphere/filter/locales";
 import { z } from "zod";
+import { useState } from "react";
 
-const customGetLocaleText = (key: string) => {
-  return `key-${key}`;
-};
+const locales = [
+  { key: "cn", label: "中文", value: { ...zhCN, id: "ID", name: "名称" } },
+  { key: "jp", label: "日本語", value: { ...jaJP, id: "ID", name: "名前" } },
+  { key: "en", label: "English", value: enUS },
+];
 
 const schema = z.object({
   id: z.number(),
@@ -27,12 +31,27 @@ const schema = z.object({
 });
 
 export default function AdvancedFilter() {
+  const [localeKey, setLocaleKey] = useState("cn");
+
+  const customGetLocaleText = (key: string): string => {
+    const locale = locales.find((locale) => locale.key === localeKey)?.value;
+    if (!locale || !(key in locale)) return key;
+    return locale[key as keyof typeof locale];
+  };
+
   const { filterRule, predicate, context } = useFilterSphere({
     schema,
     getLocaleText: customGetLocaleText,
   });
   return (
     <FilterSphereProvider context={context}>
+      <select onChange={(e) => setLocaleKey(e.target.value)}>
+        {locales.map((locale) => (
+          <option key={locale.key} value={locale.key}>
+            {locale.label}
+          </option>
+        ))}
+      </select>
       <FilterBuilder />
     </FilterSphereProvider>
   );
