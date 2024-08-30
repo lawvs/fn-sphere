@@ -1,4 +1,4 @@
-export const LOCALE_EN = {
+export const enUS = {
   // Layout
   operatorAnd: "And",
   operatorOr: "Or",
@@ -11,8 +11,6 @@ export const LOCALE_EN = {
 
   // Filter
   // General Filter
-  is: "is",
-  isNot: "is not",
   equals: "equals",
   notEqual: "not equal",
   isEmpty: "is empty",

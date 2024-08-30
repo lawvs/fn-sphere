@@ -1,4 +1,4 @@
-export const LOCALE_CN = {
+export const zhCN = {
   // Layout
   operatorAnd: "和",
   operatorOr: "或",
@@ -11,7 +11,6 @@ export const LOCALE_CN = {
 
   // Filter
   // General Filter
-  is: "is",
   isNot: "is not",
   equals: "等于",
   notEqual: "不等于",

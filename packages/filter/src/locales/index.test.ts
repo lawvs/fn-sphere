@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import * as locales from "./index.js";
 
 describe("translations", () => {
-  const enKeys = Object.keys(locales.LOCALE_EN);
+  const enKeys = Object.keys(locales.enUS);
 
   it.each(Object.keys(locales))(
     "locale %s has all translations defined",
