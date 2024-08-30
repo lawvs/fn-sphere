@@ -10,10 +10,9 @@ export const stringFilter = defineTypedFn([
       .args(z.string(), z.coerce.string())
       .returns(z.boolean()),
     implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return value.startsWith(target);
+      if (!target) return true;
+      if (typeof value !== "string") return false;
+      return value.toLowerCase().startsWith(target.toLowerCase());
     },
   },
   {
@@ -23,10 +22,9 @@ export const stringFilter = defineTypedFn([
       .args(z.string(), z.coerce.string())
       .returns(z.boolean()),
     implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return value.endsWith(target);
+      if (!target) return true;
+      if (typeof value !== "string") return false;
+      return value.toLowerCase().endsWith(target.toLowerCase());
     },
   },
 ]);
@@ -116,6 +114,9 @@ const genericEqualFilter = defineGenericFn([
         t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
     define: (t) => z.function().args(t, t).returns(z.boolean()),
     implement: (value: unknown, target: unknown) => {
+      if (typeof value === "string" && typeof target === "string") {
+        return value.toLowerCase() === target.toLowerCase();
+      }
       return value === target;
     },
   },
@@ -135,6 +136,9 @@ const genericEqualFilter = defineGenericFn([
         t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
     define: (t) => z.function().args(t, t).returns(z.boolean()),
     implement: (value: unknown, target: unknown) => {
+      if (typeof value === "string" && typeof target === "string") {
+        return value.toLowerCase() !== target.toLowerCase();
+      }
       return value !== target;
     },
   },
@@ -207,7 +211,7 @@ const genericContainFilter = defineGenericFn([
     ) => {
       if (typeof value === "string" && typeof target === "string") {
         // z.ZodString
-        return value.includes(target);
+        return value.toLowerCase().includes(target.toLowerCase());
       }
       if (Array.isArray(value)) {
         // z.ZodArray<z.ZodType>
@@ -247,7 +251,7 @@ const genericContainFilter = defineGenericFn([
       target: string | unknown | unknown[],
     ) => {
       if (typeof value === "string" && typeof target === "string") {
-        return !value.includes(target);
+        return !value.toLowerCase().includes(target.toLowerCase());
       }
       if (Array.isArray(value)) {
         return !value.includes(target);
