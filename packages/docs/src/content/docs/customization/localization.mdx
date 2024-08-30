@@ -5,9 +5,42 @@ description: Localize the UI
 
 Filter Sphere provides a variety of ways to localize the UI. This is useful when you want to display the UI in a different language.
 
+## Built-in Locales
+
+Filter Sphere provides some built-in locales. You can import them from the `@fn-sphere/filter/locales` module.
+
+| Locale               | Import name |
+| -------------------- | ----------- |
+| English              | `enUS`      |
+| Japanese             | `jaJP`      |
+| Chinese (Simplified) | `zhCN`      |
+
+```tsx {5-8} {13}
+import { enUS, jaJP, zhCN } from "@fn-sphere/filter/locales";
+
+const locale = enUS;
+
+const customGetLocaleText = (key: string): string => {
+  if (!(key in locale)) return key;
+  return locale[key as keyof typeof locale];
+};
+
+export default function AdvancedFilter() {
+  const { filterRule, predicate, context } = useFilterSphere({
+    schema,
+    getLocaleText: customGetLocaleText,
+  });
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
 ## getLocaleText
 
-You can use the `getLocaleText` function to translate the filter UI.
+The default locale of Filter Sphere is English (United States). You can use the `getLocaleText` function to translate the filter UI.
 
 ```tsx live
 import {
@@ -119,3 +152,15 @@ export const defaultMapFilterName: (
   return filterSchema.name;
 };
 ```
+
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside title="Note">
+  The output of the `mapFieldName` and `mapFilterName` functions will be used as
+  input for the `getLocaleText` function by default.
+
+If you provide a custom
+implementation for these functions, make sure to update the `getLocaleText`
+function accordingly.
+
+</Aside>
