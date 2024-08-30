@@ -3,172 +3,86 @@ import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
 import type { GenericFnSchema, StandardFnSchema } from "./types.js";
 
 export const stringFilter = defineTypedFn([
-  // {
-  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-  //   name: "Is",
-  //   implement: (value, target) => {
-  //     if (!target) {
-  //       return true;
-  //     }
-  //     return value == target;
-  //   },
-  // },
-  // {
-  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-  //   name: "Is not",
-  //   implement: (value, target) => {
-  //     if (!target) {
-  //       return true;
-  //     }
-  //     return value != target;
-  //   },
-  // },
-  // {
-  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-  //   name: "Contains",
-  //   implement: (value, target) => {
-  //     if (!target) {
-  //       return true;
-  //     }
-  //     return value.includes(target);
-  //   },
-  // },
-  // {
-  //   define: z.function().args(z.string(), z.string()).returns(z.boolean()),
-  //   name: "Does not contains",
-  //   implement: (value, target) => {
-  //     if (!target) {
-  //       return true;
-  //     }
-  //     return !value.includes(target);
-  //   },
-  // },
   {
+    name: "startsWith",
     define: z
       .function()
       .args(z.string(), z.coerce.string())
       .returns(z.boolean()),
-    name: "Starts with",
     implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return value.startsWith(target);
+      if (!target) return true;
+      if (typeof value !== "string") return false;
+      return value.toLowerCase().startsWith(target.toLowerCase());
     },
   },
   {
+    name: "endsWith",
     define: z
       .function()
       .args(z.string(), z.coerce.string())
       .returns(z.boolean()),
-    name: "Ends with",
     implement: (value, target) => {
-      if (!target) {
-        return true;
-      }
-      return value.endsWith(target);
+      if (!target) return true;
+      if (typeof value !== "string") return false;
+      return value.toLowerCase().endsWith(target.toLowerCase());
     },
   },
 ]);
 
 export const numberFilter = defineTypedFn([
   {
+    name: "greaterThan",
     define: z
       .function()
       .args(z.number(), z.coerce.number())
       .returns(z.boolean()),
-    name: ">",
     implement: (value, target) => {
       return value > target;
     },
   },
   {
+    name: "greaterThanOrEqual",
     define: z
       .function()
       .args(z.number(), z.coerce.number())
       .returns(z.boolean()),
-    name: ">=",
     implement: (value, target) => {
       return value >= target;
     },
   },
   {
+    name: "lessThan",
     define: z
       .function()
       .args(z.number(), z.coerce.number())
       .returns(z.boolean()),
-    name: "<",
     implement: (value, target) => {
       return value < target;
     },
   },
   {
+    name: "lessThanOrEqual",
     define: z
       .function()
       .args(z.number(), z.coerce.number())
       .returns(z.boolean()),
-    name: "<=",
     implement: (value, target) => {
       return value <= target;
-    },
-  },
-  // {
-  //   define: z.function().args(z.number(), z.coerce.number()).returns(z.boolean()),
-  //   name: "==",
-  //   implement: (value, target) => {
-  //     return value == target;
-  //   },
-  // },
-  // {
-  //   define: z.function().args(z.number(), z.coerce.number()).returns(z.boolean()),
-  //   name: "!=",
-  //   implement: (value, target) => {
-  //     return value != target;
-  //   },
-  // },
-]);
-
-export const booleanFilter = defineTypedFn([
-  {
-    define: z.function().args(z.boolean()).returns(z.boolean()),
-    name: "Is checked",
-    implement: (value) => {
-      return !!value;
-    },
-  },
-  {
-    define: z.function().args(z.boolean()).returns(z.boolean()),
-    name: "Is unchecked",
-    implement: (value) => {
-      return !value;
-    },
-  },
-]);
-
-export const longWindedBooleanFilter = defineTypedFn([
-  {
-    define: z
-      .function()
-      .args(z.boolean(), z.coerce.boolean())
-      .returns(z.boolean()),
-    name: "Is equal",
-    implement: (value, target) => {
-      return value === target;
     },
   },
 ]);
 
 export const dateFilter = defineTypedFn([
   {
+    name: "before",
     define: z.function().args(z.date(), z.coerce.date()).returns(z.boolean()),
-    name: "Before",
     implement: (value, target) => {
       return value.getTime() < target.getTime();
     },
   },
   {
+    name: "after",
     define: z.function().args(z.date(), z.coerce.date()).returns(z.boolean()),
-    name: "After",
     implement: (value, target) => {
       return value.getTime() > target.getTime();
     },
@@ -180,42 +94,51 @@ export const dateFilter = defineTypedFn([
 export const commonFilters: StandardFnSchema[] = [
   ...stringFilter,
   ...numberFilter,
-  ...booleanFilter,
   ...dateFilter,
 ];
 
 const genericEqualFilter = defineGenericFn([
   {
-    name: "Equals",
+    name: "equals",
     genericLimit: (
       t,
     ): t is
+      | z.ZodBoolean
       | z.ZodString
       | z.ZodNumber
       | z.ZodUnion<[z.ZodLiteral<z.Primitive>]> =>
+      t instanceof z.ZodBoolean ||
       t instanceof z.ZodString ||
       t instanceof z.ZodNumber ||
       (t instanceof z.ZodUnion &&
         t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
     define: (t) => z.function().args(t, t).returns(z.boolean()),
     implement: (value: unknown, target: unknown) => {
+      if (typeof value === "string" && typeof target === "string") {
+        return value.toLowerCase() === target.toLowerCase();
+      }
       return value === target;
     },
   },
   {
-    name: "Not equal",
+    name: "notEqual",
     genericLimit: (
       t,
-    ): t is
+    ): t is  // | z.ZodBoolean
       | z.ZodString
       | z.ZodNumber
       | z.ZodUnion<[z.ZodLiteral<z.Primitive>]> =>
+      // not equal for boolean is not useful
+      // t instanceof z.ZodBoolean ||
       t instanceof z.ZodString ||
       t instanceof z.ZodNumber ||
       (t instanceof z.ZodUnion &&
         t.options.every((op: z.ZodType) => op instanceof z.ZodLiteral)),
     define: (t) => z.function().args(t, t).returns(z.boolean()),
     implement: (value: unknown, target: unknown) => {
+      if (typeof value === "string" && typeof target === "string") {
+        return value.toLowerCase() !== target.toLowerCase();
+      }
       return value !== target;
     },
   },
@@ -223,7 +146,7 @@ const genericEqualFilter = defineGenericFn([
 
 const genericBlankFilter = defineGenericFn([
   {
-    name: "Is blank",
+    name: "isEmpty",
     genericLimit: (
       t,
     ): t is
@@ -238,11 +161,27 @@ const genericBlankFilter = defineGenericFn([
       return value === null || value === undefined || value === "";
     },
   },
+  {
+    name: "isNotEmpty",
+    genericLimit: (
+      t,
+    ): t is
+      | z.ZodOptional<z.ZodTypeAny>
+      | z.ZodNullable<z.ZodTypeAny>
+      | z.ZodString =>
+      t instanceof z.ZodOptional ||
+      t instanceof z.ZodNullable ||
+      t instanceof z.ZodString,
+    define: (t) => z.function().args(t).returns(z.boolean()),
+    implement: (value: unknown | null | undefined | string) => {
+      return !(value === null || value === undefined || value === "");
+    },
+  },
 ]);
 
 const genericContainFilter = defineGenericFn([
   {
-    name: "Contains",
+    name: "contains",
     genericLimit: (
       t,
     ): t is
@@ -272,7 +211,7 @@ const genericContainFilter = defineGenericFn([
     ) => {
       if (typeof value === "string" && typeof target === "string") {
         // z.ZodString
-        return value.includes(target);
+        return value.toLowerCase().includes(target.toLowerCase());
       }
       if (Array.isArray(value)) {
         // z.ZodArray<z.ZodType>
@@ -287,7 +226,7 @@ const genericContainFilter = defineGenericFn([
     },
   },
   {
-    name: "Does not contains",
+    name: "notContains",
     genericLimit: (
       t,
     ): t is
@@ -312,7 +251,7 @@ const genericContainFilter = defineGenericFn([
       target: string | unknown | unknown[],
     ) => {
       if (typeof value === "string" && typeof target === "string") {
-        return !value.includes(target);
+        return !value.toLowerCase().includes(target.toLowerCase());
       }
       if (Array.isArray(value)) {
         return !value.includes(target);

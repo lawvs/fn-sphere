@@ -5,26 +5,25 @@ description: Localize the UI
 
 Filter Sphere provides a variety of ways to localize the UI. This is useful when you want to display the UI in a different language.
 
-## getLocaleText
+## Built-in Locales
 
-You can use the `getLocaleText` function to translate the filter UI.
+Filter Sphere provides some built-in locales. You can import them from the `@fn-sphere/filter/locales` module.
 
-```tsx live {8-10} {20}
-import {
-  FilterSphereProvider,
-  FilterBuilder,
-  useFilterSphere,
-} from "@fn-sphere/filter";
-import { z } from "zod";
+| Locale               | Import name |
+| -------------------- | ----------- |
+| English              | `enUS`      |
+| Japanese             | `jaJP`      |
+| Chinese (Simplified) | `zhCN`      |
 
-const customGetLocaleText = (key: string) => {
-  return `key-${key}`;
+```tsx {5-8} {13}
+import { enUS, jaJP, zhCN } from "@fn-sphere/filter/locales";
+
+const locale = enUS;
+
+const customGetLocaleText = (key: string): string => {
+  if (!(key in locale)) return key;
+  return locale[key as keyof typeof locale];
 };
-
-const schema = z.object({
-  id: z.number(),
-  name: z.string(),
-});
 
 export default function AdvancedFilter() {
   const { filterRule, predicate, context } = useFilterSphere({
@@ -33,6 +32,59 @@ export default function AdvancedFilter() {
   });
   return (
     <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+## getLocaleText
+
+The default locale of Filter Sphere is English (United States). You can use the `getLocaleText` function to translate the filter UI.
+
+```tsx live
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+import { enUS, jaJP, zhCN } from "@fn-sphere/filter/locales";
+import { z } from "zod";
+import { useState } from "react";
+
+const locales = [
+  { key: "cn", label: "中文", value: { ...zhCN, id: "ID", name: "名称" } },
+  { key: "jp", label: "日本語", value: { ...jaJP, id: "ID", name: "名前" } },
+  { key: "en", label: "English", value: enUS },
+];
+
+const schema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export default function AdvancedFilter() {
+  const [localeKey, setLocaleKey] = useState("cn");
+
+  const customGetLocaleText = (key: string): string => {
+    const locale = locales.find((locale) => locale.key === localeKey)?.value;
+    if (!locale || !(key in locale)) return key;
+    return locale[key as keyof typeof locale];
+  };
+
+  const { filterRule, predicate, context } = useFilterSphere({
+    schema,
+    getLocaleText: customGetLocaleText,
+  });
+  return (
+    <FilterSphereProvider context={context}>
+      <select onChange={(e) => setLocaleKey(e.target.value)}>
+        {locales.map((locale) => (
+          <option key={locale.key} value={locale.key}>
+            {locale.label}
+          </option>
+        ))}
+      </select>
       <FilterBuilder />
     </FilterSphereProvider>
   );
@@ -100,3 +152,15 @@ export const defaultMapFilterName: (
   return filterSchema.name;
 };
 ```
+
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside title="Note">
+  The output of the `mapFieldName` and `mapFilterName` functions will be used as
+  input for the `getLocaleText` function by default.
+
+If you provide a custom
+implementation for these functions, make sure to update the `getLocaleText`
+function accordingly.
+
+</Aside>

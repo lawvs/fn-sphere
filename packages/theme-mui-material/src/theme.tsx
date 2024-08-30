@@ -124,7 +124,9 @@ export const filterTheme = createFilterTheme({
       } = useFilterGroup(filterGroup);
 
       const text =
-        filterGroup.op === "or" ? getLocaleText("Or") : getLocaleText("And");
+        filterGroup.op === "or"
+          ? getLocaleText("operatorOr")
+          : getLocaleText("operatorAnd");
 
       const handleToggleGroupOp = useCallback(() => {
         toggleGroupOp();
@@ -152,19 +154,20 @@ export const filterTheme = createFilterTheme({
           {children}
           <Stack direction="row" spacing={1}>
             <Button startIcon={<AddIcon />} onClick={handleAddCondition}>
-              {getLocaleText("Add condition")}
+              {getLocaleText("addRule")}
             </Button>
             <Button
               startIcon={<CreateNewFolderIcon />}
               onClick={handleAddGroup}
             >
-              {getLocaleText("Add group")}
+              {getLocaleText("addGroup")}
             </Button>
           </Stack>
         </Stack>
       );
     },
     SingleFilter: ({ rule }) => {
+      const { getLocaleText } = useRootRule();
       const {
         ruleState: { isValid },
         removeRule,
@@ -188,7 +191,10 @@ export const filterTheme = createFilterTheme({
           {isValid ? null : (
             <ErrorOutlineIcon color="disabled" fontSize="small" />
           )}
-          <IconButton aria-label="delete" onClick={handleClickDelete}>
+          <IconButton
+            aria-label={getLocaleText("deleteRule")}
+            onClick={handleClickDelete}
+          >
             <ClearIcon fontSize="small" />
           </IconButton>
         </SingleFilterContainer>

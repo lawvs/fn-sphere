@@ -2,6 +2,17 @@
   "name": "@fn-sphere/filter",
   "version": "0.5.0",
   "type": "module",
+  "description": "Filter Sphere is a powerful and flexible library for creating dynamic filtering interfaces in your web applications.",
+  "keywords": [
+    "filter-builder",
+    "advanced-filter",
+    "logic-builder",
+    "query-builder",
+    "filter",
+    "react",
+    "typescript",
+    "zod"
+  ],
   "scripts": {
     "build": "tsc",
     "typeCheck": "tsc --noEmit",
@@ -39,7 +50,10 @@
       "optional": true
     }
   },
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./locales": "./src/locales/index.ts"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.js",
@@ -48,6 +62,10 @@
       ".": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js"
+      },
+      "./locales": {
+        "types": "./dist/locales/index.d.ts",
+        "import": "./dist/locales/index.js"
       },
       "./package.json": "./package.json"
     }

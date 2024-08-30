@@ -7,13 +7,9 @@ import {
 import { createContext, type ReactNode, useContext } from "react";
 import { z } from "zod";
 import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
+import { defaultGetLocaleText } from "../locales/get-locale-text.js";
 import type { BasicFilterSphereInput } from "../types.js";
-import {
-  defaultGetLocaleText,
-  defaultMapFieldName,
-  defaultMapFilterName,
-  noop,
-} from "../utils.js";
+import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
 
 export interface FilterSchemaContext<Data = unknown>
   extends Readonly<Required<BasicFilterSphereInput<Data>>> {
