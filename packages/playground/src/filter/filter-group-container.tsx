@@ -3,18 +3,18 @@ import { useRootRule } from "@fn-sphere/filter";
 import type { ReactNode } from "react";
 
 type FlattenFilterGroupContainerProps = {
-  filterGroup: FilterGroup;
+  rule: FilterGroup;
   children?: ReactNode;
 };
 
 export const FlattenFilterGroupContainer = ({
-  filterGroup,
+  rule,
   children,
 }: FlattenFilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
 
   const text =
-    filterGroup.op === "or"
+    rule.op === "or"
       ? getLocaleText("operatorOr")
       : getLocaleText("operatorAnd");
 
