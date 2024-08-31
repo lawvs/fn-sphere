@@ -10,23 +10,14 @@ import { isFilterFn as isFilterSchema } from "./utils.js";
 
 export function defineTypedFn<
   T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schema: StandardFnSchema<T>[]): StandardFnSchema<T>[];
-export function defineTypedFn<
-  T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schema: StandardFnSchema<T>): StandardFnSchema<T>;
-export function defineTypedFn<T>(schema: T) {
+>(schema: StandardFnSchema<T>): StandardFnSchema<T> {
   return schema;
 }
 
 export function defineGenericFn<
   Generic extends z.ZodType,
   Fn extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schemaFn: GenericFnSchema<Generic, Fn>): GenericFnSchema<Generic, Fn>;
-export function defineGenericFn<
-  Generic extends z.ZodType,
-  Fn extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schemaFn: GenericFnSchema<Generic, Fn>[]): GenericFnSchema<Generic, Fn>[];
-export function defineGenericFn<T>(schemaFn: T) {
+>(schemaFn: GenericFnSchema<Generic, Fn>): GenericFnSchema<Generic, Fn> {
   return schemaFn;
 }
 

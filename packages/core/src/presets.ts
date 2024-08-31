@@ -2,8 +2,8 @@ import { z } from "zod";
 import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
 import type { GenericFnSchema, StandardFnSchema } from "./types.js";
 
-export const stringFilter = defineTypedFn([
-  {
+export const stringFilter = [
+  defineTypedFn({
     name: "startsWith",
     define: z
       .function()
@@ -14,8 +14,8 @@ export const stringFilter = defineTypedFn([
       if (typeof value !== "string") return false;
       return value.toLowerCase().startsWith(target.toLowerCase());
     },
-  },
-  {
+  }),
+  defineTypedFn({
     name: "endsWith",
     define: z
       .function()
@@ -26,11 +26,11 @@ export const stringFilter = defineTypedFn([
       if (typeof value !== "string") return false;
       return value.toLowerCase().endsWith(target.toLowerCase());
     },
-  },
-]);
+  }),
+];
 
-export const numberFilter = defineTypedFn([
-  {
+export const numberFilter = [
+  defineTypedFn({
     name: "greaterThan",
     define: z
       .function()
@@ -39,8 +39,8 @@ export const numberFilter = defineTypedFn([
     implement: (value, target) => {
       return value > target;
     },
-  },
-  {
+  }),
+  defineTypedFn({
     name: "greaterThanOrEqual",
     define: z
       .function()
@@ -49,8 +49,8 @@ export const numberFilter = defineTypedFn([
     implement: (value, target) => {
       return value >= target;
     },
-  },
-  {
+  }),
+  defineTypedFn({
     name: "lessThan",
     define: z
       .function()
@@ -59,8 +59,8 @@ export const numberFilter = defineTypedFn([
     implement: (value, target) => {
       return value < target;
     },
-  },
-  {
+  }),
+  defineTypedFn({
     name: "lessThanOrEqual",
     define: z
       .function()
@@ -69,27 +69,26 @@ export const numberFilter = defineTypedFn([
     implement: (value, target) => {
       return value <= target;
     },
-  },
-]);
+  }),
+];
 
-export const dateFilter = defineTypedFn([
-  {
+export const dateFilter = [
+  defineTypedFn({
     name: "before",
     define: z.function().args(z.date(), z.coerce.date()).returns(z.boolean()),
     implement: (value, target) => {
       return value.getTime() < target.getTime();
     },
-  },
-  {
+  }),
+  defineTypedFn({
     name: "after",
     define: z.function().args(z.date(), z.coerce.date()).returns(z.boolean()),
     implement: (value, target) => {
       return value.getTime() > target.getTime();
     },
-  },
-]);
+  }),
+];
 
-// TODO support case insensitive
 // TODO support optional field
 export const commonFilters: StandardFnSchema[] = [
   ...stringFilter,
@@ -97,8 +96,8 @@ export const commonFilters: StandardFnSchema[] = [
   ...dateFilter,
 ];
 
-const genericEqualFilter = defineGenericFn([
-  {
+const genericEqualFilter = [
+  defineGenericFn({
     name: "equals",
     genericLimit: (
       t,
@@ -119,8 +118,8 @@ const genericEqualFilter = defineGenericFn([
       }
       return value === target;
     },
-  },
-  {
+  }),
+  defineGenericFn({
     name: "notEqual",
     genericLimit: (
       t,
@@ -141,11 +140,11 @@ const genericEqualFilter = defineGenericFn([
       }
       return value !== target;
     },
-  },
-]);
+  }),
+];
 
-const genericBlankFilter = defineGenericFn([
-  {
+const genericEmptyFilter = [
+  defineGenericFn({
     name: "isEmpty",
     genericLimit: (
       t,
@@ -160,8 +159,8 @@ const genericBlankFilter = defineGenericFn([
     implement: (value: unknown | null | undefined | string) => {
       return value === null || value === undefined || value === "";
     },
-  },
-  {
+  }),
+  defineGenericFn({
     name: "isNotEmpty",
     genericLimit: (
       t,
@@ -176,11 +175,11 @@ const genericBlankFilter = defineGenericFn([
     implement: (value: unknown | null | undefined | string) => {
       return !(value === null || value === undefined || value === "");
     },
-  },
-]);
+  }),
+];
 
-const genericContainFilter = defineGenericFn([
-  {
+const genericContainFilter = [
+  defineGenericFn({
     name: "contains",
     genericLimit: (
       t,
@@ -224,8 +223,8 @@ const genericContainFilter = defineGenericFn([
       console.error("Invalid input type!");
       return false;
     },
-  },
-  {
+  }),
+  defineGenericFn({
     name: "notContains",
     genericLimit: (
       t,
@@ -262,12 +261,12 @@ const genericContainFilter = defineGenericFn([
       console.error("Invalid input type!");
       return false;
     },
-  },
-]);
+  }),
+];
 
 export const genericFilter: GenericFnSchema[] = [
   ...genericEqualFilter,
-  ...genericBlankFilter,
+  ...genericEmptyFilter,
   ...genericContainFilter,
 ];
 
