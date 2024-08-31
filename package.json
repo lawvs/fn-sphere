@@ -24,11 +24,6 @@
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
   },
-  "pnpm": {
-    "overrides": {
-      "@fn-sphere/theme-mui-material>@mui/material": "6.0.0-rc.0"
-    }
-  },
   "packageManager": "pnpm@9.6.0",
   "engines": {
     "node": ">=20"
