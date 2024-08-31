@@ -5,12 +5,12 @@ import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
 
 export type FilterGroupContainerProps = {
-  filterGroup: FilterGroup;
+  rule: FilterGroup;
   children?: ReactNode;
 };
 
 export const FilterGroupContainer = ({
-  filterGroup,
+  rule,
   children,
 }: FilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
@@ -20,11 +20,11 @@ export const FilterGroupContainer = ({
     appendChildRule,
     appendChildGroup,
     removeGroup,
-  } = useFilterGroup(filterGroup);
+  } = useFilterGroup(rule);
   const { Button } = useView("components");
 
   const text =
-    filterGroup.op === "or"
+    rule.op === "or"
       ? getLocaleText("operatorOr")
       : getLocaleText("operatorAnd");
 

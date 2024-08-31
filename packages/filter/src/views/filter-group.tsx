@@ -14,7 +14,7 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   } = useView("templates");
 
   return (
-    <FilterGroupContainer filterGroup={filterGroup}>
+    <FilterGroupContainer rule={filterGroup}>
       {filterGroup.conditions.map((childRule, groupIdx) => {
         return (
           <Fragment key={childRule.id}>

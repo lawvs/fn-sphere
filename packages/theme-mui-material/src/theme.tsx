@@ -114,17 +114,17 @@ export const filterTheme = createFilterTheme({
     },
   },
   templates: {
-    FilterGroupContainer: ({ filterGroup, children }) => {
+    FilterGroupContainer: ({ rule, children }) => {
       const { getLocaleText } = useRootRule();
       const {
         ruleState: { isRoot, depth },
         toggleGroupOp,
         appendChildRule,
         appendChildGroup,
-      } = useFilterGroup(filterGroup);
+      } = useFilterGroup(rule);
 
       const text =
-        filterGroup.op === "or"
+        rule.op === "or"
           ? getLocaleText("operatorOr")
           : getLocaleText("operatorAnd");
 
