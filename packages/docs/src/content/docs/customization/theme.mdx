@@ -41,7 +41,7 @@ export default function AdvancedFilter({ schema }) {
 
 You can override existing theme by replacing them with your own custom components or templates.
 
-```tsx live wrapper="~/components/mui-theme-wrapper.tsx"
+```tsx live wrapper="~/components/mui-theme-wrapper.tsx" layout="~/components/live-code-tab-layout.astro"
 import { filterTheme } from "@fn-sphere/theme-mui-material";
 import { Button } from "@mui/material";
 import {
@@ -51,8 +51,9 @@ import {
   useFilterRule,
   useFilterGroup,
   useView,
+  createFilterGroup,
+  createSingleFilter,
 } from "@fn-sphere/filter";
-import { Fragment } from "react";
 
 const customTheme = {
   ...filterTheme,
@@ -113,8 +114,22 @@ const customTheme = {
   },
 };
 
+const presetRule = createFilterGroup({
+  op: "and",
+  conditions: [
+    createSingleFilter(),
+    createFilterGroup({
+      op: "or",
+      conditions: [createSingleFilter(), createSingleFilter()],
+    }),
+  ],
+});
+
 export default function AdvancedFilter({ schema }) {
-  const { predicate, context } = useFilterSphere({ schema });
+  const { predicate, context } = useFilterSphere({
+    schema,
+    defaultRule: presetRule,
+  });
   return (
     <FilterSphereProvider context={context} theme={customTheme}>
       <FilterBuilder />

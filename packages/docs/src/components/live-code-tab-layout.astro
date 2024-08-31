@@ -1,0 +1,36 @@
+---
+// See https://astro-live-code.vercel.app/guides/customization/
+//
+// Layouts can be specified for a specific code block by adding a layout attribute to the code block:
+// ```tsx layout="~/components/live-code-tab-layout.astro"
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+---
+
+<Tabs>
+  <TabItem label="Preview" >
+    <div class="example-container">
+      <slot name="example" />
+    </div>
+  </TabItem>
+  <TabItem label="Code">
+    <slot name="code" />
+  </TabItem>
+</TabItem>
+
+<style>
+  .live-code-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .example-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2.5rem;
+    background: var(--ec-frm-edBg, var(--astro-code-color-background));
+    border-style: solid;
+    border-width: var(--ec-brdWd, 1px);
+    border-color: var(--ec-brdCol, var(--sl-color-gray-5));
+  }
+</style>
