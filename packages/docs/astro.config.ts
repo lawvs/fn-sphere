@@ -31,6 +31,15 @@ export default defineConfig({
             directory: "reference",
           },
         },
+        {
+          label: "Changelog",
+          items: [
+            {
+              label: "@fn-sphere/filter",
+              link: "/changelog",
+            },
+          ],
+        },
       ],
       customCss: [
         // Relative path to your custom CSS file
