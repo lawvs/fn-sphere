@@ -3,6 +3,7 @@ import { isSameType } from "zod-compare";
 import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
 import type {
+  FilterField,
   FilterGroup,
   FilterGroupInput,
   FilterId,
@@ -156,6 +157,33 @@ export const createFilterGroup = (ruleInput?: FilterGroupInput) =>
     conditions: [],
     ...ruleInput,
   }) satisfies FilterGroup;
+
+/**
+ * Creates a default rule based on the provided filterable fields.
+ *
+ * By default, it will auto-select the first field and the first filter.
+ */
+export const createDefaultRule = (
+  filterableFields: FilterField[],
+  { autoSelectFirstField = true, autoSelectFirstFilter = true } = {
+    /**
+     * If there is no filterable fields, it will return an empty rule.
+     */
+    autoSelectFirstField: true,
+    autoSelectFirstFilter: true,
+  },
+): SingleFilter => {
+  const firstField = filterableFields[0];
+  if (!firstField) {
+    console.error("No filterable fields", filterableFields);
+    return createSingleFilter();
+  }
+  const newRule = createSingleFilter({
+    path: autoSelectFirstField ? firstField.path : undefined,
+    name: autoSelectFirstFilter ? firstField.filterFnList[0]?.name : undefined,
+  });
+  return newRule;
+};
 
 export const isEqualPath = (a: FilterPath, b: FilterPath): boolean => {
   if (a.length !== b.length) {

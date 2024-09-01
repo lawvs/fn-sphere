@@ -7,6 +7,7 @@ export type * from "./types.js";
 export {
   countNumberOfRules,
   countValidRules,
+  createDefaultRule,
   createFilterGroup,
   createSingleFilter,
   genFilterId,
