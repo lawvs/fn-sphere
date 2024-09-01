@@ -105,8 +105,17 @@ const customTheme = {
             );
           })}
           <div>
-            <Button onClick={() => appendChildRule()}>Add</Button>
-            <Button onClick={() => appendChildGroup()}>Add Group</Button>
+            <Button onClick={() => appendChildRule({})}>Add</Button>
+            <Button
+              onClick={() =>
+                appendChildGroup({
+                  op: "and",
+                  conditions: [createSingleFilter()],
+                })
+              }
+            >
+              Add Group
+            </Button>
           </div>
         </div>
       );
@@ -120,7 +129,7 @@ const presetRule = createFilterGroup({
     createSingleFilter(),
     createFilterGroup({
       op: "or",
-      conditions: [createSingleFilter(), createSingleFilter()],
+      conditions: [createSingleFilter()],
     }),
   ],
 });
