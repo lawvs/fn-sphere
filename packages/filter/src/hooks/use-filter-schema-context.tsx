@@ -2,7 +2,6 @@ import {
   createFilterGroup,
   type FilterField,
   type FilterGroup,
-  findFilterableFields,
 } from "@fn-sphere/core";
 import { createContext, type ReactNode, useContext } from "react";
 import { z } from "zod";
@@ -14,6 +13,7 @@ import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
 export interface FilterSchemaContext<Data = unknown>
   extends Readonly<Required<BasicFilterSphereInput<Data>>> {
   readonly filterRule: FilterGroup;
+  readonly filterableFields: FilterField[];
   readonly onRuleChange?: (rule: FilterGroup) => void;
 }
 
@@ -58,12 +58,6 @@ export const FilterSchemaProvider = ({
   context,
   children,
 }: FilterSchemaProviderProps) => {
-  const filterableFields = findFilterableFields({
-    schema: context.schema,
-    filterFnList: context.filterFnList,
-    maxDeep: context.fieldDeepLimit,
-  });
-
   const { onRuleChange, ...valueWithoutRuleChange } = context;
 
   const contextValue: InternalFilterContextType = {
@@ -72,7 +66,6 @@ export const FilterSchemaProvider = ({
       onRuleChange?.(fromFilterMap(filterMap));
     },
     filterMap: toFilterMap(context.filterRule),
-    filterableFields,
   };
 
   return (

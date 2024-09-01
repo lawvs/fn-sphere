@@ -1,9 +1,10 @@
 import {
   countNumberOfRules,
   countValidRules,
+  createDefaultRule,
   createFilterGroup,
   createFilterPredicate,
-  createSingleFilter,
+  findFilterableFields,
   presetFilter,
   type FilterGroup,
 } from "@fn-sphere/core";
@@ -44,6 +45,7 @@ export const defaultContext: FilterSchemaContext = {
   schema: z.unknown(),
   filterFnList: presetFilter,
   filterRule: createFilterGroup(),
+  filterableFields: [],
   fieldDeepLimit: 1,
   mapFieldName: defaultMapFieldName,
   mapFilterName: defaultMapFilterName,
@@ -67,14 +69,22 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
   const {
     schema,
     ruleValue: inputFilterRule,
-    defaultRule = createFilterGroup({
-      op: "and",
-      conditions: [createSingleFilter()],
-    }),
     filterFnList = presetFilter,
     onRuleChange,
     onPredicateChange,
   } = props;
+
+  const filterableFields = findFilterableFields({
+    schema: props.schema,
+    filterFnList,
+    maxDeep: props.fieldDeepLimit ?? defaultContext.fieldDeepLimit,
+  });
+  const defaultRule =
+    props.defaultRule ??
+    createFilterGroup({
+      op: "and",
+      conditions: [createDefaultRule(filterableFields)],
+    });
   // This state will be used only when the filterSphere is uncontrolled.
   const [ruleState, setRuleState] = useState<FilterGroup>(defaultRule);
   const isControlled = inputFilterRule !== undefined;
@@ -112,6 +122,7 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
     ...defaultContext,
     ...contextProps,
     filterRule: realRule,
+    filterableFields,
     onRuleChange: onRuleChangeInternal,
   };
 

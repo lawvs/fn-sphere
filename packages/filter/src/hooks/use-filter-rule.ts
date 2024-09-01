@@ -1,4 +1,5 @@
 import {
+  createDefaultRule,
   createFilterGroup,
   createSingleFilter,
   isEqualPath,
@@ -62,7 +63,9 @@ export const useFilterRule = (rule: SingleFilter) => {
   const updateRule = setRule;
 
   const appendRule = (input?: SingleFilterInput) => {
-    const newRule = createSingleFilter(input);
+    const newRule = input
+      ? createSingleFilter(input)
+      : createDefaultRule(filterableFields);
     onFilterMapChange({
       ...filterMap,
       [parentId]: {
@@ -92,7 +95,7 @@ export const useFilterRule = (rule: SingleFilter) => {
   const appendGroup = (
     input: FilterGroupInput = {
       op: "and",
-      conditions: [createSingleFilter()],
+      conditions: [createDefaultRule(filterableFields)],
     },
   ) => {
     const newFilterGroup = createFilterGroup(input);

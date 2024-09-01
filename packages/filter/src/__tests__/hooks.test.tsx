@@ -28,6 +28,10 @@ vi.mock(import("@fn-sphere/core"), async (importOriginal) => {
       ...mod.createFilterGroup(groupInput),
       id: String(id++),
     })),
+    createDefaultRule: vi.fn((fields) => ({
+      ...mod.createDefaultRule(fields),
+      id: String(id++),
+    })),
   };
 });
 
@@ -73,6 +77,10 @@ describe("useFilterRule", async () => {
             {
               "args": [],
               "id": "1",
+              "name": "equals",
+              "path": [
+                "name",
+              ],
               "type": "Filter",
             },
           ],

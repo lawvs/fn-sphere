@@ -1,4 +1,5 @@
 import {
+  createDefaultRule,
   createFilterGroup,
   createSingleFilter,
   type FilterGroup,
@@ -9,7 +10,8 @@ import { getDepthOfRule, toFilterMap } from "../filter-map.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useFilterGroup = (ruleGroup: FilterGroup) => {
-  const { filterMap, onFilterMapChange } = useFilterSchemaContext();
+  const { filterMap, filterableFields, onFilterMapChange } =
+    useFilterSchemaContext();
   const ruleNode = filterMap[ruleGroup.id];
   if (!ruleNode) {
     console.error("Rule not found in filterMap", ruleGroup, filterMap);
@@ -53,7 +55,9 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
   };
 
   const appendChildRule = (input?: SingleFilterInput, index = Infinity) => {
-    const newRule = createSingleFilter(input);
+    const newRule = input
+      ? createSingleFilter(input)
+      : createDefaultRule(filterableFields);
     onFilterMapChange({
       ...filterMap,
       [ruleNode.id]: {
@@ -75,7 +79,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
   const appendChildGroup = (
     input: FilterGroupInput = {
       op: "and",
-      conditions: [createSingleFilter()],
+      conditions: [createDefaultRule(filterableFields)],
     },
     index = Infinity,
   ) => {
