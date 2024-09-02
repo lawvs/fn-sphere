@@ -42,7 +42,7 @@ export default function AdvancedFilter() {
 
 The default locale of Filter Sphere is English (United States). You can use the `getLocaleText` function to translate the filter UI.
 
-```tsx live
+```tsx live "getLocaleText" "customGetLocaleText"
 import {
   FilterSphereProvider,
   FilterBuilder,
@@ -53,14 +53,18 @@ import { z } from "zod";
 import { useState } from "react";
 
 const locales = [
-  { key: "cn", label: "中文", value: { ...zhCN, id: "ID", name: "名称" } },
-  { key: "jp", label: "日本語", value: { ...jaJP, id: "ID", name: "名前" } },
+  { key: "cn", label: "中文", value: { ...zhCN, price: "价格", name: "名称" } },
+  {
+    key: "jp",
+    label: "日本語",
+    value: { ...jaJP, price: "価格", name: "名前" },
+  },
   { key: "en", label: "English", value: enUS },
 ];
 
 const schema = z.object({
-  id: z.number(),
   name: z.string(),
+  price: z.number(),
 });
 
 export default function AdvancedFilter() {
@@ -95,7 +99,7 @@ export default function AdvancedFilter() {
 
 You can customize the field name and filter name by providing the `mapFieldName` and `mapFilterName` functions.
 
-```tsx live
+```tsx live "mapFieldName" "mapFilterName"
 import {
   FilterSphereProvider,
   FilterBuilder,
@@ -132,7 +136,7 @@ export default function AdvancedFilter() {
 
 Filter Sphere provides default implementations for the `mapFieldName` and `mapFilterName` functions.
 
-```ts
+```ts "defaultMapFieldName" "defaultMapFilterName"
 export const defaultMapFieldName: (field: FilterField) => string = (field) => {
   // By default, filter sphere uses the field description as the field name.
   if (field.fieldSchema.description) {

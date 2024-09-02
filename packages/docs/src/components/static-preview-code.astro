@@ -1,0 +1,24 @@
+---
+// This component only can preview the static code!
+//
+// > A client:only component must match an import statement, either the default export or a named exported, and can't be derived from a variable in the frontmatter.
+import { Code, TabItem, Tabs } from '@astrojs/starlight/components';
+
+interface Props {
+	path: string;
+  lang?: string;
+}
+
+const { path, lang = "tsx" } = Astro.props;
+const code = (await import(path + '?raw')).default
+const Preview = (await import(path)).default
+---
+
+<Tabs>
+  <TabItem label="Preview" >
+    <Preview client:only/>
+  </TabItem>
+  <TabItem label="Code">
+    <Code {code} {lang} />
+  </TabItem>
+</TabItem>

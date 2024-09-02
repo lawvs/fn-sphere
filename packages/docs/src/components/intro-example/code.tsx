@@ -37,3 +37,5 @@ export function AdvancedFilter() {
     </>
   );
 }
+
+export default AdvancedFilter;

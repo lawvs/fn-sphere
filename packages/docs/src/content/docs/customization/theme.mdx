@@ -13,7 +13,7 @@ import PackageManagerTabs from "~/components/package-manager-tabs.astro";
 
 ### Material UI
 
-The Material UI theme provides a sleek, modern look for your Filter Sphere components, based on [MUI Material UI](https://mui.com/material-ui/).
+The Material UI theme offers a clean and straightforward appearance, leveraging [MUI Material UI](https://mui.com/material-ui/).
 
 <PackageManagerTabs package="@fn-sphere/theme-mui-material" />
 
@@ -113,8 +113,8 @@ const customTheme = {
             })}
           </CardContent>
           <CardActions>
-            <Button onClick={() => appendChildRule({})}>Add</Button>
-            {depth < 2 && (
+            <Button onClick={() => appendChildRule({})}>Add Rule</Button>
+            {depth < 1 && (
               <Button
                 onClick={() =>
                   appendChildGroup({
