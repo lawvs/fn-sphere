@@ -2,6 +2,7 @@ import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 // @ts-expect-error missing types
 import liveCode from "astro-live-code";
+import relativeLinks from "astro-relative-links";
 import { defineConfig } from "astro/config";
 
 // https://astro.build/config
@@ -53,6 +54,8 @@ export default defineConfig({
         "client:load": true,
       },
     }),
+    // Workaround for https://github.com/withastro/astro/issues/4229
+    relativeLinks(),
   ],
   vite: {
     ssr: {

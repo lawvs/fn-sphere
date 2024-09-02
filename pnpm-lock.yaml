@@ -57,6 +57,9 @@ importers:
       astro-live-code:
         specifier: ^0.0.3
         version: 0.0.3
+      astro-relative-links:
+        specifier: ^0.4.0
+        version: 0.4.0(astro@4.15.1(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1474,6 +1477,11 @@ packages:
 
   astro-live-code@0.0.3:
     resolution: {integrity: sha512-86FJ9CWBhm05E3CYODb+sTlVjYbVECHxCf33TZOKIGW1FTqO7fu+5fB0LnCQIvhzAsFAeobegYIHJ63quKk1SQ==}
+
+  astro-relative-links@0.4.0:
+    resolution: {integrity: sha512-pqeWeID9btm0LShMTIGOhpCzBnchLnZYmcsiS4Z96IxwRVsuyTNQkAcFpT8VvRVH2rao/nwALqrcTcZAHsdQNA==}
+    peerDependencies:
+      astro: ^3.0.0 || ^4.0.0
 
   astro@4.15.1:
     resolution: {integrity: sha512-XvKZ2GaDbCsMfcJess4o+4D4cCKja45GJ/9o6EJ6n96xaen8HZMRoJn3YKL9TOjIrL2NuU4mBFMG2JivPJ0foA==}
@@ -5403,6 +5411,11 @@ snapshots:
       estree-util-visit: 2.0.0
       magic-string: 0.30.11
       unist-util-visit-parents: 6.0.1
+
+  astro-relative-links@0.4.0(astro@4.15.1(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)):
+    dependencies:
+      astro: 4.15.1(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)
+      glob: 10.4.5
 
   astro@4.15.1(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4):
     dependencies:
