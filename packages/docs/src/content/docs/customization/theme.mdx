@@ -43,7 +43,14 @@ You can override existing theme by replacing them with your own custom component
 
 ```tsx live wrapper="~/components/mui-theme-wrapper.tsx" layout="~/components/live-code-tab-layout.astro"
 import { filterTheme } from "@fn-sphere/theme-mui-material";
-import { Button } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Box,
+} from "@mui/material";
 import {
   FilterSphereProvider,
   FilterBuilder,
@@ -63,61 +70,64 @@ const customTheme = {
       const { FilterGroup: GroupView, SingleFilter: RuleView } =
         useView("templates");
       const {
-        ruleState: { isRoot },
+        ruleState: { isRoot, depth },
         appendChildRule,
         appendChildGroup,
         toggleGroupOp,
       } = useFilterGroup(rule);
       return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            border: !isRoot && "1px solid #ccc",
-            padding: 8,
-            borderRadius: 8,
-          }}
-        >
-          {rule.conditions.map((childRule, groupIdx) => {
-            return (
-              <div
-                key={childRule.id}
-                style={{ display: "flex", alignItems: "baseline" }}
-              >
-                {groupIdx === 0 ? (
-                  <span style={{ marginRight: "8px" }}>Where</span>
-                ) : (
-                  <Button
-                    variant="outlined"
-                    style={{ marginRight: "8px" }}
-                    onClick={() => toggleGroupOp()}
-                  >
-                    {rule.op}
-                  </Button>
-                )}
-                {childRule.type === "Filter" ? (
-                  <RuleView rule={childRule} />
-                ) : (
-                  <GroupView rule={childRule} />
-                )}
-              </div>
-            );
-          })}
-          <div>
+        <Card variant="outlined">
+          <CardContent
+            sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+          >
+            {rule.conditions.map((childRule, groupIdx) => {
+              return (
+                <Box
+                  key={childRule.id}
+                  sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}
+                >
+                  {groupIdx === 0 ? (
+                    <Typography
+                      align="center"
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        minWidth: 64,
+                        height: 40,
+                      }}
+                    >
+                      WHERE
+                    </Typography>
+                  ) : (
+                    <Button variant="outlined" onClick={() => toggleGroupOp()}>
+                      {rule.op}
+                    </Button>
+                  )}
+                  {childRule.type === "Filter" ? (
+                    <RuleView rule={childRule} />
+                  ) : (
+                    <GroupView rule={childRule} />
+                  )}
+                </Box>
+              );
+            })}
+          </CardContent>
+          <CardActions>
             <Button onClick={() => appendChildRule({})}>Add</Button>
-            <Button
-              onClick={() =>
-                appendChildGroup({
-                  op: "and",
-                  conditions: [createSingleFilter()],
-                })
-              }
-            >
-              Add Group
-            </Button>
-          </div>
-        </div>
+            {depth < 2 && (
+              <Button
+                onClick={() =>
+                  appendChildGroup({
+                    op: "and",
+                    conditions: [createSingleFilter()],
+                  })
+                }
+              >
+                Add Group
+              </Button>
+            )}
+          </CardActions>
+        </Card>
       );
     },
   },
