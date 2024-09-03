@@ -26,12 +26,10 @@ export function AdvancedFilter() {
   const { context, predicate } = useFilterSphere({ schema });
   return (
     <>
-      <div className="not-content" style={{ marginTop: "1rem" }}>
-        {/* 3. display the FilterBuilder inside the FilterSphereProvider */}
-        <FilterSphereProvider context={context}>
-          <FilterBuilder />
-        </FilterSphereProvider>
-      </div>
+      {/* 3. display the FilterBuilder inside the FilterSphereProvider */}
+      <FilterSphereProvider context={context}>
+        <FilterBuilder />
+      </FilterSphereProvider>
       {/* 4. use the predicate to filter the data */}
       <Table data={data.filter(predicate)} />
     </>

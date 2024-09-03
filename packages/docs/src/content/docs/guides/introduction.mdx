@@ -16,7 +16,9 @@ import importedCode from "~/components/intro-example/code?raw";
 
 <Tabs>
   <TabItem label="Preview">
-    <AdvancedFilter client:load />
+    <div className="not-content" style={{ marginTop: "1rem" }}>
+      <AdvancedFilter client:load />
+    </div>
   </TabItem>
   <TabItem label="Code">
     <Code code={importedCode} lang="tsx" />
