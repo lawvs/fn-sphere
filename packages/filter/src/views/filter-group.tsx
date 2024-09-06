@@ -1,12 +1,13 @@
 import type { FilterGroup } from "@fn-sphere/core";
 import { Fragment } from "react";
 import { useView } from "../theme/hooks.js";
+import type { CommonProps } from "./types.js";
 
 export type FilterGroupProps = {
   rule: FilterGroup;
-};
+} & CommonProps;
 
-export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
+export const FilterGroupView = ({ rule, ...props }: FilterGroupProps) => {
   const {
     FilterGroupContainer,
     SingleFilter: FilterRuleView,
@@ -14,14 +15,14 @@ export const FilterGroupView = ({ rule: filterGroup }: FilterGroupProps) => {
   } = useView("templates");
 
   return (
-    <FilterGroupContainer rule={filterGroup}>
-      {filterGroup.conditions.map((childRule, groupIdx) => {
+    <FilterGroupContainer rule={rule} {...props}>
+      {rule.conditions.map((childRule, groupIdx) => {
         return (
           <Fragment key={childRule.id}>
             {groupIdx > 0 && (
               <RuleJoiner
-                parent={filterGroup}
-                joinBetween={[filterGroup.conditions[groupIdx - 1]!, childRule]}
+                parent={rule}
+                joinBetween={[rule.conditions[groupIdx - 1]!, childRule]}
               />
             )}
             {childRule.type === "Filter" ? (

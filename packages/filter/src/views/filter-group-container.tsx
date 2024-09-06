@@ -3,15 +3,17 @@ import { useCallback, type ReactNode } from "react";
 import { useFilterGroup } from "../hooks/use-filter-group.js";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
+import type { CommonProps } from "./types.js";
 
 export type FilterGroupContainerProps = {
   rule: FilterGroup;
   children?: ReactNode;
-};
+} & CommonProps;
 
 export const FilterGroupContainer = ({
   rule,
   children,
+  ...props
 }: FilterGroupContainerProps) => {
   const { getLocaleText } = useRootRule();
   const {
@@ -56,6 +58,7 @@ export const FilterGroupContainer = ({
         gap: 8,
         background: "rgba(0, 0, 0, 0.05)",
       }}
+      {...props}
     >
       <Button onClick={handleToggleGroupOp}>{text}</Button>
       {children}

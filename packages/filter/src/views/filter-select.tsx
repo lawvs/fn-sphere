@@ -4,14 +4,17 @@ import {
   type UpdateFilterOptions,
 } from "../hooks/use-filter-select.js";
 import { useView } from "../theme/index.js";
+import type { CommonProps } from "./types.js";
 
 export type FilterSelectProps = {
   rule: SingleFilter;
-} & UpdateFilterOptions;
+} & UpdateFilterOptions &
+  CommonProps;
 
 export const FilterSelect = ({
   rule,
-  ...updateFilterOptions
+  tryRetainArgs,
+  ...props
 }: FilterSelectProps) => {
   const { Select: SelectView } = useView("components");
   const { selectedField, selectedFilter, filterOptions, setFilter } =
@@ -22,7 +25,12 @@ export const FilterSelect = ({
       value={selectedFilter}
       disabled={!selectedField}
       options={filterOptions}
-      onChange={(val) => setFilter(val, updateFilterOptions)}
+      onChange={(val) =>
+        setFilter(val, {
+          tryRetainArgs: !!tryRetainArgs,
+        })
+      }
+      {...props}
     />
   );
 };
