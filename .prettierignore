@@ -2,3 +2,4 @@ dist
 pnpm-lock.yaml
 package.json
 .astro
+packages/docs/src/content/docs/api

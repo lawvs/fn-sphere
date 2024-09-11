@@ -4,6 +4,8 @@ import starlight from "@astrojs/starlight";
 import liveCode from "astro-live-code";
 import relativeLinks from "astro-relative-links";
 import { defineConfig } from "astro/config";
+// https://github.com/HiDeoo/starlight-typedoc
+import starlightTypeDoc, { typeDocSidebarGroup } from "starlight-typedoc";
 
 // https://astro.build/config
 export default defineConfig({
@@ -32,6 +34,7 @@ export default defineConfig({
             directory: "reference",
           },
         },
+        typeDocSidebarGroup,
         {
           label: "Changelog",
           items: [
@@ -45,6 +48,13 @@ export default defineConfig({
       customCss: [
         // Relative path to your custom CSS file
         "~/styles/custom.css",
+      ],
+      plugins: [
+        // Generate the documentation.
+        starlightTypeDoc({
+          entryPoints: ["../filter/src/index.ts"],
+          tsconfig: "../filter/tsconfig.json",
+        }),
       ],
     }),
     react(),
