@@ -41,7 +41,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
 
   const toggleGroupOp = (op?: FilterGroup["op"]) => {
     const oldOp = ruleGroup.op;
-    const newOp = (op ?? ruleGroup.op === "and") ? "or" : "and";
+    const newOp = op ?? (ruleGroup.op === "and" ? "or" : "and");
     if (oldOp === newOp) {
       return;
     }
