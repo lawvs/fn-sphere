@@ -1,5 +1,6 @@
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
+import tailwind from "@astrojs/tailwind";
 // @ts-expect-error missing types
 import liveCode from "astro-live-code";
 import relativeLinks from "astro-relative-links";
@@ -48,6 +49,7 @@ export default defineConfig({
       customCss: [
         // Relative path to your custom CSS file
         "~/styles/custom.css",
+        "~/styles/tailwind.css",
       ],
       plugins: [
         // Generate the documentation.
@@ -63,9 +65,12 @@ export default defineConfig({
       defaultProps: {
         "client:load": true,
       },
-    }),
-    // Workaround for https://github.com/withastro/astro/issues/4229
+    }), // Workaround for https://github.com/withastro/astro/issues/4229
     relativeLinks(),
+    tailwind({
+      // Disable the default base styles:
+      applyBaseStyles: false,
+    }),
   ],
   vite: {
     ssr: {
