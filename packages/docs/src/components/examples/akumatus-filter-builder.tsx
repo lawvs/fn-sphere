@@ -1,5 +1,7 @@
 import {
+  createFilterGroup,
   createFilterTheme,
+  createSingleFilter,
   FilterBuilder,
   FilterSphereProvider,
   useFilterGroup,
@@ -10,14 +12,16 @@ import {
 import { z } from "zod";
 
 const schema = z.object({
-  id: z.number(),
-  name: z.string(),
-  createdAt: z.date(),
-  status: z.union([
-    z.literal("pending"),
-    z.literal("completed"),
-    z.literal("cancelled"),
-  ]),
+  id: z.number().describe("ID"),
+  name: z.string().describe("Name"),
+  createdAt: z.date().describe("Created At"),
+  status: z
+    .union([
+      z.literal("pending"),
+      z.literal("completed"),
+      z.literal("cancelled"),
+    ])
+    .describe("Status"),
 });
 
 // Ported from [akumatus/FilterBuilder](https://github.com/akumatus/FilterBuilder)
@@ -29,7 +33,7 @@ const theme = createFilterTheme({
       return (
         <input
           {...props}
-          className="w-full px-2 py-1 h-[30px] border border-[#d2d6de] text-[#555] focus:border-[#3c8dbc] outline-none"
+          className="w-full px-2 py-1 h-[30px] border border-[#d2d6de] bg-white text-[#555] focus:border-[#3c8dbc] outline-none"
         />
       );
     },
@@ -37,7 +41,7 @@ const theme = createFilterTheme({
       return (
         <select
           {...props}
-          className="w-full p-1 border border-[#d2d6de] text-[#555] focus:border-[#3c8dbc] outline-none"
+          className="w-full p-1 border border-[#d2d6de] bg-white text-[#555] focus:border-[#3c8dbc] outline-none"
         />
       );
     },
@@ -66,7 +70,7 @@ const theme = createFilterTheme({
           <div className="flex justify-between">
             <div className="flex items-center gap-1">
               <button
-                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${isAnd ? "text-white bg-[#6d77b8]" : "bg-white border-[#6d77b8]"}`}
+                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${isAnd ? "text-white bg-[#6d77b8]" : "bg-white text-[#6d77b8] border-[#6d77b8]"}`}
                 onClick={() => {
                   toggleGroupOp("and");
                 }}
@@ -74,7 +78,7 @@ const theme = createFilterTheme({
                 And
               </button>
               <button
-                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${!isAnd ? "text-white bg-[#6d77b8]" : "bg-white border-[#6d77b8]"}`}
+                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${!isAnd ? "text-white bg-[#6d77b8]" : "bg-white text-[#6d77b8] border-[#6d77b8]"}`}
                 onClick={() => {
                   toggleGroupOp("or");
                 }}
@@ -126,6 +130,7 @@ const theme = createFilterTheme({
         </div>
       );
     },
+
     SingleFilter: ({ rule }) => {
       const {
         ruleState: { isLastRule },
@@ -155,7 +160,6 @@ const theme = createFilterTheme({
             {/* Unicode character for "X" cancel / close https://stackoverflow.com/questions/5353461/unicode-character-for-x-cancel-close */}
             &#x2715;
           </button>
-          <div className="flex items-center gap-1"></div>
         </div>
       );
     },
@@ -163,7 +167,19 @@ const theme = createFilterTheme({
 });
 
 export function AdvancedFilter() {
-  const { context } = useFilterSphere({ schema });
+  const { context } = useFilterSphere({
+    schema,
+    defaultRule: createFilterGroup({
+      op: "and",
+      conditions: [
+        createSingleFilter(),
+        createFilterGroup({
+          op: "or",
+          conditions: [createSingleFilter()],
+        }),
+      ],
+    }),
+  });
   return (
     <FilterSphereProvider context={context} theme={theme}>
       <FilterBuilder />
