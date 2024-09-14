@@ -69,7 +69,7 @@ const theme = createFilterTheme({
 
           <ButtonView
             onClick={() => {
-              appendRule();
+              appendRule(createSingleFilter());
             }}
           >
             And
