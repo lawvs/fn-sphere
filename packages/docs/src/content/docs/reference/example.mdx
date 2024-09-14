@@ -1,24 +1,28 @@
 ---
-title: 🚧 Example
+title: Example
 description: Practical implementations of Filter Sphere
 ---
+
+import SourceCodeCard from "~/components/source-code-card.astro";
 
 ## Bootstrap Style
 
 This example is ported from [akumatus/FilterBuilder](https://github.com/akumatus/FilterBuilder).
 
-import { AdvancedFilter } from "~/components/examples/akumatus-filter-builder";
+import { AdvancedFilter } from "~/components/examples/akumatus-filter-builder.tsx";
 
 <div className="not-content" style={{ marginTop: "1rem" }}>
   <AdvancedFilter client:load />
 </div>
+<SourceCodeCard path="~/components/examples/akumatus-filter-builder.tsx" />
 
 ## Flatten Style
 
 This style is used in scenarios where nested filters are not required. This can be particularly useful in situations where the data structure is simple.
 
-import { FlattenFilter } from "~/components/examples/flatten-filter-builder";
+import { FlattenFilter } from "~/components/examples/flatten-filter-builder.tsx";
 
 <div className="not-content" style={{ marginTop: "1rem" }}>
   <FlattenFilter client:load />
 </div>
+<SourceCodeCard path="~/components/examples/flatten-filter-builder.tsx" />

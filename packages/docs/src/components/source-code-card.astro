@@ -1,0 +1,20 @@
+---
+import { LinkCard } from '@astrojs/starlight/components';
+
+interface Props {
+	path: string;
+}
+
+const site = 'https://github.com/lawvs/fn-sphere/tree/main/packages/docs/src/'
+const { path } = Astro.props;
+
+let normalizedPath = path.startsWith('~') ? path.slice(1) : path;
+normalizedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+---
+
+<LinkCard
+  title="View source code"
+  description="View the source code for this component on GitHub."
+  href={`${site}${normalizedPath}`}
+  target="_blank"
+/>
