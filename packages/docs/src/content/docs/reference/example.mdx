@@ -3,7 +3,7 @@ title: 🚧 Example
 description: Practical implementations of Filter Sphere
 ---
 
-## bootstrap styles
+## Bootstrap Style
 
 This example is ported from [akumatus/FilterBuilder](https://github.com/akumatus/FilterBuilder).
 
@@ -11,4 +11,14 @@ import { AdvancedFilter } from "~/components/examples/akumatus-filter-builder";
 
 <div className="not-content" style={{ marginTop: "1rem" }}>
   <AdvancedFilter client:load />
+</div>
+
+## Flatten Style
+
+This style is used in scenarios where nested filters are not required. This can be particularly useful in situations where the data structure is simple.
+
+import { FlattenFilter } from "~/components/examples/flatten-filter-builder";
+
+<div className="not-content" style={{ marginTop: "1rem" }}>
+  <FlattenFilter client:load />
 </div>

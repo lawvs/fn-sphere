@@ -1,7 +1,5 @@
 import {
-  createFilterGroup,
   createFilterTheme,
-  createSingleFilter,
   FilterBuilder,
   FilterSphereProvider,
   useFilterGroup,
@@ -9,20 +7,7 @@ import {
   useFilterSphere,
   useView,
 } from "@fn-sphere/filter";
-import { z } from "zod";
-
-const schema = z.object({
-  id: z.number().describe("ID"),
-  name: z.string().describe("Name"),
-  createdAt: z.date().describe("Created At"),
-  status: z
-    .union([
-      z.literal("pending"),
-      z.literal("completed"),
-      z.literal("cancelled"),
-    ])
-    .describe("Status"),
-});
+import { defaultRule, schema } from "./utils";
 
 // Ported from [akumatus/FilterBuilder](https://github.com/akumatus/FilterBuilder)
 // Licensed under MIT
@@ -169,16 +154,7 @@ const theme = createFilterTheme({
 export function AdvancedFilter() {
   const { context } = useFilterSphere({
     schema,
-    defaultRule: createFilterGroup({
-      op: "and",
-      conditions: [
-        createSingleFilter(),
-        createFilterGroup({
-          op: "or",
-          conditions: [createSingleFilter()],
-        }),
-      ],
-    }),
+    defaultRule,
   });
   return (
     <FilterSphereProvider context={context} theme={theme}>
