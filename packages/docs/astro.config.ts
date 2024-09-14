@@ -5,11 +5,22 @@ import tailwind from "@astrojs/tailwind";
 import liveCode from "astro-live-code";
 import relativeLinks from "astro-relative-links";
 import { defineConfig } from "astro/config";
+// @ts-expect-error missing types
+import rehypeExternalLinks from "rehype-external-links";
 // https://github.com/HiDeoo/starlight-typedoc
-import starlightTypeDoc, { typeDocSidebarGroup } from "starlight-typedoc";
+import starlightTypeDoc from "starlight-typedoc";
 
 // https://astro.build/config
 export default defineConfig({
+  markdown: {
+    rehypePlugins: [
+      // https://www.npmjs.com/package/rehype-external-links
+      [
+        rehypeExternalLinks,
+        { target: "_blank", rel: ["noopener", "noreferrer"] },
+      ],
+    ],
+  },
   integrations: [
     starlight({
       title: "Filter Sphere",
@@ -35,7 +46,15 @@ export default defineConfig({
             directory: "reference",
           },
         },
-        typeDocSidebarGroup,
+        // Prefer to show the API overviews in the sidebar, so we don't need this.
+        // typeDocSidebarGroup,
+        {
+          label: "API",
+          collapsed: true,
+          autogenerate: {
+            directory: "api",
+          },
+        },
         {
           label: "Changelog",
           items: [
@@ -56,6 +75,9 @@ export default defineConfig({
         starlightTypeDoc({
           entryPoints: ["../filter/src/index.ts"],
           tsconfig: "../filter/tsconfig.json",
+          typeDoc: {
+            entryFileName: "index.md",
+          },
         }),
       ],
     }),
