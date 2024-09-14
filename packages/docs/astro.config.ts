@@ -5,7 +5,6 @@ import tailwind from "@astrojs/tailwind";
 import liveCode from "astro-live-code";
 import relativeLinks from "astro-relative-links";
 import { defineConfig } from "astro/config";
-// @ts-expect-error missing types
 import rehypeExternalLinks from "rehype-external-links";
 // https://github.com/HiDeoo/starlight-typedoc
 import starlightTypeDoc from "starlight-typedoc";
@@ -57,6 +56,7 @@ export default defineConfig({
         },
         {
           label: "Changelog",
+          collapsed: true,
           items: [
             {
               label: "@fn-sphere/filter",
