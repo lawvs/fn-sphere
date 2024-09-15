@@ -1,5 +1,7 @@
 import {
+  createFilterGroup,
   createFilterTheme,
+  createSingleFilter,
   FilterBuilder,
   FilterSphereProvider,
   useFilterGroup,
@@ -78,7 +80,7 @@ const theme = createFilterTheme({
                   "flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[3px] text-white bg-[#6d77b8]"
                 }
                 onClick={() => {
-                  appendChildRule();
+                  appendChildRule(createSingleFilter());
                 }}
               >
                 + add
@@ -88,7 +90,12 @@ const theme = createFilterTheme({
                   "flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[3px] text-white bg-[#6d77b8]"
                 }
                 onClick={() => {
-                  appendChildGroup();
+                  appendChildGroup(
+                    createFilterGroup({
+                      op: "and",
+                      conditions: [createSingleFilter()],
+                    }),
+                  );
                 }}
               >
                 + ( group )
