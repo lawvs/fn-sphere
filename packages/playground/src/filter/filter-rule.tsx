@@ -17,7 +17,7 @@ export const FlattenSingleFilterView = ({
     removeRule,
     appendRule,
   } = useFilterRule(rule);
-  const { getLocaleText, getRootRule, updateRootRule } = useRootRule();
+  const { rootRule, getLocaleText, updateRootRule } = useRootRule();
   const { Button: ButtonView } = useView("components");
   const { FieldSelect, FilterSelect, FilterDataInput, SingleFilterContainer } =
     useView("templates");
@@ -38,7 +38,6 @@ export const FlattenSingleFilterView = ({
       </ButtonView>
       <ButtonView
         onClick={() => {
-          const rootRule = getRootRule();
           rootRule.conditions.push(
             createFilterGroup({
               op: "and",

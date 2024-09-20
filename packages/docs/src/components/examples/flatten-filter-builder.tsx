@@ -50,11 +50,10 @@ const theme = createFilterTheme({
         removeRule,
         appendRule,
       } = useFilterRule(rule);
-      const { numberOfRules, getRootRule, updateRootRule } = useRootRule();
+      const { rootRule, numberOfRules, updateRootRule } = useRootRule();
       const { Button: ButtonView } = useView("components");
       const { FieldSelect, FilterSelect, FilterDataInput } =
         useView("templates");
-      const rootRule = getRootRule();
 
       const isLastRuleInGroup =
         isLastRule &&

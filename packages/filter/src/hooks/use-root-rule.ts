@@ -1,10 +1,12 @@
 import { type FilterGroup } from "@fn-sphere/core";
-import { fromFilterMap, toFilterMap } from "../filter-map.js";
+import { useCallback } from "react";
+import { toFilterMap } from "../filter-map.js";
 import { useFilterSchemaContext } from "./use-filter-schema-context.js";
 
 export const useRootRule = () => {
   const {
     schema,
+    filterRule,
     filterFnList,
     filterMap,
     filterableFields,
@@ -14,13 +16,16 @@ export const useRootRule = () => {
     onFilterMapChange,
   } = useFilterSchemaContext();
 
-  const getRootRule = () => {
-    return fromFilterMap(filterMap);
-  };
+  const getRootRule = useCallback(() => {
+    return filterRule;
+  }, [filterRule]);
 
-  const updateRootRule = (rootGroup: FilterGroup) => {
-    onFilterMapChange(toFilterMap(rootGroup));
-  };
+  const updateRootRule = useCallback(
+    (rootGroup: FilterGroup) => {
+      onFilterMapChange(toFilterMap(rootGroup));
+    },
+    [onFilterMapChange],
+  );
 
   const numberOfRules = Object.values(filterMap).filter(
     (v) => v?.type === "Filter",
@@ -31,10 +36,14 @@ export const useRootRule = () => {
     filterFnList,
     numberOfRules,
     filterableFields,
+    rootRule: filterRule,
 
     mapFieldName,
     mapFilterName,
     getLocaleText,
+    /**
+     * @deprecated Use `rootRule` instead.
+     */
     getRootRule,
     updateRootRule,
   };
