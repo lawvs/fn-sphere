@@ -8,6 +8,8 @@ import { defineConfig } from "astro/config";
 import rehypeExternalLinks from "rehype-external-links";
 // https://github.com/HiDeoo/starlight-typedoc
 import starlightTypeDoc from "starlight-typedoc";
+// https://github.com/HiDeoo/starlight-links-validator
+import starlightLinksValidator from "starlight-links-validator";
 
 // https://astro.build/config
 export default defineConfig({
@@ -79,6 +81,7 @@ export default defineConfig({
             entryFileName: "index.md",
           },
         }),
+        starlightLinksValidator(),
       ],
     }),
     react(),

@@ -81,6 +81,9 @@ importers:
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
+      starlight-links-validator:
+        specifier: ^0.12.0
+        version: 0.12.0(@astrojs/starlight@0.27.1(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)))(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4))
       starlight-typedoc:
         specifier: ^0.16.0
         version: 0.16.0(@astrojs/starlight@0.27.1(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)))(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4))(typedoc-plugin-markdown@4.2.7(typedoc@0.26.7(typescript@5.5.4)))(typedoc@0.26.7(typescript@5.5.4))
@@ -3162,6 +3165,10 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
+  picomatch@4.0.2:
+    resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
+    engines: {node: '>=12'}
+
   pify@2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
@@ -3564,6 +3571,13 @@ packages:
 
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
+
+  starlight-links-validator@0.12.0:
+    resolution: {integrity: sha512-R4EfOyyeTHLPZX2QJmkk1s2cln9ejN+BJIucRhlavqd1R/hM05CMtP5Tpfb7WTzrTHGlqFlQlL0gbRAhc2+mQA==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      '@astrojs/starlight': '>=0.15.0'
+      astro: '>=4.0.0'
 
   starlight-typedoc@0.16.0:
     resolution: {integrity: sha512-9B2kmX8S2J3cHenlf+TqVV+ogIrOolf8UxMu0f/lWDX/XVQDAjr44j0/y8k7Nfc+V6TmndsJbRIOpAmPAIvxAg==}
@@ -7906,6 +7920,8 @@ snapshots:
 
   picomatch@2.3.1: {}
 
+  picomatch@4.0.2: {}
+
   pify@2.3.0: {}
 
   pify@4.0.1: {}
@@ -8378,6 +8394,19 @@ snapshots:
   sprintf-js@1.0.3: {}
 
   stackback@0.0.2: {}
+
+  starlight-links-validator@0.12.0(@astrojs/starlight@0.27.1(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)))(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)):
+    dependencies:
+      '@astrojs/starlight': 0.27.1(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4))
+      astro: 4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)
+      github-slugger: 2.0.0
+      hast-util-from-html: 2.0.1
+      hast-util-has-property: 3.0.0
+      is-absolute-url: 4.0.1
+      kleur: 4.1.5
+      mdast-util-to-string: 4.0.0
+      picomatch: 4.0.2
+      unist-util-visit: 5.0.0
 
   starlight-typedoc@0.16.0(@astrojs/starlight@0.27.1(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4)))(astro@4.15.4(less@4.2.0)(rollup@4.21.0)(typescript@5.5.4))(typedoc-plugin-markdown@4.2.7(typedoc@0.26.7(typescript@5.5.4)))(typedoc@0.26.7(typescript@5.5.4)):
     dependencies:
