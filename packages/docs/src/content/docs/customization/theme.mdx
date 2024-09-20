@@ -202,8 +202,28 @@ import { ThemeAnatomy } from "~/components/theme-anatomy.tsx";
 <Tabs>
   <TabItem label="components" icon="seti:svg">
     <ThemeAnatomy target="components" client:load />
+
+      ### Components
+
+      You can override the components to customize the appearance of the Filter Sphere. The components include: `Button`, `Input`, `Select` and `MultipleSelect`.
+
   </TabItem>
+
   <TabItem label="templates" icon="seti:plan">
     <ThemeAnatomy target="templates" client:load />
+
+    ### Templates
+
+    The templates are the layout of the Filter Sphere. You can override the templates to customize the layout of the Filter Sphere.
+
+    - `FilterGroup`: The FilterGroup template is used to render the group of filters in the Filter Sphere.
+      - `FilterGroupContainer`: Includes the `AND` and `OR` buttons and `Add Rule` and `Add Group` buttons by default.
+    - `SingleFilter`: The SingleFilter template is used to render the single filter in the Filter Sphere.
+      - `FilterRuleContainer`: The container for the rule.
+      - `FieldSelect`: The select field for the rule.
+      - `FilterSelect`: The select filter for the rule.
+      - `FilterDataInput`: The input field for the rule.
+    - `RuleJoiner`: Used to render the joiner between the rules, it will render nothing by default.
+
   </TabItem>
 </Tabs>

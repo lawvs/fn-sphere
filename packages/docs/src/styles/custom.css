@@ -15,8 +15,8 @@
   }
 }
 
-.expressive-code pre {
-  max-height: min(68vh, 1000px) !important;
+.expressive-code .frame pre {
+  max-height: min(68vh, 1000px);
   overflow: auto;
 }
 .expressive-code pre::-webkit-scrollbar-corner {
