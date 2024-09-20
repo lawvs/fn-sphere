@@ -241,7 +241,6 @@ export const useFilterRule = (rule: SingleFilter) => {
       },
     },
 
-    filterableFields,
     selectedField,
     selectedFilter,
 

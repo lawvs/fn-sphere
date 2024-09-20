@@ -7,6 +7,7 @@ export const useRootRule = () => {
     schema,
     filterFnList,
     filterMap,
+    filterableFields,
     mapFieldName,
     mapFilterName,
     getLocaleText,
@@ -29,6 +30,7 @@ export const useRootRule = () => {
     schema,
     filterFnList,
     numberOfRules,
+    filterableFields,
 
     mapFieldName,
     mapFilterName,
