@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import type { FilterId } from "@fn-sphere/core";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
@@ -22,15 +23,15 @@ vi.mock(import("@fn-sphere/core"), async (importOriginal) => {
     // replace some exports
     createSingleFilter: vi.fn((ruleInput) => ({
       ...mod.createSingleFilter(ruleInput),
-      id: String(id++),
+      id: String(id++) as FilterId,
     })),
     createFilterGroup: vi.fn((groupInput) => ({
       ...mod.createFilterGroup(groupInput),
-      id: String(id++),
+      id: String(id++) as FilterId,
     })),
     createDefaultRule: vi.fn((fields) => ({
       ...mod.createDefaultRule(fields),
-      id: String(id++),
+      id: String(id++) as FilterId,
     })),
   };
 });
