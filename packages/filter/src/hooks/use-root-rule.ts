@@ -20,7 +20,7 @@ export const useRootRule = () => {
     return filterRule;
   }, [filterRule]);
 
-  const updateRootRule = useCallback(
+  const setRootRule = useCallback(
     (rootGroup: FilterGroup) => {
       onFilterMapChange(toFilterMap(rootGroup));
     },
@@ -45,6 +45,10 @@ export const useRootRule = () => {
      * @deprecated Use `rootRule` instead.
      */
     getRootRule,
-    updateRootRule,
+    setRootRule,
+    /**
+     * @deprecated Use `setRootRule` instead.
+     */
+    updateRootRule: setRootRule,
   };
 };

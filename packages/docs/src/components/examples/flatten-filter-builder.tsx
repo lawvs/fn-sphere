@@ -50,7 +50,7 @@ const theme = createFilterTheme({
         removeRule,
         appendRule,
       } = useFilterRule(rule);
-      const { rootRule, numberOfRules, updateRootRule } = useRootRule();
+      const { rootRule, numberOfRules, setRootRule } = useRootRule();
       const { Button: ButtonView } = useView("components");
       const { FieldSelect, FilterSelect, FilterDataInput } =
         useView("templates");
@@ -82,7 +82,7 @@ const theme = createFilterTheme({
                     conditions: [createSingleFilter()],
                   }),
                 );
-                updateRootRule(rootRule);
+                setRootRule(rootRule);
               }}
             >
               Or
