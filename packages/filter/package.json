@@ -1,6 +1,6 @@
 {
   "name": "@fn-sphere/filter",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "description": "Filter Sphere is a powerful and flexible library for creating dynamic filtering interfaces in your web applications.",
   "keywords": [

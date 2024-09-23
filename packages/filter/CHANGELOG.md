@@ -1,5 +1,70 @@
 # @fn-sphere/filter
 
+## 0.6.0
+
+### Minor Changes
+
+- [`ef470f1`](https://github.com/lawvs/fn-sphere/commit/ef470f179cda345a441f98e0b8d765598080d551) Thanks [@lawvs](https://github.com/lawvs)! - Breaking Changes
+
+  - Now the first field and the first filter will be selected by default when creating a new rule.
+    - Updated `useFilterSphere` to use `createDefaultRule` for default rule creation.
+    - Updated `useFilterGroup` and `useFilterRule` to use `createDefaultRule` when no input is provided.
+
+- [`62aeaf0`](https://github.com/lawvs/fn-sphere/commit/62aeaf054cb90701cabbe4c2389145d8bbaed9f7) Thanks [@lawvs](https://github.com/lawvs)! - Export `filterableFields` in `useRootRule` hook.
+  Remove `filterableFields` from `useFilterRule` hook.
+
+  BREAKING CHANGE: The `filterableFields` is now exported in the `useRootRule` hook instead of the `useFilterRule` hook.
+
+  Migration:
+
+  ```diff
+  + const { filterableFields } = useRootRule();
+  - const { filterableFields } = useFilterRule(rule);
+  ```
+
+- [#51](https://github.com/lawvs/fn-sphere/pull/51) [`a8b07f2`](https://github.com/lawvs/fn-sphere/commit/a8b07f24ed031e5ed3c4396cfdf7a603f5fb2209) Thanks [@lawvs](https://github.com/lawvs)! - Add locale supports
+
+  BREAKING CHANGE
+
+  - All name of filter has been changed.
+  - The `booleanFilter` has been removed.
+
+- [`9badd88`](https://github.com/lawvs/fn-sphere/commit/9badd88890b39141b6ae5ce02865d8cc5b938a9a) Thanks [@lawvs](https://github.com/lawvs)! - Breaking Changes
+
+  - Renamed `filterGroup` prop to `rule` in FilterGroupContainer.
+  - Modified `filterTheme` in theme-mui-material to use `rule` instead of `filterGroup`.
+
+### Patch Changes
+
+- [`964faf3`](https://github.com/lawvs/fn-sphere/commit/964faf32dfb0f0e982063ee5a8a496e1a799b9c9) Thanks [@lawvs](https://github.com/lawvs)! - Add depth limit for filter group
+
+- [`5f4d54f`](https://github.com/lawvs/fn-sphere/commit/5f4d54fab3506577f08c1eae7c20d7f11f8f7e95) Thanks [@lawvs](https://github.com/lawvs)! - Rename `updateRootRule` to `setRootRule` in `useRootRule` hook
+
+  Migration:
+
+  ```diff
+  - const { updateRootRule } = useRootRule();
+  + const { setRootRule } = useRootRule();
+  ```
+
+- [`200e5a1`](https://github.com/lawvs/fn-sphere/commit/200e5a1587797ee35651bc8735a9507f8ff4d4b3) Thanks [@lawvs](https://github.com/lawvs)! - Deprecated `getRootRule` in favor of `rootRule` in `useRootRule` hook.
+
+  Migration:
+
+  ```diff
+  + const { rootRule } = useRootRule();
+  - const { getRootRule } = useRootRule();
+  ```
+
+- [`479f048`](https://github.com/lawvs/fn-sphere/commit/479f0488e42283656d8f59b515775435b0a9338b) Thanks [@lawvs](https://github.com/lawvs)! - Fix logical error in `toggleGroupOp` function within the `useFilterGroup` hook
+
+- [`8337984`](https://github.com/lawvs/fn-sphere/commit/8337984b832bd11652159ccf15c7fdbe0a300889) Thanks [@lawvs](https://github.com/lawvs)! - Support custom style for components
+
+- [`6be8772`](https://github.com/lawvs/fn-sphere/commit/6be8772d0e3dca728a52404da911844c01e2cda6) Thanks [@lawvs](https://github.com/lawvs)! - Support `moveRule` in `useFilterRule`
+
+- Updated dependencies [[`a8b07f2`](https://github.com/lawvs/fn-sphere/commit/a8b07f24ed031e5ed3c4396cfdf7a603f5fb2209), [`020bdb1`](https://github.com/lawvs/fn-sphere/commit/020bdb1dbdac9e6dfcf47d01bdeeb05d6bd13612), [`a8b07f2`](https://github.com/lawvs/fn-sphere/commit/a8b07f24ed031e5ed3c4396cfdf7a603f5fb2209), [`01369a8`](https://github.com/lawvs/fn-sphere/commit/01369a805b0fb644ddbb4e7dd334d7896651ac84)]:
+  - @fn-sphere/core@0.6.0
+
 ## 0.5.0
 
 ### Minor Changes
