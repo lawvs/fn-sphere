@@ -2,11 +2,16 @@
   "name": "@fn-sphere/theme-mui-material",
   "version": "0.1.1",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lawvs/fn-sphere.git",
+    "directory": "packages/theme-mui-material"
+  },
+  "author": "whitewater <me@waterwater.moe>",
   "scripts": {
     "build": "tsc",
     "typeCheck": "tsc --noEmit"
   },
-  "sideEffects": false,
   "devDependencies": {
     "@types/react": "^18.3.8",
     "react": "^18.3.1"
