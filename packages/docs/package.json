@@ -17,9 +17,9 @@
     "@astrojs/starlight": "^0.28.3",
     "@astrojs/starlight-tailwind": "^2.0.3",
     "@astrojs/tailwind": "^5.1.2",
-    "@types/react": "^18.3.11",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "astro": "^4.16.6",
+    "astro": "^4.16.7",
     "astro-live-code": "^0.0.3",
     "astro-relative-links": "^0.4.0",
     "react": "^18.3.1",
@@ -37,7 +37,7 @@
     "@emotion/styled": "^11.13.0",
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
-    "@mui/material": "^6.1.4",
+    "@mui/material": "^6.1.5",
     "zod": "^3.23.8"
   }
 }
