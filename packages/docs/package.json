@@ -19,7 +19,7 @@
     "@astrojs/tailwind": "^5.1.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "astro": "^4.16.10",
+    "astro": "^4.16.13",
     "astro-live-code": "^0.0.4",
     "astro-relative-links": "^0.4.0",
     "react": "^18.3.1",
@@ -28,7 +28,7 @@
     "sharp": "^0.33.5",
     "starlight-links-validator": "^0.13.2",
     "starlight-typedoc": "^0.17.0",
-    "tailwindcss": "^3.4.14",
+    "tailwindcss": "^3.4.15",
     "typedoc": "^0.26.11",
     "typedoc-plugin-markdown": "^4.2.10"
   },
@@ -37,7 +37,7 @@
     "@emotion/styled": "^11.13.0",
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
-    "@mui/material": "^6.1.6",
+    "@mui/material": "^6.1.7",
     "zod": "^3.23.8"
   }
 }
