@@ -57,8 +57,11 @@
   }
 
   @supports (
-    border-color:
-      color-mix(in srgb, var(--sl-color-asides-text-accent) 30%, transparent)
+    border-color: color-mix(
+        in srgb,
+        var(--sl-color-asides-text-accent) 30%,
+        transparent
+      )
   ) {
     .starlight-aside :is(th, td, hr, blockquote) {
       border-color: color-mix(
