@@ -18,14 +18,14 @@
     "@zodui/plugin-common": "^0.2.0",
     "@zodui/react": "^0.2.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.0.0",
     "tdesign-icons-react": "^0.4.2",
     "tdesign-react": "^1.10.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react-dom": "^19.0.1",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
     "@vitejs/plugin-react": "^4.3.4",
