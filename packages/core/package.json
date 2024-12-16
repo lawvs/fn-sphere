@@ -21,7 +21,7 @@
     "zod-compare": "^1.0.0"
   },
   "devDependencies": {
-    "zod": "3.23.8"
+    "zod": "3.24.1"
   },
   "peerDependencies": {
     "zod": "^3.0.0"
