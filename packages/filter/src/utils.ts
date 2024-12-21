@@ -1,5 +1,6 @@
 import { type FilterField, type StandardFnSchema } from "@fn-sphere/core";
 
+export const emptyArray: never[] = [];
 export const noop = () => {};
 
 export const defaultMapFieldName: (field: FilterField) => string = (field) => {

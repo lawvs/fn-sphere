@@ -69,8 +69,6 @@ export const FilterSchemaProvider = ({
   };
 
   return (
-    <FilterSchemaContext.Provider value={contextValue}>
-      {children}
-    </FilterSchemaContext.Provider>
+    <FilterSchemaContext value={contextValue}>{children}</FilterSchemaContext>
   );
 };

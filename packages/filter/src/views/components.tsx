@@ -3,11 +3,10 @@ import {
   type ButtonHTMLAttributes,
   type ChangeEvent,
   type InputHTMLAttributes,
-  type ReactNode,
-  type Ref,
   type SelectHTMLAttributes,
 } from "react";
 import { usePrimitives } from "../theme/hooks.js";
+import { emptyArray } from "../utils.js";
 
 export const ButtonView = (props: ButtonHTMLAttributes<HTMLButtonElement>) => {
   const ButtonPrimitive = usePrimitives("button");
@@ -49,7 +48,7 @@ export type MultiSelectProps<T> = Omit<
 };
 
 export const SingleSelectView = <T,>({
-  options = [],
+  options = emptyArray,
   value,
   onChange,
   ...props
@@ -79,8 +78,8 @@ export const SingleSelectView = <T,>({
 };
 
 export const MultiSelectView = <T,>({
-  options = [],
-  value = [],
+  options = emptyArray,
+  value = emptyArray,
   onChange,
   ...props
 }: MultiSelectProps<T>) => {

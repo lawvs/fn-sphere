@@ -24,9 +24,5 @@ export const FilterThemeProvider = ({
   theme: FilterTheme;
   children?: ReactNode;
 }) => {
-  return (
-    <FilterThemeContext.Provider value={theme}>
-      {children}
-    </FilterThemeContext.Provider>
-  );
+  return <FilterThemeContext value={theme}>{children}</FilterThemeContext>;
 };
