@@ -24,8 +24,8 @@ import { useCallback, type ChangeEvent } from "react";
 
 export const filterTheme = createFilterTheme({
   components: {
-    Button: ({ ref, color, ...props }) => <Button {...props} />,
-    Input: ({ ref, color, size, onChange, ...props }) => {
+    Button: ({ color, ...props }) => <Button {...props} />,
+    Input: ({ color, size, onChange, ...props }) => {
       const handleChange = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
           onChange?.(event.target.value);
@@ -34,7 +34,7 @@ export const filterTheme = createFilterTheme({
       );
       return <Input onChange={handleChange} {...props} />;
     },
-    Select: ({ options = [], value, ref, color, size, onChange, ...props }) => {
+    Select: ({ options = [], value, color, size, onChange, ...props }) => {
       const selectedIdx = options.findIndex((option) => option.value === value);
       const handleChange = useCallback(
         (event: SelectChangeEvent) => {
@@ -68,7 +68,6 @@ export const filterTheme = createFilterTheme({
     MultipleSelect: ({
       options = [],
       value = [],
-      ref,
       color,
       size,
       onChange,

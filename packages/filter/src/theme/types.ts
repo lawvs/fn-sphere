@@ -4,8 +4,6 @@ import type {
   ComponentType,
   InputHTMLAttributes,
   ReactNode,
-  Ref,
-  RefAttributes,
 } from "react";
 import type { z } from "zod";
 import type {
@@ -42,36 +40,21 @@ export type DataInputViewSpec = {
 
 export type FilterTheme = {
   primitives: {
-    button: ComponentType<
-      ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>
-    >;
-    input: ComponentType<
-      InputHTMLAttributes<HTMLInputElement> & RefAttributes<HTMLInputElement>
-    >;
-    select: ComponentType<
-      InputHTMLAttributes<HTMLSelectElement> & RefAttributes<HTMLSelectElement>
-    >;
-    option: ComponentType<
-      InputHTMLAttributes<HTMLOptionElement> & RefAttributes<HTMLOptionElement>
-    >;
+    button: ComponentType<ButtonHTMLAttributes<HTMLButtonElement>>;
+    input: ComponentType<InputHTMLAttributes<HTMLInputElement>>;
+    select: ComponentType<InputHTMLAttributes<HTMLSelectElement>>;
+    option: ComponentType<InputHTMLAttributes<HTMLOptionElement>>;
   };
   components: {
-    Button: ComponentType<
-      ButtonHTMLAttributes<HTMLButtonElement> & RefAttributes<HTMLButtonElement>
-    >;
+    Button: ComponentType<ButtonHTMLAttributes<HTMLButtonElement>>;
     Input: ComponentType<
-      Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> &
-        RefAttributes<HTMLInputElement> & {
-          onChange?: (value: string) => void;
-        }
+      Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> & {
+        onChange?: (value: string) => void;
+      }
     >;
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
-    Select: <T>(
-      props: SingleSelectProps<T> & { ref?: Ref<HTMLSelectElement> },
-    ) => ReactNode;
-    MultipleSelect: <T>(
-      props: MultiSelectProps<T> & { ref?: Ref<HTMLSelectElement> },
-    ) => ReactNode;
+    Select: <T>(props: SingleSelectProps<T>) => ReactNode;
+    MultipleSelect: <T>(props: MultiSelectProps<T>) => ReactNode;
   };
   templates: {
     FilterGroupContainer: ComponentType<FilterGroupContainerProps>;
