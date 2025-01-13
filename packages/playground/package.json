@@ -18,13 +18,13 @@
     "@zodui/react": "^0.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tdesign-icons-react": "^0.4.2",
+    "tdesign-icons-react": "^0.4.3",
     "tdesign-react": "^1.10.4",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/react": "^19.0.2",
-    "@types/react-dom": "^19.0.2",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "less": "^4.2.1",
     "vite": "^6.0.7"
