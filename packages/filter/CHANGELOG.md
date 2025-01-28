@@ -1,5 +1,11 @@
 # @fn-sphere/filter
 
+## 0.7.1
+
+### Patch Changes
+
+- [`2843855`](https://github.com/lawvs/fn-sphere/commit/284385506bc6ae8503bb04ad7968edaf8ff2d21c) Thanks [@lawvs](https://github.com/lawvs)! - Fix package build error
+
 ## 0.7.0
 
 ### Minor Changes
