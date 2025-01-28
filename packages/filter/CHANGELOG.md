@@ -1,5 +1,11 @@
 # @fn-sphere/filter
 
+## 0.7.0
+
+### Minor Changes
+
+- [`0c4bea5`](https://github.com/lawvs/fn-sphere/commit/0c4bea55f5e281c4494ed5cd2baf984dc18dc1e6) Thanks [@lawvs](https://github.com/lawvs)! - BREAKING CHANGE: Upgrade to react 19
+
 ## 0.6.0
 
 ### Minor Changes
