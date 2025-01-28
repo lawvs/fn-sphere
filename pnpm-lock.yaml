@@ -229,7 +229,7 @@ importers:
         specifier: ^11.0.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.0.8)(react@19.0.0))(@types/react@19.0.8)(react@19.0.0)
       '@fn-sphere/filter':
-        specifier: workspace:^0.6.0
+        specifier: 'workspace:'
         version: link:../filter
       '@mui/icons-material':
         specifier: ^6.0.0

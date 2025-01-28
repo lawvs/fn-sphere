@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.2/schema.json",
   "changelog": ["@changesets/changelog-github", { "repo": "lawvs/fn-sphere" }],
   "commit": false,
-  "fixed": [["@fn-sphere/core", "@fn-sphere/filter"]],
+  "linked": [["@fn-sphere/core", "@fn-sphere/filter"]],
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
