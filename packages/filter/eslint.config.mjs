@@ -25,7 +25,10 @@ export default tseslint.config(
       parser: tseslint.parser,
       globals: { ...globals.browser },
       parserOptions: {
-        projectService: true,
+        projectService: {
+          // See https://typescript-eslint.io/packages/parser#allowdefaultproject
+          allowDefaultProject: ["*.ts"],
+        },
       },
     },
     rules: {
