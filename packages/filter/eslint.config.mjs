@@ -38,6 +38,8 @@ export default tseslint.config(
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
       "@eslint-react/dom/no-missing-button-type": "off",
+      // Compatibility with React 18
+      "@eslint-react/no-use-context": "off",
 
       // eslint-plugin-react-refresh
       // https://github.com/ArnaudBarre/eslint-plugin-react-refresh
