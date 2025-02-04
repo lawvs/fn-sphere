@@ -121,7 +121,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
       tryRetainArgs &&
       newFilterSchema &&
       // For generic filter, the new filter schema is not the same as the current filter schema
-      // even if the filter name is the same, eg. Equels string -> Equels number
+      // even if the filter name is the same, eg. Equals string -> Equals number
       // needRetainFilter &&
       canRetainArgs(newFilterSchema);
 
