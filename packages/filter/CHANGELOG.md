@@ -1,5 +1,11 @@
 # @fn-sphere/filter
 
+## 0.7.2
+
+### Patch Changes
+
+- [#105](https://github.com/lawvs/fn-sphere/pull/105) [`941d4a9`](https://github.com/lawvs/fn-sphere/commit/941d4a9a6d523428c39c82264ce4fc32af73be77) Thanks [@Garfield550](https://github.com/Garfield550)! - Fix the incorrect version of @types/react in peer dependencies.
+
 ## 0.7.1
 
 ### Patch Changes
