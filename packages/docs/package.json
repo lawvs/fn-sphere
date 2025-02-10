@@ -19,7 +19,7 @@
     "@astrojs/tailwind": "^5.1.5",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "astro": "^5.2.3",
+    "astro": "^5.2.5",
     "astro-live-code": "^0.0.5",
     "astro-relative-links": "^0.4.2",
     "react": "^19.0.0",
@@ -29,15 +29,15 @@
     "starlight-links-validator": "^0.14.2",
     "starlight-typedoc": "^0.18.0",
     "tailwindcss": "^3.4.16",
-    "typedoc": "^0.27.6",
-    "typedoc-plugin-markdown": "^4.4.1"
+    "typedoc": "^0.27.7",
+    "typedoc-plugin-markdown": "^4.4.2"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
-    "@mui/material": "^6.4.2",
+    "@mui/material": "^6.4.3",
     "zod": "^3.24.1"
   }
 }
