@@ -14,19 +14,19 @@
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/react": "^4.2.0",
-    "@astrojs/starlight": "^0.31.1",
+    "@astrojs/starlight": "^0.32.0",
     "@astrojs/starlight-tailwind": "^3.0.0",
     "@astrojs/tailwind": "^5.1.5",
-    "@types/react": "^19.0.8",
+    "@types/react": "^19.0.9",
     "@types/react-dom": "^19.0.3",
-    "astro": "^5.2.5",
+    "astro": "^5.3.0",
     "astro-live-code": "^0.0.5",
     "astro-relative-links": "^0.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "rehype-external-links": "^3.0.0",
     "sharp": "^0.33.5",
-    "starlight-links-validator": "^0.14.2",
+    "starlight-links-validator": "^0.14.3",
     "starlight-typedoc": "^0.18.0",
     "tailwindcss": "^3.4.16",
     "typedoc": "^0.27.7",
@@ -37,7 +37,7 @@
     "@emotion/styled": "^11.14.0",
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
-    "@mui/material": "^6.4.3",
-    "zod": "^3.24.1"
+    "@mui/material": "^6.4.4",
+    "zod": "^3.24.2"
   }
 }
