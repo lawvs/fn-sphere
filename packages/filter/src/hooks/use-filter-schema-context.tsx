@@ -3,7 +3,7 @@ import {
   type FilterField,
   type FilterGroup,
 } from "@fn-sphere/core";
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, type ReactNode, useContext, useMemo } from "react";
 import { z } from "zod";
 import { type FilterMap, fromFilterMap, toFilterMap } from "../filter-map.js";
 import { defaultGetLocaleText } from "../locales/get-locale-text.js";
@@ -60,13 +60,16 @@ export const FilterSchemaProvider = ({
 }: FilterSchemaProviderProps) => {
   const { onRuleChange, ...valueWithoutRuleChange } = context;
 
-  const contextValue: InternalFilterContextType = {
-    ...valueWithoutRuleChange,
-    onFilterMapChange: (filterMap: FilterMap) => {
-      onRuleChange?.(fromFilterMap(filterMap));
-    },
-    filterMap: toFilterMap(context.filterRule),
-  };
+  const contextValue: InternalFilterContextType = useMemo(
+    () => ({
+      ...valueWithoutRuleChange,
+      onFilterMapChange: (filterMap: FilterMap) => {
+        onRuleChange?.(fromFilterMap(filterMap));
+      },
+      filterMap: toFilterMap(context.filterRule),
+    }),
+    [context, onRuleChange, valueWithoutRuleChange],
+  );
 
   return (
     <FilterSchemaContext value={contextValue}>{children}</FilterSchemaContext>
