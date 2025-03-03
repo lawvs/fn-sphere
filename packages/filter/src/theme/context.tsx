@@ -17,12 +17,12 @@ export const useFilterTheme = () => {
  *
  * It should preferably be used at the root of your filter component tree.
  */
-export const FilterThemeProvider = ({
+export function FilterThemeProvider({
   theme,
   children,
 }: {
   theme: FilterTheme;
   children?: ReactNode;
-}) => {
+}) {
   return <FilterThemeContext value={theme}>{children}</FilterThemeContext>;
-};
+}
