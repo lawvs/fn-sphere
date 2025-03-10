@@ -19,7 +19,7 @@
     "@astrojs/tailwind": "^5.1.5",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "astro": "^5.4.1",
+    "astro": "^5.4.2",
     "astro-live-code": "^0.0.5",
     "astro-relative-links": "^0.4.2",
     "react": "^19.0.0",
@@ -37,7 +37,7 @@
     "@emotion/styled": "^11.14.0",
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
-    "@mui/material": "^6.4.6",
+    "@mui/material": "^6.4.7",
     "zod": "^3.24.2"
   }
 }
