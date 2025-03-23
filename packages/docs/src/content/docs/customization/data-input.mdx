@@ -95,7 +95,7 @@ const pointInput: DataInputViewSpec = {
         <span>X:</span>
         <input
           onChange={(e) => {
-            const value = e.target.checked;
+            const value = e.target.value;
             updateInput({
               x: value,
               y: point.y,
@@ -106,7 +106,7 @@ const pointInput: DataInputViewSpec = {
         <span>Y:</span>
         <input
           onChange={(e) => {
-            const value = e.target.checked;
+            const value = e.target.value;
             updateInput({
               x: point.x,
               y: value,
