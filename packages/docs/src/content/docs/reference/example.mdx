@@ -27,6 +27,17 @@ import { FlattenFilter } from "~/components/examples/flatten-filter-builder.tsx"
 </div>
 <SourceCodeCard path="~/components/examples/flatten-filter-builder.tsx" />
 
+## Backend Integration
+
+Filter Sphere is easy to integrate with backend systems. This example demonstrates integration with [Meilisearch](https://www.meilisearch.com/). You can try it out by typing in the search box below.
+
+import { NeoFilter } from "~/components/examples/neo-uglysearch/index.tsx";
+
+<div className="not-content" style={{ marginTop: "1rem" }}>
+  <NeoFilter client:load />
+</div>
+<SourceCodeCard path="~/components/examples/neo-filter-builder.tsx" />
+
 ## Real-world Example
 
 import ShowcaseSites from "~/components/showcase-sites.astro";
