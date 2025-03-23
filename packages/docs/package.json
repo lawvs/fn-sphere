@@ -19,7 +19,7 @@
     "@astrojs/tailwind": "^5.1.5",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "astro": "^5.4.2",
+    "astro": "^5.5.4",
     "astro-live-code": "^0.0.5",
     "astro-relative-links": "^0.4.2",
     "react": "^19.0.0",
