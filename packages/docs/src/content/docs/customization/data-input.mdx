@@ -89,7 +89,7 @@ const pointInput: DataInputViewSpec = {
   // The data type that this input component can handle
   match: [pointSchema],
   view: ({ rule, updateInput }) => {
-    const point = rule.args?.[0] ?? { x: 0, y: 0 };
+    const point = rule.args[0] ?? { x: 0, y: 0 };
     return (
       <>
         <span>X:</span>

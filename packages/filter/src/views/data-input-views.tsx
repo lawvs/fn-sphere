@@ -25,7 +25,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       return (
         <Select
           options={options}
-          value={rule.args?.[0] as boolean}
+          value={rule.args[0] as boolean}
           onChange={(value) => {
             updateInput(value);
           }}
@@ -41,7 +41,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       if (!requiredDataSchema.length) {
         return null;
       }
-      const value = (rule.args?.[0] as string | undefined) ?? "";
+      const value = (rule.args[0] as string | undefined) ?? "";
       return (
         <InputView
           type="text"
@@ -66,7 +66,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       if (!requiredDataSchema.length) {
         return null;
       }
-      const value = (rule.args?.[0] as number) ?? "";
+      const value = (rule.args[0] as number) ?? "";
       return (
         <InputView
           type="number"
@@ -92,8 +92,8 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         return null;
       }
 
-      const value = rule.args?.[0]
-        ? new Date(rule.args?.[0] as Date).toISOString().slice(0, 10)
+      const value = rule.args[0]
+        ? new Date(rule.args[0] as Date).toISOString().slice(0, 10)
         : "";
 
       return (
@@ -142,7 +142,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       return (
         <Select
           options={options}
-          value={rule.args?.[0] as z.Primitive}
+          value={rule.args[0] as z.Primitive}
           onChange={(value) => {
             updateInput(value);
           }}
@@ -176,13 +176,13 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
         label: getLocaleText(item.description ?? String(item.value)),
         value: item.value,
       }));
-      const value = (rule.args?.[0] ?? []) as z.Primitive[];
+      const value = (rule.args[0] ?? []) as z.Primitive[];
       return (
         <MultipleSelectView<z.Primitive>
           value={value}
           options={options}
           onChange={(newValue) => {
-            if (!newValue?.length) {
+            if (!newValue.length) {
               updateInput();
               return;
             }
