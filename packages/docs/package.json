@@ -13,24 +13,24 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/react": "^4.2.1",
-    "@astrojs/starlight": "^0.32.2",
+    "@astrojs/react": "^4.2.7",
+    "@astrojs/starlight": "^0.34.2",
     "@astrojs/starlight-tailwind": "^3.0.0",
     "@astrojs/tailwind": "^5.1.5",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "astro": "^5.5.4",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.3",
+    "astro": "^5.7.10",
     "astro-live-code": "^0.0.5",
     "astro-relative-links": "^0.4.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "rehype-external-links": "^3.0.0",
-    "sharp": "^0.33.5",
-    "starlight-links-validator": "^0.14.3",
-    "starlight-typedoc": "^0.20.0",
+    "sharp": "^0.34.1",
+    "starlight-links-validator": "^0.16.0",
+    "starlight-typedoc": "^0.21.1",
     "tailwindcss": "^3.4.16",
-    "typedoc": "^0.27.9",
-    "typedoc-plugin-markdown": "^4.4.2"
+    "typedoc": "^0.28.4",
+    "typedoc-plugin-markdown": "^4.6.3"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
@@ -38,6 +38,6 @@
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
     "@mui/material": "^6.4.7",
-    "zod": "^3.24.2"
+    "zod": "^3.24.4"
   }
 }
