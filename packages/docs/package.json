@@ -37,7 +37,7 @@
     "@emotion/styled": "^11.14.0",
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
-    "@mui/material": "^6.4.7",
+    "@mui/material": "^7.0.2",
     "zod": "^3.24.2"
   }
 }
