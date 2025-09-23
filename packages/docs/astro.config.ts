@@ -1,11 +1,11 @@
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
-import tailwind from "@astrojs/tailwind";
 import liveCode from "astro-live-code";
 import relativeLinks from "astro-relative-links";
 import { defineConfig } from "astro/config";
 import rehypeExternalLinks from "rehype-external-links";
 // https://github.com/HiDeoo/starlight-typedoc
+import tailwindcss from "@tailwindcss/vite";
 import starlightTypeDoc from "starlight-typedoc";
 // https://github.com/HiDeoo/starlight-links-validator
 import starlightLinksValidator from "starlight-links-validator";
@@ -24,9 +24,13 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Filter Sphere",
-      social: {
-        github: "https://github.com/lawvs/fn-sphere",
-      },
+      social: [
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/lawvs/fn-sphere",
+        },
+      ],
       sidebar: [
         {
           label: "Guides",
@@ -91,15 +95,12 @@ export default defineConfig({
       },
     }), // Workaround for https://github.com/withastro/astro/issues/4229
     relativeLinks(),
-    tailwind({
-      // Disable the default base styles:
-      applyBaseStyles: false,
-    }),
   ],
   vite: {
     ssr: {
       // Workaround for https://github.com/mui/material-ui/issues/42848
       noExternal: /@mui\/.*?/,
     },
+    plugins: [tailwindcss()],
   },
 });

@@ -1,0 +1,2 @@
+/* Load Tailwind without any of Starlight's complementary CSS. */
+@import "tailwindcss";

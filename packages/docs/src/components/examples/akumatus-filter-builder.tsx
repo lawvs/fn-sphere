@@ -46,7 +46,7 @@ const theme = createFilterTheme({
       return (
         <div
           className={[
-            "flex flex-col gap-4 w-100 p-2 relative rounded-sm border border-solid border-[#6d77b8] border-t-4 border-t-[#6d77b8] mb-5 shadow-[0_1px_1px_rgba(0,0,0,0.1)] bg-[rgba(255,255,255,0.9)]",
+            "flex flex-col gap-4 p-2 relative rounded-sm border border-solid border-[#6d77b8] border-t-4 border-t-[#6d77b8] mb-5 shadow-[0_1px_1px_rgba(0,0,0,0.1)] bg-[rgba(255,255,255,0.9)]",
             "before:content-[''] before:absolute before:left-[-17px] before:w-4 before:h-[calc(50%+18px)] before:border-solid before:border-[#c0c5e2] before:border-b-2 before:border-l-2 before:top-[-18px]",
             !isLastGroup
               ? "after:content-[''] after:absolute after:left-[-17px] after:w-4 after:h-[calc(50%+18px)] after:border-solid after:border-[#c0c5e2] after:border-l-2 after:top-[50%]"
@@ -57,7 +57,7 @@ const theme = createFilterTheme({
           <div className="flex justify-between">
             <div className="flex items-center gap-1">
               <button
-                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${isAnd ? "text-white bg-[#6d77b8]" : "bg-white text-[#6d77b8] border-[#6d77b8]"}`}
+                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-normal whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${isAnd ? "text-white bg-[#6d77b8]" : "bg-white text-[#6d77b8] border-[#6d77b8]"}`}
                 onClick={() => {
                   toggleGroupOp("and");
                 }}
@@ -65,7 +65,7 @@ const theme = createFilterTheme({
                 And
               </button>
               <button
-                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${!isAnd ? "text-white bg-[#6d77b8]" : "bg-white text-[#6d77b8] border-[#6d77b8]"}`}
+                className={`flex justify-center items-center px-2 py-0.5 text-xs leading-normal whitespace-nowrap cursor-pointer select-none rounded-[11px] border ${!isAnd ? "text-white bg-[#6d77b8]" : "bg-white text-[#6d77b8] border-[#6d77b8]"}`}
                 onClick={() => {
                   toggleGroupOp("or");
                 }}
@@ -77,7 +77,7 @@ const theme = createFilterTheme({
             <div className="flex items-center gap-1">
               <button
                 className={
-                  "flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[3px] text-white bg-[#6d77b8]"
+                  "flex justify-center items-center px-2 py-0.5 text-xs leading-normal whitespace-nowrap cursor-pointer select-none rounded-[3px] text-white bg-[#6d77b8]"
                 }
                 onClick={() => {
                   appendChildRule(createSingleFilter());
@@ -87,7 +87,7 @@ const theme = createFilterTheme({
               </button>
               <button
                 className={
-                  "flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[3px] text-white bg-[#6d77b8]"
+                  "flex justify-center items-center px-2 py-0.5 text-xs leading-normal whitespace-nowrap cursor-pointer select-none rounded-[3px] text-white bg-[#6d77b8]"
                 }
                 onClick={() => {
                   appendChildGroup(
@@ -103,10 +103,10 @@ const theme = createFilterTheme({
               {isRoot ? null : (
                 <button
                   className={[
-                    "flex justify-center items-center px-2 py-0.5 text-xs leading-[1.5] whitespace-nowrap cursor-pointer select-none rounded-[3px] bg-[#6d77b8]",
+                    "flex justify-center items-center px-2 py-0.5 text-xs leading-normal whitespace-nowrap cursor-pointer select-none rounded-[3px] bg-[#6d77b8]",
                     // https://stackoverflow.com/questions/48152562/changing-font-color-of-html-symbol
                     // https://www.hyperui.dev/blog/text-shadow-with-tailwindcss
-                    "text-transparent [text-shadow:_0_0_0_white]",
+                    "text-transparent [text-shadow:0_0_0_white]",
                   ].join(" ")}
                   onClick={() => {
                     removeGroup();
