@@ -84,7 +84,9 @@ export default defineConfig({
             entryFileName: "index.md",
           },
         }),
-        starlightLinksValidator(),
+        starlightLinksValidator({
+          exclude: ["/api/**"],
+        }),
       ],
     }),
     react(),
