@@ -23,7 +23,6 @@
 ### Minor Changes
 
 - [`ef470f1`](https://github.com/lawvs/fn-sphere/commit/ef470f179cda345a441f98e0b8d765598080d551) Thanks [@lawvs](https://github.com/lawvs)! - Breaking Changes
-
   - Now the first field and the first filter will be selected by default when creating a new rule.
     - Updated `useFilterSphere` to use `createDefaultRule` for default rule creation.
     - Updated `useFilterGroup` and `useFilterRule` to use `createDefaultRule` when no input is provided.
@@ -43,12 +42,10 @@
 - [#51](https://github.com/lawvs/fn-sphere/pull/51) [`a8b07f2`](https://github.com/lawvs/fn-sphere/commit/a8b07f24ed031e5ed3c4396cfdf7a603f5fb2209) Thanks [@lawvs](https://github.com/lawvs)! - Add locale supports
 
   BREAKING CHANGE
-
   - All name of filter has been changed.
   - The `booleanFilter` has been removed.
 
 - [`9badd88`](https://github.com/lawvs/fn-sphere/commit/9badd88890b39141b6ae5ce02865d8cc5b938a9a) Thanks [@lawvs](https://github.com/lawvs)! - Breaking Changes
-
   - Renamed `filterGroup` prop to `rule` in FilterGroupContainer.
   - Modified `filterTheme` in theme-mui-material to use `rule` instead of `filterGroup`.
 
@@ -88,9 +85,7 @@
 ### Minor Changes
 
 - ab1a0c6: - Deprecated `onPredicateChange` in `useFilterSphere`
-
   - ⚠️ BREAKING CHANGES
-
     - The `onRuleChange` callback in `useFilterSphere` now receives an object with both `filterRule` and `predicate` properties, instead of just the `filterRule`.
     - The `onPredicateChange` callback has been removed. Use the `predicate` property in the `onRuleChange` callback instead.
 
@@ -132,7 +127,6 @@
   ```
 
 - 87acc5e: - BREAKING CHANGES
-
   - `updateInput` in `DataInputViewProps` now use spread parameter to accept new values.
 
   ```diff
@@ -210,7 +204,6 @@
   ```
 
 - 311f306: - Added the ability to retain the current filter and arguments when the field is changed in the `useFilterSelect` hook.
-
   - Introduced the `UpdateFieldOptions` type to specify the behavior when updating the field.
   - Updated the `FieldSelect` component to pass the `updateFieldOptions` to the `updateField` function.
 
@@ -270,7 +263,6 @@
 - b272f24: Export `FnSchema`, `StandardFnSchema` and `GenericFnSchema` type from core package.
 
   Export `defineGenericFn` and `defineTypedFn` from core package.
-
   - @fn-sphere/core@0.3.6
 
 ## 0.3.5
@@ -281,7 +273,6 @@
 - 75feec4: Update data input view to handle empty values
 
   If input value is empty string, the input view will update the rule args to `[]` instead of `[""]`. This is to prevent the rule from running with an empty string as an argument.
-
   - @fn-sphere/core@0.3.5
 
 ## 0.3.4
@@ -319,7 +310,6 @@
 - aef8fbc: Fix `numberOfRules` should only count the SingleRule and not the RuleGroup.
 
   Return `countTotalRules` function to `useFilterSphere` hook.
-
   - @fn-sphere/core@0.3.1
 
 ## 0.3.0

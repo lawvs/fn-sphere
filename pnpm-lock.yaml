@@ -18,8 +18,8 @@ importers:
         specifier: ^2.1.8
         version: 2.1.8(vitest@2.1.8(jsdom@26.0.0)(less@4.2.2)(lightningcss@1.30.1))
       prettier:
-        specifier: ^3.5.3
-        version: 3.5.3
+        specifier: ^3.6.2
+        version: 3.6.2
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
@@ -41,7 +41,7 @@ importers:
     dependencies:
       '@astrojs/check':
         specifier: ^0.9.4
-        version: 0.9.4(prettier@3.5.3)(typescript@5.8.2)
+        version: 0.9.4(prettier@3.6.2)(typescript@5.8.2)
       '@astrojs/react':
         specifier: ^4.3.1
         version: 4.3.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(jiti@2.6.0)(less@4.2.2)(lightningcss@1.30.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(yaml@2.7.1)
@@ -3962,8 +3962,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.5.3:
-    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+  prettier@3.6.2:
+    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -5140,9 +5140,9 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.3
       lru-cache: 11.0.2
 
-  '@astrojs/check@0.9.4(prettier@3.5.3)(typescript@5.8.2)':
+  '@astrojs/check@0.9.4(prettier@3.6.2)(typescript@5.8.2)':
     dependencies:
-      '@astrojs/language-server': 2.15.4(prettier@3.5.3)(typescript@5.8.2)
+      '@astrojs/language-server': 2.15.4(prettier@3.6.2)(typescript@5.8.2)
       chokidar: 4.0.3
       kleur: 4.1.5
       typescript: 5.8.2
@@ -5159,7 +5159,7 @@ snapshots:
 
   '@astrojs/internal-helpers@0.7.3': {}
 
-  '@astrojs/language-server@2.15.4(prettier@3.5.3)(typescript@5.8.2)':
+  '@astrojs/language-server@2.15.4(prettier@3.6.2)(typescript@5.8.2)':
     dependencies:
       '@astrojs/compiler': 2.11.0
       '@astrojs/yaml2ts': 0.2.2
@@ -5173,14 +5173,14 @@ snapshots:
       volar-service-css: 0.0.62(@volar/language-service@2.4.11)
       volar-service-emmet: 0.0.62(@volar/language-service@2.4.11)
       volar-service-html: 0.0.62(@volar/language-service@2.4.11)
-      volar-service-prettier: 0.0.62(@volar/language-service@2.4.11)(prettier@3.5.3)
+      volar-service-prettier: 0.0.62(@volar/language-service@2.4.11)(prettier@3.6.2)
       volar-service-typescript: 0.0.62(@volar/language-service@2.4.11)
       volar-service-typescript-twoslash-queries: 0.0.62(@volar/language-service@2.4.11)
       volar-service-yaml: 0.0.62(@volar/language-service@2.4.11)
       vscode-html-languageservice: 5.3.1
       vscode-uri: 3.0.8
     optionalDependencies:
-      prettier: 3.5.3
+      prettier: 3.6.2
     transitivePeerDependencies:
       - typescript
 
@@ -9596,7 +9596,7 @@ snapshots:
 
   prettier@2.8.8: {}
 
-  prettier@3.5.3: {}
+  prettier@3.6.2: {}
 
   pretty-format@27.5.1:
     dependencies:
@@ -10550,12 +10550,12 @@ snapshots:
     optionalDependencies:
       '@volar/language-service': 2.4.11
 
-  volar-service-prettier@0.0.62(@volar/language-service@2.4.11)(prettier@3.5.3):
+  volar-service-prettier@0.0.62(@volar/language-service@2.4.11)(prettier@3.6.2):
     dependencies:
       vscode-uri: 3.0.8
     optionalDependencies:
       '@volar/language-service': 2.4.11
-      prettier: 3.5.3
+      prettier: 3.6.2
 
   volar-service-typescript-twoslash-queries@0.0.62(@volar/language-service@2.4.11):
     dependencies:
