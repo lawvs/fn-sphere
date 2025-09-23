@@ -1,4 +1,5 @@
-import type { SingleFilter } from "@fn-sphere/core";
+import type { FilterField, SingleFilter } from "@fn-sphere/core";
+import { useCallback } from "react";
 import {
   useFilterSelect,
   type UpdateFieldOptions,
@@ -13,23 +14,27 @@ export type FieldSelectProps = {
 
 export const FieldSelect = ({
   rule,
-  tryRetainArgs,
-  tryRetainFilter,
+  tryRetainArgs = true,
+  tryRetainFilter = true,
   ...props
 }: FieldSelectProps) => {
   const { Select: SelectView } = useView("components");
   const { selectedField, fieldOptions, setField } = useFilterSelect(rule);
 
+  const handleChange = useCallback(
+    (field: FilterField) =>
+      setField(field, {
+        tryRetainArgs: !!tryRetainArgs,
+        tryRetainFilter: !!tryRetainFilter,
+      }),
+    [setField, tryRetainArgs, tryRetainFilter],
+  );
+
   return (
     <SelectView
       value={selectedField}
       options={fieldOptions}
-      onChange={(field) =>
-        setField(field, {
-          tryRetainArgs: !!tryRetainArgs,
-          tryRetainFilter: !!tryRetainFilter,
-        })
-      }
+      onChange={handleChange}
       {...props}
     />
   );
