@@ -51,9 +51,6 @@ jobs:
 
       - name: Build
         run: pnpm run build
-        env:
-          # Fix https://github.com/withastro/starlight/issues/3439
-          BASE_URL: ${{ vars.BASE_URL }}
 
       - name: Upload docs artifacts
         # https://github.com/actions/upload-pages-artifact
