@@ -1,5 +1,11 @@
 # @fn-sphere/core
 
+## 0.8.0
+
+### Patch Changes
+
+- [`82696fa`](https://github.com/lawvs/fn-sphere/commit/82696fae32089d1fd88f4d4becdd1b4f05bf6e88) Thanks [@lawvs](https://github.com/lawvs)! - Update dependencies
+
 ## 0.6.0
 
 ### Minor Changes

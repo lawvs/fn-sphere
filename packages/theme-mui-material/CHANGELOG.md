@@ -1,5 +1,14 @@
 # @fn-sphere/theme-mui-material
 
+## 0.1.3
+
+### Patch Changes
+
+- [`82696fa`](https://github.com/lawvs/fn-sphere/commit/82696fae32089d1fd88f4d4becdd1b4f05bf6e88) Thanks [@lawvs](https://github.com/lawvs)! - Update dependencies
+
+- Updated dependencies [[`82696fa`](https://github.com/lawvs/fn-sphere/commit/82696fae32089d1fd88f4d4becdd1b4f05bf6e88), [`a915a9a`](https://github.com/lawvs/fn-sphere/commit/a915a9a52f442de8843c68063fb53fc2755e0e57)]:
+  - @fn-sphere/filter@0.8.0
+
 ## 0.1.2
 
 ### Patch Changes
