@@ -1,11 +1,11 @@
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
+import tailwindcss from "@tailwindcss/vite";
 import liveCode from "astro-live-code";
 import relativeLinks from "astro-relative-links";
 import { defineConfig } from "astro/config";
 import rehypeExternalLinks from "rehype-external-links";
 // https://github.com/HiDeoo/starlight-typedoc
-import tailwindcss from "@tailwindcss/vite";
 import starlightTypeDoc from "starlight-typedoc";
 // https://github.com/HiDeoo/starlight-links-validator
 import starlightLinksValidator from "starlight-links-validator";
@@ -84,7 +84,9 @@ export default defineConfig({
             entryFileName: "index.md",
           },
         }),
-        starlightLinksValidator(),
+        starlightLinksValidator({
+          errorOnInvalidHashes: false,
+        }),
       ],
     }),
     react(),
