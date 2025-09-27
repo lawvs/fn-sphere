@@ -1,5 +1,23 @@
 # @fn-sphere/filter
 
+## 0.8.0
+
+### Minor Changes
+
+- [`a915a9a`](https://github.com/lawvs/fn-sphere/commit/a915a9a52f442de8843c68063fb53fc2755e0e57) Thanks [@lawvs](https://github.com/lawvs)! - feat(filter)!: retain args by default when filter changes via tryRetainArgs
+  - BREAKING: FieldSelect and FilterSelect now default `tryRetainArgs` (and `tryRetainFilter` for fields) to `true`. Previously, leaving these props undefined defaulted to resetting `args`. To restore the old behavior, explicitly pass `tryRetainArgs={false}` (and/or `tryRetainFilter={false}`).
+  - When switching filters within the same field, if the new filter's parameter schema is compatible, existing `args` are preserved.
+  - Data input "literal union" options are memoized for stability.
+
+  This change improves UX by avoiding unnecessary argument resets when changing a filter, while still allowing users to opt out.
+
+### Patch Changes
+
+- [`82696fa`](https://github.com/lawvs/fn-sphere/commit/82696fae32089d1fd88f4d4becdd1b4f05bf6e88) Thanks [@lawvs](https://github.com/lawvs)! - Update dependencies
+
+- Updated dependencies [[`82696fa`](https://github.com/lawvs/fn-sphere/commit/82696fae32089d1fd88f4d4becdd1b4f05bf6e88)]:
+  - @fn-sphere/core@0.8.0
+
 ## 0.7.2
 
 ### Patch Changes
