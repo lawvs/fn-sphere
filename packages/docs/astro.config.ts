@@ -12,6 +12,8 @@ import starlightLinksValidator from "starlight-links-validator";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://www.waterwater.moe",
+  base: "/fn-sphere",
   markdown: {
     rehypePlugins: [
       // https://www.npmjs.com/package/rehype-external-links

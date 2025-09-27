@@ -9,12 +9,10 @@
 - [#51](https://github.com/lawvs/fn-sphere/pull/51) [`a8b07f2`](https://github.com/lawvs/fn-sphere/commit/a8b07f24ed031e5ed3c4396cfdf7a603f5fb2209) Thanks [@lawvs](https://github.com/lawvs)! - Add locale supports
 
   BREAKING CHANGE
-
   - All name of filter has been changed.
   - The `booleanFilter` has been removed.
 
 - [`01369a8`](https://github.com/lawvs/fn-sphere/commit/01369a805b0fb644ddbb4e7dd334d7896651ac84) Thanks [@lawvs](https://github.com/lawvs)! - Breaking Changes
-
   - Removed support for array input in `defineTypedFn` and `defineGenericFn`.
 
 ### Patch Changes

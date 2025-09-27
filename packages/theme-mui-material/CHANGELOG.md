@@ -16,12 +16,10 @@
 - [`964faf3`](https://github.com/lawvs/fn-sphere/commit/964faf32dfb0f0e982063ee5a8a496e1a799b9c9) Thanks [@lawvs](https://github.com/lawvs)! - Add depth limit for filter group
 
 - [`9badd88`](https://github.com/lawvs/fn-sphere/commit/9badd88890b39141b6ae5ce02865d8cc5b938a9a) Thanks [@lawvs](https://github.com/lawvs)! - Breaking Changes
-
   - Renamed `filterGroup` prop to `rule` in FilterGroupContainer.
   - Modified `filterTheme` in theme-mui-material to use `rule` instead of `filterGroup`.
 
 - [`50d4c0b`](https://github.com/lawvs/fn-sphere/commit/50d4c0ba43caee04b226f396286f271bbe755d26) Thanks [@lawvs](https://github.com/lawvs)! - - Updated `FilterGroupContainer` template with improved layout and functionality.
-
   - Removed `variant="contained"` from Button component.
   - Updated `SingleFilter` template:
     - Replaced `DeleteIcon` with `ClearIcon`.
