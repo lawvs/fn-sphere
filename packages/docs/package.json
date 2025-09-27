@@ -16,7 +16,6 @@
     "@astrojs/react": "^4.3.1",
     "@astrojs/starlight": "^0.36.0",
     "@astrojs/starlight-tailwind": "^4.0.1",
-    "@astrojs/tailwind": "^6.0.2",
     "@tailwindcss/vite": "^4.1.13",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
