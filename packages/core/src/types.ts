@@ -1,26 +1,28 @@
-import type { TypeOf, ZodFunction, ZodTuple, ZodType, ZodTypeAny } from "zod";
+import type { $ZodFunction, $ZodTypes } from "zod/v4/core";
 
 /**
  * @internal
+ *
+ * @deprecated
  */
-export type ZodAnyFunction = ZodFunction<ZodTuple<any, any>, ZodTypeAny>;
+export type ZodAnyFunction = $ZodFunction;
 
-export type StandardFnSchema<T extends ZodAnyFunction = ZodAnyFunction> = {
+export type StandardFnSchema<T extends $ZodFunction = $ZodFunction> = {
   name: string;
   define: T;
-  implement: TypeOf<T>;
+  implement: Parameters<T["implement"]>[0];
   skipValidate?: boolean | undefined;
   meta?: Record<string, unknown>;
 };
 
 export type GenericFnSchema<
-  DataType extends ZodType = any,
-  Fn extends ZodAnyFunction = ZodAnyFunction,
+  DataType extends $ZodTypes = any,
+  Fn extends $ZodFunction = $ZodFunction,
 > = {
   name: string;
-  genericLimit: (t: ZodType) => t is DataType;
+  genericLimit: (t: $ZodTypes) => t is DataType;
   define: (t: DataType) => Fn;
-  implement: TypeOf<Fn>;
+  implement: Parameters<Fn["implement"]>[0];
   skipValidate?: boolean;
   meta?: Record<string, unknown>;
 };

@@ -1,4 +1,4 @@
-import type { ZodType } from "zod";
+import type { $ZodType } from "zod/v4/core";
 import type { StandardFnSchema } from "../types.js";
 
 export type FilterPath = (string | number)[];
@@ -13,7 +13,7 @@ export type FilterField = {
    * If it's a empty array, it means the root object
    */
   path: FilterPath;
-  fieldSchema: ZodType;
+  fieldSchema: $ZodType;
   filterFnList: StandardFnSchema[];
 };
 

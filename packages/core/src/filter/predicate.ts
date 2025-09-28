@@ -1,4 +1,4 @@
-import { z } from "zod";
+import type { $ZodType } from "zod/v4/core";
 import type { FnSchema } from "../types.js";
 import { unreachable } from "../utils.js";
 import type {
@@ -14,7 +14,7 @@ type FilterPredicateOptions<T> = {
   /**
    * The schema of the data.
    */
-  schema: z.ZodType<T>;
+  schema: $ZodType<T>;
   /**
    * The filter rule.
    */
@@ -43,13 +43,15 @@ const createSingleRulePredicate = <Data>({
   // Returns a new function that automatically validates its inputs and outputs.
   // See https://zod.dev/?id=functions
   const fnWithImplement = skipValidate
-    ? filterSchema.implement
-    : filterSchema.define.implement(filterSchema.implement);
+    ? (filterSchema.implement as (...data: unknown[]) => boolean)
+    : (filterSchema.define.implement(filterSchema.implement) as (
+        ...data: unknown[]
+      ) => boolean);
 
   return (data: Data): boolean => {
     const target = getValueAtPath(data, strictSingleRule.path);
     const result = fnWithImplement(target, ...strictSingleRule.args);
-    return strictSingleRule.invert ? !result : result;
+    return strictSingleRule.invert ? !result : !!result;
   };
 };
 

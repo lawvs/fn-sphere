@@ -1,15 +1,14 @@
-import type { ZodType } from "zod";
-import { z } from "zod";
 import { isSameType } from "zod-compare";
+import type { $ZodTuple, $ZodType, $ZodTypes } from "zod/v4/core";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import { isGenericFilter } from "../utils.js";
 import type { FilterField, FilterPath } from "./types.js";
 import { instantiateGenericFn } from "./utils.js";
 
 const bfsSchemaField = (
-  schema: z.ZodType,
+  schema: $ZodType,
   maxDeep: number,
-  walk: (field: z.ZodSchema, path: FilterPath) => void,
+  walk: (field: $ZodType, path: FilterPath) => void,
 ) => {
   const queue = [
     {
@@ -21,17 +20,17 @@ const bfsSchemaField = (
   while (queue.length > 0) {
     const current = queue.shift();
     if (!current) break;
-    if (current.deep > maxDeep) {
-      break;
-    }
+    if (current.deep > maxDeep) break;
+
     walk(current.schema, current.path);
 
-    if (!(current.schema instanceof z.ZodObject)) {
-      continue;
-    }
-    const fields = current.schema.shape;
+    const currentSchema = current.schema as $ZodTypes;
+    if (currentSchema._zod.def.type !== "object") continue;
+
+    const fields = currentSchema._zod.def.shape;
     for (const key in fields) {
       const field = fields[key];
+      if (!field) continue;
       queue.push({
         schema: field,
         path: [...current.path, key] as FilterPath,
@@ -49,13 +48,13 @@ export const findFilterableFields = <Data>({
   filterFnList,
   maxDeep = 1,
 }: {
-  schema: ZodType<Data>;
+  schema: $ZodType<Data>;
   filterFnList: FnSchema[];
   maxDeep?: number;
 }): FilterField[] => {
   const result: FilterField[] = [];
 
-  const walk = (fieldSchema: ZodType, path: FilterPath) => {
+  const walk = (fieldSchema: $ZodType, path: FilterPath) => {
     const instantiationFilter: StandardFnSchema[] = filterFnList
       .map((fnSchema): StandardFnSchema | undefined => {
         if (!isGenericFilter(fnSchema)) {
@@ -69,11 +68,15 @@ export const findFilterableFields = <Data>({
 
     const availableFilter = instantiationFilter.filter((filter) => {
       const { define } = filter;
-      const parameters = define.parameters();
-      const firstFnParameter: ZodType = parameters.items[0];
+      const parameters = define._zod.def.input as $ZodTuple;
+      const firstFnParameter = parameters._zod.def.items[0];
+      if (!firstFnParameter) {
+        console.error("First function parameter is not defined", filter);
+        return false;
+      }
       // TODO use isCompatibleType
       if (
-        firstFnParameter instanceof z.ZodAny ||
+        firstFnParameter._zod.def.type === "any" ||
         isSameType(fieldSchema, firstFnParameter)
       ) {
         return true;

@@ -22,12 +22,12 @@ test("basic usage", () => {
   const filterSphere = createFilterSphere(zData, [
     {
       name: "is admin",
-      define: z.function().args(zData).returns(z.boolean()),
+      define: z.function({ input: [zData], output: z.boolean() }),
       implement: (value) => value.id === "admin",
     },
     {
       name: "number equal",
-      define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+      define: z.function({ input: [z.number(), z.number()], output: z.boolean() }),
       implement: (value, target) => value === target,
     },
   ]);
@@ -79,7 +79,7 @@ test("filter nested obj", () => {
   const filterSphere = createFilterSphere(zData, [
     {
       name: "number equal",
-      define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+      define: z.function({ input: [z.number(), z.number()], output: z.boolean() }),
       implement: (value, target) => value === target,
     },
   ]);
@@ -131,12 +131,12 @@ test("FilterGroup usage", () => {
   const filterSphere = createFilterSphere(zData, [
     {
       name: "number equal",
-      define: z.function().args(z.number(), z.number()).returns(z.boolean()),
+      define: z.function({ input: [z.number(), z.number()], output: z.boolean() }),
       implement: (value, target) => value === target,
     },
     {
       name: "string equal",
-      define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+      define: z.function({ input: [z.string(), z.string()], output: z.boolean() }),
       implement: (value, target) => value === target,
     },
   ]);

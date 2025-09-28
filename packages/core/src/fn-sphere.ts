@@ -1,5 +1,11 @@
-import { z } from "zod";
 import { isSameType } from "zod-compare";
+import type {
+  $ZodFunction,
+  $ZodTuple,
+  $ZodType,
+  $ZodTypes,
+  $ZodUnknown,
+} from "zod/v4/core";
 import { createFilterSphere } from "./filter/index.js";
 import type {
   GenericFnSchema,
@@ -8,15 +14,15 @@ import type {
 } from "./types.js";
 import { isFilterFn as isFilterSchema } from "./utils.js";
 
-export function defineTypedFn<
-  T extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
->(schema: StandardFnSchema<T>): StandardFnSchema<T> {
+export function defineTypedFn<T extends $ZodFunction>(
+  schema: StandardFnSchema<T>,
+): StandardFnSchema<T> {
   return schema;
 }
 
 export function defineGenericFn<
-  Generic extends z.ZodType,
-  Fn extends z.ZodFunction<z.ZodTuple<any, any>, z.ZodTypeAny>,
+  Generic extends $ZodTypes,
+  Fn extends $ZodFunction,
 >(schemaFn: GenericFnSchema<Generic, Fn>): GenericFnSchema<Generic, Fn> {
   return schemaFn;
 }
@@ -58,8 +64,8 @@ export const createFnSphere = () => {
   };
 
   const findFn = <
-    Input extends z.ZodTuple<any, any> = z.ZodTuple<any, any>,
-    Output extends z.ZodType = z.ZodUnknown,
+    Input extends $ZodTuple<any, any> = $ZodTuple<any, any>,
+    Output extends $ZodType = $ZodUnknown,
   >(
     maybePredicate:
       | {
@@ -74,14 +80,14 @@ export const createFnSphere = () => {
     const { input, output } = maybePredicate;
     const filterFn = Object.values(state.fnMap).filter((fn) => {
       return (
-        (input ? isSameType(input, fn.define.parameters()) : true) &&
-        (output ? isSameType(output, fn.define.returnType()) : true)
+        (input ? isSameType(input, fn.define._zod.def.input) : true) &&
+        (output ? isSameType(output, fn.define._zod.def.output) : true)
       );
     });
-    return filterFn as StandardFnSchema<z.ZodFunction<Input, Output>>[];
+    return filterFn as StandardFnSchema<$ZodFunction<Input, Output>>[];
   };
 
-  const setupFilter = <S>(schema: z.ZodType<S>) => {
+  const setupFilter = <S>(schema: $ZodType<S>) => {
     const filterFn = findFn(isFilterSchema);
     const zFilter = createFilterSphere(schema, filterFn);
     return zFilter;
