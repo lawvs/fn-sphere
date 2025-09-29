@@ -126,17 +126,17 @@ const validateStandardFnRule = ({
 
   const requiredParameters = getParametersExceptFirst(fnSchema);
 
-  if (requiredParameters.length !== rule.args.length) {
+  if (requiredParameters._zod.def.items.length !== rule.args.length) {
     return {
       success: false,
       error: new Error(
-        `rule.args length not match required parameters length, ${rule.args.length} !== ${requiredParameters.length}`,
+        `rule.args length not match required parameters length, ${rule.args.length} !== ${requiredParameters._zod.def.items.length}`,
       ),
     };
   }
 
   if (!fnSchema.skipValidate) {
-    const parseResult = z.tuple(requiredParameters).safeParse(rule.args);
+    const parseResult = z.safeParse(requiredParameters, rule.args);
     return parseResult;
   }
   return {

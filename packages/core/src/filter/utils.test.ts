@@ -91,10 +91,7 @@ describe("getFirstParameters getParametersExceptFirst", () => {
     };
     expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
     expect(
-      isSameType(
-        z.tuple(getParametersExceptFirst(schema)),
-        z.tuple([z.boolean()]),
-      ),
+      isSameType(getParametersExceptFirst(schema), z.tuple([z.boolean()])),
     ).toEqual(true);
   });
 
@@ -110,7 +107,7 @@ describe("getFirstParameters getParametersExceptFirst", () => {
     expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
     expect(
       isSameType(
-        z.tuple(getParametersExceptFirst(schema)),
+        getParametersExceptFirst(schema),
         z.tuple([z.boolean(), z.string()]),
       ),
     ).toEqual(true);
@@ -123,7 +120,7 @@ describe("getFirstParameters getParametersExceptFirst", () => {
       implement: () => {},
     };
     expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
-    expect(getParametersExceptFirst(schema)).toEqual([]);
+    expect(getParametersExceptFirst(schema)._zod.def.items).toEqual([]);
   });
 
   it("should throw an error when no parameters", () => {

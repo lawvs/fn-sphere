@@ -27,7 +27,10 @@ test("basic usage", () => {
     },
     {
       name: "number equal",
-      define: z.function({ input: [z.number(), z.number()], output: z.boolean() }),
+      define: z.function({
+        input: [z.number(), z.number()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value === target,
     },
   ]);
@@ -45,7 +48,7 @@ test("basic usage", () => {
   if (!firstFilter) throw new Error("firstFilter is undefined");
   expect(firstFilter.name).toEqual("is admin");
   const requiredParameters = getParametersExceptFirst(firstFilter);
-  expect(requiredParameters).toHaveLength(0);
+  expect(requiredParameters._zod.def.items).toHaveLength(0);
 
   const data: Data[] = [
     {
@@ -79,7 +82,10 @@ test("filter nested obj", () => {
   const filterSphere = createFilterSphere(zData, [
     {
       name: "number equal",
-      define: z.function({ input: [z.number(), z.number()], output: z.boolean() }),
+      define: z.function({
+        input: [z.number(), z.number()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value === target,
     },
   ]);
@@ -97,7 +103,7 @@ test("filter nested obj", () => {
   if (!firstFilterSchema) throw new Error("firstFilterSchema is undefined");
   expect(firstFilterSchema.name).toEqual("number equal");
   const requiredParameters = getParametersExceptFirst(firstFilterSchema);
-  expect(requiredParameters).toHaveLength(1);
+  expect(requiredParameters._zod.def.items).toHaveLength(1);
 
   const data: Data[] = [
     {
@@ -131,12 +137,18 @@ test("FilterGroup usage", () => {
   const filterSphere = createFilterSphere(zData, [
     {
       name: "number equal",
-      define: z.function({ input: [z.number(), z.number()], output: z.boolean() }),
+      define: z.function({
+        input: [z.number(), z.number()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value === target,
     },
     {
       name: "string equal",
-      define: z.function({ input: [z.string(), z.string()], output: z.boolean() }),
+      define: z.function({
+        input: [z.string(), z.string()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value === target,
     },
   ]);

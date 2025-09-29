@@ -1,5 +1,9 @@
-import { type ZodTypeAny } from "zod";
-import type { $ZodObject, $ZodTuple, $ZodType, $ZodTypes } from "zod/v4/core";
+import {
+  $ZodTuple,
+  type $ZodObject,
+  type $ZodType,
+  type $ZodTypes,
+} from "zod/v4/core";
 import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
 import type {
@@ -71,7 +75,7 @@ export const getFirstParameters = (fnSchema: StandardFnSchema) => {
  */
 export const getParametersExceptFirst = (
   fnSchema: StandardFnSchema,
-): $ZodType[] => {
+): $ZodTuple => {
   const fullParameters = fnSchema.define._zod.def.input as $ZodTuple;
   if (!fullParameters._zod.def.items.length) {
     console.error("Invalid fnSchema parameters!", fnSchema, fullParameters);
@@ -79,19 +83,12 @@ export const getParametersExceptFirst = (
   }
 
   const stillNeed = fullParameters._zod.def.items.slice(1);
-  // TODO support rest by return a tuple
-  // zod4 now support function rest parameter
-  // See https://github.com/colinhacks/zod/issues/2859
-  // https://github.com/colinhacks/zod/blob/a5a9d31018f9c27000461529c582c50ade2d3937/src/types.ts#L3268
   const rest = fullParameters._zod.def.rest;
-  if (rest) {
-    console.warn(
-      "Rest parameter is not supported yet, try to report this issue to developer.",
-      fnSchema,
-      fullParameters,
-    );
-  }
-  return stillNeed;
+  return new $ZodTuple({
+    type: "tuple",
+    items: stillNeed,
+    rest,
+  });
 };
 
 export const countNumberOfRules = (rule: FilterRule): number => {
@@ -110,7 +107,7 @@ export const countValidRules = ({
   rule,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: FilterRule;
 }): number => {
   const strictRule = normalizeFilter({

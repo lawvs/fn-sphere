@@ -37,7 +37,7 @@ export const createFilterSphere = <Data = unknown>(
     }
     const requiredParameters = getParametersExceptFirst(fnSchema);
     if (!fnSchema.skipValidate) {
-      z.tuple(requiredParameters).parse(input);
+      z.parse(requiredParameters, input);
     }
 
     return createSingleFilter({
