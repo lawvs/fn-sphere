@@ -1,4 +1,4 @@
-import { z, type ZodTypeAny } from "zod";
+import { z } from "zod";
 import { isSameType } from "zod-compare";
 import type { $ZodType } from "zod/v4/core";
 import type { FnSchema, StandardFnSchema } from "../types.js";
@@ -204,7 +204,7 @@ export const isValidRule = ({
   rule,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: SingleFilter;
 }): boolean => {
   const result = validateRule({
@@ -221,7 +221,7 @@ export const validateGroup = ({
   ruleGroup,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   ruleGroup: FilterGroup;
 }): ValidateSuccess | ValidateError => {
   for (const rule of ruleGroup.conditions) {
