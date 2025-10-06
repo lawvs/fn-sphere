@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { z } from "zod";
-import type { $ZodTypes, $ZodUnion } from "zod/v4/core";
+import type { $ZodArray, $ZodLiteral, $ZodTypes, $ZodUnion } from "zod/v4/core";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
 import type { DataInputViewSpec } from "../theme/types.js";
@@ -135,13 +135,19 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       const { getLocaleText } = useRootRule();
 
       const options = useMemo(() => {
-        const unionSchema = requiredDataSchema._zod.def.items[0] as z.ZodUnion<
-          [z.ZodLiteral]
+        const unionSchema = requiredDataSchema._zod.def.items[0] as $ZodUnion<
+          $ZodLiteral[]
         >;
-        return unionSchema.options.map((item: z.ZodLiteral) => ({
-          label: getLocaleText(item.description ?? String(item.value)),
-          value: item.value,
-        }));
+        return unionSchema._zod.def.options.map((item) => {
+          const value = item._zod.def.values[0];
+          const meta = z.globalRegistry.get(item);
+          const metaDesc =
+            meta && meta.description ? meta.description : undefined;
+          return {
+            label: getLocaleText(metaDesc ?? String(value)),
+            value,
+          };
+        });
       }, [getLocaleText, requiredDataSchema]);
       return (
         <Select
@@ -173,14 +179,20 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     view: function View({ requiredDataSchema, rule, updateInput }) {
       const { MultipleSelect: MultipleSelectView } = useView("components");
       const { getLocaleText } = useRootRule();
-      const arraySchema = requiredDataSchema._zod.def.items[0] as z.ZodArray<
-        z.ZodUnion<[z.ZodLiteral]>
+      const arraySchema = requiredDataSchema._zod.def.items[0] as $ZodArray<
+        $ZodUnion<$ZodLiteral[]>
       >;
-      const unionSchema = arraySchema.element;
-      const options = unionSchema.options.map((item) => ({
-        label: getLocaleText(item.description ?? String(item.value)),
-        value: item.value,
-      }));
+      const unionSchema = arraySchema._zod.def.element;
+      const options = unionSchema._zod.def.options.map((item) => {
+        const value = item._zod.def.values[0];
+        const meta = z.globalRegistry.get(item);
+        const metaDesc =
+          meta && meta.description ? meta.description : undefined;
+        return {
+          label: getLocaleText(metaDesc ?? String(value)),
+          value,
+        };
+      });
       const value = (rule.args[0] ?? []) as z.core.util.Literal[];
       return (
         <MultipleSelectView
