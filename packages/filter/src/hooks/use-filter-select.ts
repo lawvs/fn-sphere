@@ -86,8 +86,8 @@ export const useFilterSelect = (rule: SingleFilter) => {
       return false;
     }
     return isSameType(
-      newFilterSchema.define.parameters(),
-      currentFilterSchema.define.parameters(),
+      newFilterSchema.define._zod.def.input,
+      currentFilterSchema.define._zod.def.input,
     );
   };
 

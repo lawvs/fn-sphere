@@ -5,7 +5,7 @@ import type {
   InputHTMLAttributes,
   ReactNode,
 } from "react";
-import type { z } from "zod";
+import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import type {
   MultiSelectProps,
   SingleSelectProps,
@@ -21,7 +21,7 @@ import type { SingleFilterRuleProps } from "../views/single-filter.js";
 
 export type DataInputViewProps = {
   rule: SingleFilter;
-  requiredDataSchema: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]];
+  requiredDataSchema: $ZodTuple;
   updateInput: (...input: unknown[]) => void;
 };
 
@@ -29,10 +29,13 @@ export type DataInputViewSpec = {
   name: string;
   match:
     | []
-    | [z.ZodTypeAny, ...z.ZodTypeAny[]]
+    | [$ZodType, ...$ZodType[]]
+    | $ZodTuple
     | ((
-        parameterSchemas: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
-        fieldSchema?: z.ZodTypeAny,
+        // The first parameter is the fn schema required parameters except the first one
+        parameterSchemas: $ZodTuple,
+        // The second parameter is the field schema, in most cases, you don't need to use it
+        fieldSchema?: $ZodType,
       ) => boolean);
   view: ComponentType<DataInputViewProps>;
   meta?: Record<string, unknown>;

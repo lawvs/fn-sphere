@@ -1,11 +1,11 @@
 import type { FilterField, FnSchema, StandardFnSchema } from "@fn-sphere/core";
-import type { z } from "zod";
+import type { $ZodType } from "zod/v4/core";
 
 export interface BasicFilterSphereInput<Data = unknown> {
   /**
    * The schema of the data to be filtered.
    */
-  schema: z.ZodType<Data>;
+  schema: $ZodType<Data>;
   /**
    * The filter rule.
    */
