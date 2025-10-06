@@ -34,7 +34,7 @@ export type DataInputViewSpec = {
     | ((
         // The first parameter is the fn schema required parameters except the first one
         parameterSchemas: $ZodTuple,
-        // The second parameter is the field schema, in most cases, you don't need to use it
+        // The second parameter is the field schema. In most cases, you don't need to use it.
         fieldSchema?: $ZodType,
       ) => boolean);
   view: ComponentType<DataInputViewProps>;

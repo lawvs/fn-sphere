@@ -14,10 +14,10 @@ Use `defineTypedFn` to create a custom filter:
 ```ts
 const customFilter = defineTypedFn({
   name: "your filter name",
-  define: z
-    .function()
-    .args(schemaToFilter, optionalUserInputSchema)
-    .returns(z.boolean()),
+  define: z.function({
+    input: [schemaToFilter, optionalUserInputSchema],
+    output: z.boolean(),
+  }),
   implement: (value, userInput) => {
     // Your filter logic here
     return value === userInput;
@@ -83,12 +83,12 @@ const dataFilters: FnSchema[] = [
   // Define a custom filter function
   defineTypedFn({
     name: "Average score is greater than",
-    define: z
-      .function()
+    define: z.function({
       // The first argument is the schema that needs filtering
       // and the second argument is the user input
-      .args(z.array(z.number()), z.number())
-      .returns(z.boolean()),
+      input: [z.array(z.number()), z.number()],
+      output: z.boolean(),
+    }),
     implement: (value, input) => {
       // Implement the filter logic
       const sum = value.reduce((acc, cur) => acc + cur);

@@ -122,7 +122,10 @@ const pointInput: DataInputViewSpec = {
 // Define a custom filter function for the point data type
 const pointFilter = defineTypedFn({
   name: "equals",
-  define: z.function().args(pointSchema, pointSchema).returns(z.boolean()),
+  define: z.function({
+    input: [pointSchema, pointSchema],
+    output: z.boolean(),
+  }),
   implement: (value, userInput) => {
     return value.x === userInput.x && value.y === userInput.y;
   },
@@ -149,20 +152,23 @@ export default function CustomDataInput() {
 ## Type Definition
 
 ```ts
-type DataInputViewProps = {
+export type DataInputViewProps = {
   rule: SingleFilter;
-  requiredDataSchema: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]];
+  requiredDataSchema: $ZodTuple;
   updateInput: (...input: unknown[]) => void;
 };
 
-type DataInputViewSpec = {
+export type DataInputViewSpec = {
   name: string;
   match:
     | []
-    | [z.ZodTypeAny, ...z.ZodTypeAny[]]
+    | [$ZodType, ...$ZodType[]]
+    | $ZodTuple
     | ((
-        parameterSchemas: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
-        fieldSchema?: z.ZodTypeAny,
+        // The first parameter is the fn schema required parameters except the first one
+        parameterSchemas: $ZodTuple,
+        // The second parameter is the field schema. In most cases, you don't need to use it.
+        fieldSchema?: $ZodType,
       ) => boolean);
   view: ComponentType<DataInputViewProps>;
   meta?: Record<string, unknown>;
