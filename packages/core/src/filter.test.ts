@@ -6,6 +6,7 @@ import {
   getParametersExceptFirst,
   isEqualPath,
 } from "./filter/utils.js";
+import { defineTypedFn } from "./fn-sphere.js";
 
 test("basic usage", () => {
   const zData = z.object({
@@ -20,19 +21,19 @@ test("basic usage", () => {
   type Data = z.infer<typeof zData>;
 
   const filterSphere = createFilterSphere(zData, [
-    {
+    defineTypedFn({
       name: "is admin",
       define: z.function({ input: [zData], output: z.boolean() }),
       implement: (value) => value.id === "admin",
-    },
-    {
+    }),
+    defineTypedFn({
       name: "number equal",
       define: z.function({
         input: [z.number(), z.number()],
         output: z.boolean(),
       }),
       implement: (value, target) => value === target,
-    },
+    }),
   ]);
 
   const fields = filterSphere.findFilterableField();
@@ -80,14 +81,14 @@ test("filter nested obj", () => {
   type Data = z.infer<typeof zData>;
 
   const filterSphere = createFilterSphere(zData, [
-    {
+    defineTypedFn({
       name: "number equal",
       define: z.function({
         input: [z.number(), z.number()],
         output: z.boolean(),
       }),
       implement: (value, target) => value === target,
-    },
+    }),
   ]);
 
   const fields = filterSphere.findFilterableField();
@@ -135,22 +136,22 @@ test("FilterGroup usage", () => {
   type Data = z.infer<typeof zData>;
 
   const filterSphere = createFilterSphere(zData, [
-    {
+    defineTypedFn({
       name: "number equal",
       define: z.function({
         input: [z.number(), z.number()],
         output: z.boolean(),
       }),
       implement: (value, target) => value === target,
-    },
-    {
+    }),
+    defineTypedFn({
       name: "string equal",
       define: z.function({
         input: [z.string(), z.string()],
         output: z.boolean(),
       }),
       implement: (value, target) => value === target,
-    },
+    }),
   ]);
 
   const fields = filterSphere.findFilterableField();
