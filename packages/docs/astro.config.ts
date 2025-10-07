@@ -102,8 +102,8 @@ export default defineConfig({
   ],
   vite: {
     ssr: {
-      // Workaround for https://github.com/mui/material-ui/issues/42848
-      noExternal: /@mui\/.*?/,
+      // Workaround for https://github.com/withastro/astro/issues/14117
+      noExternal: ["zod"],
     },
     plugins: [tailwindcss()],
   },
