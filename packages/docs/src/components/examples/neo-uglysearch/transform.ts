@@ -37,8 +37,8 @@ const checkUnaryFilter = (filterName: string) => {
     typeof filterSchema.define === "function"
       ? filterSchema.define(z.any())
       : filterSchema.define;
-  const parameters = filterDefine.parameters();
-  return parameters.items.length <= 1;
+  const parameters = filterDefine._zod.def.input as z.ZodTuple;
+  return parameters._zod.def.items.length <= 1;
 };
 
 function transformSingleFilter(filter: SingleFilter): string | null {

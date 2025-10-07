@@ -1,11 +1,15 @@
 import { type FilterField, type StandardFnSchema } from "@fn-sphere/core";
+import z from "zod";
 
 export const emptyArray: never[] = [];
 export const noop = () => {};
 
 export const defaultMapFieldName: (field: FilterField) => string = (field) => {
-  if (field.fieldSchema.description) {
-    return field.fieldSchema.description;
+  if (
+    z.globalRegistry.has(field.fieldSchema) &&
+    z.globalRegistry.get(field.fieldSchema)!.description
+  ) {
+    return z.globalRegistry.get(field.fieldSchema)!.description!;
   }
   if (field.path.length) {
     return field.path.join(".");

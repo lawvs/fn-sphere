@@ -1,4 +1,5 @@
-import { z, type ZodType } from "zod";
+import { z } from "zod";
+import type { $ZodType } from "zod/v4/core";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import { findFilterableFields } from "./field.js";
 import { createFilterPredicate } from "./predicate.js";
@@ -11,7 +12,7 @@ import type {
 import { createSingleFilter, getParametersExceptFirst } from "./utils.js";
 
 export const createFilterSphere = <Data = unknown>(
-  dataSchema: ZodType<Data>,
+  dataSchema: $ZodType<Data>,
   filterFnList: FnSchema[],
 ) => {
   const findFilterableField = ({
@@ -36,7 +37,7 @@ export const createFilterSphere = <Data = unknown>(
     }
     const requiredParameters = getParametersExceptFirst(fnSchema);
     if (!fnSchema.skipValidate) {
-      z.tuple(requiredParameters).parse(input);
+      z.parse(requiredParameters, input);
     }
 
     return createSingleFilter({

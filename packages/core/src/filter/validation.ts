@@ -1,5 +1,6 @@
-import { z, type ZodTypeAny } from "zod";
+import { z } from "zod";
 import { isSameType } from "zod-compare";
+import type { $ZodType } from "zod/v4/core";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import { isGenericFilter, unreachable } from "../utils.js";
 import type {
@@ -39,7 +40,7 @@ const getRuleFilterSchemaResult = ({
   rule,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: StrictSingleFilter;
 }): (ValidateSuccess & { data: StandardFnSchema }) | ValidateError => {
   const fnSchema = filterFnList.find((f) => f.name === rule.name);
@@ -79,7 +80,7 @@ const getRuleFilterSchemaResult = ({
 export const getRuleFilterSchema = (payload: {
   rule: StrictSingleFilter;
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
 }) => {
   const result = getRuleFilterSchemaResult(payload);
   if (!result.success) {
@@ -94,7 +95,7 @@ const validateStandardFnRule = ({
   rule,
 }: {
   fnSchema: StandardFnSchema;
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: StrictSingleFilter;
 }): ValidateSuccess | ValidateError => {
   if (rule.name !== fnSchema.name) {
@@ -125,17 +126,17 @@ const validateStandardFnRule = ({
 
   const requiredParameters = getParametersExceptFirst(fnSchema);
 
-  if (requiredParameters.length !== rule.args.length) {
+  if (requiredParameters._zod.def.items.length !== rule.args.length) {
     return {
       success: false,
       error: new Error(
-        `rule.args length not match required parameters length, ${rule.args.length} !== ${requiredParameters.length}`,
+        `rule.args length not match required parameters length, ${rule.args.length} !== ${requiredParameters._zod.def.items.length}`,
       ),
     };
   }
 
   if (!fnSchema.skipValidate) {
-    const parseResult = z.tuple(requiredParameters).safeParse(rule.args);
+    const parseResult = z.safeParse(requiredParameters, rule.args);
     return parseResult;
   }
   return {
@@ -149,7 +150,7 @@ export const validateRule = ({
   rule,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: SingleFilter;
 }): ValidateSuccess | ValidateError => {
   const fnSchema = filterFnList.find((f) => f.name === rule.name);
@@ -203,7 +204,7 @@ export const isValidRule = ({
   rule,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: SingleFilter;
 }): boolean => {
   const result = validateRule({
@@ -220,7 +221,7 @@ export const validateGroup = ({
   ruleGroup,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   ruleGroup: FilterGroup;
 }): ValidateSuccess | ValidateError => {
   for (const rule of ruleGroup.conditions) {
@@ -260,7 +261,7 @@ export const normalizeFilter = ({
   rule,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: FilterRule;
 }): StrictFilterRule | undefined => {
   if (rule.type === "Filter") {

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isSameType } from "zod-compare";
+import type { $ZodTuple } from "zod/v4/core";
 import type { FnSchema, GenericFnSchema, StandardFnSchema } from "./types.js";
 
 export const isGenericFilter = (
@@ -7,12 +8,13 @@ export const isGenericFilter = (
 ): fnSchema is GenericFnSchema => "genericLimit" in fnSchema;
 
 export const isFilterFn = (fn: StandardFnSchema) => {
-  if (!(fn.define.returnType() instanceof z.ZodBoolean)) {
+  const returnType = fn.define._zod.def.output;
+  if (!(returnType._zod.def.type === "boolean")) {
     // Filter should return boolean
     return false;
   }
-  const parameters = fn.define.parameters();
-  if (parameters.items.length === 0) {
+  const parameters = fn.define._zod.def.input as $ZodTuple;
+  if (parameters._zod.def.items.length === 0) {
     // Filter should have at least one parameter
     return false;
   }
@@ -20,11 +22,11 @@ export const isFilterFn = (fn: StandardFnSchema) => {
 };
 
 export const isCompareFn = (fn: StandardFnSchema) => {
-  const returnType = fn.define.returnType();
+  const returnType = fn.define._zod.def.output;
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
   if (
     !(
-      returnType instanceof z.ZodNumber ||
+      returnType._zod.def.type === "number" ||
       isSameType(
         returnType,
         z.union([z.literal(-1), z.literal(0), z.literal(1)]),
@@ -37,8 +39,8 @@ export const isCompareFn = (fn: StandardFnSchema) => {
     // === 0	keep original order of a and b
     return false;
   }
-  const parameters = fn.define.parameters();
-  if (parameters.items.length !== 2) {
+  const parameters = fn.define._zod.def.input as $ZodTuple;
+  if (parameters._zod.def.items.length !== 2) {
     // Compare should have exactly two parameters
     return false;
   }

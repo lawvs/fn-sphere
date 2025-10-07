@@ -1,5 +1,9 @@
-import { z, type ZodType, type ZodTypeAny } from "zod";
-import { isSameType } from "zod-compare";
+import {
+  $ZodTuple,
+  type $ZodObject,
+  type $ZodType,
+  type $ZodTypes,
+} from "zod/v4/core";
 import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 import { isFilterFn, unreachable } from "../utils.js";
 import type {
@@ -25,10 +29,10 @@ export const or =
     fnArray.some((fn) => fn(...args));
 
 export const instantiateGenericFn = (
-  schema: ZodType,
+  schema: $ZodType,
   genericFn: GenericFnSchema,
 ): StandardFnSchema | undefined => {
-  if (!genericFn.genericLimit(schema)) {
+  if (!genericFn.genericLimit(schema as $ZodTypes)) {
     return;
   }
   const instantiationFn: StandardFnSchema = {
@@ -50,17 +54,13 @@ export const instantiateGenericFn = (
 };
 
 export const getFirstParameters = (fnSchema: StandardFnSchema) => {
-  const fullParameters = fnSchema.define.parameters();
-  if (!fullParameters.items.length) {
-    console.error(
-      "Invalid filter parameters!",
-      fnSchema,
-      fnSchema.define.parameters(),
-    );
+  const fullParameters = fnSchema.define._zod.def.input as $ZodTuple;
+  if (!fullParameters._zod.def.items.length) {
+    console.error("Invalid filter parameters!", fnSchema, fullParameters);
     throw new Error("Invalid filter parameters!");
   }
 
-  return fullParameters.items.at(0) as z.ZodTypeAny;
+  return fullParameters._zod.def.items.at(0)!;
 };
 
 /**
@@ -75,32 +75,20 @@ export const getFirstParameters = (fnSchema: StandardFnSchema) => {
  */
 export const getParametersExceptFirst = (
   fnSchema: StandardFnSchema,
-): [] | [z.ZodTypeAny, ...z.ZodTypeAny[]] => {
-  const fullParameters = fnSchema.define.parameters();
-  if (!fullParameters.items.length) {
-    console.error(
-      "Invalid fnSchema parameters!",
-      fnSchema,
-      fnSchema.define.parameters(),
-    );
+): $ZodTuple => {
+  const fullParameters = fnSchema.define._zod.def.input as $ZodTuple;
+  if (!fullParameters._zod.def.items.length) {
+    console.error("Invalid fnSchema parameters!", fnSchema, fullParameters);
     throw new Error("Invalid fnSchema parameters!");
   }
 
-  const stillNeed = fullParameters.items.slice(1);
-  // zod not support function rest parameter yet
-  // See https://github.com/colinhacks/zod/issues/2859
-  // https://github.com/colinhacks/zod/blob/a5a9d31018f9c27000461529c582c50ade2d3937/src/types.ts#L3268
-  const rest = fullParameters._def.rest;
-  // ZodFunction will always have a unknown rest parameter
-  // See https://github.com/colinhacks/zod/blob/4641f434f3bb3dab1bb8cb07f44dd2693c72e35e/src/types.ts#L3991
-  if (!isSameType(rest, z.unknown())) {
-    console.warn(
-      "Rest parameter is not supported yet, try to report this issue to developer.",
-      fnSchema,
-      fullParameters,
-    );
-  }
-  return stillNeed;
+  const stillNeed = fullParameters._zod.def.items.slice(1);
+  const rest = fullParameters._zod.def.rest;
+  return new $ZodTuple({
+    type: "tuple",
+    items: stillNeed,
+    rest,
+  });
 };
 
 export const countNumberOfRules = (rule: FilterRule): number => {
@@ -119,7 +107,7 @@ export const countValidRules = ({
   rule,
 }: {
   filterFnList: FnSchema[];
-  dataSchema: ZodTypeAny;
+  dataSchema: $ZodType;
   rule: FilterRule;
 }): number => {
   const strictRule = normalizeFilter({
@@ -223,23 +211,23 @@ export const getValueAtPath = <R = unknown>(obj: any, path: FilterPath): R => {
 /**
  * This function retrieves the schema from a given path within a Zod schema.
  */
-export const getSchemaAtPath = <T extends ZodType = ZodType>(
-  schema: ZodType,
+export const getSchemaAtPath = <T extends $ZodType = $ZodType>(
+  schema: $ZodType,
   path: FilterPath,
   defaultValue?: T,
 ): T | undefined => {
   if (!path || path.length === 0) {
     return schema as T;
   }
-  let result = schema;
+  let result: $ZodType | undefined = schema;
   for (const key of path) {
     if (result == null) {
       return defaultValue as T;
     }
-    if (!(result instanceof z.ZodObject)) {
+    if (result._zod.def.type !== "object") {
       return defaultValue as T;
     }
-    result = result.shape[key];
+    result = (result as $ZodObject)._zod.def.shape[key];
   }
   return result as T;
 };

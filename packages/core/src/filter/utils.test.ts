@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import z from "zod";
 import { isSameType } from "zod-compare";
 import { defineGenericFn, defineTypedFn } from "../fn-sphere.js";
-import type { FnSchema } from "../types.js";
+import type { FnSchema, GenericFnSchema } from "../types.js";
 import type { FilterPath } from "./types.js";
 import {
   countNumberOfRules,
@@ -51,9 +51,9 @@ describe("getSchemaFromPath", () => {
       }),
     });
 
-    expect(getSchemaAtPath(schema, ["a", "b"] as FilterPath)).toBeInstanceOf(
-      z.ZodString,
-    );
+    expect(
+      getSchemaAtPath(schema, ["a", "b"] as FilterPath)?._zod.def.type,
+    ).toEqual("string");
   });
 
   it("should return undefined if the path does not exist", () => {
@@ -83,31 +83,31 @@ describe("getFirstParameters getParametersExceptFirst", () => {
   it("should return the correct parameters except the first one", () => {
     const schema = {
       name: "test",
-      define: z.function().args(z.number(), z.boolean()).returns(z.void()),
+      define: z.function({
+        input: [z.number(), z.boolean()],
+        output: z.void(),
+      }),
       implement: () => {},
     };
     expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
     expect(
-      isSameType(
-        z.tuple(getParametersExceptFirst(schema)),
-        z.tuple([z.boolean()]),
-      ),
+      isSameType(getParametersExceptFirst(schema), z.tuple([z.boolean()])),
     ).toEqual(true);
   });
 
   it("should return the parameters except the first one", () => {
     const schema = {
       name: "test",
-      define: z
-        .function()
-        .args(z.number(), z.boolean(), z.string())
-        .returns(z.void()),
+      define: z.function({
+        input: [z.number(), z.boolean(), z.string()],
+        output: z.void(),
+      }),
       implement: () => {},
     };
     expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
     expect(
       isSameType(
-        z.tuple(getParametersExceptFirst(schema)),
+        getParametersExceptFirst(schema),
         z.tuple([z.boolean(), z.string()]),
       ),
     ).toEqual(true);
@@ -116,17 +116,17 @@ describe("getFirstParameters getParametersExceptFirst", () => {
   it("should return empty array when only one parameter", () => {
     const schema = {
       name: "test",
-      define: z.function().args(z.number()).returns(z.void()),
+      define: z.function({ input: [z.number()], output: z.void() }),
       implement: () => {},
     };
     expect(isSameType(getFirstParameters(schema), z.number())).toEqual(true);
-    expect(getParametersExceptFirst(schema)).toEqual([]);
+    expect(getParametersExceptFirst(schema)._zod.def.items).toEqual([]);
   });
 
   it("should throw an error when no parameters", () => {
     const schema = {
       name: "test",
-      define: z.function().args().returns(z.void()),
+      define: z.function({ input: [], output: z.void() }),
       implement: () => {},
     };
     expect(() => getFirstParameters(schema)).toThrowError();
@@ -220,13 +220,16 @@ describe("countValidRules", () => {
   const filterFnList: FnSchema[] = [
     defineTypedFn({
       name: "Starts with",
-      define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+      define: z.function({
+        input: [z.string(), z.string()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value.startsWith(target),
       skipValidate: true,
     }),
     defineTypedFn({
       name: "Is checked",
-      define: z.function().args(z.boolean()).returns(z.boolean()),
+      define: z.function({ input: [z.boolean()], output: z.boolean() }),
       implement: (value) => value === true,
       skipValidate: true,
     }),
@@ -260,10 +263,10 @@ describe("countValidRules", () => {
 describe("instantiateGenericFn", () => {
   it("should return undefined if genericLimit is not satisfied", () => {
     const schema = z.string(); // Example schema
-    const genericFn = defineGenericFn({
+    const genericFn: GenericFnSchema = defineGenericFn({
       name: "Test Function",
-      genericLimit: (t: z.ZodType): t is never => false, // Always returns false
-      define: (t: z.ZodType) => z.function(),
+      genericLimit: (t): t is any => false, // Always returns false
+      define: () => z.function({ input: [], output: z.unknown() }),
       implement: () => {},
     });
 
@@ -276,7 +279,7 @@ describe("instantiateGenericFn", () => {
     const genericFn = defineGenericFn({
       name: "Test Function",
       genericLimit: (t): t is any => true, // Always returns true
-      define: (t) => z.function().args(t).returns(z.boolean()),
+      define: (t) => z.function({ input: [t], output: z.boolean() }) as any,
       implement: (value) => !!value,
     });
 
@@ -287,7 +290,7 @@ describe("instantiateGenericFn", () => {
     expect(
       isSameType(
         result!.define,
-        z.function().args(schema).returns(z.boolean()),
+        z.function({ input: [schema], output: z.boolean() }),
       ),
     ).toBe(true);
   });
@@ -296,8 +299,8 @@ describe("instantiateGenericFn", () => {
     const schema = z.string(); // Example schema
     const genericFn = defineGenericFn({
       name: "Non-Filter Function",
-      genericLimit: (t: z.ZodType): t is any => true,
-      define: (t: z.ZodType) => z.function(), // Not a filter
+      genericLimit: (t): t is any => true,
+      define: () => z.function(), // Not a filter
       implement: () => {},
     });
 
@@ -309,8 +312,8 @@ describe("instantiateGenericFn", () => {
     const schema = z.string(); // Example schema
     const genericFn = defineGenericFn({
       name: "Test Function",
-      genericLimit: (t: z.ZodType): t is any => true,
-      define: (t) => z.function().args(t).returns(z.boolean()),
+      genericLimit: (t): t is any => true,
+      define: (t) => z.function({ input: [t], output: z.boolean() }) as any,
       implement: (value) => !!value,
       meta: { test: "test" },
     });

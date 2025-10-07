@@ -14,7 +14,7 @@ import { primitives } from "../views/primitives.js";
 import { RuleJoiner } from "../views/rule-joiner.js";
 import { SingleFilterContainer } from "../views/single-filter-container.js";
 import { SingleFilterView } from "../views/single-filter.js";
-import type { FilterTheme } from "./index.js";
+import type { FilterTheme } from "./types.js";
 
 export const presetTheme: FilterTheme = {
   primitives,

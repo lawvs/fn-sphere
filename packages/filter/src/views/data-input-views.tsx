@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { z } from "zod";
+import type { $ZodArray, $ZodLiteral, $ZodTypes, $ZodUnion } from "zod/v4/core";
 import { useRootRule } from "../hooks/use-root-rule.js";
 import { useView } from "../theme/hooks.js";
 import type { DataInputViewSpec } from "../theme/types.js";
@@ -39,7 +40,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     match: [z.string()],
     view: function View({ requiredDataSchema, rule, updateInput }) {
       const { Input: InputView } = useView("components");
-      if (!requiredDataSchema.length) {
+      if (!requiredDataSchema._zod.def.items.length) {
         return null;
       }
       const value = (rule.args[0] as string | undefined) ?? "";
@@ -64,7 +65,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     match: [z.number()],
     view: function View({ requiredDataSchema, rule, updateInput }) {
       const { Input: InputView } = useView("components");
-      if (!requiredDataSchema.length) {
+      if (!requiredDataSchema._zod.def.items.length) {
         return null;
       }
       const value = (rule.args[0] as number) ?? "";
@@ -89,7 +90,7 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
     match: [z.date()],
     view: function View({ requiredDataSchema, rule, updateInput }) {
       const { Input: InputView } = useView("components");
-      if (!requiredDataSchema.length) {
+      if (!requiredDataSchema._zod.def.items.length) {
         return null;
       }
 
@@ -116,16 +117,17 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "literal union",
     match: (parameterSchemas) => {
-      if (parameterSchemas.length !== 1) {
+      if (parameterSchemas._zod.def.items.length !== 1) {
         return false;
       }
-      const [item] = parameterSchemas;
-      const isUnion = item instanceof z.ZodUnion;
+      const theOnlyItem = parameterSchemas._zod.def.items.at(0);
+      const schemaDef = (theOnlyItem as $ZodTypes)._zod.def;
+      const isUnion = schemaDef.type === "union";
       if (!isUnion) {
         return false;
       }
-      return item.options.every(
-        (option: unknown) => option instanceof z.ZodLiteral,
+      return schemaDef.options.every(
+        (option) => option._zod.def.type === "literal",
       );
     },
     view: function View({ requiredDataSchema, rule, updateInput }) {
@@ -133,18 +135,24 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
       const { getLocaleText } = useRootRule();
 
       const options = useMemo(() => {
-        const unionSchema = requiredDataSchema[0] as z.ZodUnion<
-          [z.ZodLiteral<z.Primitive>]
+        const unionSchema = requiredDataSchema._zod.def.items[0] as $ZodUnion<
+          $ZodLiteral[]
         >;
-        return unionSchema.options.map((item: z.ZodLiteral<z.Primitive>) => ({
-          label: getLocaleText(item.description ?? String(item.value)),
-          value: item.value,
-        }));
+        return unionSchema._zod.def.options.map((item) => {
+          const value = item._zod.def.values[0];
+          const meta = z.globalRegistry.get(item);
+          const metaDesc =
+            meta && meta.description ? meta.description : undefined;
+          return {
+            label: getLocaleText(metaDesc ?? String(value)),
+            value,
+          };
+        });
       }, [getLocaleText, requiredDataSchema]);
       return (
         <Select
           options={options}
-          value={rule.args[0] as z.Primitive}
+          value={rule.args[0]}
           onChange={(value) => {
             updateInput(value);
           }}
@@ -155,32 +163,39 @@ export const presetDataInputSpecs: DataInputViewSpec[] = [
   {
     name: "literal array",
     match: (parameterSchemas) => {
-      if (parameterSchemas.length !== 1) {
+      if (parameterSchemas._zod.def.items.length !== 1) {
         return false;
       }
-      const [item] = parameterSchemas;
+      const theOnlyItem = parameterSchemas._zod.def.items.at(0);
+      const schemaDef = (theOnlyItem as $ZodTypes)._zod.def;
       return (
-        item instanceof z.ZodArray &&
-        item.element instanceof z.ZodUnion &&
-        item.element.options.every(
-          (op: z.ZodType) => op instanceof z.ZodLiteral,
+        schemaDef.type === "array" &&
+        schemaDef.element._zod.def.type === "union" &&
+        (schemaDef.element as $ZodUnion)._zod.def.options.every(
+          (op) => op._zod.def.type === "literal",
         )
       );
     },
     view: function View({ requiredDataSchema, rule, updateInput }) {
       const { MultipleSelect: MultipleSelectView } = useView("components");
       const { getLocaleText } = useRootRule();
-      const arraySchema = requiredDataSchema[0] as z.ZodArray<
-        z.ZodUnion<[z.ZodLiteral<z.Primitive>]>
+      const arraySchema = requiredDataSchema._zod.def.items[0] as $ZodArray<
+        $ZodUnion<$ZodLiteral[]>
       >;
-      const unionSchema = arraySchema.element;
-      const options = unionSchema.options.map((item) => ({
-        label: getLocaleText(item.description ?? String(item.value)),
-        value: item.value,
-      }));
-      const value = (rule.args[0] ?? []) as z.Primitive[];
+      const unionSchema = arraySchema._zod.def.element;
+      const options = unionSchema._zod.def.options.map((item) => {
+        const value = item._zod.def.values[0];
+        const meta = z.globalRegistry.get(item);
+        const metaDesc =
+          meta && meta.description ? meta.description : undefined;
+        return {
+          label: getLocaleText(metaDesc ?? String(value)),
+          value,
+        };
+      });
+      const value = (rule.args[0] ?? []) as z.core.util.Literal[];
       return (
-        <MultipleSelectView<z.Primitive>
+        <MultipleSelectView
           value={value}
           options={options}
           onChange={(newValue) => {

@@ -78,7 +78,7 @@ const findFilterableFields: <Data>({
   filterFnList,
   maxDeep,
 }: {
-  schema: ZodType<Data>;
+  schema: $ZodType<Data>;
   filterFnList: FnSchema[];
   maxDeep?: number;
 }) => FilterField[];
@@ -91,7 +91,7 @@ const createFilterPredicate: <Data>({
   /**
    * The schema of the data.
    */
-  schema: z.ZodType<Data>;
+  schema: $ZodType<Data>;
   filterFnList: FnSchema[];
   /**
    * The filter rule.
@@ -104,7 +104,7 @@ type FilterField = {
    * If it's a empty array, it means the root object
    */
   path: FilterPath;
-  fieldSchema: ZodType;
+  fieldSchema: $ZodType;
   filterFnList: StandardFnSchema[];
 };
 

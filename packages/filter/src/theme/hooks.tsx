@@ -1,6 +1,6 @@
 import { isSameType } from "@fn-sphere/core";
 import { type ComponentType } from "react";
-import { z } from "zod";
+import { $ZodTuple, type $ZodType } from "zod/v4/core";
 import { useFilterTheme } from "./context.js";
 import type { DataInputViewProps, FilterTheme } from "./types.js";
 
@@ -27,8 +27,8 @@ export const useView = <T extends keyof FilterTheme>(type: T) => {
  * Must be used within a `FilterThemeProvider` component.
  */
 export const useDataInputView = (
-  fnParamsSchema?: [] | [z.ZodTypeAny, ...z.ZodTypeAny[]],
-  fieldSchema?: z.ZodTypeAny,
+  fnParamsSchema?: $ZodTuple,
+  fieldSchema?: $ZodType,
 ): ComponentType<DataInputViewProps> => {
   const dataInputViews = useView("dataInputViews");
   if (!fnParamsSchema) {
@@ -38,14 +38,26 @@ export const useDataInputView = (
     if (typeof spec.match === "function") {
       return spec.match(fnParamsSchema, fieldSchema);
     }
-    return isSameType(z.tuple(spec.match), z.tuple(fnParamsSchema));
+    if (Array.isArray(spec.match)) {
+      return isSameType(
+        new $ZodTuple({
+          type: "tuple",
+          items: spec.match,
+          rest: null,
+        }),
+        fnParamsSchema,
+      );
+    }
+    return isSameType(spec.match, fnParamsSchema);
   });
   if (!targetSpec) {
     console.error("no view spec found for", fnParamsSchema, dataInputViews);
     return () => (
       <div>
         No view spec found for&nbsp;
-        {"<" + fnParamsSchema.map((i) => i._def.typeName).join(", ") + ">"}
+        {"<" +
+          fnParamsSchema._zod.def.items.map((i) => i._zod.def.type).join(", ") +
+          ">"}
       </div>
     );
   }

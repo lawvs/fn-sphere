@@ -28,7 +28,7 @@ export const dataFilters: FnSchema[] = [
   ...presetFilter,
   defineTypedFn({
     name: "Luck User",
-    define: z.function().args(presetSchema).returns(z.boolean()),
+    define: z.function({ input: [presetSchema], output: z.boolean() }),
     implement: (value) => {
       return value.id < 10 && Math.random() > 0.5;
     },

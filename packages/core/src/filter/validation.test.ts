@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
+import type { $ZodNumber, $ZodString } from "zod/v4/core";
 import { defineGenericFn, defineTypedFn } from "../fn-sphere.js";
 import type { FnSchema } from "../types.js";
 import type { FilterId, SingleFilter } from "./types.js";
@@ -10,13 +11,16 @@ describe("isValidRule", () => {
   const filterFnList: FnSchema[] = [
     defineTypedFn({
       name: "Starts with",
-      define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+      define: z.function({
+        input: [z.string(), z.string()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value.startsWith(target),
       skipValidate: true,
     }),
     defineTypedFn({
       name: "Is checked",
-      define: z.function().args(z.boolean()).returns(z.boolean()),
+      define: z.function({ input: [z.boolean()], output: z.boolean() }),
       implement: (value) => value === true,
       skipValidate: true,
     }),
@@ -145,7 +149,10 @@ describe("isValidRule", () => {
 
     const standardFn = defineTypedFn({
       name: "Equals",
-      define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+      define: z.function({
+        input: [z.string(), z.string()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value === target,
       skipValidate: true,
     });
@@ -178,9 +185,10 @@ describe("isValidRule", () => {
 
     const genericFn = defineGenericFn({
       name: "Equals",
-      genericLimit: (t): t is z.ZodString | z.ZodNumber => true,
-      define: (t) => z.function().args(t, t).returns(z.boolean()),
-      implement: (value: z.Primitive, target: z.Primitive) => value === target,
+      genericLimit: (t): t is $ZodString | $ZodNumber => true,
+      define: (t) => z.function({ input: [t, t], output: z.boolean() }),
+      implement: (value: string | number, target: string | number) =>
+        value === target,
       skipValidate: true,
     });
 
@@ -215,9 +223,10 @@ describe("isValidRule", () => {
 
     const genericFn = defineGenericFn({
       name: "Equals",
-      genericLimit: (t): t is z.ZodString | z.ZodNumber => true,
-      define: (t) => z.function().args(t, t).returns(z.boolean()),
-      implement: (value: z.Primitive, target: z.Primitive) => value === target,
+      genericLimit: (t): t is $ZodString | $ZodNumber => true,
+      define: (t) => z.function({ input: [t, t], output: z.boolean() }),
+      implement: (value: string | number, target: string | number) =>
+        value === target,
     });
 
     rule.args = ["not email"];
@@ -243,13 +252,16 @@ describe("normalizeFilter", () => {
   const filterFnList: FnSchema[] = [
     defineTypedFn({
       name: "Starts with",
-      define: z.function().args(z.string(), z.string()).returns(z.boolean()),
+      define: z.function({
+        input: [z.string(), z.string()],
+        output: z.boolean(),
+      }),
       implement: (value, target) => value.startsWith(target),
       skipValidate: true,
     }),
     defineTypedFn({
       name: "Is checked",
-      define: z.function().args(z.boolean()).returns(z.boolean()),
+      define: z.function({ input: [z.boolean()], output: z.boolean() }),
       implement: (value) => value === true,
       skipValidate: true,
     }),
