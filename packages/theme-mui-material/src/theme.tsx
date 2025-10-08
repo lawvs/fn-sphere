@@ -24,6 +24,7 @@ import { useCallback, type ChangeEvent } from "react";
 
 export const filterTheme = createFilterTheme({
   components: {
+    // @ts-expect-error -- Remove it after @types/react is updated to v19.2
     Button: ({ color, ...props }) => <Button {...props} />,
     Input: ({ color, size, onChange, ...props }) => {
       const handleChange = useCallback(
@@ -32,6 +33,7 @@ export const filterTheme = createFilterTheme({
         },
         [onChange],
       );
+      // @ts-expect-error -- Remove it after @types/react is updated to v19.2
       return <Input onChange={handleChange} {...props} />;
     },
     Select: ({ options = [], value, color, size, onChange, ...props }) => {
