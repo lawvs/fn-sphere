@@ -38,6 +38,6 @@
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
     "@mui/material": "^7.3.4",
-    "zod": "^4.1.11"
+    "zod": "^4.1.12"
   }
 }
