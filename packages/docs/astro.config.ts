@@ -106,7 +106,7 @@ export default defineConfig({
       // Workaround for https://github.com/withastro/astro/issues/14117
       noExternal: ["zod"],
     },
-    // @ts-expect-error -- https://github.com/tailwindlabs/tailwindcss/issues/18802
+    // @ts-expect-error -- https://github.com/withastro/astro/issues/14030
     plugins: [tailwindcss()],
   },
 });
