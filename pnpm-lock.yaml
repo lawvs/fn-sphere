@@ -31,11 +31,11 @@ importers:
     dependencies:
       zod-compare:
         specifier: ^2.0.0
-        version: 2.0.0(zod@4.1.11)
+        version: 2.0.0(zod@4.1.12)
     devDependencies:
       zod:
-        specifier: ^4.1.11
-        version: 4.1.11
+        specifier: ^4.1.12
+        version: 4.1.12
 
   packages/docs:
     dependencies:
@@ -113,8 +113,8 @@ importers:
         specifier: ^7.3.4
         version: 7.3.4(@emotion/react@11.14.0(@types/react@19.1.14)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.14)(react@19.1.1))(@types/react@19.1.14)(react@19.1.1))(@types/react@19.1.14)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       zod:
-        specifier: ^4.1.11
-        version: 4.1.11
+        specifier: ^4.1.12
+        version: 4.1.12
 
   packages/filter:
     dependencies:
@@ -165,8 +165,8 @@ importers:
         specifier: ^8.27.0
         version: 8.27.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
       zod:
-        specifier: ^4.1.11
-        version: 4.1.11
+        specifier: ^4.1.12
+        version: 4.1.12
 
   packages/playground:
     dependencies:
@@ -178,16 +178,16 @@ importers:
         version: link:../filter
       '@zodui/components-lib-tdesign':
         specifier: ^0.2.2
-        version: 0.2.2(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.11))(react@19.1.1)(tdesign-icons-react@0.6.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(tdesign-react@1.15.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+        version: 0.2.2(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.12))(react@19.1.1)(tdesign-icons-react@0.6.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(tdesign-react@1.15.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@zodui/core':
         specifier: ^0.2.1
         version: 0.2.1
       '@zodui/plugin-common':
         specifier: ^0.2.0
-        version: 0.2.0(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.11))(react@19.1.1)
+        version: 0.2.0(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.12))(react@19.1.1)
       '@zodui/react':
         specifier: ^0.2.2
-        version: 0.2.2(react@19.1.1)(zod@4.1.11)
+        version: 0.2.2(react@19.1.1)(zod@4.1.12)
       react:
         specifier: ^19.1.1
         version: 19.1.1
@@ -201,8 +201,8 @@ importers:
         specifier: ^1.15.5
         version: 1.15.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       zod:
-        specifier: ^4.1.11
-        version: 4.1.11
+        specifier: ^4.1.12
+        version: 4.1.12
     devDependencies:
       '@types/react':
         specifier: ^19.1.14
@@ -4682,8 +4682,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.1.11:
-    resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
+  zod@4.1.12:
+    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -6513,10 +6513,10 @@ snapshots:
 
   '@vscode/l10n@0.0.18': {}
 
-  '@zodui/components-lib-tdesign@0.2.2(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.11))(react@19.1.1)(tdesign-icons-react@0.6.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(tdesign-react@1.15.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
+  '@zodui/components-lib-tdesign@0.2.2(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.12))(react@19.1.1)(tdesign-icons-react@0.6.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(tdesign-react@1.15.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
     dependencies:
       '@zodui/core': 0.2.1
-      '@zodui/react': 0.2.2(react@19.1.1)(zod@4.1.11)
+      '@zodui/react': 0.2.2(react@19.1.1)(zod@4.1.12)
       react: 19.1.1
       tdesign-icons-react: 0.6.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       tdesign-react: 1.15.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -6525,17 +6525,17 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  '@zodui/plugin-common@0.2.0(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.11))(react@19.1.1)':
+  '@zodui/plugin-common@0.2.0(@zodui/react@0.2.2(react@19.1.1)(zod@4.1.12))(react@19.1.1)':
     dependencies:
       '@zodui/core': 0.2.1
-      '@zodui/react': 0.2.2(react@19.1.1)(zod@4.1.11)
+      '@zodui/react': 0.2.2(react@19.1.1)(zod@4.1.12)
       react: 19.1.1
 
-  '@zodui/react@0.2.2(react@19.1.1)(zod@4.1.11)':
+  '@zodui/react@0.2.2(react@19.1.1)(zod@4.1.12)':
     dependencies:
       '@zodui/core': 0.2.1
       react: 19.1.1
-      zod: 4.1.11
+      zod: 4.1.12
 
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
@@ -9895,9 +9895,9 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zod-compare@2.0.0(zod@4.1.11):
+  zod-compare@2.0.0(zod@4.1.12):
     dependencies:
-      zod: 4.1.11
+      zod: 4.1.12
 
   zod-to-json-schema@3.24.6(zod@3.25.76):
     dependencies:
@@ -9910,6 +9910,6 @@ snapshots:
 
   zod@3.25.76: {}
 
-  zod@4.1.11: {}
+  zod@4.1.12: {}
 
   zwitch@2.0.4: {}
