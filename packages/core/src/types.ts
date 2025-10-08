@@ -1,12 +1,5 @@
 import type { $ZodFunction, $ZodTypes } from "zod/v4/core";
 
-/**
- * @internal
- *
- * @deprecated
- */
-export type ZodAnyFunction = $ZodFunction;
-
 export type StandardFnSchema<T extends $ZodFunction = $ZodFunction> = {
   name: string;
   define: T;
