@@ -97,7 +97,8 @@ export default defineConfig({
       defaultProps: {
         "client:load": true,
       },
-    }), // Workaround for https://github.com/withastro/astro/issues/4229
+    }),
+    // Workaround for https://github.com/withastro/astro/issues/4229
     relativeLinks(),
   ],
   vite: {
@@ -105,6 +106,7 @@ export default defineConfig({
       // Workaround for https://github.com/withastro/astro/issues/14117
       noExternal: ["zod"],
     },
+    // @ts-expect-error -- https://github.com/tailwindlabs/tailwindcss/issues/18802
     plugins: [tailwindcss()],
   },
 });
