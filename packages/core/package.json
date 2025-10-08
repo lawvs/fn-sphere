@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "typeCheck": "tsc --noEmit",
-    "test": "vitest",
+    "test": "vitest --typecheck",
     "clean": "rm -rf dist"
   },
   "keywords": [],
