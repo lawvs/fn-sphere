@@ -19,7 +19,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tdesign-icons-react": "^0.6.1",
-    "tdesign-react": "^1.15.5",
+    "tdesign-react": "^1.15.6",
     "zod": "^4.1.12"
   },
   "devDependencies": {
