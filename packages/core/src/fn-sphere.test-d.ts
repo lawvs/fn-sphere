@@ -1,6 +1,7 @@
 import { describe, expectTypeOf, test } from "vitest";
 import { z } from "zod";
-import { defineTypedFn } from "./fn-sphere.js";
+import type { $ZodString } from "zod/v4/core";
+import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
 
 describe("defineTypedFn", () => {
   test("should work with complex schemas", () => {
@@ -34,6 +35,25 @@ describe("defineTypedFn", () => {
 
     expectTypeOf(luckUserFilter.implement).toEqualTypeOf<
       (input: PresetData) => boolean
+    >();
+  });
+});
+
+describe("defineGenericFn", () => {
+  test("should work with genericLimit", () => {
+    const fn = defineGenericFn({
+      name: "Equals",
+      genericLimit: (t): t is $ZodString => t._zod.def.type === "string",
+      define: (t) =>
+        z.function({
+          input: [t, t],
+          output: z.boolean(),
+        }),
+      implement: (value: string, target: string) => value === target,
+    });
+
+    expectTypeOf(fn.implement).toEqualTypeOf<
+      (data1: string, data2: string) => boolean
     >();
   });
 });
