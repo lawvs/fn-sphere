@@ -67,7 +67,7 @@ export default function FilterPanel({
         type="button"
         onClick={handleReset}
       >
-        <span className="icon-[material-symbols--cancel] mr-1 text-sm" />
+        {/* <span className="icon-[material-symbols--cancel] mr-1 text-sm" /> */}
         <span>{t("reset")}</span>
       </button>
     </div>
