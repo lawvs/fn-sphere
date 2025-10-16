@@ -1,17 +1,26 @@
-import { type FilterGroup, type FilterSphereInput, FilterSphereProvider, useFilterSphere } from '@fn-sphere/filter'
-import { useCallback, useMemo, useState } from 'react'
-import { z } from 'zod'
+import {
+  type FilterGroup,
+  type FilterSphereInput,
+  FilterSphereProvider,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+import { useCallback, useMemo, useState } from "react";
+import { z } from "zod";
 
-import FilterButton from './filter-button'
-import { useGetLocaleText } from './locale'
-import { themeSpec } from './theme'
-import { basicFilterFunction, createDefaultFilterRule, filterRuleTransform } from './utilities'
+import FilterButton from "./filter-button";
+import { useGetLocaleText } from "./locale";
+import { themeSpec } from "./theme";
+import {
+  basicFilterFunction,
+  createDefaultFilterRule,
+  filterRuleTransform,
+} from "./utilities";
 
 interface FilterBuilderProperties<Data> {
-  className?: string
-  schema: z.ZodType<Data>
-  defaultParameter?: Partial<Data>
-  onFilterChange?: (rule: Partial<Data>) => void
+  className?: string;
+  schema: z.ZodType<Data>;
+  defaultParameter?: Partial<Data>;
+  onFilterChange?: (rule: Partial<Data>) => void;
 }
 
 /**
@@ -34,11 +43,15 @@ interface FilterBuilderProperties<Data> {
  * <FilterBuilder className="mb-6" schema={yourSchema} onFilterChange={handleFilterChange} />
  * ```
  */
-export default function FilterBuilder<Data>(properties: Readonly<FilterBuilderProperties<Data>>) {
-  const { className, schema, defaultParameter, onFilterChange } = properties
-  const getLocaleText = useGetLocaleText(schema)
+export default function FilterBuilder<Data>(
+  properties: Readonly<FilterBuilderProperties<Data>>,
+) {
+  const { className, schema, defaultParameter, onFilterChange } = properties;
+  const getLocaleText = useGetLocaleText(schema);
 
-  const [badge, setBadge] = useState(() => (defaultParameter ? Object.keys(defaultParameter).length : 0))
+  const [badge, setBadge] = useState(() =>
+    defaultParameter ? Object.keys(defaultParameter).length : 0,
+  );
   const sphereConfig = useMemo(
     () =>
       ({
@@ -48,22 +61,22 @@ export default function FilterBuilder<Data>(properties: Readonly<FilterBuilderPr
         getLocaleText,
       }) satisfies FilterSphereInput<Data>,
     [defaultParameter, getLocaleText, schema],
-  )
+  );
 
-  const { context } = useFilterSphere(sphereConfig)
+  const { context } = useFilterSphere(sphereConfig);
 
   const handleApply = useCallback(
     (filterRule: FilterGroup) => {
-      const transformedData: Partial<Data> = filterRuleTransform(filterRule)
-      onFilterChange?.(transformedData)
-      setBadge(Object.keys(transformedData).length)
+      const transformedData: Partial<Data> = filterRuleTransform(filterRule);
+      onFilterChange?.(transformedData);
+      setBadge(Object.keys(transformedData).length);
     },
     [onFilterChange],
-  )
+  );
 
   return (
     <FilterSphereProvider context={context} theme={themeSpec}>
       <FilterButton badge={badge} className={className} onApply={handleApply} />
     </FilterSphereProvider>
-  )
+  );
 }
