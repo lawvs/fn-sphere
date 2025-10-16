@@ -52,7 +52,9 @@ export const themeSpec = createFilterTheme({
       const handleChange = useCallback(
         (event: SelectOnChangeEvent) => {
           const index = Number(event.target.value);
-          onChange?.(options[index].value);
+          const selectedOption = options[index];
+          if (!selectedOption) return;
+          onChange?.(selectedOption.value);
         },
         [options, onChange],
       );

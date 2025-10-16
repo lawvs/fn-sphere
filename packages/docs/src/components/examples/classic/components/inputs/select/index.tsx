@@ -97,7 +97,7 @@ export default function Select<
       <SelectPrimitive.Root
         {...others}
         name={name}
-        value={value}
+        {...(value !== undefined ? { value } : {})}
         onValueChange={handleValueChange}
       >
         <SelectPrimitive.Trigger
