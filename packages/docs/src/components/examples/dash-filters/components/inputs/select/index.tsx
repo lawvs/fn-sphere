@@ -87,7 +87,7 @@ export default function Select<
   );
 
   return (
-    <fieldset className={cn("block", className)}>
+    <fieldset className={cn("block p-0", className)}>
       {label ? (
         <Label className="mb-3" htmlFor={realId}>
           {label}
@@ -106,13 +106,13 @@ export default function Select<
           id={realId}
           className={cn(
             "group inline-flex w-full items-center justify-between outline-none transition-colors",
-            "rounded-sm border border-n-1 bg-white font-bold text-n-1 tap-highlight-color",
-            "data-[placeholder]:text-n-2 radix-state-open:border-red-1",
+            "rounded-sm border border-black bg-white font-bold text-black tap-highlight-color",
+            "data-[placeholder]:text-[#161616] radix-state-open:border-[#E44C55]",
             "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
             size === "large" && "h-16 px-5 text-sm",
             size === "medium" && "h-10 px-3 text-sm",
             size === "small" && "h-6 px-4 text-xs",
-            error ? "border-pink-1" : "",
+            error ? "border-[#E99898]" : "",
             classButton,
           )}
         >
@@ -141,7 +141,7 @@ export default function Select<
             position="popper"
             className={cn(
               "my-1 max-h-96 min-w-[var(--radix-popper-anchor-width)] overflow-hidden",
-              "rounded-sm border border-n-3 bg-white shadow-lg",
+              "rounded-sm border border-[#5F646D] bg-white shadow-lg",
             )}
           >
             <SelectPrimitive.Viewport
@@ -159,8 +159,8 @@ export default function Select<
                   value={option.value}
                   className={cn(
                     "flex cursor-pointer items-start outline-none transition-colors tap-highlight-color",
-                    "min-h-6 rounded-sm font-bold text-n-3 hover:text-n-1",
-                    "radix-state-checked:bg-n-3/20 radix-state-checked:text-n-1",
+                    "min-h-6 rounded-sm font-bold text-[#5F646D] hover:text-black",
+                    "radix-state-checked:bg-[#5F646D]/20 radix-state-checked:text-black",
                     size === "large" && "px-3 py-2 text-sm",
                     size === "medium" && "px-2 py-1.5 text-sm",
                     size === "small" && "py-1 pl-4 text-xs",
@@ -187,7 +187,7 @@ export default function Select<
       </SelectPrimitive.Root>
 
       {error && typeof error === "string" ? (
-        <div className="mt-1 text-xs text-pink-1">{error}</div>
+        <div className="mt-1 text-xs text-[#E99898]">{error}</div>
       ) : null}
     </fieldset>
   );
