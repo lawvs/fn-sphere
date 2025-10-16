@@ -5,6 +5,7 @@ import {
   type FilterGroup,
 } from "@fn-sphere/filter";
 import { z } from "zod";
+import type { $ZodNumber, $ZodString } from "zod/v4/core";
 
 /**
  * Transforms a filter rule group into a parameter object.
@@ -62,9 +63,13 @@ export function createDefaultFilterRule<Data>(
  */
 export const basicFilterFunction = defineGenericFn({
   name: "Equals",
-  genericLimit: (t): t is z.ZodString | z.ZodNumber =>
+  genericLimit: (t): t is $ZodString | $ZodNumber =>
     // Exclude the root schema
-    !(t instanceof z.ZodObject),
-  define: (t) => z.function().args(t, t).returns(z.boolean()),
-  implement: (value: z.Primitive, target: z.Primitive) => value === target,
+    t._zod.def.type !== "object",
+  define: (t) =>
+    z.function({
+      input: [t, t],
+      output: z.boolean(),
+    }),
+  implement: (value: unknown, target: unknown) => value === target,
 });
