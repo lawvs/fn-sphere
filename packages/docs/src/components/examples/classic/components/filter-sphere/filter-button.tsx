@@ -10,7 +10,7 @@ import FilterPanel from "./filter-panel";
 
 interface FilterButtonProperties {
   badge: number;
-  className?: string;
+  className?: string | undefined;
   onApply?: (filterRule: FilterGroup) => void;
 }
 
