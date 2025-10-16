@@ -124,16 +124,7 @@ export default function Select<
           <span className="pointer-events-none truncate">
             {selectedOption ? selectedOption.name : placeholder}
           </span>
-          <SelectPrimitive.Icon
-            className={cn(
-              "icon-[material-symbols--keyboard-arrow-down] pointer-events-none text-xl leading-none",
-              "shrink-0 transition-transform group-radix-state-open:rotate-180",
-              size === "large" && "-mr-0.5 ml-6",
-              size === "medium" && "-mr-1 ml-4",
-              size === "small" && "-mr-2 ml-2",
-              classArrow,
-            )}
-          />
+          <SelectPrimitive.Icon className={cn(classArrow)} />
         </SelectPrimitive.Trigger>
 
         <SelectPrimitive.Portal>
