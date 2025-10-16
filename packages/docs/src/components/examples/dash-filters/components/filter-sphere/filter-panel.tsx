@@ -55,7 +55,7 @@ export default function FilterPanel({
         <FilterInput key={rule.id} rule={rule} />
       ))}
       <button
-        className="btn-red btn-small disabled:btn-disabled"
+        className="inline-flex h-8 items-center justify-center px-3 text-xs font-bold text-black transition-colors border border-black rounded-sm bg-[#E44C55] fill-black hover:bg-[#E44C55]/90 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-[#E44C55]"
         type="button"
         onClick={handleApply}
       >
@@ -63,7 +63,7 @@ export default function FilterPanel({
       </button>
 
       <button
-        className="btn-stroke btn-small"
+        className="bg-white inline-flex h-8 items-center justify-center px-3 text-xs font-bold text-black transition-colors border border-black rounded-sm fill-black hover:bg-black hover:text-white hover:fill-white"
         type="button"
         onClick={handleReset}
       >

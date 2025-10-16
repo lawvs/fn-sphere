@@ -11,7 +11,11 @@ export const themeSpec = createFilterTheme({
     button: ({ className, ...properties }) => {
       return (
         <button
-          className={cn("btn-stroke btn-small", className)}
+          className={cn(
+            "inline-flex h-8 items-center justify-center px-3 text-xs font-bold text-black transition-colors",
+            "border border-black rounded-sm fill-black hover:bg-black hover:text-white hover:fill-white",
+            className,
+          )}
           type="button"
           {...properties}
         />
@@ -21,8 +25,8 @@ export const themeSpec = createFilterTheme({
       return (
         <input
           className={cn(
-            "w-full rounded-sm border border-n-1 bg-transparent p-2 text-xs font-bold text-n-1",
-            "outline-none transition-colors placeholder:text-n-1 focus:border-red-1",
+            "w-full rounded-sm border border-black bg-transparent p-2 text-xs font-bold text-black",
+            "outline-none transition-colors placeholder:text-black focus:border-[#E44C55]",
             // Hide the spinner in number input
             // https://stackoverflow.com/questions/3790935/can-i-hide-the-html5-number-input-s-spin-box
             "[-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none",

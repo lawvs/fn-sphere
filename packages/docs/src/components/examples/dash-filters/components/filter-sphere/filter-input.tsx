@@ -19,7 +19,7 @@ export default function FilterInput({ rule }: Readonly<FieldInputProperties>) {
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex items-center">
-        <span className="text-xs font-bold">
+        <span className="text-xs font-bold text-black">
           {getLocaleText(mapFieldName(selectedField))}
         </span>
       </div>
