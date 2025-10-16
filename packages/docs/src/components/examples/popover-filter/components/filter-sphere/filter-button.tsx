@@ -51,7 +51,7 @@ export default function FilterButton(
           )}
           type="button"
         >
-          <span className="icon-[material-symbols--filter-list] mr-1.5 text-base" />
+          {/* <span className="icon-[material-symbols--filter-list] mr-1.5 text-base" /> */}
           <span className="truncate">{t("allFilters")}</span>
           {badge > 0 && (
             <span className="ms-2.5 inline-flex size-4 items-center justify-center rounded-sm border border-black bg-[#E44C55] text-[0.625rem] font-semibold text-gray-900">
