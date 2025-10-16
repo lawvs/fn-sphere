@@ -19,7 +19,7 @@
     "@tailwindcss/vite": "^4.1.14",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
-    "astro": "^5.14.1",
+    "astro": "^5.14.4",
     "astro-live-code": "^0.0.6",
     "astro-relative-links": "^0.4.2",
     "react": "^19.2.0",
@@ -29,7 +29,7 @@
     "starlight-links-validator": "^0.18.0",
     "starlight-typedoc": "^0.21.3",
     "tailwindcss": "^4.1.14",
-    "typedoc": "^0.28.13",
+    "typedoc": "^0.28.14",
     "typedoc-plugin-markdown": "^4.9.0"
   },
   "devDependencies": {
