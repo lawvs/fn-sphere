@@ -19,14 +19,14 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tdesign-icons-react": "^0.6.1",
-    "tdesign-react": "^1.15.6",
+    "tdesign-react": "^1.15.7",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react": "^5.0.4",
+    "@vitejs/plugin-react": "^5.1.0",
     "less": "^4.4.2",
-    "vite": "^7.1.10"
+    "vite": "^7.1.12"
   }
 }
