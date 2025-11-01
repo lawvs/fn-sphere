@@ -114,6 +114,84 @@ export default function AdvancedFilter() {
 }
 ```
 
-## 🚧 Define a generic filter
+## Define a Generic Filter
 
-WIP
+Generic filters work across multiple data types, unlike custom filters that are bound to specific schemas. For example, the built-in `equals` filter works with strings, numbers, booleans, and union types without needing separate implementations.
+
+Use `defineGenericFn` to create a generic filter:
+
+```tsx live {31-53} {58}
+import { z } from "zod";
+import { Table } from "~/components/table";
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+  defineGenericFn,
+  type FnSchema,
+} from "@fn-sphere/filter";
+import type {
+  $ZodBoolean,
+  $ZodString,
+  $ZodNumber,
+  $ZodUnion,
+  $ZodLiteral,
+} from "zod/v4/core";
+
+const data = [
+  { name: "Alice", age: 25, active: true },
+  { name: "Bob", age: 30, active: false },
+  { name: "alice", age: 35, active: true },
+  { name: "ALICE", age: 40, active: false },
+];
+
+const schema = z.object({
+  name: z.string(),
+  age: z.number(),
+  active: z.boolean(),
+});
+
+const genericFilter = defineGenericFn({
+  name: "generic equals",
+  // Define which types this filter can work with
+  genericLimit: (genericT): genericT is $ZodBoolean | $ZodString | $ZodNumber =>
+    genericT._zod.def.type === "boolean" ||
+    genericT._zod.def.type === "string" ||
+    genericT._zod.def.type === "number",
+  // Define the function signature based on the type
+  define: (genericT) =>
+    z.function({
+      input: [genericT, genericT],
+      output: z.boolean(),
+    }),
+  // Implement logic that handles all types
+  implement: (
+    value: boolean | string | number,
+    target: boolean | string | number,
+  ) => {
+    if (typeof value === "string" && typeof target === "string")
+      return value.toLowerCase() === target.toLowerCase();
+    return value === target;
+  },
+});
+
+export default function GenericFilterExample() {
+  const { predicate, context } = useFilterSphere({
+    schema,
+    filterFnList: [genericFilter],
+  });
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+      <Table data={data.filter(predicate)} />
+    </FilterSphereProvider>
+  );
+}
+```
+
+Key properties:
+
+- **name**: A unique string identifying your filter.
+- **genericLimit**: A type guard that determines which Zod types this filter applies to.
+- **define**: A function that receives the matched type and returns a Zod function schema.
+- **implement**: The filter logic that handles all specified types.
