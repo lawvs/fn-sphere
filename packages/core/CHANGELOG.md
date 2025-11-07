@@ -10,7 +10,6 @@
   - Added enum and enum array data input views for selecting enum values in the filter UI
   - Enum filters are defined separately due to runtime type indistinguishability from strings
 
-
 ## 1.0.0
 
 ### Major Changes
