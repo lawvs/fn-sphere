@@ -118,16 +118,10 @@ const genericEqualFilter = [
     name: "equals",
     genericLimit: (
       t,
-    ): t is
-      | $ZodBoolean
-      | $ZodString
-      | $ZodNumber
-      | $ZodEnum
-      | $ZodUnion<$ZodLiteral[]> =>
+    ): t is $ZodBoolean | $ZodString | $ZodNumber | $ZodUnion<$ZodLiteral[]> =>
       t._zod.def.type === "boolean" ||
       t._zod.def.type === "string" ||
       t._zod.def.type === "number" ||
-      t._zod.def.type === "enum" ||
       (t._zod.def.type === "union" &&
         t._zod.def.options.every((op) => op._zod.def.type === "literal")),
     define: (t) =>
@@ -149,13 +143,11 @@ const genericEqualFilter = [
     ): t /* | $ZodBoolean */ is
       | $ZodString
       | $ZodNumber
-      | $ZodEnum
       | $ZodUnion<$ZodLiteral[]> =>
       // not equal for boolean is not useful
       // t._zod.def.type === "boolean"  ||
       t._zod.def.type === "string" ||
       t._zod.def.type === "number" ||
-      t._zod.def.type === "enum" ||
       (t._zod.def.type === "union" &&
         t._zod.def.options.every((op) => op._zod.def.type === "literal")),
     define: (t) =>
@@ -167,6 +159,35 @@ const genericEqualFilter = [
       if (typeof value === "string" && typeof target === "string") {
         return value.toLowerCase() !== target.toLowerCase();
       }
+      return value !== target;
+    },
+  }),
+];
+
+// Enum filters can not be merged into genericEqualFilter because
+// z.enum() type is cannot be distinguished between string type in runtime
+export const enumEqualFilter = [
+  defineGenericFn({
+    name: "enumEquals",
+    genericLimit: (t): t is $ZodEnum => t._zod.def.type === "enum",
+    define: (t) =>
+      z.function({
+        input: [t, t],
+        output: z.boolean(),
+      }),
+    implement: (value: unknown, target: unknown) => {
+      return value === target;
+    },
+  }),
+  defineGenericFn({
+    name: "enumNotEqual",
+    genericLimit: (t): t is $ZodEnum => t._zod.def.type === "enum",
+    define: (t) =>
+      z.function({
+        input: [t, t],
+        output: z.boolean(),
+      }),
+    implement: (value: unknown, target: unknown) => {
       return value !== target;
     },
   }),
@@ -291,6 +312,7 @@ const genericContainFilter = [
 
 export const genericFilter: GenericFnSchema[] = [
   ...genericEqualFilter,
+  ...enumEqualFilter,
   ...genericEmptyFilter,
   ...genericContainFilter,
 ];
