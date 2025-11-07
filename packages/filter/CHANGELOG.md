@@ -1,5 +1,20 @@
 # @fn-sphere/filter
 
+## 1.1.0
+
+### Minor Changes
+
+- [#185](https://github.com/lawvs/fn-sphere/pull/185) [`7a93fcd`](https://github.com/lawvs/fn-sphere/commit/7a93fcdfe4e1e31619c45689e346293aa151955f) Thanks [@lawvs](https://github.com/lawvs)! - Add support for Zod enum types in filter predicates and UI components.
+  - Added `enumEquals` and `enumNotEqual` filter functions for enum types
+  - Extended `contains` and `notContains` functions to work with `z.enum()` schemas
+  - Added enum and enum array data input views for selecting enum values in the filter UI
+  - Enum filters are defined separately due to runtime type indistinguishability from strings
+
+### Patch Changes
+
+- Updated dependencies [[`7a93fcd`](https://github.com/lawvs/fn-sphere/commit/7a93fcdfe4e1e31619c45689e346293aa151955f)]:
+  - @fn-sphere/core@1.1.0
+
 ## 1.0.0
 
 ### Major Changes
