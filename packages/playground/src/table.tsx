@@ -34,6 +34,7 @@ const tableColumns = [
     },
     width: "100",
   },
+  { colKey: "role", title: "Role", width: "120" },
 ] satisfies PrimaryTableCol<PresetData>[];
 
 export const DataTable = ({ data }: { data: PresetData[] }) => {

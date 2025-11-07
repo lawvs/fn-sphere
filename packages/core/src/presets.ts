@@ -2,6 +2,7 @@ import { z } from "zod";
 import type {
   $ZodArray,
   $ZodBoolean,
+  $ZodEnum,
   $ZodLiteral,
   $ZodNullable,
   $ZodNumber,
@@ -163,6 +164,35 @@ const genericEqualFilter = [
   }),
 ];
 
+// Enum filters are defined separately from genericEqualFilter because
+// z.enum() values are indistinguishable from regular strings at runtime,
+export const enumEqualFilter = [
+  defineGenericFn({
+    name: "enumEquals",
+    genericLimit: (t): t is $ZodEnum => t._zod.def.type === "enum",
+    define: (t) =>
+      z.function({
+        input: [t, t],
+        output: z.boolean(),
+      }),
+    implement: (value: unknown, target: unknown) => {
+      return value === target;
+    },
+  }),
+  defineGenericFn({
+    name: "enumNotEqual",
+    genericLimit: (t): t is $ZodEnum => t._zod.def.type === "enum",
+    define: (t) =>
+      z.function({
+        input: [t, t],
+        output: z.boolean(),
+      }),
+    implement: (value: unknown, target: unknown) => {
+      return value !== target;
+    },
+  }),
+];
+
 const genericEmptyFilter = [
   defineGenericFn({
     name: "isEmpty",
@@ -199,9 +229,12 @@ const genericEmptyFilter = [
 const genericContainFilter = [
   defineGenericFn({
     name: "contains",
-    genericLimit: (t): t is $ZodString | $ZodArray | $ZodUnion<$ZodLiteral[]> =>
+    genericLimit: (
+      t,
+    ): t is $ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]> =>
       t._zod.def.type === "string" ||
       t._zod.def.type === "array" ||
+      t._zod.def.type === "enum" ||
       (t._zod.def.type === "union" &&
         t._zod.def.options.every((op) => op._zod.def.type === "literal")),
     define: (t) => {
@@ -212,11 +245,13 @@ const genericContainFilter = [
         const element = t._zod.def.element;
         return z.function({ input: [t, element], output: z.boolean() });
       }
-      // union of literals
+      // union of literals or enum
       return z.function({ input: [t, z.array(t)], output: z.boolean() });
     },
     implement: (
-      value: z.infer<$ZodString | $ZodArray | $ZodUnion<$ZodLiteral[]>>,
+      value: z.infer<
+        $ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]>
+      >,
       target: string | unknown | unknown[],
     ) => {
       if (typeof value === "string" && typeof target === "string") {
@@ -228,7 +263,7 @@ const genericContainFilter = [
         return value.includes(target);
       }
       if (typeof value === "string" && Array.isArray(target)) {
-        // $ZodUnion<$ZodLiteral[]>
+        // $ZodUnion<$ZodLiteral[]> or $ZodEnum
         return target.includes(value);
       }
       console.error("Invalid input type!");
@@ -237,9 +272,12 @@ const genericContainFilter = [
   }),
   defineGenericFn({
     name: "notContains",
-    genericLimit: (t): t is $ZodString | $ZodArray | $ZodUnion<$ZodLiteral[]> =>
+    genericLimit: (
+      t,
+    ): t is $ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]> =>
       t._zod.def.type === "array" ||
       t._zod.def.type === "string" ||
+      t._zod.def.type === "enum" ||
       (t._zod.def.type === "union" &&
         t._zod.def.options.every((op) => op._zod.def.type === "literal")),
     define: (t) => {
@@ -250,7 +288,7 @@ const genericContainFilter = [
         const element = t._zod.def.element;
         return z.function({ input: [t, element], output: z.boolean() });
       }
-      // union of literals
+      // union of literals or enum
       return z.function({ input: [t, z.array(t)], output: z.boolean() });
     },
     implement: (
@@ -274,6 +312,7 @@ const genericContainFilter = [
 
 export const genericFilter: GenericFnSchema[] = [
   ...genericEqualFilter,
+  ...enumEqualFilter,
   ...genericEmptyFilter,
   ...genericContainFilter,
 ];

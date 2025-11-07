@@ -16,6 +16,10 @@ export const enUS = {
   isEmpty: "is empty",
   isNotEmpty: "is not empty",
 
+  // Enum Filter
+  enumEquals: "equals",
+  enumNotEqual: "not equal",
+
   // String Filter
   contains: "contains",
   notContains: "not contains",

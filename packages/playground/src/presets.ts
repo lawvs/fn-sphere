@@ -15,6 +15,13 @@ export const presetSchema = z
         z.literal("other").describe("Other"),
       ])
       .describe("Gender"),
+    role: z
+      .enum({
+        Admin: "admin",
+        User: "user",
+        Guest: "guest",
+      })
+      .describe("Role"),
     detail: z.object({
       email: z.string().email().describe("Email"),
       birthday: z.date().describe("Birthday"),
@@ -47,6 +54,7 @@ export const genSampleData = (total = 28) => {
       gender:
         Math.random() < 0.05 ? "other" : sample(["male", "female"] as const),
       status: sample([false, true] as const),
+      role: i === 0 ? "admin" : sample(["user", "guest"] as const),
       detail: {
         email: genId() + "@" + sample(["gmail.com", "qq.com", "apple.com"]),
         birthday,

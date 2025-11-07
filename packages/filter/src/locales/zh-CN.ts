@@ -17,6 +17,10 @@ export const zhCN = {
   isEmpty: "为空",
   isNotEmpty: "不为空",
 
+  // Enum Filter
+  enumEquals: "等于",
+  enumNotEqual: "不等于",
+
   // String Filter
   contains: "包含",
   notContains: "不包含",

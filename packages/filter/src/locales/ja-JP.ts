@@ -17,6 +17,10 @@ export const jaJP = {
   isEmpty: "空である",
   isNotEmpty: "空ではない",
 
+  // Enum Filter
+  enumEquals: "に等しい",
+  enumNotEqual: "に等しくない",
+
   // String Filter
   contains: "を含む",
   notContains: "を含まない",
