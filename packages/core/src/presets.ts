@@ -164,8 +164,8 @@ const genericEqualFilter = [
   }),
 ];
 
-// Enum filters can not be merged into genericEqualFilter because
-// z.enum() type is cannot be distinguished between string type in runtime
+// Enum filters are defined separately from genericEqualFilter because
+// z.enum() values are indistinguishable from regular strings at runtime,
 export const enumEqualFilter = [
   defineGenericFn({
     name: "enumEquals",
