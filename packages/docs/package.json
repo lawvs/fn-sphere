@@ -13,22 +13,22 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.5",
-    "@astrojs/react": "^4.4.1",
+    "@astrojs/react": "^4.4.2",
     "@astrojs/starlight": "^0.36.2",
     "@astrojs/starlight-tailwind": "^4.0.2",
-    "@tailwindcss/vite": "^4.1.16",
+    "@tailwindcss/vite": "^4.1.17",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "astro": "^5.15.3",
+    "astro": "^5.15.4",
     "astro-live-code": "^0.0.6",
     "astro-relative-links": "^0.4.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "rehype-external-links": "^3.0.0",
-    "sharp": "^0.34.4",
-    "starlight-links-validator": "^0.19.0",
+    "sharp": "^0.34.5",
+    "starlight-links-validator": "^0.19.1",
     "starlight-typedoc": "^0.21.4",
-    "tailwindcss": "^4.1.16",
+    "tailwindcss": "^4.1.17",
     "typedoc": "^0.28.14",
     "typedoc-plugin-markdown": "^4.9.0"
   },
@@ -37,7 +37,7 @@
     "@emotion/styled": "^11.14.1",
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
-    "@mui/material": "^7.3.4",
+    "@mui/material": "^7.3.5",
     "zod": "^4.1.12"
   }
 }
