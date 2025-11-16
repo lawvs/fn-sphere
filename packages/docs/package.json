@@ -16,6 +16,8 @@
     "@astrojs/react": "^4.4.2",
     "@astrojs/starlight": "^0.36.2",
     "@astrojs/starlight-tailwind": "^4.0.2",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-select": "^2.2.6",
     "@tailwindcss/vite": "^4.1.17",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
