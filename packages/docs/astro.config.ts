@@ -9,6 +9,9 @@ import rehypeExternalLinks from "rehype-external-links";
 import starlightTypeDoc from "starlight-typedoc";
 // https://github.com/HiDeoo/starlight-links-validator
 import starlightLinksValidator from "starlight-links-validator";
+import starlightMarkdown from "./src/plugins/starlight-markdown";
+// https://github.com/corsfix/starlight-contextual-menu
+import starlightContextualMenu from "starlight-contextual-menu";
 
 // https://astro.build/config
 export default defineConfig({
@@ -88,6 +91,11 @@ export default defineConfig({
         }),
         starlightLinksValidator({
           errorOnInvalidHashes: false,
+        }),
+        starlightMarkdown(),
+        starlightContextualMenu({
+          injectMarkdownRoutes: false,
+          actions: ["copy", "view", "chatgpt", "claude"],
         }),
       ],
     }),

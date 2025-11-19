@@ -28,6 +28,7 @@
     "react-dom": "^19.2.0",
     "rehype-external-links": "^3.0.0",
     "sharp": "^0.34.5",
+    "starlight-contextual-menu": "^0.1.5",
     "starlight-links-validator": "^0.19.1",
     "starlight-typedoc": "^0.21.4",
     "tailwindcss": "^4.1.17",
