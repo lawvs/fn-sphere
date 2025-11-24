@@ -23,10 +23,10 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react": "^5.1.0",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
     "less": "^4.4.2",
-    "vite": "^7.2.2"
+    "vite": "^7.2.4"
   }
 }
