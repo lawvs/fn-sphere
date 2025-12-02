@@ -33,7 +33,9 @@ export interface SelectOption<
 export interface SelectProperties<
   TValue extends string = string,
   TName extends Node = Node,
-> extends Omit<SelectPrimitive.SelectProps, "onValueChange" | "children">,
+>
+  extends
+    Omit<SelectPrimitive.SelectProps, "onValueChange" | "children">,
     RefAttributes<HTMLButtonElement> {
   className?: string;
   classButton?: string;

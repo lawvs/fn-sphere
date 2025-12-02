@@ -10,8 +10,9 @@ import { defaultGetLocaleText } from "../locales/get-locale-text.js";
 import type { BasicFilterSphereInput } from "../types.js";
 import { defaultMapFieldName, defaultMapFilterName, noop } from "../utils.js";
 
-export interface FilterSchemaContext<Data = unknown>
-  extends Readonly<Required<BasicFilterSphereInput<Data>>> {
+export interface FilterSchemaContext<Data = unknown> extends Readonly<
+  Required<BasicFilterSphereInput<Data>>
+> {
   readonly filterRule: FilterGroup;
   readonly filterableFields: FilterField[];
   readonly onRuleChange?: (rule: FilterGroup) => void;

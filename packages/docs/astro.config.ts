@@ -94,6 +94,7 @@ export default defineConfig({
         }),
         starlightMarkdown(),
         starlightContextualMenu({
+          // Adds the markdown routes in the starlightMarkdown plugin
           injectMarkdownRoutes: false,
           actions: ["copy", "view", "chatgpt", "claude"],
         }),
