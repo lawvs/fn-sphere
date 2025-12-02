@@ -15,8 +15,9 @@ import {
 import { FlattenFilterGroupContainer } from "./filter-group-container";
 import { FlattenSingleFilterView } from "./filter-rule";
 
-interface FlattenFilterBuilderProps<Data = unknown>
-  extends BasicFilterSphereInput<Data> {
+interface FlattenFilterBuilderProps<
+  Data = unknown,
+> extends BasicFilterSphereInput<Data> {
   filterRule: FilterGroup;
   onRuleChange?: (value: {
     filterRule: FilterGroup;

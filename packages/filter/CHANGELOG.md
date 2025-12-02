@@ -254,8 +254,9 @@
     - The `onPredicateChange` callback has been removed. Use the `predicate` property in the `onRuleChange` callback instead.
 
     ```ts
-    export interface FilterSphereInput<Data>
-      extends BasicFilterSphereInput<Data> {
+    export interface FilterSphereInput<
+      Data,
+    > extends BasicFilterSphereInput<Data> {
       onRuleChange?: (data: {
         filterRule: FilterGroup;
         predicate: (data: Data) => boolean;
