@@ -1,5 +1,11 @@
 # @fn-sphere/filter
 
+## 1.1.1
+
+### Patch Changes
+
+- [`4c0eccc`](https://github.com/lawvs/fn-sphere/commit/4c0eccc61ded789446284cee4a200ec7e83caa0b) Thanks [@lawvs](https://github.com/lawvs)! - Export `defaultGetLocaleText` function for accessing localized filter names
+
 ## 1.1.0
 
 ### Minor Changes
