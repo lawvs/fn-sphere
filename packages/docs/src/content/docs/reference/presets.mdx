@@ -1,0 +1,62 @@
+---
+title: Preset Filters
+description: Built-in filter functions available in Filter Sphere
+---
+
+Filter Sphere provides a collection of preset filter functions that cover common filtering scenarios. These functions are designed to work with various data types including strings, numbers, dates, arrays, and enums.
+
+## Available Filters
+
+The following table shows all available preset filters and their type signatures:
+
+import { PresetFiltersTable } from "~/components/preset-filters-table.tsx";
+
+<PresetFiltersTable client:load />
+
+## Filter Categories
+
+### Equality Filters
+
+- **Equals**: Compare values for equality (case-insensitive for strings)
+- **Not Equal**: Compare values for inequality (case-insensitive for strings)
+- **Enum Equals**: Strict equality for enum values
+- **Enum Not Equal**: Strict inequality for enum values
+
+### String Filters
+
+- **Contains**: Check if a string contains a substring (case-insensitive)
+- **Not Contains**: Check if a string does not contain a substring (case-insensitive)
+- **Starts With**: Check if a string starts with a prefix (case-insensitive)
+- **Ends With**: Check if a string ends with a suffix (case-insensitive)
+
+### Number Filters
+
+- **Greater Than**: Check if a number is greater than another
+- **Greater Than Or Equal**: Check if a number is greater than or equal to another
+- **Less Than**: Check if a number is less than another
+- **Less Than Or Equal**: Check if a number is less than or equal to another
+
+### Date Filters
+
+- **Before**: Check if a date is before another date
+- **After**: Check if a date is after another date
+
+### Empty/Null Filters
+
+- **Is Empty**: Check if a value is null, undefined, or empty string
+- **Is Not Empty**: Check if a value is not null, undefined, or empty string
+
+### Array Filters
+
+- **Contains**: Check if an array contains an element
+- **Not Contains**: Check if an array does not contain an element
+
+## Usage
+
+Import preset filters in your application:
+
+```typescript
+import { presetFilter } from "@fn-sphere/filter";
+```
+
+These filters can be used with the Filter Sphere system to build dynamic filtering interfaces.
