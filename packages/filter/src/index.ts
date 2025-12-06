@@ -15,6 +15,7 @@ export {
   type FilterSphereInput,
 } from "./hooks/use-filter-sphere.js";
 export { useRootRule } from "./hooks/use-root-rule.js";
+export { defaultGetLocaleText } from "./locales/get-locale-text.js";
 export * from "./theme/index.js";
 export type { BasicFilterSphereInput } from "./types.js";
 export { defaultMapFieldName, defaultMapFilterName } from "./utils.js";
