@@ -1,6 +1,10 @@
+import { isValidElement, type CSSProperties } from "react";
 import type { ZodObject } from "zod";
 
-const stringify = (value: unknown) => {
+const renderCell = (value: unknown) => {
+  if (isValidElement(value)) {
+    return value;
+  }
   if (typeof value === "string") {
     return value;
   }
@@ -13,9 +17,13 @@ const stringify = (value: unknown) => {
 export function Table({
   data,
   schema,
+  className,
+  style,
 }: {
   data: Record<string, unknown>[];
   schema?: ZodObject<any>;
+  className?: string;
+  style?: CSSProperties;
 }) {
   if (!data.length && !schema) {
     return <div>No data</div>;
@@ -25,8 +33,10 @@ export function Table({
 
   return (
     <div
-      className="overflow-auto rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
-      style={{ maxHeight: "250px" }}
+      className={`overflow-auto rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900 ${
+        className ?? ""
+      }`}
+      style={style}
     >
       <table className="min-w-full divide-y divide-gray-200 text-left text-sm dark:divide-gray-700">
         <thead className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:bg-gray-800 dark:text-gray-400">
@@ -59,7 +69,7 @@ export function Table({
                     key={key}
                     className="px-4 py-2 text-gray-900 dark:text-gray-100"
                   >
-                    {stringify(item[key])}
+                    {renderCell(item[key])}
                   </td>
                 ))}
               </tr>

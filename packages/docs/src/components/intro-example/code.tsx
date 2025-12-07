@@ -31,7 +31,11 @@ export function AdvancedFilter() {
         <FilterBuilder />
       </FilterSphereProvider>
       {/* 4. use the predicate to filter the data */}
-      <Table schema={schema} data={data.filter(predicate)} />
+      <Table
+        schema={schema}
+        data={data.filter(predicate)}
+        className="max-h-[250px]"
+      />
     </>
   );
 }
