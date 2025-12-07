@@ -1,3 +1,5 @@
+import type { ZodObject } from "zod";
+
 const stringify = (value: unknown) => {
   if (typeof value === "string") {
     return value;
@@ -8,12 +10,18 @@ const stringify = (value: unknown) => {
   return JSON.stringify(value);
 };
 
-export function Table({ data }: { data: Record<string, unknown>[] }) {
-  if (!data.length) {
+export function Table({
+  data,
+  schema,
+}: {
+  data: Record<string, unknown>[];
+  schema?: ZodObject<any>;
+}) {
+  if (!data.length && !schema) {
     return <div>No data</div>;
   }
 
-  const keys = Object.keys(data[0] ?? {});
+  const keys = schema ? Object.keys(schema.shape) : Object.keys(data[0] ?? {});
 
   return (
     <div
@@ -31,21 +39,32 @@ export function Table({ data }: { data: Record<string, unknown>[] }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-          {data.map((item, index) => (
-            <tr
-              key={index}
-              className="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800"
-            >
-              {keys.map((key) => (
-                <td
-                  key={key}
-                  className="px-4 py-2 text-gray-900 dark:text-gray-100"
-                >
-                  {stringify(item[key])}
-                </td>
-              ))}
+          {data.length === 0 ? (
+            <tr>
+              <td
+                colSpan={keys.length}
+                className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+              >
+                No data
+              </td>
             </tr>
-          ))}
+          ) : (
+            data.map((item, index) => (
+              <tr
+                key={index}
+                className="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800"
+              >
+                {keys.map((key) => (
+                  <td
+                    key={key}
+                    className="px-4 py-2 text-gray-900 dark:text-gray-100"
+                  >
+                    {stringify(item[key])}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

@@ -31,7 +31,7 @@ export function AdvancedFilter() {
         <FilterBuilder />
       </FilterSphereProvider>
       {/* 4. use the predicate to filter the data */}
-      <Table data={data.filter(predicate)} />
+      <Table schema={schema} data={data.filter(predicate)} />
     </>
   );
 }
