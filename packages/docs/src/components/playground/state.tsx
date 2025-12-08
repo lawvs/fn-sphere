@@ -126,26 +126,26 @@ function buildSchema(columns: ColumnDef[]) {
   columns.forEach((col) => {
     switch (col.type) {
       case "text":
-        shape[col.id] = z.string().nullable();
+        shape[col.id] = z.string();
         break;
       case "number":
-        shape[col.id] = z.number().nullable();
+        shape[col.id] = z.number();
         break;
       case "boolean":
-        shape[col.id] = z.boolean().nullable();
+        shape[col.id] = z.boolean();
         break;
       case "select":
-        shape[col.id] = z.string().nullable();
+        shape[col.id] = z.string();
         break;
       case "multi-select":
-        shape[col.id] = z.array(z.string()).nullable();
+        shape[col.id] = z.array(z.string());
         break;
       case "date":
-        shape[col.id] = z.date().nullable();
+        shape[col.id] = z.date();
         break;
       default:
         ColumnTypeSchema.parse(col.type);
-        shape[col.id] = z.unknown().nullable();
+        shape[col.id] = z.unknown();
     }
   });
 
