@@ -135,10 +135,29 @@ function buildSchema(columns: ColumnDef[]) {
         shape[col.id] = z.boolean();
         break;
       case "select":
-        shape[col.id] = z.string();
+        if (col.options?.length) {
+          const literals = col.options.map((o) =>
+            z.literal(o.id).meta({
+              description: o.label,
+            }),
+          );
+          shape[col.id] = z.union(literals);
+        } else {
+          shape[col.id] = z.null();
+        }
         break;
       case "multi-select":
-        shape[col.id] = z.array(z.string());
+        if (col.options?.length) {
+          const literals = col.options.map((o) =>
+            z.literal(o.id).meta({
+              description: o.label,
+            }),
+          );
+          const union = z.union(literals);
+          shape[col.id] = z.array(union);
+        } else {
+          shape[col.id] = z.null();
+        }
         break;
       case "date":
         shape[col.id] = z.date();
