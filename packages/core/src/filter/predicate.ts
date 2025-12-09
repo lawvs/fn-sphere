@@ -151,7 +151,7 @@ const createGroupPredicate = <Data>({
 /**
  * Creates a filter predicate function based on the provided filter rule.
  */
-export const createUnsafeFilterPredicate = <Data>({
+const createUnsafeFilterPredicate = <Data>({
   filterFnList,
   schema,
   filterRule,
