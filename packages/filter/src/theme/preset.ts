@@ -5,6 +5,7 @@ import {
   SingleSelectView,
 } from "../views/components.js";
 import { presetDataInputSpecs } from "../views/data-input-views.js";
+import { ErrorBoundary } from "../views/error-boundary.js";
 import { FieldSelect } from "../views/field-select.js";
 import { FilterDataInput } from "../views/filter-data-input.js";
 import { FilterGroupContainer } from "../views/filter-group-container.js";
@@ -23,6 +24,7 @@ export const presetTheme: FilterTheme = {
     Input: InputView,
     Select: SingleSelectView,
     MultipleSelect: MultiSelectView,
+    ErrorBoundary,
   },
   templates: {
     SingleFilter: SingleFilterView,

@@ -23,7 +23,7 @@ export const FilterGroupContainer = ({
     appendChildGroup,
     removeGroup,
   } = useFilterGroup(rule);
-  const { Button } = useView("components");
+  const { Button, ErrorBoundary } = useView("components");
 
   const text =
     rule.op === "or"
@@ -47,38 +47,44 @@ export const FilterGroupContainer = ({
   }, [removeGroup]);
 
   return (
-    <div
-      className="filter-sphere-filter-group-container"
-      style={{
-        display: "inline-flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        borderRadius: 4,
-        padding: 8,
-        gap: 8,
-        background: "rgba(0, 0, 0, 0.05)",
-      }}
-      {...props}
-    >
-      <Button onClick={handleToggleGroupOp}>{text}</Button>
-      {children}
+    <ErrorBoundary {...(!isRoot ? { onDelete: handleDeleteGroup } : undefined)}>
       <div
-        className="filter-sphere-filter-group-container-actions"
+        className="filter-sphere-filter-group-container"
         style={{
-          display: "flex",
+          display: "inline-flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          borderRadius: 4,
+          padding: 8,
           gap: 8,
+          background: "rgba(0, 0, 0, 0.05)",
         }}
+        {...props}
       >
-        <Button onClick={handleAddCondition}>{getLocaleText("addRule")}</Button>
-        {depth < 3 && (
-          <Button onClick={handleAddGroup}>{getLocaleText("addGroup")}</Button>
-        )}
-        {!isRoot && (
-          <Button onClick={handleDeleteGroup}>
-            {getLocaleText("deleteGroup")}
+        <Button onClick={handleToggleGroupOp}>{text}</Button>
+        {children}
+        <div
+          className="filter-sphere-filter-group-container-actions"
+          style={{
+            display: "flex",
+            gap: 8,
+          }}
+        >
+          <Button onClick={handleAddCondition}>
+            {getLocaleText("addRule")}
           </Button>
-        )}
+          {depth < 3 && (
+            <Button onClick={handleAddGroup}>
+              {getLocaleText("addGroup")}
+            </Button>
+          )}
+          {!isRoot && (
+            <Button onClick={handleDeleteGroup}>
+              {getLocaleText("deleteGroup")}
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };

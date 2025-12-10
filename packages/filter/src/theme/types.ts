@@ -58,6 +58,11 @@ export type FilterTheme = {
     // Select: ComponentType<SelectProps<unknown> & RefAttributes<HTMLElement>>;
     Select: <T>(props: SingleSelectProps<T>) => ReactNode;
     MultipleSelect: <T>(props: MultiSelectProps<T>) => ReactNode;
+    ErrorBoundary: ComponentType<{
+      children: ReactNode;
+      fallback?: ReactNode;
+      onDelete?: () => void;
+    }>;
   };
   templates: {
     FilterGroupContainer: ComponentType<FilterGroupContainerProps>;

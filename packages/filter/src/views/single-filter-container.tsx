@@ -1,5 +1,7 @@
 import type { SingleFilter } from "@fn-sphere/core";
-import type { ReactNode } from "react";
+import { useCallback, type ReactNode } from "react";
+import { useFilterRule } from "../hooks/use-filter-rule.js";
+import { useView } from "../theme/hooks.js";
 import type { CommonProps } from "./types.js";
 
 export type SingleFilterContainerProps = {
@@ -8,23 +10,31 @@ export type SingleFilterContainerProps = {
 } & CommonProps;
 
 export const SingleFilterContainer = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  rule: _rule,
+  rule,
   children,
   ...props
 }: SingleFilterContainerProps) => {
+  const { ErrorBoundary } = useView("components");
+  const { removeRule } = useFilterRule(rule);
+
+  const handleDelete = useCallback(() => {
+    removeRule(true);
+  }, [removeRule]);
+
   return (
-    <div
-      className="filter-sphere-single-filter-container"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-      }}
-      {...props}
-    >
-      {children}
-    </div>
+    <ErrorBoundary onDelete={handleDelete}>
+      <div
+        className="filter-sphere-single-filter-container"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }}
+        {...props}
+      >
+        {children}
+      </div>
+    </ErrorBoundary>
   );
 };
 SingleFilterContainer.displayName = "SingleFilterContainer";
