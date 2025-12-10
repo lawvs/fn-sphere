@@ -3,25 +3,11 @@ import type {
   $ZodFunction,
   $ZodTuple,
   $ZodType,
-  $ZodTypes,
   $ZodUnknown,
 } from "zod/v4/core";
 import { createFilterSphere } from "./filter/index.js";
+import { isFilterFn } from "./fn-helpers.js";
 import type { GenericFnSchema, StandardFnSchema } from "./types.js";
-import { isFilterFn as isFilterSchema } from "./utils.js";
-
-export function defineTypedFn<T extends $ZodFunction>(
-  schema: StandardFnSchema<T>,
-): StandardFnSchema<T> {
-  return schema;
-}
-
-export function defineGenericFn<
-  Generic extends $ZodTypes,
-  Fn extends $ZodFunction,
->(schemaFn: GenericFnSchema<Generic, Fn>): GenericFnSchema<Generic, Fn> {
-  return schemaFn;
-}
 
 export const createFnSphere = () => {
   type FnSphereState = {
@@ -84,7 +70,7 @@ export const createFnSphere = () => {
   };
 
   const setupFilter = <S>(schema: $ZodType<S>) => {
-    const filterFn = findFn(isFilterSchema);
+    const filterFn = findFn(isFilterFn);
     const zFilter = createFilterSphere(schema, filterFn);
     return zFilter;
   };

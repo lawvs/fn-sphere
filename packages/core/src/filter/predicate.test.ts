@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { z } from "zod";
-import { defineTypedFn } from "../fn-sphere.js";
+import { defineTypedFn } from "../fn-helpers.js";
 import { createFilterPredicate } from "./predicate.js";
 import type { FilterRule } from "./types.js";
 import { createSingleFilter } from "./utils.js";

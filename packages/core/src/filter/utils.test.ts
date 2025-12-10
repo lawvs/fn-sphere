@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import z from "zod";
 import { isSameType } from "zod-compare";
-import { defineGenericFn, defineTypedFn } from "../fn-sphere.js";
+import { defineGenericFn, defineTypedFn } from "../fn-helpers.js";
 import type { FnSchema, GenericFnSchema } from "../types.js";
 import type { FilterPath } from "./types.js";
 import {

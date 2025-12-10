@@ -10,7 +10,7 @@ import type {
   $ZodString,
   $ZodUnion,
 } from "zod/v4/core";
-import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
+import { defineGenericFn, defineTypedFn } from "./fn-helpers.js";
 import type { GenericFnSchema, StandardFnSchema } from "./types.js";
 
 export const stringFilter = [

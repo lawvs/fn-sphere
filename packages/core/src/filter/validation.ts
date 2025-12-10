@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { isSameType } from "zod-compare";
 import type { $ZodType } from "zod/v4/core";
+import { isGenericFilter } from "../fn-helpers.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
-import { isGenericFilter, unreachable } from "../utils.js";
+import { unreachable } from "../utils.js";
 import type {
   FilterGroup,
   FilterRule,

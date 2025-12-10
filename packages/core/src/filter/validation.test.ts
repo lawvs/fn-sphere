@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import type { $ZodNumber, $ZodString } from "zod/v4/core";
-import { defineGenericFn, defineTypedFn } from "../fn-sphere.js";
+import { defineGenericFn, defineTypedFn } from "../fn-helpers.js";
 import type { FnSchema } from "../types.js";
 import type { FilterId, SingleFilter } from "./types.js";
 import { createFilterGroup, createSingleFilter } from "./utils.js";

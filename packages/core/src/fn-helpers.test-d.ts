@@ -1,7 +1,7 @@
 import { describe, expectTypeOf, test } from "vitest";
 import { z } from "zod";
 import type { $ZodString } from "zod/v4/core";
-import { defineGenericFn, defineTypedFn } from "./fn-sphere.js";
+import { defineGenericFn, defineTypedFn } from "./fn-helpers.js";
 
 describe("defineTypedFn", () => {
   test("should work with complex schemas", () => {

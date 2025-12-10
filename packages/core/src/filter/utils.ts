@@ -4,8 +4,9 @@ import {
   type $ZodType,
   type $ZodTypes,
 } from "zod/v4/core";
+import { isFilterFn } from "../fn-helpers.js";
 import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
-import { isFilterFn, unreachable } from "../utils.js";
+import { unreachable } from "../utils.js";
 import type {
   FilterField,
   FilterGroup,

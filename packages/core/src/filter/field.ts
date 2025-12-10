@@ -1,7 +1,7 @@
 import { isSameType } from "zod-compare";
 import type { $ZodTuple, $ZodType, $ZodTypes } from "zod/v4/core";
+import { isGenericFilter } from "../fn-helpers.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
-import { isGenericFilter } from "../utils.js";
 import type { FilterField, FilterPath } from "./types.js";
 import { instantiateGenericFn } from "./utils.js";
 

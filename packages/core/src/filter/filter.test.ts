@@ -1,12 +1,12 @@
 import { expect, test } from "vitest";
 import { z } from "zod";
-import { createFilterSphere } from "./filter/index.js";
+import { defineTypedFn } from "../fn-helpers.js";
+import { createFilterSphere } from "./index.js";
 import {
   createFilterGroup,
   getParametersExceptFirst,
   isEqualPath,
-} from "./filter/utils.js";
-import { defineTypedFn } from "./fn-sphere.js";
+} from "./utils.js";
 
 test("basic usage", () => {
   const zData = z.object({
