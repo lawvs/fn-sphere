@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.7",
-    "react": "^19.2.1"
+    "react": "^19.2.3"
   },
   "peerDependencies": {
     "@emotion/react": "^11.0.0",
