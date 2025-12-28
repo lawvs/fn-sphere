@@ -1,5 +1,22 @@
 # @fn-sphere/filter
 
+## 1.2.0
+
+### Minor Changes
+
+- [`4f62a4b`](https://github.com/lawvs/fn-sphere/commit/4f62a4bee271aa7d3192e72e91ed4106feadbf0d) Thanks [@lawvs](https://github.com/lawvs)! - Add ErrorBoundary component
+  - Added `ErrorBoundary` component to the theme components for handling rendering errors in filter UI
+  - `ErrorBoundary` wraps `FilterGroupContainer` and `SingleFilterContainer` to catch and handle errors gracefully
+  - Provides delete functionality to remove error-causing filter rules or groups via `onDelete` callback
+  - Displays user-friendly error fallback UI with error message and delete button
+
+### Patch Changes
+
+- [`4c0eccc`](https://github.com/lawvs/fn-sphere/commit/4c0eccc61ded789446284cee4a200ec7e83caa0b) Thanks [@lawvs](https://github.com/lawvs)! - Export `defaultGetLocaleText` function for accessing localized filter names
+
+- Updated dependencies [[`604b283`](https://github.com/lawvs/fn-sphere/commit/604b28300704b40c8a5cfcffaaf9416ce7f42cf9)]:
+  - @fn-sphere/core@1.2.0
+
 ## 1.1.0
 
 ### Minor Changes
