@@ -59,13 +59,6 @@ jobs:
           path: "./packages/docs/dist"
           name: "docs"
 
-      - name: Upload playground artifacts
-        # https://github.com/actions/upload-pages-artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: "./packages/playground/dist"
-          name: "playground"
-
       - name: Deploy GitHub Pages
         if: github.ref == 'refs/heads/main'
         # https://github.com/actions/deploy-pages
