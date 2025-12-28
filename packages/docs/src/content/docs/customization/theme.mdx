@@ -192,6 +192,18 @@ export default function AdvancedFilter() {
 }
 ```
 
+## Error Handling
+
+Filter Sphere includes an `ErrorBoundary` component that wraps `FilterGroupContainer` and `SingleFilterContainer` to catch and handle rendering errors gracefully. This prevents the entire filter UI from crashing when an individual rule or group encounters an error.
+
+You can try out the error boundary by using the example below.
+
+import { ErrorBoundaryExample } from "~/components/examples/error-boundary-example.tsx";
+
+<div className="not-content">
+  <ErrorBoundaryExample client:load />
+</div>
+
 ## Anatomy of the theme
 
 The theme is a set of components and templates that are used to render the Filter Sphere. You can see the constructor of the theme by clicking on the following tabs.
@@ -205,7 +217,7 @@ import { ThemeAnatomy } from "~/components/theme-anatomy.tsx";
 
       ### Components
 
-      You can override the components to customize the appearance of the Filter Sphere. The components include: `Button`, `Input`, `Select` and `MultipleSelect`.
+      You can override the components to customize the appearance of the Filter Sphere. The components include: `Button`, `Input`, `Select`, `MultipleSelect` and `ErrorBoundary`.
 
   </TabItem>
 
