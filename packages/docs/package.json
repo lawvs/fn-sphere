@@ -14,12 +14,12 @@
   "dependencies": {
     "@astrojs/check": "^0.9.6",
     "@astrojs/react": "^4.4.2",
-    "@astrojs/starlight": "^0.37.5",
+    "@astrojs/starlight": "^0.37.6",
     "@astrojs/starlight-tailwind": "^4.0.2",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
     "@tailwindcss/vite": "^4.1.18",
-    "@types/react": "^19.2.10",
+    "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
     "astro-live-code": "^0.0.6",
@@ -33,7 +33,7 @@
     "starlight-typedoc": "^0.21.5",
     "tailwindcss": "^4.1.18",
     "typedoc": "^0.28.16",
-    "typedoc-plugin-markdown": "^4.9.0"
+    "typedoc-plugin-markdown": "^4.10.0"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
