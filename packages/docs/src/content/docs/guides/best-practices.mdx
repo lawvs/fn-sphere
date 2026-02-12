@@ -1,0 +1,148 @@
+---
+title: Best Practices
+description: Best practices for using Filter Sphere effectively
+sidebar:
+  order: 2
+---
+
+import SourceCodeCard from "~/components/source-code-card.astro";
+
+This guide covers best practices and recommended patterns when building with Filter Sphere.
+
+## Project Structure
+
+Organize your filter code into separate files by concern. This makes each piece easier to reuse, test, and maintain independently.
+
+```
+filter-sphere/
+├── index.tsx   # Main component, wires everything together
+├── schema.ts   # Zod data schema, default rules, filter functions
+├── theme.tsx   # Theme configuration via createFilterTheme
+└── locale.ts   # i18n setup with getLocaleText
+```
+
+## Define Descriptive Schemas
+
+Define your data with zod. Use `.describe()` on your Zod fields to provide human-readable labels or i18n keys. These labels are displayed in the field selector dropdown and can be translated via `getLocaleText`.
+
+```ts
+// schema.ts
+import { presetFilter } from "@fn-sphere/filter";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string().describe("Name"),
+  email: z.string().describe("Email"),
+  age: z.number().describe("Age"),
+  active: z.boolean().describe("Active"),
+  createdAt: z.date().describe("Created At"),
+});
+
+// (Optional) Define a default filter rule
+export const defaultRule = createFilterGroup({
+  op: "and",
+  conditions: [
+    createSingleFilter({
+      path: ["name"],
+      name: "contains",
+      args: ["default value"],
+    }),
+  ],
+});
+
+// (Optional) Customize the list of filter functions
+export const filterFnList: FnSchema[] = presetFilter
+  // Exclude "endsWith" as an example
+  .filter((fn) => fn.name !== "endsWith");
+```
+
+## Create a Custom Theme
+
+Use `createFilterTheme` to build your theme in a dedicated file. It merges your customizations with the preset defaults, so you only need to override what you want to change.
+
+```tsx
+// theme.tsx
+import { createFilterTheme } from "@fn-sphere/filter";
+
+export const theme = createFilterTheme({
+  components: {
+    Button: (props) => <button {...props} className="my-button" />,
+    Input: ({ onChange, ...props }) => (
+      <input onChange={(e) => onChange?.(e.target.value)} {...props} />
+    ),
+  },
+  templates: {
+    // Customize FilterGroupContainer, SingleFilter, etc.
+  },
+});
+```
+
+## Handle Localization
+
+Keep i18n logic in a separate locale file. Use built-in locales from `@fn-sphere/filter/locales` as a base, and extend them with your own field name translations.
+
+```ts
+// locale.ts
+import { enUS, zhCN, jaJP } from "@fn-sphere/filter/locales";
+
+export const locales = [
+  { key: "en", label: "English", value: enUS },
+  {
+    key: "cn",
+    label: "中文",
+    value: { ...zhCN, Name: "名称", Email: "邮箱" },
+  },
+  {
+    key: "jp",
+    label: "日本語",
+    value: { ...jaJP, Name: "名前", Email: "メール" },
+  },
+];
+
+export const createGetLocaleText = (localeKey: string) => {
+  const locale = locales.find((l) => l.key === localeKey)?.value;
+  return (key: string): string => {
+    if (!locale || !(key in locale)) return key;
+    return locale[key as keyof typeof locale];
+  };
+};
+```
+
+The field labels from `.describe()` are passed through `getLocaleText`, so you can translate them by adding the label as a key in your locale objects.
+
+## Wire Everything Together
+
+The main file imports from all other modules and composes them into the final component.
+
+```tsx
+// index.tsx
+import {
+  FilterBuilder,
+  FilterSphereProvider,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+import { defaultRule, filterFnList, filterSchema } from "./schema";
+import { theme } from "./theme";
+import { createGetLocaleText } from "./locale";
+
+export function MyFilter() {
+  const { context, predicate, filterRule } = useFilterSphere({
+    schema: filterSchema,
+    defaultRule,
+    filterFnList,
+    getLocaleText: createGetLocaleText("en"),
+  });
+
+  const data = [
+    /* your data here */
+  ];
+  const filteredData = data.filter(predicate);
+  console.log("Filtered Data:", filteredData);
+
+  return (
+    <FilterSphereProvider context={context} theme={theme}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```

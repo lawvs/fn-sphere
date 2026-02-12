@@ -168,3 +168,78 @@ implementation for these functions, make sure to update the `getLocaleText`
 function accordingly.
 
 </Aside>
+
+## Integration with i18n Libraries
+
+If your project already uses an i18n library (e.g. `next-intl`, `react-intl`, `react-i18next`), you can bridge it with Filter Sphere's `getLocaleText` instead of maintaining separate locale files.
+
+The key idea is to create a custom `getLocaleText` that delegates to your i18n library's translation function.
+
+### Create a hook that bridges your i18n library
+
+Wrap your i18n library's `useTranslations` (or equivalent) in a custom hook. This example uses `next-intl`:
+
+```tsx
+import { defaultGetLocaleText } from "@fn-sphere/filter";
+import { useTranslations } from "next-intl";
+import { useCallback } from "react";
+
+const FIELD_PREFIX = "filter"; // Optional prefix for filter keys
+
+export function useGetLocaleText() {
+  const t = useTranslations();
+
+  const getLocaleText = useCallback(
+    (key: string) => t(`${FIELD_PREFIX}.${key}`) ?? defaultGetLocaleText(key),
+    [t],
+  );
+
+  return getLocaleText;
+}
+```
+
+### Use the hook with Filter Sphere
+
+Pass the bridged `getLocaleText` to `useFilterSphere`. All Filter Sphere UI labels (operator names, button text, field names, filter names) will be resolved through your i18n pipeline.
+
+```tsx
+import {
+  FilterSphereProvider,
+  FilterBuilder,
+  useFilterSphere,
+  type FilterSphereInput,
+} from "@fn-sphere/filter";
+import { z } from "zod";
+import { useMemo } from "react";
+
+const schema = z.object({
+  name: z.string().describe("name"),
+  price: z.number().describe("price"),
+});
+
+function MyFilter() {
+  const getLocaleText = useGetLocaleText();
+  const { context } = useFilterSphere({
+    schema,
+    getLocaleText,
+  });
+
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+Then add the corresponding keys to your translation files:
+
+```json
+// en.json
+{
+  "filter.name": "Name",
+  "filter.price": "Price"
+}
+```
+
+With this approach, all Filter Sphere labels are resolved through your existing i18n pipeline, so you only need to maintain a single set of translation files.
