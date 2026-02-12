@@ -16,7 +16,11 @@ function getCategory(key: string): string {
   )
     return "Layout";
   if (key.startsWith("enum")) return "Enum Filter";
-  if (key.startsWith("number") || key.startsWith("greater") || key.startsWith("less"))
+  if (
+    key.startsWith("number") ||
+    key.startsWith("greater") ||
+    key.startsWith("less")
+  )
     return "Number Filter";
   if (key.startsWith("value")) return "Boolean Filter";
   if (["contains", "notContains", "startsWith", "endsWith"].includes(key))
