@@ -79,7 +79,6 @@ type SortRule = SortItem[];
 | File | Purpose |
 |---|---|
 | `types.ts` | `SortField`, `SortItem`, `SortRule` type definitions |
-| `presets.ts` | `presetSort` — generic compare function for primitive types |
 | `field.ts` | `findSortableFields` — BFS schema walking + field discovery |
 | `utils.ts` | `instantiateGenericSortFn` — generic-to-concrete sort fn instantiation |
 | `sorter.ts` | `createSorterSphere` — main entry point |

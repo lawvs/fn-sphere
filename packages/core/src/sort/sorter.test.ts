@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
 import { defineTypedFn } from "../fn-helpers.js";
-import { presetSort } from "./presets.js";
+import { presetSort } from "../fn/sort.js";
 import { createSorterSphere } from "./sorter.js";
 import type { SortRule } from "./types.js";
 
