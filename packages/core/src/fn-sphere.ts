@@ -6,7 +6,8 @@ import type {
   $ZodUnknown,
 } from "zod/v4/core";
 import { createFilterSphere } from "./filter/index.js";
-import { isFilterFn } from "./fn-helpers.js";
+import { isCompareFn, isFilterFn } from "./fn-helpers.js";
+import { createSorterSphere } from "./sort/index.js";
 import type { GenericFnSchema, StandardFnSchema } from "./types.js";
 
 export const createFnSphere = () => {
@@ -75,6 +76,12 @@ export const createFnSphere = () => {
     return zFilter;
   };
 
+  const setupSort = <S>(schema: $ZodType<S>) => {
+    const compareFn = findFn(isCompareFn);
+    const zSort = createSorterSphere(schema, compareFn);
+    return zSort;
+  };
+
   return {
     _state: state,
 
@@ -85,5 +92,7 @@ export const createFnSphere = () => {
     findFn,
 
     setupFilter,
+
+    setupSort,
   };
 };

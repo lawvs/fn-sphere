@@ -1,4 +1,5 @@
 export * from "./filter/index.js";
+export * from "./sort/index.js";
 
 export { defineGenericFn, defineTypedFn } from "./fn-helpers.js";
 export { createFnSphere } from "./fn-sphere.js";
@@ -8,6 +9,7 @@ export {
   genericFilter,
   numberFilter,
   presetFilter,
+  presetSort,
   stringFilter,
 } from "./presets.js";
 
