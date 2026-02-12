@@ -1,0 +1,191 @@
+---
+title: Persistence
+description: Save and restore filter rules
+---
+
+Filter rules can be saved to `localStorage` (or any storage) and restored later, so users don't lose their filters on page reload.
+
+## Serialization
+
+A `FilterGroup` is a plain object, so `JSON.stringify` works for most cases. However, if your schema includes `Date` fields, you need custom handling since `JSON.stringify` converts dates to strings.
+
+```ts
+import type { FilterGroup } from "@fn-sphere/filter";
+
+export function serializeFilterGroup(filterGroup: FilterGroup): string {
+  const replacer = function (this: any, key: string) {
+    return this[key] instanceof Date
+      ? { __type: "Date", value: this[key].toISOString() }
+      : this[key];
+  };
+  return JSON.stringify(filterGroup, replacer);
+}
+```
+
+## Deserialization
+
+When reading back, revive `Date` objects and validate the structure before using it.
+
+```ts
+import type { FilterGroup } from "@fn-sphere/filter";
+
+export function deserializeFilterGroup(serialized: string): FilterGroup {
+  const deserialized = JSON.parse(serialized, (_, value) => {
+    if (value && typeof value === "object" && value.__type === "Date") {
+      return new Date(value.value);
+    }
+    return value;
+  });
+  return deserialized as FilterGroup;
+}
+```
+
+## Save to localStorage
+
+Use the `onRuleChange` callback to save the filter rule whenever it changes.
+
+```tsx
+import {
+  FilterBuilder,
+  FilterSphereProvider,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+
+const STORAGE_KEY = "my-filter-rule";
+
+function MyFilter({ schema }) {
+  const { context } = useFilterSphere({
+    schema,
+    defaultRule: loadFilterRule(),
+    onRuleChange: ({ filterRule }) => {
+      localStorage.setItem(STORAGE_KEY, serializeFilterGroup(filterRule));
+    },
+  });
+
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+## Restore from localStorage
+
+Read from storage on mount and pass it as `defaultRule`. Wrap it in a try-catch so corrupted data doesn't break the UI.
+
+```ts
+import { createFilterGroup, createSingleFilter } from "@fn-sphere/filter";
+
+const fallbackRule = createFilterGroup({
+  op: "and",
+  conditions: [createSingleFilter()],
+});
+
+function loadFilterRule() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return fallbackRule;
+    return deserializeFilterGroup(saved);
+  } catch {
+    return fallbackRule;
+  }
+}
+```
+
+## Full Example
+
+Putting it all together:
+
+```tsx
+import {
+  FilterBuilder,
+  FilterSphereProvider,
+  useFilterSphere,
+  createFilterGroup,
+  createSingleFilter,
+  type FilterGroup,
+} from "@fn-sphere/filter";
+import { z } from "zod";
+
+const STORAGE_KEY = "my-filter-rule";
+
+const schema = z.object({
+  name: z.string().describe("Name"),
+  createdAt: z.date().describe("Created At"),
+});
+
+const fallbackRule = createFilterGroup({
+  op: "and",
+  conditions: [createSingleFilter()],
+});
+
+// --- Serialization ---
+
+function serializeFilterGroup(filterGroup: FilterGroup): string {
+  const replacer = function (this: any, key: string) {
+    return this[key] instanceof Date
+      ? { __type: "Date", value: this[key].toISOString() }
+      : this[key];
+  };
+  return JSON.stringify(filterGroup, replacer);
+}
+
+function deserializeFilterGroup(serialized: string): FilterGroup {
+  const deserialized = JSON.parse(serialized, (_, value) => {
+    if (value && typeof value === "object" && value.__type === "Date") {
+      return new Date(value.value);
+    }
+    return value;
+  });
+  if (
+    !deserialized ||
+    deserialized.type !== "FilterGroup" ||
+    !Array.isArray(deserialized.conditions)
+  ) {
+    throw new Error("Invalid FilterGroup structure");
+  }
+  return deserialized;
+}
+
+// --- Storage ---
+
+function loadFilterRule(): FilterGroup {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return fallbackRule;
+    return deserializeFilterGroup(saved);
+  } catch {
+    return fallbackRule;
+  }
+}
+
+// --- Component ---
+
+export default function PersistentFilter() {
+  const { context } = useFilterSphere({
+    schema,
+    defaultRule: loadFilterRule(),
+    onRuleChange: ({ filterRule }) => {
+      localStorage.setItem(STORAGE_KEY, serializeFilterGroup(filterRule));
+    },
+  });
+
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+## Using Other Serialization Libraries
+
+If you prefer not to write custom serialization, you can use <a href="https://github.com/flightcontrolhq/superjson" target="_blank">superjson</a> which handles `Date`, `Map`, `Set`, `RegExp`, and other types automatically.
+
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside title="Tip">
+  If your schema has no `Date` fields, you can skip the custom replacer/reviver
+  and use `JSON.stringify` / `JSON.parse` directly.
+</Aside>
