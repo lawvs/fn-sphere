@@ -295,7 +295,7 @@ describe("instantiateGenericFn", () => {
     ).toBe(true);
   });
 
-  it("should return undefined if instantiated function is not a filter", () => {
+  it("should return instantiated function even if it is not a filter (caller validates)", () => {
     const schema = z.string(); // Example schema
     const genericFn = defineGenericFn({
       name: "Non-Filter Function",
@@ -305,7 +305,8 @@ describe("instantiateGenericFn", () => {
     });
 
     const result = instantiateGenericFn(schema, genericFn);
-    expect(result).toBeUndefined();
+    expect(result).toBeDefined();
+    expect(result?.name).toBe("Non-Filter Function");
   });
 
   it("should keep meta information when instantiating a function", () => {

@@ -4,7 +4,6 @@ import {
   type $ZodType,
   type $ZodTypes,
 } from "zod/v4/core";
-import { isFilterFn } from "../fn-helpers.js";
 import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 import { unreachable } from "../utils.js";
 import type {
@@ -36,7 +35,7 @@ export const instantiateGenericFn = (
   if (!genericFn.genericLimit(schema as $ZodTypes)) {
     return;
   }
-  const instantiationFn: StandardFnSchema = {
+  return {
     name: genericFn.name,
     define: genericFn.define(schema),
     implement: genericFn.implement,
@@ -47,11 +46,6 @@ export const instantiateGenericFn = (
       genericFn: genericFn,
     },
   };
-  const isFilter = isFilterFn(instantiationFn);
-  if (!isFilter) {
-    return;
-  }
-  return instantiationFn;
 };
 
 export const getFirstParameters = (fnSchema: StandardFnSchema) => {
@@ -179,6 +173,41 @@ export const isEqualPath = (a: FilterPath, b: FilterPath): boolean => {
     return false;
   }
   return a.every((v, i) => v === b[i]);
+};
+
+export const bfsSchemaField = (
+  schema: $ZodType,
+  maxDeep: number,
+  walk: (field: $ZodType, path: FilterPath) => void,
+) => {
+  const queue = [
+    {
+      schema,
+      path: [] as FilterPath,
+      deep: 0,
+    },
+  ];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) break;
+    if (current.deep > maxDeep) break;
+
+    walk(current.schema, current.path);
+
+    const currentSchema = current.schema as $ZodTypes;
+    if (currentSchema._zod.def.type !== "object") continue;
+
+    const fields = currentSchema._zod.def.shape;
+    for (const key in fields) {
+      const field = fields[key];
+      if (!field) continue;
+      queue.push({
+        schema: field,
+        path: [...current.path, key] as FilterPath,
+        deep: current.deep + 1,
+      });
+    }
+  }
 };
 
 /**

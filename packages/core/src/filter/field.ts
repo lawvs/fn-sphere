@@ -1,44 +1,9 @@
 import { isSameType } from "zod-compare";
-import type { $ZodTuple, $ZodType, $ZodTypes } from "zod/v4/core";
-import { isGenericFilter } from "../fn-helpers.js";
+import type { $ZodTuple, $ZodType } from "zod/v4/core";
+import { isFilterFn, isGenericFilter } from "../fn-helpers.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import type { FilterField, FilterPath } from "./types.js";
-import { instantiateGenericFn } from "./utils.js";
-
-const bfsSchemaField = (
-  schema: $ZodType,
-  maxDeep: number,
-  walk: (field: $ZodType, path: FilterPath) => void,
-) => {
-  const queue = [
-    {
-      schema,
-      path: [] as FilterPath,
-      deep: 0,
-    },
-  ];
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current) break;
-    if (current.deep > maxDeep) break;
-
-    walk(current.schema, current.path);
-
-    const currentSchema = current.schema as $ZodTypes;
-    if (currentSchema._zod.def.type !== "object") continue;
-
-    const fields = currentSchema._zod.def.shape;
-    for (const key in fields) {
-      const field = fields[key];
-      if (!field) continue;
-      queue.push({
-        schema: field,
-        path: [...current.path, key] as FilterPath,
-        deep: current.deep + 1,
-      });
-    }
-  }
-};
+import { bfsSchemaField, instantiateGenericFn } from "./utils.js";
 
 /**
  * Find all fields that can be filtered based on the given schema and filterFnList.
@@ -64,7 +29,8 @@ export const findFilterableFields = <Data>({
         const genericFilter = fnSchema;
         return instantiateGenericFn(fieldSchema, genericFilter);
       })
-      .filter((fn): fn is StandardFnSchema => !!fn);
+      .filter((fn): fn is StandardFnSchema => !!fn)
+      .filter(isFilterFn);
 
     const availableFilter = instantiationFilter.filter((filter) => {
       const { define } = filter;

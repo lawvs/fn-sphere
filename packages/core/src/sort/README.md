@@ -80,7 +80,6 @@ type SortRule = SortItem[];
 |---|---|
 | `types.ts` | `SortField`, `SortItem`, `SortRule` type definitions |
 | `field.ts` | `findSortableFields` — BFS schema walking + field discovery |
-| `utils.ts` | `instantiateGenericSortFn` — generic-to-concrete sort fn instantiation |
 | `sorter.ts` | `createSorterSphere` — main entry point |
 | `index.ts` | Public exports |
 

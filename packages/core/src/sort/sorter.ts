@@ -1,10 +1,13 @@
 import type { $ZodType } from "zod/v4/core";
 import { isCompareFn, isGenericFilter } from "../fn-helpers.js";
-import { getSchemaAtPath, getValueAtPath } from "../filter/utils.js";
+import {
+  getSchemaAtPath,
+  getValueAtPath,
+  instantiateGenericFn,
+} from "../filter/utils.js";
 import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 import { findSortableFields } from "./field.js";
 import type { SortField, SortItem, SortRule } from "./types.js";
-import { instantiateGenericSortFn } from "./utils.js";
 
 export const createSorterSphere = <DataType>(
   dataSchema: $ZodType<DataType>,
@@ -47,7 +50,9 @@ export const createSorterSphere = <DataType>(
     }
     const targetSchema = getSchemaAtPath(dataSchema, path);
     if (!targetSchema) return;
-    return instantiateGenericSortFn(targetSchema, fnSchema);
+    const instantiated = instantiateGenericFn(targetSchema, fnSchema);
+    if (!instantiated || !isCompareFn(instantiated)) return;
+    return instantiated;
   };
 
   const findSortableField = ({
