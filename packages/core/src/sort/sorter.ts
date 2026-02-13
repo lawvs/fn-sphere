@@ -81,7 +81,9 @@ export const createSorterSphere = <DataType>(
     };
   };
 
-  const getSortComparator = (rule: SortRule): ((a: DataType, b: DataType) => number) => {
+  const getSortComparator = (
+    rule: SortRule,
+  ): ((a: DataType, b: DataType) => number) => {
     if (rule.length === 0) {
       return () => 0;
     }

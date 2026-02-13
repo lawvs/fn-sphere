@@ -41,12 +41,12 @@ Creates a sort sphere bound to a Zod schema and a list of compare functions.
 
 Returns:
 
-| Method | Description |
-|---|---|
-| `findSortableField({ maxDeep? })` | BFS-walks the schema and returns fields that have at least one matching compare function. |
-| `getSortRule(sortField, fnSchema, dir?)` | Creates a `SortItem` after validating the function belongs to the field. `dir` defaults to `"asc"`. |
-| `getSortComparator(rule)` | Returns a `(a, b) => number` comparator. Pre-resolves all functions for performance. Supports multi-field sort (iterates items, first non-zero wins). Negates result for `"desc"`. |
-| `sortData(data, rule)` | Returns a new sorted array (`[...data].sort(comparator)`). Never mutates the input. |
+| Method                                   | Description                                                                                                                                                                        |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `findSortableField({ maxDeep? })`        | BFS-walks the schema and returns fields that have at least one matching compare function.                                                                                          |
+| `getSortRule(sortField, fnSchema, dir?)` | Creates a `SortItem` after validating the function belongs to the field. `dir` defaults to `"asc"`.                                                                                |
+| `getSortComparator(rule)`                | Returns a `(a, b) => number` comparator. Pre-resolves all functions for performance. Supports multi-field sort (iterates items, first non-zero wins). Negates result for `"desc"`. |
+| `sortData(data, rule)`                   | Returns a new sorted array (`[...data].sort(comparator)`). Never mutates the input.                                                                                                |
 
 ### `findSortableFields({ schema, sortFnList, maxDeep? })`
 
@@ -76,12 +76,12 @@ type SortRule = SortItem[];
 
 ## File Structure
 
-| File | Purpose |
-|---|---|
-| `types.ts` | `SortField`, `SortItem`, `SortRule` type definitions |
-| `field.ts` | `findSortableFields` — BFS schema walking + field discovery |
-| `sorter.ts` | `createSorterSphere` — main entry point |
-| `index.ts` | Public exports |
+| File        | Purpose                                                     |
+| ----------- | ----------------------------------------------------------- |
+| `types.ts`  | `SortField`, `SortItem`, `SortRule` type definitions        |
+| `field.ts`  | `findSortableFields` — BFS schema walking + field discovery |
+| `sorter.ts` | `createSorterSphere` — main entry point                     |
+| `index.ts`  | Public exports                                              |
 
 ## Custom Compare Functions
 

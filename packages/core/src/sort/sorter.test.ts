@@ -42,9 +42,7 @@ describe("createSorterSphere", () => {
     const sphere = createSorterSphere(zData, [numberCompare, stringCompare]);
     const fields = sphere.findSortableField();
     const ageField = fields.find((f) => f.path[0] === "age")!;
-    const ageFn = ageField.sortFnList.find(
-      (f) => f.name === "number compare",
-    )!;
+    const ageFn = ageField.sortFnList.find((f) => f.name === "number compare")!;
 
     const rule: SortRule = [sphere.getSortRule(ageField, ageFn, "asc")];
     const sorted = sphere.sortData(testData, rule);
@@ -56,9 +54,7 @@ describe("createSorterSphere", () => {
     const sphere = createSorterSphere(zData, [numberCompare, stringCompare]);
     const fields = sphere.findSortableField();
     const ageField = fields.find((f) => f.path[0] === "age")!;
-    const ageFn = ageField.sortFnList.find(
-      (f) => f.name === "number compare",
-    )!;
+    const ageFn = ageField.sortFnList.find((f) => f.name === "number compare")!;
 
     const rule: SortRule = [sphere.getSortRule(ageField, ageFn, "desc")];
     const sorted = sphere.sortData(testData, rule);
@@ -74,9 +70,7 @@ describe("createSorterSphere", () => {
     const nameFn = nameField.sortFnList.find(
       (f) => f.name === "string compare",
     )!;
-    const ageFn = ageField.sortFnList.find(
-      (f) => f.name === "number compare",
-    )!;
+    const ageFn = ageField.sortFnList.find((f) => f.name === "number compare")!;
 
     const rule: SortRule = [
       sphere.getSortRule(nameField, nameFn, "asc"),
@@ -103,9 +97,7 @@ describe("createSorterSphere", () => {
     const sphere = createSorterSphere(zData, [numberCompare]);
     const fields = sphere.findSortableField();
     const ageField = fields.find((f) => f.path[0] === "age")!;
-    const ageFn = ageField.sortFnList.find(
-      (f) => f.name === "number compare",
-    )!;
+    const ageFn = ageField.sortFnList.find((f) => f.name === "number compare")!;
 
     const original = [...testData];
     const rule: SortRule = [sphere.getSortRule(ageField, ageFn, "asc")];
@@ -237,7 +229,11 @@ describe("genericSort (presetSort)", () => {
     const field = fields.find((f) => f.path[0] === "val")!;
     const fn = field.sortFnList[0]!;
 
-    const data = [{ val: "medium" as const }, { val: "high" as const }, { val: "low" as const }];
+    const data = [
+      { val: "medium" as const },
+      { val: "high" as const },
+      { val: "low" as const },
+    ];
     const sorted = sphere.sortData(data, [
       sphere.getSortRule(field, fn, "asc"),
     ]);
