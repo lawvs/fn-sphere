@@ -1,0 +1,55 @@
+---
+title: Work with AI
+description: Use AI coding agents to integrate Filter Sphere into your project
+sidebar:
+  order: 3
+---
+
+Thanks to Filter Sphere being schema-driven and TypeScript-first, it works great with AI coding agents.
+
+## Skills
+
+Filter Sphere provides official [skills](https://code.claude.com/docs/en/skills) for AI coding agents, enabling them to understand Filter Sphere's API, patterns, and best practices when helping you build filtering and sorting interfaces.
+
+### Installation
+
+Install the Filter Sphere skill to your AI coding agent:
+
+```bash
+npx skills add lawvs/fn-sphere
+```
+
+The source code of the skill is [here](https://github.com/lawvs/fn-sphere/tree/main/skills/filter-sphere).
+
+### Example Prompts
+
+Once installed, you can ask agents to help with various Filter Sphere tasks:
+
+```
+Add a filter UI to my data table using Filter Sphere
+```
+
+```
+Create a custom filter function that checks if a string matches a regex pattern
+```
+
+```
+Set up multi-field sorting for my user list with name ascending and age descending
+```
+
+```
+Add localization support to my filter builder with English and Chinese
+```
+
+### What's Included
+
+The Filter Sphere skill provides knowledge about:
+
+- Zod schema definition and field discovery
+- Filter and sort sphere creation (`createFilterSphere`, `createSorterSphere`)
+- Preset functions (`presetFilter`, `presetSort`)
+- Custom function authoring (`defineTypedFn`, `defineGenericFn`)
+- React integration (`useFilterSphere`, `FilterBuilder`, themes, localization)
+- Filter rule composition (single filters, groups with and/or logic)
+- Multi-field sorting with asc/desc support
+- Recommended project structure and best practices

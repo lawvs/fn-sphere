@@ -9,6 +9,13 @@ Filter rules can be saved to `localStorage` (or any storage) and restored later,
 
 A `FilterGroup` is a plain object, so `JSON.stringify` works for most cases. However, if your schema includes `Date` fields, you need custom handling since `JSON.stringify` converts dates to strings.
 
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside title="Tip">
+  If your schema has no `Date` fields, you can skip the custom replacer/reviver
+  and use `JSON.stringify` / `JSON.parse` directly.
+</Aside>
+
 ```ts
 import type { FilterGroup } from "@fn-sphere/filter";
 
@@ -182,10 +189,3 @@ export default function PersistentFilter() {
 ## Using Other Serialization Libraries
 
 If you prefer not to write custom serialization, you can use <a href="https://github.com/flightcontrolhq/superjson" target="_blank">superjson</a> which handles `Date`, `Map`, `Set`, `RegExp`, and other types automatically.
-
-import { Aside } from "@astrojs/starlight/components";
-
-<Aside title="Tip">
-  If your schema has no `Date` fields, you can skip the custom replacer/reviver
-  and use `JSON.stringify` / `JSON.parse` directly.
-</Aside>
