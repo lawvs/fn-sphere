@@ -1,46 +1,44 @@
 import { isSameType } from "zod-compare";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
-import { isFilterFn, isGenericFilter } from "../fn-helpers.js";
+import { isCompareFn, isGenericFilter } from "../fn-helpers.js";
+import type { FilterPath } from "../filter/types.js";
+import { bfsSchemaField, instantiateGenericFn } from "../filter/utils.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
-import type { FilterField, FilterPath } from "./types.js";
-import { bfsSchemaField, instantiateGenericFn } from "./utils.js";
+import type { SortField } from "./types.js";
 
 /**
- * Find all fields that can be filtered based on the given schema and filterFnList.
+ * Find all fields that can be sorted based on the given schema and sortFnList.
  */
-export const findFilterableFields = <Data>({
+export const findSortableFields = <Data>({
   schema,
-  filterFnList,
+  sortFnList,
   maxDeep = 1,
 }: {
   schema: $ZodType<Data>;
-  filterFnList: FnSchema[];
+  sortFnList: FnSchema[];
   maxDeep?: number;
-}): FilterField[] => {
-  const result: FilterField[] = [];
+}): SortField[] => {
+  const result: SortField[] = [];
 
   const walk = (fieldSchema: $ZodType, path: FilterPath) => {
-    const instantiationFilter: StandardFnSchema[] = filterFnList
+    const instantiatedFns: StandardFnSchema[] = sortFnList
       .map((fnSchema): StandardFnSchema | undefined => {
         if (!isGenericFilter(fnSchema)) {
-          // Standard filter
           return fnSchema;
         }
-        const genericFilter = fnSchema;
-        return instantiateGenericFn(fieldSchema, genericFilter);
+        return instantiateGenericFn(fieldSchema, fnSchema);
       })
       .filter((fn): fn is StandardFnSchema => !!fn)
-      .filter(isFilterFn);
+      .filter(isCompareFn);
 
-    const availableFilter = instantiationFilter.filter((filter) => {
-      const { define } = filter;
+    const availableFns = instantiatedFns.filter((fn) => {
+      const { define } = fn;
       const parameters = define._zod.def.input as $ZodTuple;
       const firstFnParameter = parameters._zod.def.items[0];
       if (!firstFnParameter) {
-        console.error("First function parameter is not defined", filter);
+        console.error("First function parameter is not defined", fn);
         return false;
       }
-      // TODO use isCompatibleType
       if (
         firstFnParameter._zod.def.type === "any" ||
         isSameType(fieldSchema, firstFnParameter)
@@ -49,11 +47,11 @@ export const findFilterableFields = <Data>({
       }
     });
 
-    if (availableFilter.length > 0) {
+    if (availableFns.length > 0) {
       result.push({
         path,
         fieldSchema,
-        filterFnList: availableFilter,
+        sortFnList: availableFns,
       });
     }
   };
