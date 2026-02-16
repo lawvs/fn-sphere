@@ -25,7 +25,7 @@ export interface FilterSphereInput<Data> extends BasicFilterSphereInput<Data> {
    * This prop will overwrite the `defaultRule` prop.
    */
   ruleValue?: FilterGroup;
-  defaultRule?: FilterGroup;
+  defaultRule?: FilterGroup | (() => FilterGroup);
   /**
    * The callback when the filter rule changes.
    */
@@ -80,7 +80,9 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
     maxDeep: props.fieldDeepLimit ?? defaultContext.fieldDeepLimit,
   });
   const defaultRule =
-    props.defaultRule ??
+    (typeof props.defaultRule === "function"
+      ? props.defaultRule()
+      : props.defaultRule) ??
     createFilterGroup({
       op: "and",
       conditions: [createDefaultRule(filterableFields)],
@@ -143,7 +145,7 @@ export const useFilterSphere = <Data,>(props: FilterSphereInput<Data>) => {
     filterRule: realRule,
 
     /**
-     * @deprecated Use `countTotalRules` directly.
+     * @deprecated Use `totalRuleCount` directly.
      */
     countTotalRules,
     get totalRuleCount() {
