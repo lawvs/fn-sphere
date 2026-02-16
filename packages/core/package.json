@@ -18,7 +18,7 @@
   },
   "keywords": [],
   "dependencies": {
-    "zod-compare": "^2.0.1"
+    "zod-compare": "^3.0.0"
   },
   "devDependencies": {
     "zod": "^4.3.6"
