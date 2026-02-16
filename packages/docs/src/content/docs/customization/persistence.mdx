@@ -186,6 +186,19 @@ export default function PersistentFilter() {
 }
 ```
 
+## Filter Presets Collection
+
+You can build a preset collection that lets users save, switch between, and manage named filter presets. This is useful when users frequently reuse the same filter configurations.
+
+import SourceCodeCard from "~/components/source-code-card.astro";
+import { PresetCollection } from "~/components/examples/preset-collection.tsx";
+
+<div className="not-content">
+  <PresetCollection client:only />
+</div>
+
+<SourceCodeCard path="~/components/examples/preset-collection.tsx" />
+
 ## Using Other Serialization Libraries
 
 If you prefer not to write custom serialization, you can use <a href="https://github.com/flightcontrolhq/superjson" target="_blank">superjson</a> which handles `Date`, `Map`, `Set`, `RegExp`, and other types automatically.
