@@ -13,11 +13,6 @@ const FILTER_OPERATORS: Record<string, string> = {
   contains: "CONTAINS",
   notContains: "NOT CONTAINS",
   startsWith: "STARTS WITH",
-  notStartsWith: "NOT STARTS WITH",
-  in: "IN",
-  notIn: "NOT IN",
-  isNull: "IS NULL",
-  isNotNull: "IS NOT NULL",
   isEmpty: "IS EMPTY",
   isNotEmpty: "IS NOT EMPTY",
   before: "<",
@@ -27,7 +22,7 @@ const FILTER_OPERATORS: Record<string, string> = {
 /**
  * Checks if a filter is unary (takes 0 or 1 parameters)
  *
- * Unary filters include operations like isNull, isEmpty, isNotNull etc.
+ * Unary filters include operations like isEmpty, isNotEmpty etc.
  */
 const checkUnaryFilter = (filterName: string) => {
   // use `validateRule` from @fn-sphere/core in the future

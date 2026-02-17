@@ -10,15 +10,9 @@ const SQL_OPERATORS: Record<string, string> = {
   lessThan: "<",
   lessThanOrEqual: "<=",
   contains: "LIKE",
-  notContains: "NOT LIKE",
   startsWith: "LIKE",
-  notStartsWith: "NOT LIKE",
-  in: "IN",
-  notIn: "NOT IN",
-  isNull: "IS NULL",
-  isNotNull: "IS NOT NULL",
-  isEmpty: "= ''",
-  isNotEmpty: "!= ''",
+  isEmpty: "IS NULL",
+  isNotEmpty: "IS NOT NULL",
   before: "<",
   after: ">",
 };
@@ -59,7 +53,7 @@ function transformSingleFilter(filter: SingleFilter): string | null {
     return `${path} ${operator} (${items})`;
   }
 
-  // Unary operators (IS NULL, IS NOT NULL, = '', != '')
+  // Unary operators
   if (value === undefined) {
     return `${path} ${operator}`;
   }
@@ -67,10 +61,10 @@ function transformSingleFilter(filter: SingleFilter): string | null {
   // LIKE patterns for contains/startsWith
   if (typeof value === "string") {
     const escaped = escapeSQL(value);
-    if (filter.name === "contains" || filter.name === "notContains") {
+    if (filter.name === "contains") {
       return `${path} ${operator} '%${escaped}%'`;
     }
-    if (filter.name === "startsWith" || filter.name === "notStartsWith") {
+    if (filter.name === "startsWith") {
       return `${path} ${operator} '${escaped}%'`;
     }
     return `${path} ${operator} '${escaped}'`;
@@ -106,6 +100,10 @@ function transformFilterGroup(filterGroup: FilterGroup): string | null {
 /**
  * Transforms a FilterGroup object into a SQL WHERE clause.
  *
+ * WARNING: This is for demonstration purposes only. The output uses string
+ * concatenation and is NOT safe against SQL injection. In production, always
+ * use parameterized queries or prepared statements.
+ *
  * @example
  * ```ts
  * filterRuleToSQL({
@@ -120,6 +118,8 @@ function transformFilterGroup(filterGroup: FilterGroup): string | null {
  * })
  * // "WHERE (title = 'hello world')"
  * ```
+ *
+ * @deprecated This function is for demonstration purposes only and should not be used in production due to SQL injection risks. Always use parameterized queries or prepared statements in real applications.
  */
 export const filterRuleToSQL = (filterGroup: FilterGroup) => {
   const where = transformFilterGroup(filterGroup);
