@@ -1,5 +1,18 @@
 # @fn-sphere/filter
 
+## 1.3.0
+
+### Minor Changes
+
+- [`3eee173`](https://github.com/lawvs/fn-sphere/commit/3eee1738328ba80337ddf699a2e4cb4b05695b48) Thanks [@lawvs](https://github.com/lawvs)! - Support lazy initializer function for `defaultRule` in `useFilterSphere`. Accepts `() => FilterGroup` in addition to `FilterGroup`.
+
+### Patch Changes
+
+- [`c7d1d08`](https://github.com/lawvs/fn-sphere/commit/c7d1d08dfaf7afa582d9844953b967b52b67cc08) Thanks [@lawvs](https://github.com/lawvs)! - Fix React 18 compatibility by using `Context.Provider` instead of the React 19-only `Context` JSX pattern
+
+- Updated dependencies [[`be2bf20`](https://github.com/lawvs/fn-sphere/commit/be2bf20e7b4ec779057dfa495a2b6dcd89dfa0b2)]:
+  - @fn-sphere/core@1.3.0
+
 ## 1.2.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @fn-sphere/core
 
+## 1.3.0
+
+### Minor Changes
+
+- [`be2bf20`](https://github.com/lawvs/fn-sphere/commit/be2bf20e7b4ec779057dfa495a2b6dcd89dfa0b2) Thanks [@lawvs](https://github.com/lawvs)! - Add sorting functionality with `createSorterSphere` and utilities. Provides schema-driven, multi-field sorting for Zod-typed data with customizable comparison functions and a built-in `presetSort` for strings, numbers, booleans, dates, and enums.
+
 ## 1.2.0
 
 ### Minor Changes
