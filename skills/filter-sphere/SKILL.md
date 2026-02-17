@@ -69,20 +69,20 @@ filter-sphere/
 
 ## Core References
 
-| Topic                  | Reference                                                                      |
-| ---------------------- | ------------------------------------------------------------------------------ |
-| Introduction           | [Introduction](https://lawvs.github.io/fn-sphere/guides/introduction/)         |
-| Getting Started        | [Getting Started](https://lawvs.github.io/fn-sphere/guides/getting-started/)   |
-| Best Practices         | [Best Practices](https://lawvs.github.io/fn-sphere/guides/best-practices/)     |
-| Work with AI           | [Work with AI](https://lawvs.github.io/fn-sphere/guides/work-with-ai/)         |
-| Customizing Filters    | [Customizing Filters](https://lawvs.github.io/fn-sphere/customization/filter/) |
-| Customizing Theme      | [Customizing Theme](https://lawvs.github.io/fn-sphere/customization/theme/)    |
-| Customizing Data Input | [Data Input](https://lawvs.github.io/fn-sphere/customization/data-input/)      |
-| Persistence            | [Persistence](https://lawvs.github.io/fn-sphere/customization/persistence/)    |
-| Preset Filters         | [Preset Filters](https://lawvs.github.io/fn-sphere/reference/presets/)         |
-| Example                | [Example](https://lawvs.github.io/fn-sphere/reference/example/)                |
+| Topic                  | Reference                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| Introduction           | [Introduction](https://www.waterwater.moe/fn-sphere/guides/introduction/)         |
+| Getting Started        | [Getting Started](https://www.waterwater.moe/fn-sphere/guides/getting-started/)   |
+| Best Practices         | [Best Practices](https://www.waterwater.moe/fn-sphere/guides/best-practices/)     |
+| Work with AI           | [Work with AI](https://www.waterwater.moe/fn-sphere/guides/work-with-ai/)         |
+| Customizing Filters    | [Customizing Filters](https://www.waterwater.moe/fn-sphere/customization/filter/) |
+| Customizing Theme      | [Customizing Theme](https://www.waterwater.moe/fn-sphere/customization/theme/)    |
+| Customizing Data Input | [Data Input](https://www.waterwater.moe/fn-sphere/customization/data-input/)      |
+| Persistence            | [Persistence](https://www.waterwater.moe/fn-sphere/customization/persistence/)    |
+| Preset Filters         | [Preset Filters](https://www.waterwater.moe/fn-sphere/reference/presets/)         |
+| Example                | [Example](https://www.waterwater.moe/fn-sphere/reference/example/)                |
 
 ## Resources
 
 - Repository: https://github.com/lawvs/fn-sphere
-- Documentation: https://lawvs.github.io/fn-sphere/
+- Documentation: https://www.waterwater.moe/fn-sphere/
