@@ -73,6 +73,9 @@ export const FilterSchemaProvider = ({
   );
 
   return (
-    <FilterSchemaContext value={contextValue}>{children}</FilterSchemaContext>
+    // eslint-disable-next-line @eslint-react/no-context-provider -- Compatibility with React 18 and earlier versions
+    <FilterSchemaContext.Provider value={contextValue}>
+      {children}
+    </FilterSchemaContext.Provider>
   );
 };

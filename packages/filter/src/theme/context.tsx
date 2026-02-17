@@ -24,5 +24,10 @@ export function FilterThemeProvider({
   theme: FilterTheme;
   children?: ReactNode;
 }) {
-  return <FilterThemeContext value={theme}>{children}</FilterThemeContext>;
+  return (
+    // eslint-disable-next-line @eslint-react/no-context-provider -- Compatibility with React 18 and earlier versions
+    <FilterThemeContext.Provider value={theme}>
+      {children}
+    </FilterThemeContext.Provider>
+  );
 }
