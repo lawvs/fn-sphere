@@ -60,12 +60,16 @@ export const filterFnList: FnSchema[] = presetFilter
 
 Use `createFilterTheme` to build your theme in a dedicated file. It merges your customizations with the preset defaults, so you only need to override what you want to change.
 
+In most cases, overriding `components` is sufficient. The built-in components already handle event normalization internally (e.g., `Input`'s `onChange` provides a `string` directly instead of a raw `ChangeEvent`), so you rarely need to override `primitives`. Only override `primitives` when you need to swap the underlying HTML element itself, such as replacing native `<button>` with a UI library's base element.
+
 ```tsx
 // theme.tsx
 import { createFilterTheme } from "@fn-sphere/filter";
 
 export const theme = createFilterTheme({
   components: {
+    // Override components — the recommended approach for most cases.
+    // Components provide a simplified API on top of primitives.
     Button: (props) => <button {...props} className="my-button" />,
     Input: ({ onChange, ...props }) => (
       <input onChange={(e) => onChange?.(e.target.value)} {...props} />
@@ -74,6 +78,10 @@ export const theme = createFilterTheme({
   templates: {
     // Customize FilterGroupContainer, SingleFilter, etc.
   },
+  // primitives: {
+  //   // Only override primitives when you need to replace the base HTML elements.
+  //   // e.g., swap native <button> with a UI library's base component.
+  // },
 });
 ```
 
