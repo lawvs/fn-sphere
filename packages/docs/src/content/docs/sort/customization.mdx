@@ -1,0 +1,109 @@
+---
+title: Custom Sort Functions
+description: Defining custom compare functions for sorting
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+import { MultiFieldSortExample } from "~/components/sort-example/multi-field";
+import multiFieldCode from "~/components/sort-example/multi-field?raw";
+
+The Sort module allows you to extend sorting with custom compare functions. Compare functions take two values of the same type and return a `number` following the [`Array.prototype.sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort) comparator contract.
+
+## Defining a Custom Compare Function
+
+Use `defineTypedFn` to create a type-safe compare function:
+
+```ts
+import { z } from "zod";
+import { defineTypedFn, createSorterSphere } from "@fn-sphere/core";
+
+const numberCompare = defineTypedFn({
+  name: "number compare",
+  define: z.function({
+    input: [z.number(), z.number()],
+    output: z.number(),
+  }),
+  implement: (a, b) => a - b,
+});
+```
+
+- **name**: A unique string identifying your compare function.
+- **define**: A Zod function schema with exactly 2 parameters of the same type, returning a `number`.
+- **implement**: The comparator logic. Return negative if `a < b`, positive if `a > b`, and `0` if equal.
+
+## Using Custom Compare Functions
+
+Pass your custom functions to `createSorterSphere`:
+
+```ts {5}
+import { createSorterSphere, presetSort } from "@fn-sphere/core";
+
+const sphere = createSorterSphere(schema, [
+  numberCompare,
+  ...presetSort, // Include preset sort functions if needed
+]);
+```
+
+## Defining a Generic Compare Function
+
+Generic compare functions work across multiple data types. Use `defineGenericFn` to create one:
+
+```ts
+import { z } from "zod";
+import { defineGenericFn } from "@fn-sphere/core";
+import type { $ZodString, $ZodNumber } from "zod/v4/core";
+
+const caseInsensitiveSort = defineGenericFn({
+  name: "case insensitive sort",
+  genericLimit: (t): t is $ZodString =>
+    t._zod.def.type === "string",
+  define: (t) =>
+    z.function({
+      input: [t, t],
+      output: z.number(),
+    }),
+  implement: (a: string, b: string) =>
+    a.toLowerCase().localeCompare(b.toLowerCase()),
+});
+```
+
+Key properties:
+
+- **name**: A unique string identifying your compare function.
+- **genericLimit**: A type guard that determines which Zod types this function applies to.
+- **define**: A function that receives the matched type and returns a Zod function schema.
+- **implement**: The comparator logic that handles all specified types.
+
+## Multi-Field Sorting
+
+The sort module supports sorting by multiple fields with cascading priority. The first non-zero comparison result wins:
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <MultiFieldSortExample client:load />
+    </div>
+  </TabItem>
+  <TabItem label="Code">
+    <Code code={multiFieldCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+```ts
+const sphere = createSorterSphere(schema, presetSort);
+const fields = sphere.findSortableField();
+
+const nameField = fields.find((f) => f.path[0] === "name")!;
+const ageField = fields.find((f) => f.path[0] === "age")!;
+
+// Sort by name ascending, then by age descending
+const rule = [
+  sphere.getSortRule(nameField, nameField.sortFnList[0]!, "asc"),
+  sphere.getSortRule(ageField, ageField.sortFnList[0]!, "desc"),
+];
+
+const sorted = sphere.sortData(users, rule);
+```

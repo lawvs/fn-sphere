@@ -112,6 +112,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(react@19.2.4)
+      '@fn-sphere/core':
+        specifier: workspace:*
+        version: link:../core
       '@fn-sphere/filter':
         specifier: workspace:*
         version: link:../filter

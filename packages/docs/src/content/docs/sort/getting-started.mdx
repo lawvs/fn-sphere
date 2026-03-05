@@ -1,0 +1,91 @@
+---
+title: Getting Started
+description: Getting started with the Sort module
+sidebar:
+  order: 0
+---
+
+import { Tabs, TabItem, Steps } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+import { SortExample } from "~/components/sort-example/index";
+import sortExampleCode from "~/components/sort-example/index?raw";
+import PackageManagerTabs from "~/components/package-manager-tabs.astro";
+
+## Overview
+
+The Sort module provides schema-driven, multi-field sorting for Zod-typed data. It mirrors the architecture of the Filter module — define a Zod schema, provide compare functions, and let the library discover sortable fields automatically.
+
+Here's an interactive example:
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <SortExample client:load />
+    </div>
+  </TabItem>
+  <TabItem label="Code">
+    <Code code={sortExampleCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+## Usage Summary
+
+<Steps>
+
+1. Install the core package using your favorite package manager:
+
+   <PackageManagerTabs package="@fn-sphere/core" />
+
+2. If not installed, add <a href="https://zod.dev/" target="_blank">zod</a>:
+
+   <PackageManagerTabs package="zod" />
+
+3. Define your data schema with Zod:
+
+   ```ts
+   import { z } from "zod";
+
+   const schema = z.object({
+     name: z.string(),
+     age: z.number(),
+   });
+   ```
+
+4. Create a sorter sphere and sort your data:
+
+   ```ts
+   import { createSorterSphere, presetSort } from "@fn-sphere/core";
+
+   const sphere = createSorterSphere(schema, presetSort);
+
+   // Discover which fields are sortable
+   const fields = sphere.findSortableField();
+   const ageField = fields.find((f) => f.path[0] === "age")!;
+   const sortAgeFn = ageField.sortFnList[0]!;
+
+   // Build a sort rule (multi-field supported)
+   const rule = [sphere.getSortRule(ageField, sortAgeFn, "desc")];
+
+   // Sort data (non-mutating — returns a new array)
+   const sorted = sphere.sortData(users, rule);
+
+   // Or get a reusable comparator
+   const cmp = sphere.getSortComparator(rule);
+   [...users].sort(cmp);
+   ```
+
+</Steps>
+
+## Preset Sort
+
+The built-in `presetSort` provides a generic compare function that handles `string`, `number`, `boolean`, `Date`, and `enum` fields out of the box.
+
+```ts
+import { presetSort } from "@fn-sphere/core";
+
+const sphere = createSorterSphere(schema, presetSort);
+```
+
+## Next Steps
+
+- Learn how to [define custom compare functions](/fn-sphere/sort/customization) for domain-specific sorting logic.

@@ -36,6 +36,9 @@ export default defineConfig({
           href: "https://github.com/lawvs/fn-sphere",
         },
       ],
+      components: {
+        Sidebar: "./src/components/overrides/Sidebar.astro",
+      },
       sidebar: [
         {
           label: "Guides",
@@ -62,6 +65,12 @@ export default defineConfig({
           collapsed: true,
           autogenerate: {
             directory: "api",
+          },
+        },
+        {
+          label: "Sort",
+          autogenerate: {
+            directory: "sort",
           },
         },
         {
