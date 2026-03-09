@@ -38,8 +38,7 @@ const btnDefault =
   "bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700";
 const btnDanger =
   "bg-white text-red-600 hover:bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700";
-const btnPrimary =
-  "bg-blue-600 text-white hover:bg-blue-700 border-blue-600";
+const btnPrimary = "bg-blue-600 text-white hover:bg-blue-700 border-blue-600";
 
 function DirToggle({
   dir,
