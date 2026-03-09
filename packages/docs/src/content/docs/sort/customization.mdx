@@ -58,8 +58,7 @@ import type { $ZodString, $ZodNumber } from "zod/v4/core";
 
 const caseInsensitiveSort = defineGenericFn({
   name: "case insensitive sort",
-  genericLimit: (t): t is $ZodString =>
-    t._zod.def.type === "string",
+  genericLimit: (t): t is $ZodString => t._zod.def.type === "string",
   define: (t) =>
     z.function({
       input: [t, t],
