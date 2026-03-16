@@ -2,8 +2,8 @@
 import Default from "@astrojs/starlight/components/Sidebar.astro";
 import { ModuleSelector } from "../module-selector.tsx";
 
-const { slug, sidebar } = Astro.locals.starlightRoute;
-const isSortModule = slug.startsWith("sort");
+const { id, sidebar } = Astro.locals.starlightRoute;
+const isSortModule = id.startsWith("sort");
 
 const hasSortLink = (entry: (typeof sidebar)[number]): boolean => {
   if (entry.type === "link") return entry.href.includes("/sort/");
@@ -15,5 +15,5 @@ Astro.locals.starlightRoute.sidebar = sidebar.filter(
 );
 ---
 
-<ModuleSelector slug={slug} client:load />
+<ModuleSelector slug={id} client:load />
 <Default {...Astro.props}><slot /></Default>
