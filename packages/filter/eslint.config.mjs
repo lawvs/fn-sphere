@@ -40,6 +40,8 @@ export default tseslint.config(
       "@eslint-react/dom/no-missing-button-type": "off",
       // Compatibility with React 18
       "@eslint-react/no-use-context": "off",
+      // Experimental rule - console.error in error guards is an accepted pattern
+      "@eslint-react/purity": "off",
 
       // eslint-plugin-react-refresh
       // https://github.com/ArnaudBarre/eslint-plugin-react-refresh
