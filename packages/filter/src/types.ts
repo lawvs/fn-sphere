@@ -7,21 +7,11 @@ export interface BasicFilterSphereInput<Data = unknown> {
    */
   schema: $ZodType<Data>;
   /**
-   * The filter rule.
-   */
-  // filterRule?: FilterGroup;
-  /**
    * The list of filter functions schema.
    *
    * If not provided, the `presetFilter` will be used.
    */
   filterFnList?: FnSchema[];
-  /**
-   * The maximum nesting depth limit of the filter rule.
-   *
-   * @default 2
-   */
-  // maxNestedDepth?: number;
   /**
    * The maximum depth of searching for filter fields.
    *
