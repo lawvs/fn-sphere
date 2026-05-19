@@ -42,6 +42,8 @@ export default tseslint.config(
       "@eslint-react/no-use-context": "off",
       // Experimental rule - console.error in error guards is an accepted pattern
       "@eslint-react/purity": "off",
+      // The theme API intentionally resolves component slots during render.
+      "@eslint-react/static-components": "off",
 
       // eslint-plugin-react-refresh
       // https://github.com/ArnaudBarre/eslint-plugin-react-refresh
