@@ -42,36 +42,26 @@ export default defineConfig({
       sidebar: [
         {
           label: "Guides",
-          autogenerate: {
-            directory: "guides",
-          },
+          items: [{ autogenerate: { directory: "guides" } }],
         },
         {
           label: "Customization",
-          autogenerate: {
-            directory: "customization",
-          },
+          items: [{ autogenerate: { directory: "customization" } }],
         },
         {
           label: "Reference",
-          autogenerate: {
-            directory: "reference",
-          },
+          items: [{ autogenerate: { directory: "reference" } }],
         },
         // Prefer to show the API overviews in the sidebar, so we don't need this.
         // typeDocSidebarGroup,
         {
           label: "API",
           collapsed: true,
-          autogenerate: {
-            directory: "api",
-          },
+          items: [{ autogenerate: { directory: "api", collapsed: true } }],
         },
         {
           label: "Sort",
-          autogenerate: {
-            directory: "sort",
-          },
+          items: [{ autogenerate: { directory: "sort" } }],
         },
         {
           label: "Changelog",
