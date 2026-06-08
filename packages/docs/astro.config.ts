@@ -18,6 +18,9 @@ export default defineConfig({
   site: "https://www.waterwater.moe",
   base: "/fn-sphere",
   markdown: {
+    // Workaround for Astro 6.4/Starlight 0.39 MDX GFM table regression:
+    // https://github.com/withastro/starlight/issues/3934
+    gfm: true,
     rehypePlugins: [
       // https://www.npmjs.com/package/rehype-external-links
       [
