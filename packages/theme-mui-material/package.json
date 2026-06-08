@@ -13,8 +13,8 @@
     "typeCheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/react": "^19.2.14",
-    "react": "^19.2.5"
+    "@types/react": "^19.2.17",
+    "react": "^19.2.7"
   },
   "peerDependencies": {
     "@emotion/react": "^11.0.0",
