@@ -1,5 +1,11 @@
 # @fn-sphere/theme-mui-material
 
+## 0.2.0
+
+### Minor Changes
+
+- [#245](https://github.com/lawvs/fn-sphere/pull/245) [`18f98a6`](https://github.com/lawvs/fn-sphere/commit/18f98a61156e690159273726e0d670dd5dc44e6c) Thanks [@dependabot](https://github.com/apps/dependabot)! - Require MUI 9 peers and use native MUI select components to keep SSR builds compatible with MUI 9.
+
 ## 0.1.3
 
 ### Patch Changes
