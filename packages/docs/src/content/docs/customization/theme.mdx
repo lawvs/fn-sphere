@@ -43,14 +43,12 @@ You can override existing theme by replacing them with your own custom component
 
 ```tsx live wrapper="~/components/mui-theme-wrapper.tsx" layout="~/components/live-code-tab-layout.astro"
 import { filterTheme } from "@fn-sphere/theme-mui-material";
-import {
-  Button,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Box,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 import {
   FilterSphereProvider,
   FilterBuilder,

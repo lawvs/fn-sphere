@@ -9,17 +9,13 @@ import {
   Add as AddIcon,
   Clear as ClearIcon,
   CreateNewFolderOutlined as CreateNewFolderIcon,
-  ErrorOutline as ErrorOutlineIcon,
+  ErrorOutlineOutlined as ErrorOutlineIcon,
 } from "@mui/icons-material";
-import {
-  Button,
-  IconButton,
-  Input,
-  MenuItem,
-  Select,
-  Stack,
-  type SelectChangeEvent,
-} from "@mui/material";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Input from "@mui/material/Input";
+import NativeSelect from "@mui/material/NativeSelect";
+import Stack from "@mui/material/Stack";
 import { useCallback, type ChangeEvent } from "react";
 
 export const filterTheme = createFilterTheme({
@@ -37,7 +33,7 @@ export const filterTheme = createFilterTheme({
     Select: ({ options = [], value, color, size, onChange, ...props }) => {
       const selectedIdx = options.findIndex((option) => option.value === value);
       const handleChange = useCallback(
-        (event: SelectChangeEvent) => {
+        (event: ChangeEvent<HTMLSelectElement>) => {
           const index = Number(event.target.value);
           const selectedOption = options[index];
           if (!selectedOption) return;
@@ -46,23 +42,21 @@ export const filterTheme = createFilterTheme({
         [options, onChange],
       );
       return (
-        <Select
-          size="small"
+        <NativeSelect
           sx={{
             minWidth: "120px",
           }}
-          // Type 'EventHandler<HTMLSelectElement> | undefined' is not assignable to
-          // type 'EventHandler<HTMLDivElement> | undefined'.
-          {...(props as any)}
           value={String(selectedIdx === -1 ? "" : selectedIdx)}
           onChange={handleChange}
+          inputProps={props}
         >
+          <option value="" disabled />
           {options?.map((option, index) => (
-            <MenuItem key={option.label} value={String(index)}>
+            <option key={option.label} value={String(index)}>
               {option.label}
-            </MenuItem>
+            </option>
           ))}
-        </Select>
+        </NativeSelect>
       );
     },
     MultipleSelect: ({
@@ -77,38 +71,35 @@ export const filterTheme = createFilterTheme({
         String(options.findIndex((option) => option.value === val)),
       );
       const handleChange = useCallback(
-        (event: SelectChangeEvent<string[]>) => {
-          const targetValue = event.target.value;
-          const normalizedValue =
-            // On autofill we get a stringified value.
-            typeof targetValue === "string"
-              ? targetValue.split(",")
-              : targetValue;
-          const selectedOptions = Array.from(normalizedValue, (option) => {
-            const index = Number(option);
-            const selectedOption = options[index];
-            if (!selectedOption) return;
-            return selectedOption.value;
-          }).filter((i) => i !== undefined);
+        (event: ChangeEvent<HTMLSelectElement>) => {
+          const selectedOptions = Array.from(
+            event.target.selectedOptions,
+            (option) => {
+              const index = Number(option.value);
+              const selectedOption = options[index];
+              if (!selectedOption) return;
+              return selectedOption.value;
+            },
+          ).filter((i) => i !== undefined);
           onChange?.(selectedOptions);
         },
         [options, onChange],
       );
       return (
-        <Select
-          // Type 'EventHandler<HTMLSelectElement> | undefined' is not assignable to
-          // type 'EventHandler<HTMLDivElement> | undefined'.
-          {...(props as any)}
-          multiple
+        <NativeSelect
           value={selectedIndices}
           onChange={handleChange}
+          inputProps={{
+            ...props,
+            multiple: true,
+          }}
         >
           {options?.map((option, index) => (
-            <MenuItem key={option.label} value={String(index)}>
+            <option key={option.label} value={String(index)}>
               {option.label}
-            </MenuItem>
+            </option>
           ))}
-        </Select>
+        </NativeSelect>
       );
     },
   },
