@@ -1,7 +1,6 @@
 import {
   type FilterTheme,
   createFilterTheme,
-  presetTheme,
   useFilterGroup,
   useRootRule,
 } from "@fn-sphere/filter";
@@ -32,6 +31,8 @@ const componentsSpec = {
     );
   },
 } satisfies Partial<FilterTheme["components"]>;
+
+const defaultTheme = createFilterTheme({});
 
 const templatesSpec = {
   FilterGroupContainer: ({ rule, children, ...props }) => {
@@ -108,7 +109,7 @@ const templatesSpec = {
     );
   },
   FilterSelect: (props) => {
-    const PresetFilterSelect = presetTheme.templates.FilterSelect;
+    const PresetFilterSelect = defaultTheme.templates.FilterSelect;
     return <PresetFilterSelect tryRetainArgs {...props} />;
   },
 } satisfies Partial<FilterTheme["templates"]>;
