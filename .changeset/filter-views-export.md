@@ -2,4 +2,4 @@
 "@fn-sphere/filter": minor
 ---
 
-Exported the default `FilterSelect` view from `@fn-sphere/filter` for reuse in custom themes.
+Refactored filter theme resolution to avoid preset theme import cycles while preserving default and outer-provider behavior. `FilterSelect` is now available as a direct named export for custom theme overrides.
