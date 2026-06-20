@@ -1,10 +1,10 @@
 import {
+  FilterSelect as PresetFilterSelect,
   type FilterTheme,
   createFilterTheme,
   useFilterGroup,
   useRootRule,
 } from "@fn-sphere/filter";
-import { FilterSelect as PresetFilterSelect } from "@fn-sphere/filter/views";
 import { type ChangeEvent, useCallback } from "react";
 
 const componentsSpec = {

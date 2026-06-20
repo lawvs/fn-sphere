@@ -59,8 +59,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./locales": "./src/locales/index.ts",
-    "./views": "./src/views/index.ts"
+    "./locales": "./src/locales/index.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -74,10 +73,6 @@
       "./locales": {
         "types": "./dist/locales/index.d.ts",
         "import": "./dist/locales/index.js"
-      },
-      "./views": {
-        "types": "./dist/views/index.d.ts",
-        "import": "./dist/views/index.js"
       },
       "./package.json": "./package.json"
     }
