@@ -7,8 +7,16 @@ const FilterThemeContext = createContext<FilterTheme | undefined>(undefined);
  * @internal
  */
 // eslint-disable-next-line react-refresh/only-export-components
+export const useOptionalFilterTheme = () => {
+  return useContext(FilterThemeContext);
+};
+
+/**
+ * @internal
+ */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useFilterTheme = () => {
-  const theme = useContext(FilterThemeContext);
+  const theme = useOptionalFilterTheme();
   if (!theme) {
     throw new Error("useFilterTheme must be used within FilterThemeProvider");
   }

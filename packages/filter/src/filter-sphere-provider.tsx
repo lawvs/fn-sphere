@@ -3,7 +3,10 @@ import {
   FilterSchemaProvider,
   type FilterSchemaContext,
 } from "./hooks/use-filter-schema-context.js";
-import { FilterThemeProvider } from "./theme/context.js";
+import {
+  FilterThemeProvider,
+  useOptionalFilterTheme,
+} from "./theme/context.js";
 import { presetTheme } from "./theme/preset.js";
 import type { FilterTheme } from "./theme/types.js";
 
@@ -17,11 +20,12 @@ export const FilterSphereProvider = <Data,>({
   context,
   children,
 }: PropsWithChildren<FilterSphereProviderProps<Data>>) => {
+  const outerTheme = useOptionalFilterTheme();
+  const resolvedTheme = theme ?? outerTheme ?? presetTheme;
+
   return (
     <FilterSchemaProvider context={context}>
-      <FilterThemeProvider theme={theme ?? presetTheme}>
-        {children}
-      </FilterThemeProvider>
+      <FilterThemeProvider theme={resolvedTheme}>{children}</FilterThemeProvider>
     </FilterSchemaProvider>
   );
 };
