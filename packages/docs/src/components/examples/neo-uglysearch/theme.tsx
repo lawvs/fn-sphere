@@ -4,6 +4,7 @@ import {
   useFilterGroup,
   useRootRule,
 } from "@fn-sphere/filter";
+import { FilterSelect as PresetFilterSelect } from "@fn-sphere/filter/views";
 import { type ChangeEvent, useCallback } from "react";
 
 const componentsSpec = {
@@ -31,8 +32,6 @@ const componentsSpec = {
     );
   },
 } satisfies Partial<FilterTheme["components"]>;
-
-const defaultTheme = createFilterTheme({});
 
 const templatesSpec = {
   FilterGroupContainer: ({ rule, children, ...props }) => {
@@ -109,7 +108,6 @@ const templatesSpec = {
     );
   },
   FilterSelect: (props) => {
-    const PresetFilterSelect = defaultTheme.templates.FilterSelect;
     return <PresetFilterSelect tryRetainArgs {...props} />;
   },
 } satisfies Partial<FilterTheme["templates"]>;
