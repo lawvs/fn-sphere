@@ -1,4 +1,4 @@
-import { presetTheme } from "./preset.js";
+import { presetThemeParts } from "./preset.js";
 import type { FilterTheme } from "./types.js";
 
 export type FilterThemeInput = {
@@ -17,10 +17,10 @@ export const createFilterTheme = (theme: FilterThemeInput): FilterTheme => {
   return {
     dataInputViews: [
       ...(theme.dataInputViews ?? []),
-      ...presetTheme.dataInputViews,
+      ...presetThemeParts.dataInputViews,
     ],
-    components: { ...presetTheme.components, ...theme.components },
-    primitives: { ...presetTheme.primitives, ...theme.primitives },
-    templates: { ...presetTheme.templates, ...theme.templates },
+    components: { ...presetThemeParts.components, ...theme.components },
+    primitives: { ...presetThemeParts.primitives, ...theme.primitives },
+    templates: { ...presetThemeParts.templates, ...theme.templates },
   };
 };

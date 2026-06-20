@@ -2,4 +2,4 @@
 "@fn-sphere/filter": minor
 ---
 
-Refactored filter theme resolution to avoid preset theme import cycles while preserving default and outer-provider behavior. `FilterSelect` is now available as a direct named export for custom theme overrides.
+Refactored preset theme defaults into `presetThemeParts` so custom themes can reuse default primitives, components, templates, and data input views without relying on the full `presetTheme`, while preserving default and outer-provider behavior.

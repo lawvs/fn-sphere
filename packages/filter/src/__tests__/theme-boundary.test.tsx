@@ -6,6 +6,8 @@ import {
   FilterSphereProvider,
   FilterThemeProvider,
   createFilterTheme,
+  presetTheme,
+  presetThemeParts,
   useFilterSphere,
   useView,
 } from "../index.js";
@@ -73,5 +75,25 @@ describe("theme boundary", () => {
         .getByRole("button", { name: "And" })
         .getAttribute("data-custom-theme"),
     ).toBe("outer");
+  });
+});
+
+describe("preset theme parts", () => {
+  it("exports the preset parts used by presetTheme", () => {
+    expect(presetThemeParts.primitives).toBe(presetTheme.primitives);
+    expect(presetThemeParts.components).toBe(presetTheme.components);
+    expect(presetThemeParts.templates).toBe(presetTheme.templates);
+    expect(presetThemeParts.dataInputViews).toBe(presetTheme.dataInputViews);
+  });
+
+  it("createFilterTheme uses presetThemeParts as defaults", () => {
+    const theme = createFilterTheme({});
+
+    expect(theme.primitives.select).toBe(presetThemeParts.primitives.select);
+    expect(theme.components.Select).toBe(presetThemeParts.components.Select);
+    expect(theme.templates.FilterSelect).toBe(
+      presetThemeParts.templates.FilterSelect,
+    );
+    expect(theme.dataInputViews).toEqual(presetThemeParts.dataInputViews);
   });
 });

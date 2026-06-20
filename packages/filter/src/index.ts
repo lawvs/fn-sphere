@@ -20,7 +20,6 @@ export * from "./theme/index.js";
 export type { BasicFilterSphereInput } from "./types.js";
 export { defaultMapFieldName, defaultMapFilterName } from "./utils.js";
 export { FilterBuilder } from "./views/filter-builder.js";
-export { FilterSelect, type FilterSelectProps } from "./views/filter-select.js";
 
 export {
   commonFilters,
