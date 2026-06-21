@@ -4,5 +4,5 @@ export {
   type FilterThemeInput,
 } from "./create-filter-theme.js";
 export { useDataInputView, useView } from "./hooks.js";
-export { presetTheme, presetThemeParts } from "./preset.js";
+export { presetTheme } from "./preset.js";
 export type * from "./types.js";

@@ -1,13 +1,13 @@
 import { cleanup, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { z } from "zod";
+import * as filterExports from "../index.js";
 import {
   FilterBuilder,
   FilterSphereProvider,
   FilterThemeProvider,
   createFilterTheme,
   presetTheme,
-  presetThemeParts,
   useFilterSphere,
   useView,
 } from "../index.js";
@@ -78,22 +78,19 @@ describe("theme boundary", () => {
   });
 });
 
-describe("preset theme parts", () => {
-  it("exports the preset parts used by presetTheme", () => {
-    expect(presetThemeParts.primitives).toBe(presetTheme.primitives);
-    expect(presetThemeParts.components).toBe(presetTheme.components);
-    expect(presetThemeParts.templates).toBe(presetTheme.templates);
-    expect(presetThemeParts.dataInputViews).toBe(presetTheme.dataInputViews);
+describe("preset theme", () => {
+  it("does not expose a duplicate preset theme parts alias", () => {
+    expect("presetThemeParts" in filterExports).toBe(false);
   });
 
-  it("createFilterTheme uses presetThemeParts as defaults", () => {
+  it("createFilterTheme uses presetTheme as defaults", () => {
     const theme = createFilterTheme({});
 
-    expect(theme.primitives.select).toBe(presetThemeParts.primitives.select);
-    expect(theme.components.Select).toBe(presetThemeParts.components.Select);
+    expect(theme.primitives.select).toBe(presetTheme.primitives.select);
+    expect(theme.components.Select).toBe(presetTheme.components.Select);
     expect(theme.templates.FilterSelect).toBe(
-      presetThemeParts.templates.FilterSelect,
+      presetTheme.templates.FilterSelect,
     );
-    expect(theme.dataInputViews).toEqual(presetThemeParts.dataInputViews);
+    expect(theme.dataInputViews).toEqual(presetTheme.dataInputViews);
   });
 });

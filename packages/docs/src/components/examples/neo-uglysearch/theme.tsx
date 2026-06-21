@@ -1,7 +1,7 @@
 import {
   type FilterTheme,
   createFilterTheme,
-  presetThemeParts,
+  presetTheme,
   useFilterGroup,
   useRootRule,
 } from "@fn-sphere/filter";
@@ -108,7 +108,7 @@ const templatesSpec = {
     );
   },
   FilterSelect: (props) => {
-    const PresetFilterSelect = presetThemeParts.templates.FilterSelect;
+    const PresetFilterSelect = presetTheme.templates.FilterSelect;
     return <PresetFilterSelect tryRetainArgs {...props} />;
   },
 } satisfies Partial<FilterTheme["templates"]>;

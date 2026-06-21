@@ -1,5 +1,5 @@
 ---
-"@fn-sphere/filter": minor
+"@fn-sphere/filter": patch
 ---
 
-Refactored preset theme defaults into `presetThemeParts` so custom themes can reuse default primitives, components, templates, and data input views without relying on the full `presetTheme`, while preserving default and outer-provider behavior.
+Refactored filter theme boundaries to avoid preset theme import cycles while preserving default theme fallback and outer-provider behavior.
