@@ -20,8 +20,8 @@ export const FilterSphereProvider = <Data,>({
   context,
   children,
 }: PropsWithChildren<FilterSphereProviderProps<Data>>) => {
-  const outerTheme = useOptionalFilterTheme();
-  const resolvedTheme = theme ?? outerTheme ?? presetTheme;
+  const inheritedTheme = useOptionalFilterTheme();
+  const resolvedTheme = theme ?? inheritedTheme ?? presetTheme;
 
   return (
     <FilterSchemaProvider context={context}>
