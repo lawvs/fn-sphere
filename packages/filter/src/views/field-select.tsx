@@ -4,7 +4,7 @@ import {
   useFilterSelect,
   type UpdateFieldOptions,
 } from "../hooks/use-filter-select.js";
-import { useView } from "../theme/index.js";
+import { useView } from "../theme/hooks.js";
 import type { CommonProps } from "./types.js";
 
 export type FieldSelectProps = {

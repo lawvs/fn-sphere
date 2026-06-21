@@ -17,7 +17,7 @@ import { SingleFilterContainer } from "../views/single-filter-container.js";
 import { SingleFilterView } from "../views/single-filter.js";
 import type { FilterTheme } from "./types.js";
 
-export const presetTheme: FilterTheme = {
+export const presetTheme = {
   primitives,
   components: {
     Button: ButtonView,
@@ -37,4 +37,4 @@ export const presetTheme: FilterTheme = {
     SingleFilterContainer,
   },
   dataInputViews: presetDataInputSpecs,
-};
+} satisfies FilterTheme;

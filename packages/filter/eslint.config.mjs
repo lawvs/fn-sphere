@@ -50,4 +50,48 @@ export default tseslint.config(
       "react-refresh/only-export-components": "warn",
     },
   },
+  {
+    files: ["src/views/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "../theme/index",
+              message:
+                "Internal views must import theme modules directly instead of the theme barrel.",
+            },
+            {
+              name: "../theme/index.js",
+              message:
+                "Internal views must import theme modules directly instead of the theme barrel.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/theme/context.tsx", "src/theme/hooks.tsx"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "./preset",
+              message:
+                "Theme context/hooks must not depend on preset theme assembly.",
+            },
+            {
+              name: "./preset.js",
+              message:
+                "Theme context/hooks must not depend on preset theme assembly.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );
