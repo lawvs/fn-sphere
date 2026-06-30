@@ -1,10 +1,5 @@
 export type ColumnType =
-  | "text"
-  | "number"
-  | "boolean"
-  | "select"
-  | "multi-select"
-  | "date";
+  "text" | "number" | "boolean" | "select" | "multi-select" | "date";
 
 export type ColumnOption = {
   id: string;

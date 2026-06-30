@@ -37,15 +37,10 @@ export const isFilterFn = (fn: StandardFnSchema) => {
 export const isCompareFn = (fn: StandardFnSchema) => {
   const returnType = fn.define._zod.def.output;
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-  if (
-    !(
-      returnType._zod.def.type === "number" ||
-      isSameType(
-        returnType,
-        z.union([z.literal(-1), z.literal(0), z.literal(1)]),
-      )
-    )
-  ) {
+  if (!(
+    returnType._zod.def.type === "number" ||
+    isSameType(returnType, z.union([z.literal(-1), z.literal(0), z.literal(1)]))
+  )) {
     // compareFn(a, b) return value	sort order
     // > 0	sort a after b, e.g. [b, a]
     // < 0	sort a before b, e.g. [a, b]

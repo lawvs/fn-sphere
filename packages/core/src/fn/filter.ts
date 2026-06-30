@@ -141,9 +141,7 @@ const genericEqualFilter = [
     genericLimit: (
       t,
     ): t /* | $ZodBoolean */ is
-      | $ZodString
-      | $ZodNumber
-      | $ZodUnion<$ZodLiteral[]> =>
+      $ZodString | $ZodNumber | $ZodUnion<$ZodLiteral[]> =>
       // not equal for boolean is not useful
       // t._zod.def.type === "boolean"  ||
       t._zod.def.type === "string" ||
