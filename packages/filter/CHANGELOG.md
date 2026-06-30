@@ -1,5 +1,13 @@
 # @fn-sphere/filter
 
+## 1.3.1
+
+### Patch Changes
+
+- [#248](https://github.com/lawvs/fn-sphere/pull/248) [`3de7690`](https://github.com/lawvs/fn-sphere/commit/3de7690e295a0c874c1f3d0007fa159ba0e26534) Thanks [@lawvs](https://github.com/lawvs)! - Refactored filter theme boundaries to avoid preset theme import cycles while preserving default theme fallback and outer-provider behavior.
+
+  Behavior change: theme hooks such as `useView` and `useDataInputView` now require a `FilterThemeProvider` or `FilterSphereProvider` in scope. Code that called these hooks outside a theme provider previously fell back to `presetTheme`; it will now throw instead.
+
 ## 1.3.0
 
 ### Minor Changes
