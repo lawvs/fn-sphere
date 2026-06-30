@@ -41,9 +41,7 @@ export function FilterBuilder() {
     },
   });
 
-  const data = [
-    /* ... */
-  ];
+  const data = [/* ... */];
 
   // 4. use the `predicate` to filter the data
   const filteredData = data.filter(predicate);
