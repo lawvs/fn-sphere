@@ -15,17 +15,30 @@ import { z } from "zod";
 
 type IconName = "user" | "email" | "number" | "calendar";
 
-declare module "zod" {
-  interface GlobalMeta {
-    icon?: IconName;
-  }
-}
+type FieldMetadata = {
+  icon?: IconName;
+};
+
+const fieldMetadata = z.registry<FieldMetadata>();
 
 const schema = z.object({
-  name: z.string().min(1).meta({ description: "Name", icon: "user" }),
-  email: z.string().meta({ description: "Email", icon: "email" }),
-  age: z.number().meta({ description: "Age", icon: "number" }),
-  createdAt: z.date().meta({ description: "Created At", icon: "calendar" }),
+  name: z
+    .string()
+    .min(1)
+    .meta({ description: "Name" })
+    .register(fieldMetadata, { icon: "user" }),
+  email: z
+    .string()
+    .meta({ description: "Email" })
+    .register(fieldMetadata, { icon: "email" }),
+  age: z
+    .number()
+    .meta({ description: "Age" })
+    .register(fieldMetadata, { icon: "number" }),
+  createdAt: z
+    .date()
+    .meta({ description: "Created At" })
+    .register(fieldMetadata, { icon: "calendar" }),
   notes: z.string().meta({ description: "Notes" }),
 });
 
@@ -46,7 +59,7 @@ const MetadataFieldSelect: FilterTheme["templates"]["FieldSelect"] = ({
   const { Select } = useView("components");
   const { selectedField, fieldOptions, setField } = useFilterSelect(rule);
   const options = fieldOptions.map((option) => {
-    const iconName = z.globalRegistry.get(option.value.fieldSchema)?.icon;
+    const iconName = fieldMetadata.get(option.value.fieldSchema)?.icon;
     const glyph = iconName ? iconGlyphs[iconName] : undefined;
 
     return {
