@@ -76,13 +76,8 @@ declare module "zod" {
 
 export const schema = z.object({
   name: z.string().min(1).meta({ description: "Name", icon: "user" }),
-  email: z
-    .string()
-    .email()
-    .meta({ description: "Email", icon: "email" }),
-  createdAt: z
-    .date()
-    .meta({ description: "Created At", icon: "calendar" }),
+  email: z.string().email().meta({ description: "Email", icon: "email" }),
+  createdAt: z.date().meta({ description: "Created At", icon: "calendar" }),
 });
 ```
 
@@ -99,9 +94,7 @@ import {
 import { z } from "zod";
 
 const getFieldIcon = (field: FilterField | undefined) =>
-  field
-    ? z.globalRegistry.get(field.fieldSchema)?.icon
-    : undefined;
+  field ? z.globalRegistry.get(field.fieldSchema)?.icon : undefined;
 
 function FieldSelect({ rule }: { rule: SingleFilter }) {
   const { selectedField, fieldOptions } = useFilterSelect(rule);
