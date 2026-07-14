@@ -101,16 +101,21 @@ export default function AdvancedFilter() {
 
 You can customize the field name and filter name by providing the `mapFieldName` and `mapFilterName` functions.
 
+Field descriptions are Zod schema metadata. See [Schema Metadata](/fn-sphere/customization/schema-metadata/) to learn how to define typed metadata keys and read them in custom consumers.
+
 ```tsx live "mapFieldName" "mapFilterName"
 import {
   FilterSphereProvider,
   FilterBuilder,
   useFilterSphere,
+  type FilterField,
+  type StandardFnSchema,
 } from "@fn-sphere/filter";
 import { z } from "zod";
 
 const customMapFieldName = (field: FilterField) => {
-  return field.fieldSchema.description;
+  const fieldPath = field.path.length ? field.path.join(".") : "root";
+  return z.globalRegistry.get(field.fieldSchema)?.description ?? fieldPath;
 };
 
 const customMapFilterName = (filterSchema: StandardFnSchema) => {
@@ -141,8 +146,9 @@ Filter Sphere provides default implementations for the `mapFieldName` and `mapFi
 ```ts "defaultMapFieldName" "defaultMapFilterName"
 export const defaultMapFieldName: (field: FilterField) => string = (field) => {
   // By default, filter sphere uses the field description as the field name.
-  if (field.fieldSchema.description) {
-    return field.fieldSchema.description;
+  const description = z.globalRegistry.get(field.fieldSchema)?.description;
+  if (description) {
+    return description;
   }
   // If the field description is not provided, the field path is used as the field name.
   if (field.path.length) {

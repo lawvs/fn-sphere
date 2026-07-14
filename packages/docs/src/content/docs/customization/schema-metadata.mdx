@@ -1,0 +1,83 @@
+---
+title: Schema Metadata
+description: Attach typed metadata to Zod schemas and consume it in custom filter UI
+---
+
+import SourceCodeCard from "~/components/source-code-card.astro";
+
+Zod metadata lets your application associate configuration with a schema. Filter Sphere exposes each field's schema as `FilterField.fieldSchema`, so custom UI can read that configuration directly.
+
+## Define Typed Metadata
+
+[Zod registries](https://zod.dev/metadata#registries) associate schemas with strongly typed metadata. Define a registry for application-owned metadata such as an icon name:
+
+```ts
+import { z } from "zod";
+
+type IconName = "user" | "email" | "number" | "calendar";
+
+type FieldMetadata = {
+  icon?: IconName;
+};
+
+export const fieldMetadata = z.registry<FieldMetadata>();
+
+export const schema = z.object({
+  name: z
+    .string()
+    .min(1)
+    .meta({ description: "Name" })
+    .register(fieldMetadata, { icon: "user" }),
+  email: z
+    .string()
+    .meta({ description: "Email" })
+    .register(fieldMetadata, { icon: "email" }),
+  age: z
+    .number()
+    .meta({ description: "Age" })
+    .register(fieldMetadata, { icon: "number" }),
+  createdAt: z
+    .date()
+    .meta({ description: "Created At" })
+    .register(fieldMetadata, { icon: "calendar" }),
+  notes: z.string().meta({ description: "Notes" }),
+});
+```
+
+`description` uses Zod's global metadata, while `icon` belongs to the typed application registry.
+
+## Read Metadata from a Filter Field
+
+Use `FilterField.fieldSchema` to look up metadata from the registry:
+
+```tsx
+import { useFilterSelect, type FilterField } from "@fn-sphere/filter";
+import { fieldMetadata } from "./schema";
+
+const getFieldIcon = (field: FilterField) =>
+  fieldMetadata.get(field.fieldSchema)?.icon;
+
+function FieldSelectOptions({ rule }) {
+  const { selectedField, fieldOptions } = useFilterSelect(rule);
+  const selectedIcon = selectedField ? getFieldIcon(selectedField) : undefined;
+  const options = fieldOptions.map((option) => ({
+    ...option,
+    icon: getFieldIcon(option.value),
+  }));
+
+  // Render selectedIcon and options with any UI technology.
+}
+```
+
+The same approach works for labels, analytics identifiers, permissions, formatting hints, or other configuration owned by your application.
+
+## Live Example
+
+This example maps icon metadata to glyphs in a custom `FieldSelect`. It uses Filter Sphere's native `<select>`, and the `notes` field demonstrates the plain-label fallback.
+
+import { SchemaMetadataExample } from "~/components/examples/schema-metadata.tsx";
+
+<div className="not-content">
+  <SchemaMetadataExample client:load />
+</div>
+<SourceCodeCard path="~/components/examples/schema-metadata.tsx" />
