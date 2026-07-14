@@ -5,8 +5,6 @@ sidebar:
   order: 2
 ---
 
-import SourceCodeCard from "~/components/source-code-card.astro";
-
 This guide covers best practices and recommended patterns when building with Filter Sphere.
 
 ## Project Structure
@@ -56,65 +54,7 @@ export const filterFnList: FnSchema[] = presetFilter
   .filter((fn) => fn.name !== "endsWith");
 ```
 
-## Using Schema Metadata
-
-Zod schema metadata lets an application attach configuration to a field and read it in a custom consumer such as `FieldSelect`. The public data flow is:
-
-`schema field .meta()` → `z.globalRegistry` → `FilterField.fieldSchema` → custom consumer
-
-Application-defined metadata keys can be type-checked by augmenting Zod's `GlobalMeta` interface. Here, `icon` is an example application convention, not part of the Filter Sphere API:
-
-```ts
-// schema.ts
-import { z } from "zod";
-
-declare module "zod" {
-  interface GlobalMeta {
-    icon?: "user" | "email" | "calendar";
-  }
-}
-
-export const schema = z.object({
-  name: z.string().min(1).meta({ description: "Name", icon: "user" }),
-  email: z.string().email().meta({ description: "Email", icon: "email" }),
-  createdAt: z.date().meta({ description: "Created At", icon: "calendar" }),
-});
-```
-
-Keep `.meta()` at the end of each field construction chain. It returns the schema instance registered with that metadata, so that returned instance must be the one placed in the object shape.
-
-Filter Sphere exposes the same instance as `FilterField.fieldSchema`. Read its metadata directly from the global registry; no schema cast is needed:
-
-```tsx
-import {
-  useFilterSelect,
-  type FilterField,
-  type SingleFilter,
-} from "@fn-sphere/filter";
-import { z } from "zod";
-
-const getFieldIcon = (field: FilterField | undefined) =>
-  field ? z.globalRegistry.get(field.fieldSchema)?.icon : undefined;
-
-function FieldSelect({ rule }: { rule: SingleFilter }) {
-  const { selectedField, fieldOptions } = useFilterSelect(rule);
-
-  // selectedField is FilterField | undefined.
-  const selectedIcon = getFieldIcon(selectedField);
-
-  // Each option.value is a FilterField.
-  const optionsWithIcons = fieldOptions.map((option) => ({
-    ...option,
-    icon: getFieldIcon(option.value),
-  }));
-
-  // Pass selectedIcon and optionsWithIcons to your select component.
-}
-```
-
-Schema metadata is configuration associated with the schema. Filter Sphere does not copy it into `SingleFilter` rules, and serializing a rule does not serialize the schema metadata.
-
-See the [complete visual example](/fn-sphere/reference/example/#field-icons-from-schema-metadata) for a full `FieldSelect` customization.
+Descriptions are built-in Zod schema metadata. You can also define typed, application-owned metadata and consume it in custom filter UI. See [Schema Metadata](/fn-sphere/customization/schema-metadata/) for the complete pattern and live example.
 
 ## Create a Custom Theme
 
