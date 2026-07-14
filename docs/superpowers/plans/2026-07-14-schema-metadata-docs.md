@@ -36,7 +36,7 @@
 - Consumes: the approved design in `docs/superpowers/specs/2026-07-14-schema-metadata-docs-design.md`.
 - Produces: an executable structural contract for the new canonical page and dependency-free example.
 
-- [ ] **Step 1: Run the structural contract before implementation**
+- [x] **Step 1: Run the structural contract before implementation**
 
 ```bash
 node --input-type=module <<'NODE'
@@ -75,13 +75,13 @@ NODE
 
 Expected: FAIL with `ENOENT` for `customization/schema-metadata.mdx`, proving that the new documentation contract is not already satisfied.
 
-- [ ] **Step 2: Confirm the baseline documentation type check**
+- [x] **Step 2: Confirm the baseline documentation type check**
 
 Run: `pnpm --filter docs typeCheck`
 
 Expected: exit 0 with 0 errors. The three existing `filterRuleToSQL` deprecation hints may remain.
 
-- [ ] **Step 3: Commit the approved design and plan**
+- [x] **Step 3: Commit the approved design and plan**
 
 ```bash
 git add docs/superpowers/specs/2026-07-14-schema-metadata-docs-design.md docs/superpowers/plans/2026-07-14-schema-metadata-docs.md
@@ -102,7 +102,7 @@ git commit -m "docs: plan schema metadata guide restructure"
 - Consumes: `useFilterSelect(rule)`, `useView("components")`, `createFilterTheme()`, `FilterTheme["templates"]["FieldSelect"]`, and `z.globalRegistry`.
 - Produces: `SchemaMetadataExample`, a live Filter Builder whose native field selects display metadata-derived glyph prefixes.
 
-- [ ] **Step 1: Implement the native example**
+- [x] **Step 1: Implement the native example**
 
 Replace the old component with `schema-metadata.tsx` using this structure:
 
@@ -220,17 +220,17 @@ export function SchemaMetadataExample() {
 }
 ```
 
-- [ ] **Step 2: Remove the direct icon dependency**
+- [x] **Step 2: Remove the direct icon dependency**
 
 Delete `"@mui/icons-material": "^9.0.0"` from `packages/docs/package.json`. Run `pnpm install --lockfile-only` to remove the docs importer entry while retaining icon packages needed by the MUI theme workspace package.
 
-- [ ] **Step 3: Run focused type checking**
+- [x] **Step 3: Run focused type checking**
 
 Run: `pnpm --filter docs typeCheck`
 
 Expected: exit 0 with 0 errors. The three existing `filterRuleToSQL` deprecation hints may remain.
 
-- [ ] **Step 4: Commit the native example**
+- [x] **Step 4: Commit the native example**
 
 ```bash
 git add packages/docs/src/components/examples/schema-metadata.tsx packages/docs/src/components/examples/schema-metadata-field-icons.tsx packages/docs/package.json pnpm-lock.yaml
@@ -252,7 +252,7 @@ git commit -m "refactor(docs): remove MUI from metadata example"
 - Consumes: `SchemaMetadataExample` from `~/components/examples/schema-metadata.tsx`.
 - Produces: `/fn-sphere/customization/schema-metadata/` as the canonical metadata guide and related links from adjacent documentation.
 
-- [ ] **Step 1: Create the canonical guide**
+- [x] **Step 1: Create the canonical guide**
 
 Create `schema-metadata.mdx` with the following content:
 
@@ -286,7 +286,7 @@ declare module "zod" {
 }
 
 export const schema = z.object({
-  name: z.string().meta({ description: "Name", icon: "user" }),
+  name: z.string().min(1).meta({ description: "Name", icon: "user" }),
   email: z.string().meta({ description: "Email", icon: "email" }),
   age: z.number().meta({ description: "Age", icon: "number" }),
   createdAt: z.date().meta({ description: "Created At", icon: "calendar" }),
@@ -339,7 +339,7 @@ import { SchemaMetadataExample } from "~/components/examples/schema-metadata.tsx
 - Metadata remains associated with the schema. Filter Sphere does not copy it into `SingleFilter` rules, and serializing a rule does not serialize schema metadata.
 ````
 
-- [ ] **Step 2: Remove duplicate sections and add canonical links**
+- [x] **Step 2: Remove duplicate sections and add canonical links**
 
 In Best Practices, replace `## Using Schema Metadata` through its final visual-example link with:
 
@@ -349,13 +349,13 @@ Descriptions are built-in Zod schema metadata. You can also define typed, applic
 
 Remove the complete `Field Icons from Schema Metadata` section from Reference Example. Update Localization's old Best Practices link to `/fn-sphere/customization/schema-metadata/`. Add a link after the Theme guide's `FieldSelect` bullet pointing readers to the same guide.
 
-- [ ] **Step 3: Run the structural contract and verify green**
+- [x] **Step 3: Run the structural contract and verify green**
 
 Run the exact Node contract from Task 1 Step 1.
 
 Expected: exit 0 with no assertion failures.
 
-- [ ] **Step 4: Format the changed content**
+- [x] **Step 4: Format the changed content**
 
 ```bash
 pnpm exec prettier --write \
@@ -371,12 +371,14 @@ pnpm exec prettier --write \
   docs/superpowers/plans/2026-07-14-schema-metadata-docs.md
 ```
 
-- [ ] **Step 5: Commit the guide restructure**
+- [x] **Step 5: Commit the guide restructure**
 
 ```bash
 git add packages/docs/src/content/docs/customization/schema-metadata.mdx packages/docs/src/content/docs/guides/best-practices.mdx packages/docs/src/content/docs/reference/example.mdx packages/docs/src/content/docs/customization/localization.mdx packages/docs/src/content/docs/customization/theme.mdx docs/superpowers/specs/2026-07-14-schema-metadata-docs-design.md docs/superpowers/plans/2026-07-14-schema-metadata-docs.md
 git commit -m "docs: add schema metadata customization guide"
 ```
+
+Execution note: Tasks 2 and 3 were committed together as `1acb826` because deleting the old example and removing its MDX import had to remain atomic for `astro check`.
 
 ### Task 4: Verify and refresh the pull request
 
@@ -390,31 +392,31 @@ git commit -m "docs: add schema metadata customization guide"
 - Consumes: the native example and canonical customization guide from Tasks 2 and 3.
 - Produces: a verified branch and an accurate pull request presentation.
 
-- [ ] **Step 1: Verify formatting**
+- [x] **Step 1: Verify formatting**
 
 Run: `pnpm exec prettier --check` against the exact files listed in Task 3 Step 4.
 
 Expected: all matched files use Prettier code style.
 
-- [ ] **Step 2: Verify dependencies**
+- [x] **Step 2: Verify dependencies**
 
 Run: `pnpm install --frozen-lockfile`
 
 Expected: exit 0 with the lockfile unchanged.
 
-- [ ] **Step 3: Verify docs diagnostics**
+- [x] **Step 3: Verify docs diagnostics**
 
 Run: `pnpm --filter docs typeCheck`
 
 Expected: exit 0 with 0 errors. The three existing `filterRuleToSQL` deprecation hints may remain.
 
-- [ ] **Step 4: Verify the production build and internal links**
+- [x] **Step 4: Verify the production build and internal links**
 
 Run: `pnpm --filter docs build`
 
 Expected: exit 0, the new schema metadata page is generated, and the Starlight link validator reports valid internal links.
 
-- [ ] **Step 5: Inspect the diff and page visually**
+- [x] **Step 5: Inspect the diff and page visually**
 
 Run `git diff origin/main...HEAD --check` and inspect `git diff --stat origin/main...HEAD`. Open `/fn-sphere/customization/schema-metadata/` on the local docs server at desktop and narrow widths. Confirm glyph-bearing and fallback field labels are visible and controls do not overflow without horizontal scrolling support.
 
