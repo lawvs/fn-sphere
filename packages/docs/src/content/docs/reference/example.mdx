@@ -36,6 +36,17 @@ import { PopoverFilter } from "~/components/examples/popover-filter/index.tsx";
 </div>
 <SourceCodeCard path="~/components/examples/popover-filter/index.tsx" />
 
+## Field Icons from Schema Metadata
+
+Schema metadata can drive application-owned presentation such as field icons without changing Filter Sphere's public APIs. This standalone MUI recipe overrides only `templates.FieldSelect`; see [Using Schema Metadata](/fn-sphere/guides/best-practices/#using-schema-metadata) for the framework-neutral data flow.
+
+import { SchemaMetadataFieldIcons } from "~/components/examples/schema-metadata-field-icons.tsx";
+
+<div className="not-content">
+  <SchemaMetadataFieldIcons client:load />
+</div>
+<SourceCodeCard path="~/components/examples/schema-metadata-field-icons.tsx" />
+
 ## Backend Integration
 
 Filter Sphere is easy to integrate with backend systems. This example demonstrates converting filter rules into SQL WHERE clauses and [Meilisearch](https://www.meilisearch.com/) queries in real time.
