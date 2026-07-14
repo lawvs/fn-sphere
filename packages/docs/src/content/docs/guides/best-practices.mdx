@@ -54,8 +54,6 @@ export const filterFnList: FnSchema[] = presetFilter
   .filter((fn) => fn.name !== "endsWith");
 ```
 
-Descriptions are built-in Zod schema metadata. You can also define typed, application-owned metadata and consume it in custom filter UI. See [Schema Metadata](/fn-sphere/customization/schema-metadata/) for the complete pattern and live example.
-
 ## Create a Custom Theme
 
 Use `createFilterTheme` to build your theme in a dedicated file. It merges your customizations with the preset defaults, so you only need to override what you want to change.
