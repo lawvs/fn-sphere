@@ -1,7 +1,7 @@
+import { isCompatibleType } from "zod-compare";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import { isFilterFn, isGenericFilter } from "../fn-helpers.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
-import { doesFilterAcceptField } from "./compatibility.js";
 import type { FilterField, FilterPath } from "./types.js";
 import { bfsSchemaField, instantiateGenericFn } from "./utils.js";
 
@@ -40,7 +40,7 @@ export const findFilterableFields = <Data>({
         console.error("First function parameter is not defined", filter);
         return false;
       }
-      if (doesFilterAcceptField(firstFnParameter, fieldSchema)) {
+      if (isCompatibleType(firstFnParameter, fieldSchema)) {
         return true;
       }
     });

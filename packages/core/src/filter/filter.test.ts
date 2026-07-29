@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { z } from "zod";
-import type { $ZodString } from "zod/v4/core";
-import { defineGenericFn, defineTypedFn } from "../fn-helpers.js";
+import { defineTypedFn } from "../fn-helpers.js";
+import { presetFilter } from "../fn/filter.js";
 import { createFilterSphere } from "./index.js";
 import {
   createFilterGroup,
@@ -211,102 +211,52 @@ test("FilterGroup usage", () => {
   expect(orFilterData[1]?.age).toEqual(18);
 });
 
-test("only exposes custom filters whose field parameter accepts the field schema", () => {
-  const zData = z.object({
-    requiredName: z.string(),
-    optionalName: z.string().optional(),
-    nullableName: z.string().nullable(),
-    anyValue: z.any(),
+test("preset filters support nullish fields without changing input views", () => {
+  const schema = z.object({
+    text: z.string().optional(),
+    count: z.number().nullable(),
+    createdAt: z.date().nullish(),
+    enabled: z.boolean().optional(),
+    status: z.enum(["draft", "published"]).nullable(),
+    tags: z.array(z.string()).optional(),
   });
+  const sphere = createFilterSphere(schema, presetFilter);
+  const fields = sphere.findFilterableField();
 
-  const strictStringFilter = defineTypedFn({
-    name: "strict string",
-    define: z.function({
-      input: [z.string(), z.string()],
-      output: z.boolean(),
-    }),
-    implement: (value, target) => value === target,
-  });
-  const nullishStringFilter = defineTypedFn({
-    name: "nullish string",
-    define: z.function({
-      input: [z.string().nullish(), z.string()],
-      output: z.boolean(),
-    }),
-    implement: (value, target) => value != null && value === target,
-  });
-  const strictGenericStringFilter = defineGenericFn({
-    name: "strict generic string",
-    genericLimit: (datatype): datatype is $ZodString =>
-      datatype._zod.def.type === "string",
-    define: (datatype) =>
-      z.function({
-        input: [datatype, datatype],
-        output: z.boolean(),
-      }),
-    implement: (value: string, target: string) => value === target,
-  });
+  for (const [path, filterName, inputType] of [
+    ["text", "startsWith", "string"],
+    ["count", "greaterThan", "number"],
+    ["createdAt", "before", "date"],
+    ["enabled", "equals", "boolean"],
+    ["status", "enumEquals", "enum"],
+    ["tags", "contains", "string"],
+  ] as const) {
+    const field = fields.find((item) => isEqualPath(item.path, [path]));
+    const filter = field?.filterFnList.find((item) => item.name === filterName);
 
-  const filterSphere = createFilterSphere(zData, [
-    strictStringFilter,
-    nullishStringFilter,
-    strictGenericStringFilter,
-  ]);
-  const fields = filterSphere.findFilterableField();
-  const filterNamesAt = (path: string) =>
-    fields
-      .find((field) => isEqualPath(field.path, [path]))
-      ?.filterFnList.map((filter) => filter.name);
+    expect(filter, `${path}/${filterName}`).toBeDefined();
+    expect(
+      filter &&
+        getParametersExceptFirst(filter)._zod.def.items[0]?._zod.def.type,
+    ).toBe(inputType);
+    expect(field?.filterFnList.some((item) => item.name === "isEmpty")).toBe(
+      true,
+    );
+  }
 
-  expect(filterNamesAt("requiredName")).toEqual([
-    "strict string",
-    "nullish string",
-    "strict generic string",
-  ]);
-  expect(filterNamesAt("optionalName")).toEqual(["nullish string"]);
-  expect(filterNamesAt("nullableName")).toEqual(["nullish string"]);
-  expect(filterNamesAt("anyValue")).toBeUndefined();
+  const textField = fields.find((item) => isEqualPath(item.path, ["text"]))!;
+  const startsWith = textField.filterFnList.find(
+    (item) => item.name === "startsWith",
+  )!;
+  const rule = sphere.getFilterRule(textField, startsWith, ["ali"]);
+
+  expect(
+    sphere.filterData(
+      [
+        { text: "Alice", count: null, status: null },
+        { count: null, status: null },
+      ],
+      rule,
+    ),
+  ).toHaveLength(1);
 });
-
-test.each([
-  ["any", z.any()],
-  ["optional any", z.any().optional()],
-  ["unknown", z.unknown()],
-  ["nullable unknown", z.unknown().nullable()],
-  ["nullish unknown", z.unknown().nullish()],
-  ["union with any", z.union([z.string(), z.any()])],
-  [
-    "union with optional unknown",
-    z.union([z.number(), z.unknown().optional()]),
-  ],
-])(
-  "only exposes unconstrained custom filters for a %s field",
-  (_name, fieldSchema) => {
-    const strictStringFilter = defineTypedFn({
-      name: "strict string",
-      define: z.function({
-        input: [z.string().nullish()],
-        output: z.boolean(),
-      }),
-      implement: (value) => typeof value === "string" && value.length > 0,
-    });
-    const unconstrainedFilter = defineTypedFn({
-      name: "unconstrained",
-      define: z.function({
-        input: [z.unknown()],
-        output: z.boolean(),
-      }),
-      implement: () => true,
-    });
-    const field = createFilterSphere(z.object({ value: fieldSchema }), [
-      strictStringFilter,
-      unconstrainedFilter,
-    ])
-      .findFilterableField()
-      .find((candidate) => isEqualPath(candidate.path, ["value"]));
-
-    expect(field?.filterFnList.map((filter) => filter.name)).toEqual([
-      "unconstrained",
-    ]);
-  },
-);

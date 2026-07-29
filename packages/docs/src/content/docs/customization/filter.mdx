@@ -10,110 +10,46 @@ For a complete list of available preset filters, see the [Preset Filters Referen
 ## Nullable and Optional Fields
 
 Preset filters support fields declared with `.optional()`, `.nullable()`, or
-`.nullish()`. A nullish field keeps the filters for its underlying type and
-also exposes `isEmpty` and `isNotEmpty`.
-
-For example, `z.string().optional()` can use string filters such as
-`contains`, `startsWith`, and `endsWith`, as well as the empty filters. The
-same behavior applies to number, date, boolean, enum, literal union, and array
-fields.
-
-When a field value is `null` or `undefined`:
-
-- `isEmpty` returns `true`.
-- `isNotEmpty` returns `false`.
-- Other preset filters, including negative filters such as `notEqual`, return
-  `false`.
-
-Try changing the field and filter below. The table applies the generated
-predicate from the rule shown in the filter UI.
+`.nullish()`. They keep the filters and input UI for their underlying string,
+number, date, boolean, enum, literal-union, or array type, and also offer
+`isEmpty` and `isNotEmpty`.
 
 ```tsx live
 import { z } from "zod";
 import { Table } from "~/components/table";
 import {
-  createFilterGroup,
-  createSingleFilter,
   FilterBuilder,
   FilterSphereProvider,
   useFilterSphere,
 } from "@fn-sphere/filter";
 
 const schema = z.object({
-  title: z.string().optional().describe("Title (optional)"),
-  score: z.number().nullable().describe("Score (nullable)"),
-  publishedAt: z.date().nullish().describe("Published At (nullish)"),
-  active: z.boolean().optional().describe("Active (optional)"),
-  status: z
-    .enum(["draft", "published"])
-    .nullable()
-    .describe("Status (nullable)"),
-  tags: z.array(z.string()).optional().describe("Tags (optional)"),
+  title: z.string().optional(),
+  score: z.number().nullable(),
+  publishedAt: z.date().nullish(),
 });
 
-type Data = z.infer<typeof schema>;
-
-const data: Data[] = [
-  {
-    title: "Compatibility guide",
-    score: 92,
-    publishedAt: new Date(2026, 6, 28),
-    active: true,
-    status: "published",
-    tags: ["docs", "zod"],
-  },
-  {
-    score: null,
-    publishedAt: null,
-    active: false,
-    status: null,
-    tags: [],
-  },
-  {
-    title: "",
-    score: 64,
-    status: "draft",
-  },
-  {
-    title: "Filter presets",
-    score: null,
-    publishedAt: new Date(2026, 6, 30),
-    active: true,
-    status: "published",
-    tags: ["filters"],
-  },
+const data = [
+  { title: "Compatibility guide", score: 92, publishedAt: new Date() },
+  { title: undefined, score: null, publishedAt: null },
+  { title: "Filter presets", score: 64, publishedAt: undefined },
 ];
 
-const defaultRule = createFilterGroup({
-  op: "and",
-  conditions: [
-    createSingleFilter({
-      path: ["title"],
-      name: "isEmpty",
-    }),
-  ],
-});
-
 export default function NullishFieldsExample() {
-  const { context, predicate } = useFilterSphere({
-    schema,
-    defaultRule,
-  });
+  const { context, predicate } = useFilterSphere({ schema });
 
   return (
-    <div className="space-y-4">
-      <FilterSphereProvider context={context}>
-        <FilterBuilder />
-      </FilterSphereProvider>
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
       <Table schema={schema} data={data.filter(predicate)} />
-    </div>
+    </FilterSphereProvider>
   );
 }
 ```
 
-Custom filters remain explicit. A filter declared with `z.string()` is not
-offered for a `z.string().optional()` field. Opt in by declaring the nullish
-values and handling them in the implementation:
+Custom filters remain explicit. A filter whose first input is `z.string()` is
+not offered for a `z.string().optional()` field. Declare the accepted nullish
+values and handle them in the implementation:
 
 ```ts
 const nullishContains = defineTypedFn({
@@ -125,8 +61,6 @@ const nullishContains = defineTypedFn({
   implement: (value, target) => value?.includes(target) ?? false,
 });
 ```
-
-`.nullish()` is shorthand for `.nullable().optional()`.
 
 ## Defining a Custom Filter
 

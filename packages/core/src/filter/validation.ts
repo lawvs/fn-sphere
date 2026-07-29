@@ -1,9 +1,9 @@
 import { z } from "zod";
+import { isCompatibleType } from "zod-compare";
 import type { $ZodType } from "zod/v4/core";
 import { isGenericFilter } from "../fn-helpers.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
 import { unreachable } from "../utils.js";
-import { doesFilterAcceptField } from "./compatibility.js";
 import type {
   FilterGroup,
   FilterRule,
@@ -115,7 +115,7 @@ const validateStandardFnRule = ({
     };
   }
   const dataParameters = getFirstParameters(fnSchema);
-  const dataMatchFn = doesFilterAcceptField(dataParameters, targetSchema);
+  const dataMatchFn = isCompatibleType(dataParameters, targetSchema);
   if (!dataMatchFn) {
     return {
       success: false,
