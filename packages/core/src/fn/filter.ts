@@ -12,6 +12,15 @@ import type {
 import { defineGenericFn, defineTypedFn } from "../fn-helpers.js";
 import type { GenericFnSchema, StandardFnSchema } from "../types.js";
 
+const unwrapNullishType = (schema: $ZodTypes): $ZodTypes => {
+  while (
+    schema._zod.def.type === "optional" ||
+    schema._zod.def.type === "nullable"
+  )
+    schema = schema._zod.def.innerType as $ZodTypes;
+  return schema;
+};
+
 export const stringFilter = [
   defineTypedFn({
     name: "startsWith",
@@ -121,12 +130,7 @@ const genericEqualFilter = [
   defineGenericFn({
     name: "equals",
     genericLimit: (t): t is $ZodTypes => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return (
         datatype._zod.def.type === "boolean" ||
         datatype._zod.def.type === "string" ||
@@ -138,12 +142,7 @@ const genericEqualFilter = [
       );
     },
     define: (t) => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return z.function({
         input: [t, datatype],
         output: z.boolean(),
@@ -159,12 +158,7 @@ const genericEqualFilter = [
   defineGenericFn({
     name: "notEqual",
     genericLimit: (t): t is $ZodTypes => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       // not equal for boolean is not useful
       return (
         datatype._zod.def.type === "string" ||
@@ -176,12 +170,7 @@ const genericEqualFilter = [
       );
     },
     define: (t) => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return z.function({
         input: [t, datatype],
         output: z.boolean(),
@@ -202,21 +191,11 @@ export const enumEqualFilter = [
   defineGenericFn({
     name: "enumEquals",
     genericLimit: (t): t is $ZodTypes => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return datatype._zod.def.type === "enum";
     },
     define: (t) => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return z.function({
         input: [t, datatype],
         output: z.boolean(),
@@ -229,21 +208,11 @@ export const enumEqualFilter = [
   defineGenericFn({
     name: "enumNotEqual",
     genericLimit: (t): t is $ZodTypes => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return datatype._zod.def.type === "enum";
     },
     define: (t) => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return z.function({
         input: [t, datatype],
         output: z.boolean(),
@@ -292,12 +261,7 @@ const genericContainFilter = [
   defineGenericFn({
     name: "contains",
     genericLimit: (t): t is $ZodTypes => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return (
         datatype._zod.def.type === "string" ||
         datatype._zod.def.type === "array" ||
@@ -309,12 +273,7 @@ const genericContainFilter = [
       );
     },
     define: (t) => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       if (datatype._zod.def.type === "string") {
         return z.function({
           input: [t, datatype],
@@ -356,12 +315,7 @@ const genericContainFilter = [
   defineGenericFn({
     name: "notContains",
     genericLimit: (t): t is $ZodTypes => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       return (
         datatype._zod.def.type === "array" ||
         datatype._zod.def.type === "string" ||
@@ -373,12 +327,7 @@ const genericContainFilter = [
       );
     },
     define: (t) => {
-      let datatype = t;
-      while (
-        datatype._zod.def.type === "optional" ||
-        datatype._zod.def.type === "nullable"
-      )
-        datatype = datatype._zod.def.innerType as $ZodTypes;
+      const datatype = unwrapNullishType(t);
       if (datatype._zod.def.type === "string") {
         return z.function({
           input: [t, datatype],
