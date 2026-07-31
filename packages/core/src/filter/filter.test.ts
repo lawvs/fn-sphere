@@ -212,6 +212,11 @@ test("FilterGroup usage", () => {
 });
 
 test("preset filters support nullish fields without changing input views", () => {
+  expect(presetFilter.slice(-2).map((filter) => filter.name)).toEqual([
+    "isEmpty",
+    "isNotEmpty",
+  ]);
+
   const schema = z.object({
     text: z.string().optional(),
     count: z.number().nullable(),

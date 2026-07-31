@@ -10,7 +10,7 @@ import type {
   $ZodUnion,
 } from "zod/v4/core";
 import { defineGenericFn, defineTypedFn } from "../fn-helpers.js";
-import type { GenericFnSchema, StandardFnSchema } from "../types.js";
+import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
 
 const unwrapNullishType = (schema: $ZodTypes): $ZodTypes => {
   while (
@@ -370,4 +370,10 @@ export const genericFilter: GenericFnSchema[] = [
   ...genericContainFilter,
 ];
 
-export const presetFilter = [...genericFilter, ...commonFilters];
+export const presetFilter: FnSchema[] = [
+  ...genericEqualFilter,
+  ...enumEqualFilter,
+  ...genericContainFilter,
+  ...commonFilters,
+  ...genericEmptyFilter,
+];
