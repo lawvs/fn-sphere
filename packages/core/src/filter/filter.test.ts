@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { z } from "zod";
 import { defineTypedFn } from "../fn-helpers.js";
 import { presetFilter } from "../fn/filter.js";
@@ -211,7 +211,7 @@ test("FilterGroup usage", () => {
   expect(orFilterData[1]?.age).toEqual(18);
 });
 
-test("preset filters support nullish fields without changing input views", () => {
+test("preset filters support nullish fields", () => {
   expect(presetFilter.slice(-2).map((filter) => filter.name)).toEqual([
     "isEmpty",
     "isNotEmpty",
@@ -264,4 +264,21 @@ test("preset filters support nullish fields without changing input views", () =>
       rule,
     ),
   ).toHaveLength(1);
+
+  const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    for (const filterName of ["contains", "notContains"] as const) {
+      const filter = textField.filterFnList.find(
+        (item) => item.name === filterName,
+      )!;
+      const nullishRule = sphere.getFilterRule(textField, filter, ["ali"]);
+
+      expect(
+        sphere.filterData([{ count: null, status: null }], nullishRule),
+      ).toHaveLength(0);
+    }
+    expect(consoleError).not.toHaveBeenCalled();
+  } finally {
+    consoleError.mockRestore();
+  }
 });

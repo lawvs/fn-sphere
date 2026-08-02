@@ -291,11 +291,13 @@ const genericContainFilter = [
       });
     },
     implement: (
-      value: z.infer<
-        $ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]>
-      >,
+      value:
+        | z.infer<$ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]>>
+        | null
+        | undefined,
       target: string | unknown | unknown[],
     ) => {
+      if (value == null) return false;
       if (typeof value === "string" && typeof target === "string") {
         // $ZodString
         return value.toLowerCase().includes(target.toLowerCase());
@@ -345,9 +347,10 @@ const genericContainFilter = [
       });
     },
     implement: (
-      value: string | unknown[],
+      value: string | unknown[] | null | undefined,
       target: string | unknown | unknown[],
     ) => {
+      if (value == null) return false;
       if (typeof value === "string" && typeof target === "string") {
         return !value.toLowerCase().includes(target.toLowerCase());
       }
