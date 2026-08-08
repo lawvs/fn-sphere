@@ -277,6 +277,18 @@ test("preset filters support nullish fields", () => {
         sphere.filterData([{ count: null, status: null }], nullishRule),
       ).toHaveLength(0);
     }
+
+    const contains = textField.filterFnList.find(
+      (item) => item.name === "contains",
+    )!;
+    const invertedContainsRule = {
+      ...sphere.getFilterRule(textField, contains, ["ali"]),
+      invert: true,
+    };
+    expect(
+      sphere.filterData([{ count: null, status: null }], invertedContainsRule),
+    ).toHaveLength(1);
+
     expect(consoleError).not.toHaveBeenCalled();
   } finally {
     consoleError.mockRestore();
