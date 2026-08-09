@@ -409,11 +409,15 @@ const templatesSpec = {
     }, [toggleGroupOp]);
 
     const hasMultipleConditions = rule.conditions.length > 1;
+    const lastCondition = rule.conditions.at(-1);
+    const endsWithNestedRail =
+      lastCondition?.type === "FilterGroup" &&
+      lastCondition.conditions.length > 1;
     const groupRail = hasMultipleConditions ? (
       <div
         className={cx(
           "pointer-events-none absolute left-6 top-4 w-4 rounded-l-xl border-y border-l border-slate-200",
-          isRoot ? "bottom-3" : "bottom-4",
+          endsWithNestedRail ? "bottom-7" : "bottom-4",
         )}
       />
     ) : null;
