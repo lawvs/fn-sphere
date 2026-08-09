@@ -73,6 +73,12 @@ export const ChevronDownIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+const CheckIcon = ({ className }: IconProps) => (
+  <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
+    <path className={iconStroke} d="m5 12 4 4 10-10" />
+  </svg>
+);
+
 const FolderPlusIcon = ({ className }: IconProps) => (
   <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
     <path
@@ -236,12 +242,14 @@ const PanelMultipleSelect = <T,>({
     value.some((currentValue) => currentValue === option.value),
   );
 
-  const handleToggleOpen = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-    setIsOpen((currentValue) => !currentValue);
-  }, [disabled]);
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!disabled) {
+        setIsOpen(open);
+      }
+    },
+    [disabled],
+  );
 
   const handleToggle = useCallback(
     (optionValue: T) => {
@@ -264,50 +272,67 @@ const PanelMultipleSelect = <T,>({
         className,
       )}
     >
-      <button
-        aria-expanded={isOpen}
-        aria-label="Values"
-        className="flex min-h-8 min-w-0 flex-1 flex-wrap items-center gap-1.5 border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-45"
-        disabled={disabled}
-        type="button"
-        onClick={handleToggleOpen}
-      >
-        {selectedOptions.length ? (
-          selectedOptions.map((option) => (
-            <ValueToken key={option.label}>{option.label}</ValueToken>
-          ))
-        ) : (
-          <span className="text-sm text-slate-400">Select values</span>
-        )}
-      </button>
-      {isOpen && (
-        <div className="absolute right-2 top-[calc(100%+4px)] z-30 min-w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
-          {options.map((option) => {
-            const isSelected = value.some(
-              (currentValue) => currentValue === option.value,
-            );
-            return (
-              <button
-                aria-pressed={isSelected}
-                className={cx(
-                  "flex h-8 w-full items-center justify-between rounded-md border-0 px-2 text-sm font-medium transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
-                  isSelected
-                    ? "bg-slate-100 text-slate-950"
-                    : "bg-transparent text-slate-700",
-                )}
-                key={option.label}
-                type="button"
-                onClick={() => {
-                  handleToggle(option.value);
-                }}
-              >
-                {option.label}
-                {isSelected && <span className="text-slate-500">Selected</span>}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
+        <Popover.Trigger asChild>
+          <button
+            aria-label="Values"
+            className="flex min-h-8 min-w-0 flex-1 flex-wrap items-center gap-1.5 border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-45"
+            disabled={disabled}
+            type="button"
+          >
+            {selectedOptions.length ? (
+              selectedOptions.map((option) => (
+                <ValueToken key={option.label}>{option.label}</ValueToken>
+              ))
+            ) : (
+              <span className="text-sm text-slate-400">Select values</span>
+            )}
+          </button>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            align="end"
+            aria-label="Values"
+            aria-multiselectable="true"
+            className="isolate w-[var(--radix-popover-trigger-width)] min-w-44 rounded-lg border border-slate-200 bg-white p-1 text-slate-900 shadow-lg outline-none"
+            collisionPadding={8}
+            role="listbox"
+            side="bottom"
+            sideOffset={4}
+          >
+            {options.map((option) => {
+              const isSelected = value.some(
+                (currentValue) => currentValue === option.value,
+              );
+              return (
+                <button
+                  aria-selected={isSelected}
+                  className={cx(
+                    "flex h-8 w-full items-center justify-between rounded-md border-0 px-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+                    isSelected
+                      ? "bg-slate-100 text-slate-950 hover:bg-slate-200"
+                      : "bg-white text-slate-700 hover:bg-slate-100",
+                  )}
+                  key={option.label}
+                  role="option"
+                  type="button"
+                  onClick={() => {
+                    handleToggle(option.value);
+                  }}
+                >
+                  <span>{option.label}</span>
+                  <CheckIcon
+                    className={cx(
+                      "h-4 w-4 text-slate-600",
+                      !isSelected && "invisible",
+                    )}
+                  />
+                </button>
+              );
+            })}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 };
