@@ -1,5 +1,11 @@
 # @fn-sphere/core
 
+## 1.4.0
+
+### Minor Changes
+
+- [#261](https://github.com/lawvs/fn-sphere/pull/261) [`cbf67ed`](https://github.com/lawvs/fn-sphere/commit/cbf67ed0f16cb0fa2602dca3d695601e136d9b4e) Thanks [@lawvs](https://github.com/lawvs)! - Match preset filters to compatible optional and nullable field schemas while keeping custom filter nullish handling explicit.
+
 ## 1.3.0
 
 ### Minor Changes
