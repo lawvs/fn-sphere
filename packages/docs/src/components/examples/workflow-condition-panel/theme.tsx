@@ -13,6 +13,7 @@ import {
   type ChangeEvent,
   type ComponentType,
   type InputHTMLAttributes,
+  type MouseEvent,
   type ReactNode,
   type SelectHTMLAttributes,
 } from "react";
@@ -69,13 +70,6 @@ export const BranchIcon = ({ className }: IconProps) => (
 export const ChevronDownIcon = ({ className }: IconProps) => (
   <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
     <path className={iconStroke} d="m6 9 6 6 6-6" />
-  </svg>
-);
-
-const CloseIcon = ({ className }: IconProps) => (
-  <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
-    <path className={iconStroke} d="M18 6 6 18" />
-    <path className={iconStroke} d="m6 6 12 12" />
   </svg>
 );
 
@@ -350,7 +344,6 @@ const templatesSpec = {
       ruleState: { depth, isRoot },
       appendChildGroup,
       appendChildRule,
-      removeGroup,
       toggleGroupOp,
     } = useFilterGroup(rule);
 
@@ -361,10 +354,6 @@ const templatesSpec = {
     const handleAddGroup = useCallback(() => {
       appendChildGroup();
     }, [appendChildGroup]);
-
-    const handleRemoveGroup = useCallback(() => {
-      removeGroup();
-    }, [removeGroup]);
 
     const handleToggleGroupOp = useCallback(() => {
       toggleGroupOp();
@@ -427,14 +416,6 @@ const templatesSpec = {
       >
         {groupRail}
         {groupOperator}
-        <button
-          aria-label="Remove group"
-          className="absolute right-0 top-0 hidden h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 group-hover/filter-group:flex"
-          type="button"
-          onClick={handleRemoveGroup}
-        >
-          <CloseIcon className="h-4 w-4" />
-        </button>
         {children}
       </div>
     );
@@ -448,6 +429,8 @@ const templatesSpec = {
     const { FieldSelect, FilterDataInput, FilterSelect } = useView("templates");
     const {
       ruleState: { parentGroup },
+      appendGroup,
+      appendRule,
       removeRule,
       selectedField,
     } = useFilterRule(rule);
@@ -456,9 +439,33 @@ const templatesSpec = {
     const FieldIcon = fieldIcons[fieldName] ?? BranchIcon;
     const canRemove = parentGroup.conditions.length > 1;
 
-    const handleRemoveRule = useCallback(() => {
-      removeRule(true);
-    }, [removeRule]);
+    const closeMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+      event.currentTarget.closest("details")?.removeAttribute("open");
+    }, []);
+
+    const handleAddCondition = useCallback(
+      (event: MouseEvent<HTMLButtonElement>) => {
+        closeMenu(event);
+        appendRule();
+      },
+      [appendRule, closeMenu],
+    );
+
+    const handleAddGroup = useCallback(
+      (event: MouseEvent<HTMLButtonElement>) => {
+        closeMenu(event);
+        appendGroup();
+      },
+      [appendGroup, closeMenu],
+    );
+
+    const handleRemoveRule = useCallback(
+      (event: MouseEvent<HTMLButtonElement>) => {
+        closeMenu(event);
+        removeRule(true);
+      },
+      [closeMenu, removeRule],
+    );
 
     return (
       <div className="group/filter-rule flex min-w-0 items-start">
@@ -472,15 +479,39 @@ const templatesSpec = {
                 rule={rule}
               />
             </div>
-            <button
-              aria-label="Remove condition"
-              className="absolute right-1 top-1 flex h-9 w-9 items-center justify-center rounded-md text-slate-400 opacity-0 transition hover:bg-slate-50 hover:text-slate-700 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500 disabled:pointer-events-none disabled:opacity-0 group-hover/filter-rule:opacity-100"
-              disabled={!canRemove}
-              type="button"
-              onClick={handleRemoveRule}
-            >
-              <CloseIcon className="h-4 w-4" />
-            </button>
+            <details className="absolute right-1 top-1 z-30">
+              <summary
+                aria-label="Condition actions"
+                className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md bg-white text-lg leading-none text-slate-400 opacity-0 transition hover:bg-slate-50 hover:text-slate-700 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500 group-hover/filter-rule:opacity-100 group-focus-within/filter-rule:opacity-100"
+              >
+                ⋯
+              </summary>
+              <div className="absolute right-0 top-10 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
+                <button
+                  className="h-8 w-full rounded-md px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                  type="button"
+                  onClick={handleAddCondition}
+                >
+                  Add condition after
+                </button>
+                <button
+                  className="h-8 w-full rounded-md px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                  type="button"
+                  onClick={handleAddGroup}
+                >
+                  Add group after
+                </button>
+                <div className="my-1 h-px bg-slate-200" />
+                <button
+                  className="h-8 w-full rounded-md px-2 text-left text-xs font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent"
+                  disabled={!canRemove}
+                  type="button"
+                  onClick={handleRemoveRule}
+                >
+                  Delete condition
+                </button>
+              </div>
+            </details>
           </div>
           <div className="grid min-w-0 grid-cols-1 divide-y divide-slate-200 sm:grid-cols-[minmax(110px,0.32fr)_1fr] sm:divide-x sm:divide-y-0">
             <FilterSelect
