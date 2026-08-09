@@ -6,6 +6,7 @@ import {
   useView,
   type FilterTheme,
 } from "@fn-sphere/filter";
+import * as Popover from "@radix-ui/react-popover";
 import {
   useCallback,
   useState,
@@ -13,7 +14,6 @@ import {
   type ChangeEvent,
   type ComponentType,
   type InputHTMLAttributes,
-  type MouseEvent,
   type ReactNode,
   type SelectHTMLAttributes,
 } from "react";
@@ -438,40 +438,29 @@ const templatesSpec = {
     const fieldName = String(selectedField?.path[0] ?? "");
     const FieldIcon = fieldIcons[fieldName] ?? BranchIcon;
     const canRemove = parentGroup.conditions.length > 1;
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const closeMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-      event.currentTarget.closest("details")?.removeAttribute("open");
+    const handleMenuOpenChange = useCallback((open: boolean) => {
+      setIsMenuOpen(open);
     }, []);
 
-    const handleAddCondition = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        closeMenu(event);
-        appendRule();
-      },
-      [appendRule, closeMenu],
-    );
+    const handleAddCondition = useCallback(() => {
+      appendRule();
+    }, [appendRule]);
 
-    const handleAddGroup = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        closeMenu(event);
-        appendGroup();
-      },
-      [appendGroup, closeMenu],
-    );
+    const handleAddGroup = useCallback(() => {
+      appendGroup();
+    }, [appendGroup]);
 
-    const handleRemoveRule = useCallback(
-      (event: MouseEvent<HTMLButtonElement>) => {
-        closeMenu(event);
-        removeRule(true);
-      },
-      [closeMenu, removeRule],
-    );
+    const handleRemoveRule = useCallback(() => {
+      removeRule(true);
+    }, [removeRule]);
 
     return (
       <div className="group/filter-rule flex min-w-0 items-start">
         <div className="relative min-w-0 flex-1 rounded-lg border border-slate-200 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
           <div className="relative flex min-w-0 border-b border-slate-200">
-            <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2 py-0 pl-3 pr-12">
               <FieldIcon className="h-4 w-4 shrink-0 text-slate-500" />
               <FieldSelect
                 aria-label="Field"
@@ -479,39 +468,67 @@ const templatesSpec = {
                 rule={rule}
               />
             </div>
-            <details className="absolute right-1 top-1 z-30 [&[open]>summary]:bg-slate-100 [&[open]>summary]:text-slate-700">
-              <summary
-                aria-label="Condition actions"
-                className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md bg-transparent text-lg leading-none text-slate-400 opacity-0 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500 group-hover/filter-rule:opacity-100 group-focus-within/filter-rule:opacity-100"
+            <div className="absolute right-1 top-1">
+              <Popover.Root
+                open={isMenuOpen}
+                onOpenChange={handleMenuOpenChange}
               >
-                ⋯
-              </summary>
-              <div className="absolute right-0 top-10 w-44 rounded-lg border border-slate-200 bg-white p-1 text-slate-900 shadow-lg">
-                <button
-                  className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
-                  type="button"
-                  onClick={handleAddCondition}
-                >
-                  Add condition after
-                </button>
-                <button
-                  className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
-                  type="button"
-                  onClick={handleAddGroup}
-                >
-                  Add group after
-                </button>
-                <div className="my-1 h-px bg-slate-200" />
-                <button
-                  className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-white"
-                  disabled={!canRemove}
-                  type="button"
-                  onClick={handleRemoveRule}
-                >
-                  Delete condition
-                </button>
-              </div>
-            </details>
+                <Popover.Trigger asChild>
+                  <button
+                    aria-label="Condition actions"
+                    className={cx(
+                      "flex h-9 w-9 items-center justify-center rounded-md border-0 text-lg leading-none opacity-0 transition focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500 group-hover/filter-rule:opacity-100 group-focus-within/filter-rule:opacity-100",
+                      isMenuOpen
+                        ? "bg-slate-100 text-slate-700 opacity-100"
+                        : "bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-700",
+                    )}
+                    type="button"
+                  >
+                    ⋯
+                  </button>
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content
+                    align="end"
+                    aria-label="Condition actions"
+                    className="isolate w-44 rounded-lg border border-slate-200 bg-white p-1 text-slate-900 shadow-lg outline-none"
+                    collisionPadding={8}
+                    side="bottom"
+                    sideOffset={4}
+                  >
+                    <Popover.Close asChild>
+                      <button
+                        className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                        type="button"
+                        onClick={handleAddCondition}
+                      >
+                        Add condition after
+                      </button>
+                    </Popover.Close>
+                    <Popover.Close asChild>
+                      <button
+                        className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                        type="button"
+                        onClick={handleAddGroup}
+                      >
+                        Add group after
+                      </button>
+                    </Popover.Close>
+                    <div className="my-1 h-px bg-slate-200" />
+                    <Popover.Close asChild>
+                      <button
+                        className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-white"
+                        disabled={!canRemove}
+                        type="button"
+                        onClick={handleRemoveRule}
+                      >
+                        Delete condition
+                      </button>
+                    </Popover.Close>
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
+            </div>
           </div>
           <div className="grid min-w-0 grid-cols-1 divide-y divide-slate-200 sm:grid-cols-[minmax(110px,0.32fr)_1fr] sm:divide-x sm:divide-y-0">
             <FilterSelect
