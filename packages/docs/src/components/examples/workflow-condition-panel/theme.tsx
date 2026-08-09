@@ -1,14 +1,14 @@
 import {
   createFilterTheme,
-  presetTheme,
   useFilterGroup,
   useFilterRule,
   useView,
+  type FilterGroup,
   type FilterTheme,
 } from "@fn-sphere/filter";
 import * as Popover from "@radix-ui/react-popover";
+import * as SelectPrimitive from "@radix-ui/react-select";
 import {
-  useCallback,
   useState,
   type ButtonHTMLAttributes,
   type ChangeEvent,
@@ -60,15 +60,10 @@ const ValueToken = ({ children }: { children: ReactNode }) => (
 const selectPopoverContentClass =
   "isolate w-52 max-w-[calc(100vw-16px)] rounded-lg border border-slate-200 bg-white p-1 text-slate-900 shadow-lg outline-none";
 
-const getSelectOptionClass = (isSelected: boolean) =>
-  cx(
-    "flex h-8 w-full items-center justify-between rounded-md border-0 px-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
-    isSelected
-      ? "bg-slate-100 text-slate-950 hover:bg-slate-200"
-      : "bg-white text-slate-700 hover:bg-slate-100",
-  );
+const selectOptionClass =
+  "flex h-8 w-full items-center justify-between rounded-md border-0 bg-white px-2 text-sm font-medium text-slate-700 outline-none transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-violet-500 data-[highlighted]:bg-slate-100 data-[state=checked]:bg-slate-100 data-[state=checked]:text-slate-950 data-[state=checked]:hover:bg-slate-200";
 
-export const BranchIcon = ({ className }: IconProps) => (
+const BranchIcon = ({ className }: IconProps) => (
   <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
     <circle className={iconStroke} cx="6" cy="6" r="2.5" />
     <circle className={iconStroke} cx="18" cy="18" r="2.5" />
@@ -78,7 +73,7 @@ export const BranchIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-export const ChevronDownIcon = ({ className }: IconProps) => (
+const ChevronDownIcon = ({ className }: IconProps) => (
   <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
     <path className={iconStroke} d="m6 9 6 6 6-6" />
   </svg>
@@ -143,12 +138,9 @@ const PanelInput = ({
 }: Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> & {
   onChange?: (value: string) => void;
 }) => {
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      onChange?.(event.target.value);
-    },
-    [onChange],
-  );
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onChange?.(event.target.value);
+  };
 
   return (
     <input
@@ -163,94 +155,81 @@ const PanelInput = ({
 };
 
 const PanelSelect = <T,>({
+  "aria-label": ariaLabel,
   className,
   disabled,
   onChange,
   options = [],
   value,
-  ...props
 }: PanelSelectProps<T>) => {
-  const { "aria-label": ariaLabel } = props;
-  const [isOpen, setIsOpen] = useState(false);
   const selectedIdx = options.findIndex((option) => option.value === value);
   const selectedOption = options[selectedIdx];
   const isValueSelect = ariaLabel === undefined;
   const resolvedAriaLabel = ariaLabel ?? "Value";
-  const handleSelect = useCallback(
-    (index: number) => {
-      const selectedOption = options[index];
-      if (selectedOption) {
-        onChange?.(selectedOption.value);
-      }
-    },
-    [onChange, options],
-  );
+  const handleValueChange = (nextValue: string) => {
+    const selectedOption = options[Number(nextValue)];
+    if (selectedOption) {
+      onChange?.(selectedOption.value);
+    }
+  };
 
   return (
-    <div className={cx("relative min-w-0", className)}>
-      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Popover.Trigger asChild>
-          <button
-            aria-haspopup="listbox"
-            aria-label={resolvedAriaLabel}
-            className={cx(
-              "flex min-h-11 w-full min-w-0 items-center gap-2 border-0 bg-transparent text-left text-[15px] font-medium text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:text-slate-400",
-              ariaLabel === "Field" ? "pl-0 pr-2" : "px-3",
-            )}
-            disabled={disabled}
-            type="button"
-          >
-            <span className="min-w-0 flex-1 truncate">
-              {selectedOption ? (
-                isValueSelect ? (
-                  <ValueToken>{selectedOption.label}</ValueToken>
-                ) : (
-                  selectedOption.label
-                )
+    <div className={cx("min-w-0", className)}>
+      <SelectPrimitive.Root
+        disabled={!!disabled}
+        value={selectedIdx >= 0 ? String(selectedIdx) : ""}
+        onValueChange={handleValueChange}
+      >
+        <SelectPrimitive.Trigger
+          aria-label={resolvedAriaLabel}
+          className={cx(
+            "flex min-h-11 w-full min-w-0 items-center gap-2 border-0 bg-transparent text-left text-[15px] font-medium text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:text-slate-400",
+            ariaLabel === "Field" ? "pl-0 pr-2" : "px-3",
+          )}
+        >
+          <span className="min-w-0 flex-1 truncate">
+            {selectedOption ? (
+              isValueSelect ? (
+                <ValueToken>{selectedOption.label}</ValueToken>
               ) : (
-                <span className="text-slate-400">Select value</span>
-              )}
-            </span>
+                selectedOption.label
+              )
+            ) : (
+              <span className="text-slate-400">Select value</span>
+            )}
+          </span>
+          <SelectPrimitive.Icon asChild>
             <ChevronDownIcon className="h-4 w-4 shrink-0 text-slate-500" />
-          </button>
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Content
+          </SelectPrimitive.Icon>
+        </SelectPrimitive.Trigger>
+        <SelectPrimitive.Portal>
+          <SelectPrimitive.Content
             align="start"
-            aria-label={resolvedAriaLabel}
             className={selectPopoverContentClass}
             collisionPadding={8}
-            role="listbox"
+            position="popper"
             side="bottom"
             sideOffset={4}
           >
-            {options.map((option, index) => {
-              const isSelected = index === selectedIdx;
-              return (
-                <Popover.Close asChild key={option.label}>
-                  <button
-                    aria-selected={isSelected}
-                    className={getSelectOptionClass(isSelected)}
-                    role="option"
-                    type="button"
-                    onClick={() => {
-                      handleSelect(index);
-                    }}
-                  >
+            <SelectPrimitive.Viewport>
+              {options.map((option, index) => (
+                <SelectPrimitive.Item
+                  className={selectOptionClass}
+                  key={option.label}
+                  value={String(index)}
+                >
+                  <SelectPrimitive.ItemText asChild>
                     <span className="truncate">{option.label}</span>
-                    <CheckIcon
-                      className={cx(
-                        "h-4 w-4 shrink-0 text-slate-600",
-                        !isSelected && "invisible",
-                      )}
-                    />
-                  </button>
-                </Popover.Close>
-              );
-            })}
-          </Popover.Content>
-        </Popover.Portal>
-      </Popover.Root>
+                  </SelectPrimitive.ItemText>
+                  <SelectPrimitive.ItemIndicator asChild>
+                    <CheckIcon className="h-4 w-4 shrink-0 text-slate-600" />
+                  </SelectPrimitive.ItemIndicator>
+                </SelectPrimitive.Item>
+              ))}
+            </SelectPrimitive.Viewport>
+          </SelectPrimitive.Content>
+        </SelectPrimitive.Portal>
+      </SelectPrimitive.Root>
     </div>
   );
 };
@@ -262,45 +241,28 @@ const PanelMultipleSelect = <T,>({
   options = [],
   value = [],
 }: PanelMultiSelectProps<T>) => {
-  const [isOpen, setIsOpen] = useState(false);
   const selectedOptions = options.filter((option) =>
     value.some((currentValue) => currentValue === option.value),
   );
 
-  const handleOpenChange = useCallback(
-    (open: boolean) => {
-      if (!disabled) {
-        setIsOpen(open);
-      }
-    },
-    [disabled],
-  );
-
-  const handleToggle = useCallback(
-    (optionValue: T) => {
-      const hasValue = value.some(
-        (currentValue) => currentValue === optionValue,
-      );
-      const nextValue = hasValue
-        ? value.filter((currentValue) => currentValue !== optionValue)
-        : [...value, optionValue];
-      onChange?.(nextValue);
-    },
-    [onChange, value],
-  );
+  const handleToggle = (optionValue: T) => {
+    const hasValue = value.some((currentValue) => currentValue === optionValue);
+    const nextValue = hasValue
+      ? value.filter((currentValue) => currentValue !== optionValue)
+      : [...value, optionValue];
+    onChange?.(nextValue);
+  };
 
   return (
     <div
-      aria-disabled={disabled}
       className={cx(
-        "relative flex min-h-11 min-w-0 items-center px-3 py-1.5",
+        "flex min-h-11 min-w-0 items-center px-3 py-1.5",
         className,
       )}
     >
-      <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
+      <Popover.Root>
         <Popover.Trigger asChild>
           <button
-            aria-haspopup="listbox"
             aria-label="Values"
             className="flex min-h-8 min-w-0 flex-1 items-center gap-2 border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-45"
             disabled={disabled}
@@ -322,10 +284,8 @@ const PanelMultipleSelect = <T,>({
           <Popover.Content
             align="start"
             aria-label="Values"
-            aria-multiselectable="true"
             className={selectPopoverContentClass}
             collisionPadding={8}
-            role="listbox"
             side="bottom"
             sideOffset={4}
           >
@@ -335,10 +295,10 @@ const PanelMultipleSelect = <T,>({
               );
               return (
                 <button
-                  aria-selected={isSelected}
-                  className={getSelectOptionClass(isSelected)}
+                  aria-pressed={isSelected}
+                  className={selectOptionClass}
+                  data-state={isSelected ? "checked" : "unchecked"}
                   key={option.label}
-                  role="option"
                   type="button"
                   onClick={() => {
                     handleToggle(option.value);
@@ -387,45 +347,37 @@ const AddButton = ({
   </button>
 );
 
+const getRailBottomInset = (group: FilterGroup): number => {
+  const lastCondition = group.conditions.at(-1);
+  return lastCondition?.type === "FilterGroup" &&
+    lastCondition.conditions.length > 1
+    ? 12 + getRailBottomInset(lastCondition)
+    : 16;
+};
+
 const templatesSpec = {
   FilterGroupContainer: ({ children, rule, ...props }) => {
     const {
-      ruleState: { depth, isRoot },
+      ruleState: { isRoot },
       appendChildGroup,
       appendChildRule,
       toggleGroupOp,
     } = useFilterGroup(rule);
 
-    const handleAddCondition = useCallback(() => {
-      appendChildRule();
-    }, [appendChildRule]);
-
-    const handleAddGroup = useCallback(() => {
-      appendChildGroup();
-    }, [appendChildGroup]);
-
-    const handleToggleGroupOp = useCallback(() => {
-      toggleGroupOp();
-    }, [toggleGroupOp]);
-
     const hasMultipleConditions = rule.conditions.length > 1;
-    const lastCondition = rule.conditions.at(-1);
-    const endsWithNestedRail =
-      lastCondition?.type === "FilterGroup" &&
-      lastCondition.conditions.length > 1;
     const groupRail = hasMultipleConditions ? (
       <div
-        className={cx(
-          "pointer-events-none absolute left-6 top-4 w-4 rounded-l-xl border-y border-l border-slate-200",
-          endsWithNestedRail ? "bottom-7" : "bottom-4",
-        )}
+        className="pointer-events-none absolute left-6 top-4 w-4 rounded-l-xl border-y border-l border-slate-200"
+        style={{ bottom: getRailBottomInset(rule) }}
       />
     ) : null;
     const groupOperator = hasMultipleConditions ? (
       <button
         className="absolute left-6 top-1/2 inline-flex h-6 -translate-x-1/2 -translate-y-1/2 items-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
         type="button"
-        onClick={handleToggleGroupOp}
+        onClick={() => {
+          toggleGroupOp();
+        }}
       >
         {rule.op === "and" ? "And" : "Or"}
       </button>
@@ -447,18 +399,20 @@ const templatesSpec = {
           <div className="mt-5 flex flex-wrap gap-2">
             <AddButton
               icon={<BranchIcon className="h-4 w-4 text-slate-900" />}
-              onClick={handleAddCondition}
+              onClick={() => {
+                appendChildRule();
+              }}
             >
               Add condition
             </AddButton>
-            {depth < 4 && (
-              <AddButton
-                icon={<FolderPlusIcon className="h-4 w-4 text-slate-900" />}
-                onClick={handleAddGroup}
-              >
-                Add group
-              </AddButton>
-            )}
+            <AddButton
+              icon={<FolderPlusIcon className="h-4 w-4 text-slate-900" />}
+              onClick={() => {
+                appendChildGroup();
+              }}
+            >
+              Add group
+            </AddButton>
           </div>
         </div>
       );
@@ -478,41 +432,15 @@ const templatesSpec = {
       </div>
     );
   },
-  FilterSelect: (props) => {
-    const PresetFilterSelect = presetTheme.templates.FilterSelect;
-    return <PresetFilterSelect tryRetainArgs {...props} />;
-  },
   RuleJoiner: () => null,
   SingleFilter: ({ rule }) => {
     const { FieldSelect, FilterDataInput, FilterSelect } = useView("templates");
-    const {
-      ruleState: { parentGroup },
-      appendGroup,
-      appendRule,
-      removeRule,
-      selectedField,
-    } = useFilterRule(rule);
+    const { appendGroup, appendRule, removeRule, selectedField } =
+      useFilterRule(rule);
 
     const fieldName = String(selectedField?.path[0] ?? "");
     const FieldIcon = fieldIcons[fieldName] ?? BranchIcon;
-    const canRemove = parentGroup.conditions.length > 1;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const handleMenuOpenChange = useCallback((open: boolean) => {
-      setIsMenuOpen(open);
-    }, []);
-
-    const handleAddCondition = useCallback(() => {
-      appendRule();
-    }, [appendRule]);
-
-    const handleAddGroup = useCallback(() => {
-      appendGroup();
-    }, [appendGroup]);
-
-    const handleRemoveRule = useCallback(() => {
-      removeRule(true);
-    }, [removeRule]);
 
     return (
       <div className="group/filter-rule flex min-w-0 items-start">
@@ -527,10 +455,7 @@ const templatesSpec = {
               />
             </div>
             <div className="absolute right-1 top-1">
-              <Popover.Root
-                open={isMenuOpen}
-                onOpenChange={handleMenuOpenChange}
-              >
+              <Popover.Root open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <Popover.Trigger asChild>
                   <button
                     aria-label="Condition actions"
@@ -558,7 +483,9 @@ const templatesSpec = {
                       <button
                         className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
                         type="button"
-                        onClick={handleAddCondition}
+                        onClick={() => {
+                          appendRule();
+                        }}
                       >
                         Add condition after
                       </button>
@@ -567,7 +494,9 @@ const templatesSpec = {
                       <button
                         className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
                         type="button"
-                        onClick={handleAddGroup}
+                        onClick={() => {
+                          appendGroup();
+                        }}
                       >
                         Add group after
                       </button>
@@ -575,10 +504,11 @@ const templatesSpec = {
                     <div className="my-1 h-px bg-slate-200" />
                     <Popover.Close asChild>
                       <button
-                        className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-white"
-                        disabled={!canRemove}
+                        className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                         type="button"
-                        onClick={handleRemoveRule}
+                        onClick={() => {
+                          removeRule(true);
+                        }}
                       >
                         Delete condition
                       </button>
