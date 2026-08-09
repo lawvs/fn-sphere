@@ -410,11 +410,11 @@ const templatesSpec = {
 
     const hasMultipleConditions = rule.conditions.length > 1;
     const groupRail = hasMultipleConditions ? (
-      <div className="pointer-events-none absolute bottom-4 left-4 top-4 w-6 rounded-l-xl border-y border-l border-slate-200" />
+      <div className="pointer-events-none absolute bottom-4 left-6 top-4 w-4 rounded-l-xl border-y border-l border-slate-200" />
     ) : null;
     const groupOperator = hasMultipleConditions ? (
       <button
-        className="absolute left-4 top-1/2 z-10 inline-flex h-6 -translate-x-1/2 -translate-y-1/2 items-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+        className="absolute left-6 top-1/2 inline-flex h-6 -translate-x-1/2 -translate-y-1/2 items-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
         type="button"
         onClick={handleToggleGroupOp}
       >
