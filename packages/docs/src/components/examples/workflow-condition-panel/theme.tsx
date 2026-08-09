@@ -90,15 +90,6 @@ const FolderPlusIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-const GripIcon = ({ className }: IconProps) => (
-  <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
-    <path
-      className="fill-current"
-      d="M9 7.5a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Zm0 4.5a1.2 1.2 0 1 1-2.4 0A1.2 1.2 0 0 1 9 12Zm0 4.5a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Zm8.4-9a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Zm0 4.5a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Zm0 4.5a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Z"
-    />
-  </svg>
-);
-
 const UserIcon = ({ className }: IconProps) => (
   <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
     <circle className={iconStroke} cx="12" cy="8" r="3" />
@@ -360,6 +351,7 @@ const templatesSpec = {
       appendChildGroup,
       appendChildRule,
       removeGroup,
+      toggleGroupOp,
     } = useFilterGroup(rule);
 
     const handleAddCondition = useCallback(() => {
@@ -374,11 +366,35 @@ const templatesSpec = {
       removeGroup();
     }, [removeGroup]);
 
+    const handleToggleGroupOp = useCallback(() => {
+      toggleGroupOp();
+    }, [toggleGroupOp]);
+
+    const hasMultipleConditions = rule.conditions.length > 1;
+    const groupRail = hasMultipleConditions ? (
+      <div className="pointer-events-none absolute bottom-4 left-4 top-4 w-6 rounded-l-xl border-y border-l border-slate-200" />
+    ) : null;
+    const groupOperator = hasMultipleConditions ? (
+      <button
+        className="absolute left-4 top-1/2 z-10 inline-flex h-6 -translate-x-1/2 -translate-y-1/2 items-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+        type="button"
+        onClick={handleToggleGroupOp}
+      >
+        {rule.op === "and" ? "And" : "Or"}
+      </button>
+    ) : null;
+
     if (isRoot) {
       return (
         <div {...props}>
-          <div className="relative flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50 py-3 pl-10 pr-3">
-            <div className="pointer-events-none absolute bottom-4 left-4 top-4 w-6 rounded-l-xl border-y border-l border-slate-200" />
+          <div
+            className={cx(
+              "relative flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50",
+              hasMultipleConditions ? "py-3 pl-12 pr-3" : "p-3",
+            )}
+          >
+            {groupRail}
+            {groupOperator}
             {children}
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -403,10 +419,14 @@ const templatesSpec = {
 
     return (
       <div
-        className="group/filter-group relative flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50 py-3 pl-10 pr-3"
+        className={cx(
+          "group/filter-group relative flex flex-col gap-3 rounded-xl bg-slate-50",
+          hasMultipleConditions ? "py-3 pl-12 pr-3" : "p-3",
+        )}
         {...props}
       >
-        <div className="pointer-events-none absolute bottom-4 left-4 top-4 w-6 rounded-l-xl border-y border-l border-slate-200" />
+        {groupRail}
+        {groupOperator}
         <button
           aria-label="Remove group"
           className="absolute right-0 top-0 hidden h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 group-hover/filter-group:flex"
@@ -423,32 +443,11 @@ const templatesSpec = {
     const PresetFilterSelect = presetTheme.templates.FilterSelect;
     return <PresetFilterSelect tryRetainArgs {...props} />;
   },
-  RuleJoiner: ({ parent }) => {
-    const { toggleGroupOp } = useFilterGroup(parent);
-    const label = parent.op === "and" ? "And" : "Or";
-    const handleToggleGroupOp = useCallback(() => {
-      toggleGroupOp();
-    }, [toggleGroupOp]);
-
-    return (
-      <div className="relative h-2">
-        <button
-          className={cx(
-            "absolute z-10 inline-flex h-6 items-center rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 shadow-sm transition hover:border-violet-200 hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
-            "left-[-2.35rem] top-1/2 -translate-y-1/2",
-          )}
-          type="button"
-          onClick={handleToggleGroupOp}
-        >
-          {label}
-        </button>
-      </div>
-    );
-  },
+  RuleJoiner: () => null,
   SingleFilter: ({ rule }) => {
     const { FieldSelect, FilterDataInput, FilterSelect } = useView("templates");
     const {
-      ruleState: { isValid, parentGroup },
+      ruleState: { parentGroup },
       removeRule,
       selectedField,
     } = useFilterRule(rule);
@@ -462,15 +461,7 @@ const templatesSpec = {
     }, [removeRule]);
 
     return (
-      <div
-        className={cx(
-          "group/filter-rule flex min-w-0 items-start gap-2",
-          !isValid && "rounded-lg ring-2 ring-amber-300",
-        )}
-      >
-        <div className="flex h-11 w-5 shrink-0 items-center justify-center pt-2 text-slate-400">
-          <GripIcon className="h-4 w-4" />
-        </div>
+      <div className="group/filter-rule flex min-w-0 items-start">
         <div className="relative min-w-0 flex-1 rounded-lg border border-slate-200 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.08)]">
           <div className="relative flex min-w-0 border-b border-slate-200">
             <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
