@@ -410,7 +410,12 @@ const templatesSpec = {
 
     const hasMultipleConditions = rule.conditions.length > 1;
     const groupRail = hasMultipleConditions ? (
-      <div className="pointer-events-none absolute bottom-4 left-6 top-4 w-4 rounded-l-xl border-y border-l border-slate-200" />
+      <div
+        className={cx(
+          "pointer-events-none absolute left-6 top-4 w-4 rounded-l-xl border-y border-l border-slate-200",
+          isRoot ? "bottom-3" : "bottom-4",
+        )}
+      />
     ) : null;
     const groupOperator = hasMultipleConditions ? (
       <button
