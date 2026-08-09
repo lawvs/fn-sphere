@@ -320,7 +320,7 @@ const PanelMultipleSelect = <T,>({
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
-            align="end"
+            align="start"
             aria-label="Values"
             aria-multiselectable="true"
             className={selectPopoverContentClass}
