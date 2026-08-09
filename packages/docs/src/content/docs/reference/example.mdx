@@ -36,6 +36,19 @@ import { PopoverFilter } from "~/components/examples/popover-filter/index.tsx";
 </div>
 <SourceCodeCard path="~/components/examples/popover-filter/index.tsx" />
 
+## Workflow Condition Panel
+
+This example adapts Filter Sphere into a workflow-builder condition panel with nested groups, operator rails, and compact chip inputs.
+
+import { WorkflowConditionPanel } from "~/components/examples/workflow-condition-panel/index.tsx";
+
+<div className="not-content">
+  <WorkflowConditionPanel client:load />
+</div>
+<SourceCodeCard path="~/components/examples/workflow-condition-panel/index.tsx" />
+<SourceCodeCard path="~/components/examples/workflow-condition-panel/theme.tsx" />
+<SourceCodeCard path="~/components/examples/workflow-condition-panel/schema.ts" />
+
 ## Backend Integration
 
 Filter Sphere is easy to integrate with backend systems. This example demonstrates converting filter rules into SQL WHERE clauses and [Meilisearch](https://www.meilisearch.com/) queries in real time.
