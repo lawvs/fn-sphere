@@ -479,23 +479,23 @@ const templatesSpec = {
                 rule={rule}
               />
             </div>
-            <details className="absolute right-1 top-1 z-30">
+            <details className="absolute right-1 top-1 z-30 [&[open]>summary]:bg-slate-100 [&[open]>summary]:text-slate-700">
               <summary
                 aria-label="Condition actions"
-                className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md bg-white text-lg leading-none text-slate-400 opacity-0 transition hover:bg-slate-50 hover:text-slate-700 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500 group-hover/filter-rule:opacity-100 group-focus-within/filter-rule:opacity-100"
+                className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md bg-transparent text-lg leading-none text-slate-400 opacity-0 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500 group-hover/filter-rule:opacity-100 group-focus-within/filter-rule:opacity-100"
               >
                 ⋯
               </summary>
-              <div className="absolute right-0 top-10 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
+              <div className="absolute right-0 top-10 w-44 rounded-lg border border-slate-200 bg-white p-1 text-slate-900 shadow-lg">
                 <button
-                  className="h-8 w-full rounded-md px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                  className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
                   type="button"
                   onClick={handleAddCondition}
                 >
                   Add condition after
                 </button>
                 <button
-                  className="h-8 w-full rounded-md px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                  className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
                   type="button"
                   onClick={handleAddGroup}
                 >
@@ -503,7 +503,7 @@ const templatesSpec = {
                 </button>
                 <div className="my-1 h-px bg-slate-200" />
                 <button
-                  className="h-8 w-full rounded-md px-2 text-left text-xs font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent"
+                  className="h-8 w-full rounded-md border-0 bg-white px-2 text-left text-xs font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-white"
                   disabled={!canRemove}
                   type="button"
                   onClick={handleRemoveRule}
