@@ -57,6 +57,17 @@ const ValueToken = ({ children }: { children: ReactNode }) => (
   </span>
 );
 
+const selectPopoverContentClass =
+  "isolate w-52 max-w-[calc(100vw-16px)] rounded-lg border border-slate-200 bg-white p-1 text-slate-900 shadow-lg outline-none";
+
+const getSelectOptionClass = (isSelected: boolean) =>
+  cx(
+    "flex h-8 w-full items-center justify-between rounded-md border-0 px-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+    isSelected
+      ? "bg-slate-100 text-slate-950 hover:bg-slate-200"
+      : "bg-white text-slate-700 hover:bg-slate-100",
+  );
+
 export const BranchIcon = ({ className }: IconProps) => (
   <svg aria-hidden="true" className={className} viewBox="0 0 24 24">
     <circle className={iconStroke} cx="6" cy="6" r="2.5" />
@@ -153,18 +164,20 @@ const PanelInput = ({
 
 const PanelSelect = <T,>({
   className,
+  disabled,
   onChange,
   options = [],
   value,
   ...props
 }: PanelSelectProps<T>) => {
-  const { "aria-label": ariaLabel, ...selectProps } = props;
+  const { "aria-label": ariaLabel } = props;
+  const [isOpen, setIsOpen] = useState(false);
   const selectedIdx = options.findIndex((option) => option.value === value);
   const selectedOption = options[selectedIdx];
   const isValueSelect = ariaLabel === undefined;
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const index = Number(event.target.value);
+  const resolvedAriaLabel = ariaLabel ?? "Value";
+  const handleSelect = useCallback(
+    (index: number) => {
       const selectedOption = options[index];
       if (selectedOption) {
         onChange?.(selectedOption.value);
@@ -173,59 +186,71 @@ const PanelSelect = <T,>({
     [onChange, options],
   );
 
-  if (isValueSelect) {
-    return (
-      <div
-        className={cx(
-          "relative flex min-h-11 min-w-0 items-center px-3 py-1.5",
-          className,
-        )}
-      >
-        {selectedOption ? (
-          <ValueToken>{selectedOption.label}</ValueToken>
-        ) : (
-          <span className="text-sm text-slate-400">Select value</span>
-        )}
-        <select
-          aria-label="Value"
-          className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0 disabled:cursor-not-allowed"
-          value={selectedIdx}
-          onChange={handleChange}
-          {...selectProps}
-        >
-          <option value={-1} disabled></option>
-          {options.map(({ label }, index) => (
-            <option key={label} value={index}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-
-  const selectPadding = ariaLabel === "Field" ? "pl-0 pr-8" : "px-3 pr-8";
-
   return (
     <div className={cx("relative min-w-0", className)}>
-      <select
-        className={cx(
-          "h-11 w-full appearance-none rounded-none border-0 bg-transparent text-[15px] font-medium text-slate-900 outline-none focus:ring-0 disabled:cursor-not-allowed disabled:text-slate-400",
-          selectPadding,
-        )}
-        aria-label={ariaLabel}
-        value={selectedIdx}
-        onChange={handleChange}
-        {...selectProps}
-      >
-        <option value={-1} disabled></option>
-        {options.map(({ label }, index) => (
-          <option key={label} value={index}>
-            {label}
-          </option>
-        ))}
-      </select>
-      <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Popover.Trigger asChild>
+          <button
+            aria-haspopup="listbox"
+            aria-label={resolvedAriaLabel}
+            className={cx(
+              "flex min-h-11 w-full min-w-0 items-center gap-2 border-0 bg-transparent text-left text-[15px] font-medium text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:text-slate-400",
+              ariaLabel === "Field" ? "pl-0 pr-2" : "px-3",
+            )}
+            disabled={disabled}
+            type="button"
+          >
+            <span className="min-w-0 flex-1 truncate">
+              {selectedOption ? (
+                isValueSelect ? (
+                  <ValueToken>{selectedOption.label}</ValueToken>
+                ) : (
+                  selectedOption.label
+                )
+              ) : (
+                <span className="text-slate-400">Select value</span>
+              )}
+            </span>
+            <ChevronDownIcon className="h-4 w-4 shrink-0 text-slate-500" />
+          </button>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            align="start"
+            aria-label={resolvedAriaLabel}
+            className={selectPopoverContentClass}
+            collisionPadding={8}
+            role="listbox"
+            side="bottom"
+            sideOffset={4}
+          >
+            {options.map((option, index) => {
+              const isSelected = index === selectedIdx;
+              return (
+                <Popover.Close asChild key={option.label}>
+                  <button
+                    aria-selected={isSelected}
+                    className={getSelectOptionClass(isSelected)}
+                    role="option"
+                    type="button"
+                    onClick={() => {
+                      handleSelect(index);
+                    }}
+                  >
+                    <span className="truncate">{option.label}</span>
+                    <CheckIcon
+                      className={cx(
+                        "h-4 w-4 shrink-0 text-slate-600",
+                        !isSelected && "invisible",
+                      )}
+                    />
+                  </button>
+                </Popover.Close>
+              );
+            })}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 };
@@ -275,18 +300,22 @@ const PanelMultipleSelect = <T,>({
       <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
         <Popover.Trigger asChild>
           <button
+            aria-haspopup="listbox"
             aria-label="Values"
-            className="flex min-h-8 min-w-0 flex-1 flex-wrap items-center gap-1.5 border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-45"
+            className="flex min-h-8 min-w-0 flex-1 items-center gap-2 border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-not-allowed disabled:opacity-45"
             disabled={disabled}
             type="button"
           >
-            {selectedOptions.length ? (
-              selectedOptions.map((option) => (
-                <ValueToken key={option.label}>{option.label}</ValueToken>
-              ))
-            ) : (
-              <span className="text-sm text-slate-400">Select values</span>
-            )}
+            <span className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+              {selectedOptions.length ? (
+                selectedOptions.map((option) => (
+                  <ValueToken key={option.label}>{option.label}</ValueToken>
+                ))
+              ) : (
+                <span className="text-sm text-slate-400">Select values</span>
+              )}
+            </span>
+            <ChevronDownIcon className="h-4 w-4 shrink-0 text-slate-500" />
           </button>
         </Popover.Trigger>
         <Popover.Portal>
@@ -294,7 +323,7 @@ const PanelMultipleSelect = <T,>({
             align="end"
             aria-label="Values"
             aria-multiselectable="true"
-            className="isolate w-[var(--radix-popover-trigger-width)] min-w-44 rounded-lg border border-slate-200 bg-white p-1 text-slate-900 shadow-lg outline-none"
+            className={selectPopoverContentClass}
             collisionPadding={8}
             role="listbox"
             side="bottom"
@@ -307,12 +336,7 @@ const PanelMultipleSelect = <T,>({
               return (
                 <button
                   aria-selected={isSelected}
-                  className={cx(
-                    "flex h-8 w-full items-center justify-between rounded-md border-0 px-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
-                    isSelected
-                      ? "bg-slate-100 text-slate-950 hover:bg-slate-200"
-                      : "bg-white text-slate-700 hover:bg-slate-100",
-                  )}
+                  className={getSelectOptionClass(isSelected)}
                   key={option.label}
                   role="option"
                   type="button"
@@ -320,7 +344,7 @@ const PanelMultipleSelect = <T,>({
                     handleToggle(option.value);
                   }}
                 >
-                  <span>{option.label}</span>
+                  <span className="truncate">{option.label}</span>
                   <CheckIcon
                     className={cx(
                       "h-4 w-4 text-slate-600",
