@@ -197,3 +197,58 @@ Key properties:
 - **genericLimit**: A type guard that determines which Zod types this filter applies to.
 - **define**: A function that receives the matched type and returns a Zod function schema.
 - **implement**: The filter logic that handles all specified types.
+
+## Nullable and Optional Fields
+
+Preset filters support fields declared with `.optional()`, `.nullable()`, or
+`.nullish()`. They keep the filters and input UI for their underlying string,
+number, date, boolean, enum, literal-union, or array type, and also offer
+`isEmpty` and `isNotEmpty`.
+
+```tsx live
+import { z } from "zod";
+import { Table } from "~/components/table";
+import {
+  FilterBuilder,
+  FilterSphereProvider,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+
+const schema = z.object({
+  title: z.string().optional(),
+  score: z.number().nullable(),
+  publishedAt: z.date().nullish(),
+});
+
+const data = [
+  { title: "Compatibility guide", score: 92, publishedAt: new Date() },
+  { title: undefined, score: null, publishedAt: null },
+  { title: "Filter presets", score: 64, publishedAt: undefined },
+];
+
+export default function NullishFieldsExample() {
+  const { context, predicate } = useFilterSphere({ schema });
+
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+      <Table schema={schema} data={data.filter(predicate)} />
+    </FilterSphereProvider>
+  );
+}
+```
+
+Custom filters remain explicit. A filter whose first input is `z.string()` is
+not offered for a `z.string().optional()` field. Declare the accepted nullish
+values and handle them in the implementation:
+
+```ts
+const nullishContains = defineTypedFn({
+  name: "nullish contains",
+  define: z.function({
+    input: [z.string().nullish(), z.string()],
+    output: z.boolean(),
+  }),
+  implement: (value, target) => value?.includes(target) ?? false,
+});
+```

@@ -1,23 +1,31 @@
 import { z } from "zod";
 import type {
   $ZodArray,
-  $ZodBoolean,
   $ZodEnum,
   $ZodLiteral,
   $ZodNullable,
-  $ZodNumber,
   $ZodOptional,
   $ZodString,
+  $ZodTypes,
   $ZodUnion,
 } from "zod/v4/core";
 import { defineGenericFn, defineTypedFn } from "../fn-helpers.js";
-import type { GenericFnSchema, StandardFnSchema } from "../types.js";
+import type { FnSchema, GenericFnSchema, StandardFnSchema } from "../types.js";
+
+const unwrapNullishSchema = (schema: $ZodTypes): $ZodTypes => {
+  while (
+    schema._zod.def.type === "optional" ||
+    schema._zod.def.type === "nullable"
+  )
+    schema = schema._zod.def.innerType as $ZodTypes;
+  return schema;
+};
 
 export const stringFilter = [
   defineTypedFn({
     name: "startsWith",
     define: z.function({
-      input: [z.string(), z.coerce.string()],
+      input: [z.string().nullish(), z.coerce.string()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
@@ -29,7 +37,7 @@ export const stringFilter = [
   defineTypedFn({
     name: "endsWith",
     define: z.function({
-      input: [z.string(), z.coerce.string()],
+      input: [z.string().nullish(), z.coerce.string()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
@@ -44,40 +52,44 @@ export const numberFilter = [
   defineTypedFn({
     name: "greaterThan",
     define: z.function({
-      input: [z.number(), z.coerce.number()],
+      input: [z.number().nullish(), z.coerce.number()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
+      if (value == null) return false;
       return value > target;
     },
   }),
   defineTypedFn({
     name: "greaterThanOrEqual",
     define: z.function({
-      input: [z.number(), z.coerce.number()],
+      input: [z.number().nullish(), z.coerce.number()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
+      if (value == null) return false;
       return value >= target;
     },
   }),
   defineTypedFn({
     name: "lessThan",
     define: z.function({
-      input: [z.number(), z.coerce.number()],
+      input: [z.number().nullish(), z.coerce.number()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
+      if (value == null) return false;
       return value < target;
     },
   }),
   defineTypedFn({
     name: "lessThanOrEqual",
     define: z.function({
-      input: [z.number(), z.coerce.number()],
+      input: [z.number().nullish(), z.coerce.number()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
+      if (value == null) return false;
       return value <= target;
     },
   }),
@@ -87,26 +99,27 @@ export const dateFilter = [
   defineTypedFn({
     name: "before",
     define: z.function({
-      input: [z.date(), z.coerce.date()],
+      input: [z.date().nullish(), z.coerce.date()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
+      if (value == null) return false;
       return value.getTime() < target.getTime();
     },
   }),
   defineTypedFn({
     name: "after",
     define: z.function({
-      input: [z.date(), z.coerce.date()],
+      input: [z.date().nullish(), z.coerce.date()],
       output: z.boolean(),
     }),
     implement: (value, target) => {
+      if (value == null) return false;
       return value.getTime() > target.getTime();
     },
   }),
 ];
 
-// TODO support optional field
 export const commonFilters: StandardFnSchema[] = [
   ...stringFilter,
   ...numberFilter,
@@ -116,19 +129,25 @@ export const commonFilters: StandardFnSchema[] = [
 const genericEqualFilter = [
   defineGenericFn({
     name: "equals",
-    genericLimit: (
-      t,
-    ): t is $ZodBoolean | $ZodString | $ZodNumber | $ZodUnion<$ZodLiteral[]> =>
-      t._zod.def.type === "boolean" ||
-      t._zod.def.type === "string" ||
-      t._zod.def.type === "number" ||
-      (t._zod.def.type === "union" &&
-        t._zod.def.options.every((op) => op._zod.def.type === "literal")),
-    define: (t) =>
-      z.function({
-        input: [t, t],
+    genericLimit: (t): t is $ZodTypes => {
+      const datatype = unwrapNullishSchema(t);
+      return (
+        datatype._zod.def.type === "boolean" ||
+        datatype._zod.def.type === "string" ||
+        datatype._zod.def.type === "number" ||
+        (datatype._zod.def.type === "union" &&
+          datatype._zod.def.options.every(
+            (op) => op._zod.def.type === "literal",
+          ))
+      );
+    },
+    define: (t) => {
+      const datatype = unwrapNullishSchema(t);
+      return z.function({
+        input: [t, datatype],
         output: z.boolean(),
-      }),
+      });
+    },
     implement: (value: unknown, target: unknown) => {
       if (typeof value === "string" && typeof target === "string") {
         return value.toLowerCase() === target.toLowerCase();
@@ -138,21 +157,25 @@ const genericEqualFilter = [
   }),
   defineGenericFn({
     name: "notEqual",
-    genericLimit: (
-      t,
-    ): t /* | $ZodBoolean */ is
-      $ZodString | $ZodNumber | $ZodUnion<$ZodLiteral[]> =>
+    genericLimit: (t): t is $ZodTypes => {
+      const datatype = unwrapNullishSchema(t);
       // not equal for boolean is not useful
-      // t._zod.def.type === "boolean"  ||
-      t._zod.def.type === "string" ||
-      t._zod.def.type === "number" ||
-      (t._zod.def.type === "union" &&
-        t._zod.def.options.every((op) => op._zod.def.type === "literal")),
-    define: (t) =>
-      z.function({
-        input: [t, t],
+      return (
+        datatype._zod.def.type === "string" ||
+        datatype._zod.def.type === "number" ||
+        (datatype._zod.def.type === "union" &&
+          datatype._zod.def.options.every(
+            (op) => op._zod.def.type === "literal",
+          ))
+      );
+    },
+    define: (t) => {
+      const datatype = unwrapNullishSchema(t);
+      return z.function({
+        input: [t, datatype],
         output: z.boolean(),
-      }),
+      });
+    },
     implement: (value: unknown, target: unknown) => {
       if (typeof value === "string" && typeof target === "string") {
         return value.toLowerCase() !== target.toLowerCase();
@@ -167,24 +190,34 @@ const genericEqualFilter = [
 export const enumEqualFilter = [
   defineGenericFn({
     name: "enumEquals",
-    genericLimit: (t): t is $ZodEnum => t._zod.def.type === "enum",
-    define: (t) =>
-      z.function({
-        input: [t, t],
+    genericLimit: (t): t is $ZodTypes => {
+      const datatype = unwrapNullishSchema(t);
+      return datatype._zod.def.type === "enum";
+    },
+    define: (t) => {
+      const datatype = unwrapNullishSchema(t);
+      return z.function({
+        input: [t, datatype],
         output: z.boolean(),
-      }),
+      });
+    },
     implement: (value: unknown, target: unknown) => {
       return value === target;
     },
   }),
   defineGenericFn({
     name: "enumNotEqual",
-    genericLimit: (t): t is $ZodEnum => t._zod.def.type === "enum",
-    define: (t) =>
-      z.function({
-        input: [t, t],
+    genericLimit: (t): t is $ZodTypes => {
+      const datatype = unwrapNullishSchema(t);
+      return datatype._zod.def.type === "enum";
+    },
+    define: (t) => {
+      const datatype = unwrapNullishSchema(t);
+      return z.function({
+        input: [t, datatype],
         output: z.boolean(),
-      }),
+      });
+    },
     implement: (value: unknown, target: unknown) => {
       return value !== target;
     },
@@ -227,31 +260,44 @@ const genericEmptyFilter = [
 const genericContainFilter = [
   defineGenericFn({
     name: "contains",
-    genericLimit: (
-      t,
-    ): t is $ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]> =>
-      t._zod.def.type === "string" ||
-      t._zod.def.type === "array" ||
-      t._zod.def.type === "enum" ||
-      (t._zod.def.type === "union" &&
-        t._zod.def.options.every((op) => op._zod.def.type === "literal")),
+    genericLimit: (t): t is $ZodTypes => {
+      const datatype = unwrapNullishSchema(t);
+      return (
+        datatype._zod.def.type === "string" ||
+        datatype._zod.def.type === "array" ||
+        datatype._zod.def.type === "enum" ||
+        (datatype._zod.def.type === "union" &&
+          datatype._zod.def.options.every(
+            (op) => op._zod.def.type === "literal",
+          ))
+      );
+    },
     define: (t) => {
-      if (t._zod.def.type === "string") {
-        return z.function({ input: [t, t], output: z.boolean() });
+      const datatype = unwrapNullishSchema(t);
+      if (datatype._zod.def.type === "string") {
+        return z.function({
+          input: [t, datatype],
+          output: z.boolean(),
+        });
       }
-      if (t._zod.def.type === "array") {
-        const element = t._zod.def.element;
+      if (datatype._zod.def.type === "array") {
+        const element = datatype._zod.def.element;
         return z.function({ input: [t, element], output: z.boolean() });
       }
       // union of literals or enum
-      return z.function({ input: [t, z.array(t)], output: z.boolean() });
+      return z.function({
+        input: [t, z.array(datatype)],
+        output: z.boolean(),
+      });
     },
     implement: (
-      value: z.infer<
-        $ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]>
-      >,
+      value:
+        | z.infer<$ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]>>
+        | null
+        | undefined,
       target: string | unknown | unknown[],
     ) => {
+      if (value == null) return false;
       if (typeof value === "string" && typeof target === "string") {
         // $ZodString
         return value.toLowerCase().includes(target.toLowerCase());
@@ -270,29 +316,41 @@ const genericContainFilter = [
   }),
   defineGenericFn({
     name: "notContains",
-    genericLimit: (
-      t,
-    ): t is $ZodString | $ZodArray | $ZodEnum | $ZodUnion<$ZodLiteral[]> =>
-      t._zod.def.type === "array" ||
-      t._zod.def.type === "string" ||
-      t._zod.def.type === "enum" ||
-      (t._zod.def.type === "union" &&
-        t._zod.def.options.every((op) => op._zod.def.type === "literal")),
+    genericLimit: (t): t is $ZodTypes => {
+      const datatype = unwrapNullishSchema(t);
+      return (
+        datatype._zod.def.type === "array" ||
+        datatype._zod.def.type === "string" ||
+        datatype._zod.def.type === "enum" ||
+        (datatype._zod.def.type === "union" &&
+          datatype._zod.def.options.every(
+            (op) => op._zod.def.type === "literal",
+          ))
+      );
+    },
     define: (t) => {
-      if (t._zod.def.type === "string") {
-        return z.function({ input: [t, t], output: z.boolean() });
+      const datatype = unwrapNullishSchema(t);
+      if (datatype._zod.def.type === "string") {
+        return z.function({
+          input: [t, datatype],
+          output: z.boolean(),
+        });
       }
-      if (t._zod.def.type === "array") {
-        const element = t._zod.def.element;
+      if (datatype._zod.def.type === "array") {
+        const element = datatype._zod.def.element;
         return z.function({ input: [t, element], output: z.boolean() });
       }
       // union of literals or enum
-      return z.function({ input: [t, z.array(t)], output: z.boolean() });
+      return z.function({
+        input: [t, z.array(datatype)],
+        output: z.boolean(),
+      });
     },
     implement: (
-      value: string | unknown[],
+      value: string | unknown[] | null | undefined,
       target: string | unknown | unknown[],
     ) => {
+      if (value == null) return false;
       if (typeof value === "string" && typeof target === "string") {
         return !value.toLowerCase().includes(target.toLowerCase());
       }
@@ -315,4 +373,10 @@ export const genericFilter: GenericFnSchema[] = [
   ...genericContainFilter,
 ];
 
-export const presetFilter = [...genericFilter, ...commonFilters];
+export const presetFilter: FnSchema[] = [
+  ...genericEqualFilter,
+  ...enumEqualFilter,
+  ...genericContainFilter,
+  ...commonFilters,
+  ...genericEmptyFilter,
+];

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isSameType } from "zod-compare";
+import { isCompatibleType } from "zod-compare";
 import type { $ZodType } from "zod/v4/core";
 import { isGenericFilter } from "../fn-helpers.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
@@ -115,7 +115,7 @@ const validateStandardFnRule = ({
     };
   }
   const dataParameters = getFirstParameters(fnSchema);
-  const dataMatchFn = isSameType(dataParameters, targetSchema);
+  const dataMatchFn = isCompatibleType(dataParameters, targetSchema);
   if (!dataMatchFn) {
     return {
       success: false,

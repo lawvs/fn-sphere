@@ -1,4 +1,4 @@
-import { isSameType } from "zod-compare";
+import { isCompatibleType } from "zod-compare";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import { isFilterFn, isGenericFilter } from "../fn-helpers.js";
 import type { FnSchema, StandardFnSchema } from "../types.js";
@@ -40,11 +40,7 @@ export const findFilterableFields = <Data>({
         console.error("First function parameter is not defined", filter);
         return false;
       }
-      // TODO use isCompatibleType
-      if (
-        firstFnParameter._zod.def.type === "any" ||
-        isSameType(fieldSchema, firstFnParameter)
-      ) {
+      if (isCompatibleType(firstFnParameter, fieldSchema)) {
         return true;
       }
     });

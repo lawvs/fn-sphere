@@ -1,6 +1,7 @@
-import { expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { z } from "zod";
 import { defineTypedFn } from "../fn-helpers.js";
+import { presetFilter } from "../fn/filter.js";
 import { createFilterSphere } from "./index.js";
 import {
   createFilterGroup,
@@ -208,4 +209,112 @@ test("FilterGroup usage", () => {
   expect(orFilterData[0]?.age).toEqual(19);
   expect(orFilterData[1]?.name).toEqual("Carol");
   expect(orFilterData[1]?.age).toEqual(18);
+});
+
+describe("preset filters with nullish fields", () => {
+  const schema = z.object({
+    text: z.string().optional(),
+    count: z.number().nullable(),
+    createdAt: z.date().nullish(),
+    enabled: z.boolean().optional(),
+    status: z.enum(["draft", "published"]).nullable(),
+    tags: z.array(z.string()).optional(),
+  });
+  const sphere = createFilterSphere(schema, presetFilter);
+  const fields = sphere.findFilterableField();
+  const textField = fields.find((item) => isEqualPath(item.path, ["text"]))!;
+
+  const filterNullishText = (
+    filterName: "contains" | "notContains",
+    invert = false,
+  ) => {
+    const filter = textField.filterFnList.find(
+      (item) => item.name === filterName,
+    )!;
+    const rule = {
+      ...sphere.getFilterRule(textField, filter, ["ali"]),
+      invert,
+    };
+    return sphere.filterData([{ count: null, status: null }], rule);
+  };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test("places empty filters at the end of the preset list", () => {
+    expect(presetFilter.slice(-2).map((filter) => filter.name)).toEqual([
+      "isEmpty",
+      "isNotEmpty",
+    ]);
+  });
+
+  test.each([
+    ["text", "startsWith", "string"],
+    ["count", "greaterThan", "number"],
+    ["createdAt", "before", "date"],
+    ["enabled", "equals", "boolean"],
+    ["status", "enumEquals", "enum"],
+    ["tags", "contains", "string"],
+  ] as const)(
+    "%s exposes %s with a %s input",
+    (path, filterName, inputType) => {
+      const field = fields.find((item) => isEqualPath(item.path, [path]));
+      const filter = field?.filterFnList.find(
+        (item) => item.name === filterName,
+      );
+
+      expect(
+        filter &&
+          getParametersExceptFirst(filter)._zod.def.items[0]?._zod.def.type,
+      ).toBe(inputType);
+    },
+  );
+
+  test("exposes an empty filter for every nullish field", () => {
+    for (const field of fields) {
+      expect(field.filterFnList.some((item) => item.name === "isEmpty")).toBe(
+        true,
+      );
+    }
+  });
+
+  test("applies a string filter to defined values", () => {
+    const startsWith = textField.filterFnList.find(
+      (item) => item.name === "startsWith",
+    )!;
+    const rule = sphere.getFilterRule(textField, startsWith, ["ali"]);
+
+    expect(
+      sphere.filterData(
+        [
+          { text: "Alice", count: null, status: null },
+          { count: null, status: null },
+        ],
+        rule,
+      ),
+    ).toHaveLength(1);
+  });
+
+  describe("contain filters with a nullish value", () => {
+    describe.each(["contains", "notContains"] as const)("%s", (filterName) => {
+      test("excludes the value", () => {
+        expect(filterNullishText(filterName)).toHaveLength(0);
+      });
+
+      test("does not log an error", () => {
+        const consoleError = vi
+          .spyOn(console, "error")
+          .mockImplementation(() => {});
+
+        filterNullishText(filterName);
+
+        expect(consoleError).not.toHaveBeenCalled();
+      });
+    });
+
+    test("inverted contains includes the value", () => {
+      expect(filterNullishText("contains", true)).toHaveLength(1);
+    });
+  });
 });
