@@ -16,28 +16,39 @@ import compositionCode from "~/components/flow-example/composition?raw";
 ```ts
 const analysis = analyzeFlow({ flow, fnList });
 
-if (!analysis.valid) {
-  for (const diagnostic of analysis.diagnostics) {
+for (const diagnostic of analysis.diagnostics) {
+  if (diagnostic.severity === "error") {
     console.error(diagnostic.code, diagnostic.message);
+  } else {
+    console.warn(diagnostic.code, diagnostic.message);
   }
 }
 ```
 
-Each diagnostic can identify a `nodeId`, `edgeId`, or numeric `handle` when the error belongs to a specific graph element. `compileFlow` performs the same analysis and throws when the graph is invalid.
+Each diagnostic has an `error` or `warning` severity and can identify a `nodeId`, `edgeId`, or numeric `handle`. `analysis.valid` depends only on errors. `compileFlow` performs the same analysis and throws when the output-reachable graph is invalid.
+
+Warnings remain available even when the flow is valid:
+
+```ts
+const warnings = analysis.diagnostics.filter(
+  (diagnostic) => diagnostic.severity === "warning",
+);
+```
 
 ## Current Graph Rules
 
 A version 1 executable flow must satisfy these rules:
 
 - Node IDs and edge IDs are unique.
-- `fnName` resolves to exactly one function in `fnList`.
+- Every output-reachable `fnName` resolves to a function in `fnList`.
 - There is exactly one input node and one output node.
-- Function schemas use fixed tuple inputs; variadic array inputs are unsupported.
-- Every function input handle has exactly one incoming edge.
-- Each flow input handle has one consumer and its schema can be inferred from that consumer.
+- Output-reachable function schemas use fixed tuple inputs; variadic array inputs are unsupported.
+- Every output-reachable function input handle has exactly one incoming edge.
+- Each active flow input handle has one consumer, and active handles form a contiguous zero-based tuple.
 - Function output and output-node handles are `0`.
-- Connected Zod schemas are compatible.
-- Function nodes form an acyclic graph.
+- Connected schemas in the executable slice are compatible.
+- Output-reachable function nodes form an acyclic graph.
+- Unreachable function nodes produce warnings and are excluded from the compiled function.
 
 ## Reuse a Compiled Flow
 

@@ -144,12 +144,17 @@ const toFlowSpec = (nodes: FlowCanvasNode[], edges: Edge[]): FlowSpec => {
   });
 };
 
+type DisplayDiagnostic = {
+  severity: "error" | "warning";
+  text: string;
+};
+
 export function FlowCanvasExample() {
   const [nodes, setNodes, onNodesChange] = useNodesState(createNodes());
   const [edges, setEdges, onEdgesChange] = useEdgesState(createEdges());
   const [inputs, setInputs] = useState([1, 2, 3]);
   const [result, setResult] = useState<unknown>();
-  const [diagnostics, setDiagnostics] = useState<string[]>([]);
+  const [diagnostics, setDiagnostics] = useState<DisplayDiagnostic[]>([]);
 
   const onConnect = useCallback(
     (connection: Connection) =>
@@ -169,27 +174,37 @@ export function FlowCanvasExample() {
     try {
       const flow = toFlowSpec(nodes, edges);
       const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+      setDiagnostics(
+        analysis.diagnostics.map((diagnostic) => ({
+          severity: diagnostic.severity,
+          text: `${diagnostic.code}: ${diagnostic.message}`,
+        })),
+      );
       if (!analysis.valid) {
         setResult(undefined);
-        setDiagnostics(
-          analysis.diagnostics.map(
-            (diagnostic) => `${diagnostic.code}: ${diagnostic.message}`,
-          ),
-        );
         return;
       }
 
       const compiled = compileFlow({ flow, fnList: arithmeticFns });
       const execute = compiled.define.implement(compiled.implement);
       setResult(execute(...inputs));
-      setDiagnostics([]);
     } catch (error) {
       setResult(undefined);
       setDiagnostics([
-        error instanceof Error ? error.message : "Unable to read the graph.",
+        {
+          severity: "error",
+          text:
+            error instanceof Error
+              ? error.message
+              : "Unable to read the graph.",
+        },
       ]);
     }
   };
+
+  const hasDiagnosticErrors = diagnostics.some(
+    (diagnostic) => diagnostic.severity === "error",
+  );
 
   const reset = () => {
     setNodes(createNodes());
@@ -256,9 +271,17 @@ export function FlowCanvasExample() {
         </div>
       )}
       {diagnostics.length > 0 && (
-        <ul className="m-0 rounded-md border border-red-200 bg-red-50 px-8 py-3 text-sm text-red-900 dark:border-red-800 dark:bg-red-950 dark:text-red-100">
+        <ul
+          className={`m-0 rounded-md border px-8 py-3 text-sm ${
+            hasDiagnosticErrors
+              ? "border-red-200 bg-red-50 text-red-900 dark:border-red-800 dark:bg-red-950 dark:text-red-100"
+              : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100"
+          }`}
+        >
           {diagnostics.map((diagnostic) => (
-            <li key={diagnostic}>{diagnostic}</li>
+            <li key={`${diagnostic.severity}:${diagnostic.text}`}>
+              {diagnostic.text}
+            </li>
           ))}
         </ul>
       )}
