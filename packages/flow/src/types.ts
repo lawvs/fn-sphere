@@ -12,9 +12,9 @@ export type FlowDiagnosticCode =
   | "unknown-target-node"
   | "invalid-source-handle"
   | "invalid-target-handle"
+  | "multiple-input-consumers"
   | "multiple-input-edges"
   | "missing-input-edge"
-  | "conflicting-input-schema"
   | "unresolved-input-schema"
   | "incompatible-edge"
   | "cycle";

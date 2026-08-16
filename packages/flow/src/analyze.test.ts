@@ -108,41 +108,41 @@ describe("analyzeFlow", () => {
     );
   });
 
-  test("reports different schemas inferred for one input handle", () => {
-    const stringIdentity = {
-      name: "stringIdentity",
+  test("reports one input handle connected to multiple nodes", () => {
+    const numberIdentity = {
+      name: "numberIdentity",
       define: z.function({
-        input: [z.string()],
-        output: z.string(),
+        input: [z.number()],
+        output: z.number(),
       }),
-      implement: (value: string) => value,
+      implement: (value: number) => value,
     };
     const flow = createFormula([
       ...validEdges,
       {
-        id: "a-to-string-identity",
+        id: "a-to-number-identity",
         source: "input",
         sourceHandle: 0,
-        target: "stringIdentity",
+        target: "numberIdentity",
         targetHandle: 0,
       },
     ]);
     flow.nodes.push({
-      id: "stringIdentity",
+      id: "numberIdentity",
       type: "fn",
-      fnName: "stringIdentity",
+      fnName: "numberIdentity",
     });
 
     const analysis = analyzeFlow({
       flow,
-      fnList: [...arithmeticFns, stringIdentity],
+      fnList: [...arithmeticFns, numberIdentity],
     });
 
     expect(analysis.valid).toBe(false);
     expect(analysis.diagnostics).toContainEqual(
       expect.objectContaining({
-        code: "conflicting-input-schema",
-        edgeId: "a-to-string-identity",
+        code: "multiple-input-consumers",
+        nodeId: "input",
         handle: 0,
       }),
     );
