@@ -9,16 +9,17 @@ type InspectFlowOptions = {
   fnList: readonly StandardFnSchema[];
 };
 
-export type InspectedFlow = {
+type InspectedFlow = {
   analysis: FlowAnalysis;
   fnByNodeId: Map<string, StandardFnSchema>;
+  getIncomingEdge: (nodeId: string, handle: number) => FlowEdgeSpec | undefined;
   inputSchemasByNodeId: Map<string, $ZodType[]>;
-  incomingEdges: Map<string, FlowEdgeSpec[]>;
   nodeById: Map<string, FlowNodeSpec>;
   orderedFnNodes: FlowFnNodeSpec[];
 };
 
-const inputKey = (nodeId: string, handle: number) => `${nodeId}\0${handle}`;
+const targetPortKey = (nodeId: string, handle: number) =>
+  `${nodeId}\0${handle}`;
 
 const isHandleIndex = (handle: number) =>
   Number.isInteger(handle) && handle >= 0;
@@ -147,6 +148,8 @@ export const inspectFlow = ({
   }
   const flowOutputSchema = getOutputSchema(flow);
   const incomingEdges = new Map<string, FlowEdgeSpec[]>();
+  const getIncomingEdge = (nodeId: string, handle: number) =>
+    incomingEdges.get(targetPortKey(nodeId, handle))?.[0];
   const sourceSchemas = new Map<string, $ZodType>();
   const targetSchemas = new Map<string, $ZodType>();
 
@@ -267,13 +270,13 @@ export const inspectFlow = ({
       });
     }
 
-    const key = inputKey(edge.target, edge.targetHandle);
+    const key = targetPortKey(edge.target, edge.targetHandle);
     const edges = incomingEdges.get(key) ?? [];
     edges.push(edge);
     incomingEdges.set(key, edges);
   }
 
-  for (const [key, edges] of incomingEdges) {
+  for (const edges of incomingEdges.values()) {
     if (edges.length < 2) {
       continue;
     }
@@ -297,7 +300,7 @@ export const inspectFlow = ({
     }
     inputSchemas.forEach((_, index) => {
       const handle = index;
-      if (!incomingEdges.has(inputKey(node.id, handle))) {
+      if (!getIncomingEdge(node.id, handle)) {
         addDiagnostic({
           code: "missing-input-edge",
           message: `Missing edge for ${node.id}.${handle}.`,
@@ -309,7 +312,7 @@ export const inspectFlow = ({
   }
 
   const outputNode = outputNodes.length === 1 ? outputNodes[0] : undefined;
-  if (outputNode && !incomingEdges.has(inputKey(outputNode.id, 0))) {
+  if (outputNode && !getIncomingEdge(outputNode.id, 0)) {
     addDiagnostic({
       code: "missing-input-edge",
       message: `Missing edge for ${outputNode.id}.input.`,
@@ -380,8 +383,8 @@ export const inspectFlow = ({
       diagnostics,
     },
     fnByNodeId,
+    getIncomingEdge,
     inputSchemasByNodeId,
-    incomingEdges,
     nodeById,
     orderedFnNodes,
   };
@@ -389,5 +392,3 @@ export const inspectFlow = ({
 
 export const analyzeFlow = (options: InspectFlowOptions): FlowAnalysis =>
   inspectFlow(options).analysis;
-
-export const getFlowInputKey = inputKey;
