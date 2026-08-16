@@ -1,12 +1,7 @@
 import { arithmeticFns } from "@fn-sphere/core";
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import {
-  analyzeFlow,
-  compileFlow,
-  defineFlow,
-  type FlowEdgeSpec,
-} from "./index.js";
+import { analyzeFlow, compileFlow, type FlowEdgeSpec } from "./index.js";
 
 const validEdges: FlowEdgeSpec[] = [
   {
@@ -46,24 +41,17 @@ const validEdges: FlowEdgeSpec[] = [
   },
 ];
 
-const createFormula = (edges: FlowEdgeSpec[] = validEdges) =>
-  defineFlow({
-    name: "formula",
-    define: z.function({
-      input: [z.number(), z.number(), z.number()],
-      output: z.number(),
-    }),
-    flow: {
-      version: 1,
-      nodes: [
-        { id: "input", type: "input" },
-        { id: "sum", type: "fn", fnName: "add" },
-        { id: "product", type: "fn", fnName: "multiply" },
-        { id: "output", type: "output" },
-      ],
-      edges,
-    },
-  });
+const createFormula = (edges: FlowEdgeSpec[] = validEdges) => ({
+  version: 1 as const,
+  name: "formula",
+  nodes: [
+    { id: "input", type: "input" as const },
+    { id: "sum", type: "fn" as const, fnName: "add" },
+    { id: "product", type: "fn" as const, fnName: "multiply" },
+    { id: "output", type: "output" as const },
+  ],
+  edges,
+});
 
 describe("analyzeFlow", () => {
   test("accepts a valid flow", () => {
@@ -120,26 +108,73 @@ describe("analyzeFlow", () => {
     );
   });
 
-  test("reports incompatible connected schemas", () => {
-    const flow = createFormula();
-    const incompatibleFlow = defineFlow({
-      ...flow,
+  test("reports different schemas inferred for one input handle", () => {
+    const stringIdentity = {
+      name: "stringIdentity",
       define: z.function({
-        input: [z.string(), z.number(), z.number()],
-        output: z.number(),
+        input: [z.string()],
+        output: z.string(),
       }),
+      implement: (value: string) => value,
+    };
+    const flow = createFormula([
+      ...validEdges,
+      {
+        id: "a-to-string-identity",
+        source: "input",
+        sourceHandle: 0,
+        target: "stringIdentity",
+        targetHandle: 0,
+      },
+    ]);
+    flow.nodes.push({
+      id: "stringIdentity",
+      type: "fn",
+      fnName: "stringIdentity",
     });
 
     const analysis = analyzeFlow({
-      flow: incompatibleFlow,
+      flow,
+      fnList: [...arithmeticFns, stringIdentity],
+    });
+
+    expect(analysis.valid).toBe(false);
+    expect(analysis.diagnostics).toContainEqual(
+      expect.objectContaining({
+        code: "conflicting-input-schema",
+        edgeId: "a-to-string-identity",
+        handle: 0,
+      }),
+    );
+  });
+
+  test("reports an input-to-output edge without an inferred schema", () => {
+    const analysis = analyzeFlow({
+      flow: {
+        version: 1,
+        name: "passthrough",
+        nodes: [
+          { id: "input", type: "input" },
+          { id: "output", type: "output" },
+        ],
+        edges: [
+          {
+            id: "input-to-output",
+            source: "input",
+            sourceHandle: 0,
+            target: "output",
+            targetHandle: 0,
+          },
+        ],
+      },
       fnList: arithmeticFns,
     });
 
     expect(analysis.valid).toBe(false);
     expect(analysis.diagnostics).toContainEqual(
       expect.objectContaining({
-        code: "incompatible-edge",
-        edgeId: "a-to-sum",
+        code: "unresolved-input-schema",
+        handle: 0,
       }),
     );
   });
@@ -190,7 +225,7 @@ describe("compileFlow", () => {
         flow: createFormula(edges),
         fnList: arithmeticFns,
       }),
-    ).toThrowError("Cannot compile invalid flow: missing-input-edge");
+    ).toThrowError(/missing-input-edge/);
   });
 
   test("allows a compiled flow to be used as a function node", () => {
@@ -198,66 +233,60 @@ describe("compileFlow", () => {
       flow: createFormula(),
       fnList: arithmeticFns,
     });
-    const nestedFlow = defineFlow({
+    const nestedFlow = {
+      version: 1 as const,
       name: "nestedFormula",
-      define: z.function({
-        input: [z.number(), z.number(), z.number(), z.number()],
-        output: z.number(),
-      }),
-      flow: {
-        version: 1,
-        nodes: [
-          { id: "input", type: "input" },
-          { id: "formula", type: "fn", fnName: "formula" },
-          { id: "add", type: "fn", fnName: "add" },
-          { id: "output", type: "output" },
-        ],
-        edges: [
-          {
-            id: "input-0-to-formula-0",
-            source: "input",
-            sourceHandle: 0,
-            target: "formula",
-            targetHandle: 0,
-          },
-          {
-            id: "input-1-to-formula-1",
-            source: "input",
-            sourceHandle: 1,
-            target: "formula",
-            targetHandle: 1,
-          },
-          {
-            id: "input-2-to-formula-2",
-            source: "input",
-            sourceHandle: 2,
-            target: "formula",
-            targetHandle: 2,
-          },
-          {
-            id: "formula-to-add",
-            source: "formula",
-            sourceHandle: 0,
-            target: "add",
-            targetHandle: 0,
-          },
-          {
-            id: "input-3-to-add",
-            source: "input",
-            sourceHandle: 3,
-            target: "add",
-            targetHandle: 1,
-          },
-          {
-            id: "add-to-output",
-            source: "add",
-            sourceHandle: 0,
-            target: "output",
-            targetHandle: 0,
-          },
-        ],
-      },
-    });
+      nodes: [
+        { id: "input", type: "input" as const },
+        { id: "formula", type: "fn" as const, fnName: "formula" },
+        { id: "add", type: "fn" as const, fnName: "add" },
+        { id: "output", type: "output" as const },
+      ],
+      edges: [
+        {
+          id: "input-0-to-formula-0",
+          source: "input",
+          sourceHandle: 0,
+          target: "formula",
+          targetHandle: 0,
+        },
+        {
+          id: "input-1-to-formula-1",
+          source: "input",
+          sourceHandle: 1,
+          target: "formula",
+          targetHandle: 1,
+        },
+        {
+          id: "input-2-to-formula-2",
+          source: "input",
+          sourceHandle: 2,
+          target: "formula",
+          targetHandle: 2,
+        },
+        {
+          id: "formula-to-add",
+          source: "formula",
+          sourceHandle: 0,
+          target: "add",
+          targetHandle: 0,
+        },
+        {
+          id: "input-3-to-add",
+          source: "input",
+          sourceHandle: 3,
+          target: "add",
+          targetHandle: 1,
+        },
+        {
+          id: "add-to-output",
+          source: "add",
+          sourceHandle: 0,
+          target: "output",
+          targetHandle: 0,
+        },
+      ],
+    };
     const compiled = compileFlow({
       flow: nestedFlow,
       fnList: [...arithmeticFns, formula],

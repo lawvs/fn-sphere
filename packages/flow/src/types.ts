@@ -1,14 +1,3 @@
-import type { StandardFnSchema } from "@fn-sphere/core";
-import type { $ZodFunction } from "zod/v4/core";
-import type { FlowSpec } from "./schema.js";
-
-export type FlowSchema<T extends $ZodFunction = $ZodFunction> = Omit<
-  StandardFnSchema<T>,
-  "implement"
-> & {
-  flow: FlowSpec;
-};
-
 export type FlowDiagnosticCode =
   | "duplicate-node-id"
   | "duplicate-edge-id"
@@ -25,6 +14,8 @@ export type FlowDiagnosticCode =
   | "invalid-target-handle"
   | "multiple-input-edges"
   | "missing-input-edge"
+  | "conflicting-input-schema"
+  | "unresolved-input-schema"
   | "incompatible-edge"
   | "cycle";
 
