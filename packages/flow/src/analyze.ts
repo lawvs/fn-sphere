@@ -18,14 +18,10 @@ export type InspectedFlow = {
   orderedFnNodes: FlowFnNodeSpec[];
 };
 
-const inputKey = (nodeId: string, handle: string) => `${nodeId}\0${handle}`;
+const inputKey = (nodeId: string, handle: number) => `${nodeId}\0${handle}`;
 
-const parseIndexHandle = (handle: string) => {
-  if (!/^(0|[1-9]\d*)$/.test(handle)) {
-    return undefined;
-  }
-  return Number(handle);
-};
+const isHandleIndex = (handle: number) =>
+  Number.isInteger(handle) && handle >= 0;
 
 const getInputSchemas = (fnSchema: Pick<StandardFnSchema, "define">) => {
   const input = fnSchema.define._zod.def.input;
@@ -166,8 +162,8 @@ export const inspectFlow = ({
         nodeId: edge.source,
       });
     } else if (sourceNode.type === "input") {
-      const index = parseIndexHandle(edge.sourceHandle);
-      if (index === undefined) {
+      const index = edge.sourceHandle;
+      if (!isHandleIndex(index)) {
         addDiagnostic({
           code: "invalid-source-handle",
           message: `Invalid input handle: ${edge.sourceHandle}`,
@@ -191,8 +187,8 @@ export const inspectFlow = ({
       }
     } else if (sourceNode.type === "fn") {
       const fnSchema = fnByNodeId.get(sourceNode.id);
-      if (edge.sourceHandle !== "output" || !fnSchema) {
-        if (edge.sourceHandle !== "output") {
+      if (edge.sourceHandle !== 0 || !fnSchema) {
+        if (edge.sourceHandle !== 0) {
           addDiagnostic({
             code: "invalid-source-handle",
             message: `Invalid function output handle: ${edge.sourceHandle}`,
@@ -226,8 +222,8 @@ export const inspectFlow = ({
 
     if (targetNode.type === "fn") {
       const fnSchema = fnByNodeId.get(targetNode.id);
-      const index = parseIndexHandle(edge.targetHandle);
-      if (index === undefined) {
+      const index = edge.targetHandle;
+      if (!isHandleIndex(index)) {
         addDiagnostic({
           code: "invalid-target-handle",
           message: `Invalid function input handle: ${edge.targetHandle}`,
@@ -250,7 +246,7 @@ export const inspectFlow = ({
         }
       }
     } else if (targetNode.type === "output") {
-      if (edge.targetHandle !== "input") {
+      if (edge.targetHandle !== 0) {
         addDiagnostic({
           code: "invalid-target-handle",
           message: `Invalid flow output handle: ${edge.targetHandle}`,
@@ -300,7 +296,7 @@ export const inspectFlow = ({
       continue;
     }
     inputSchemas.forEach((_, index) => {
-      const handle = String(index);
+      const handle = index;
       if (!incomingEdges.has(inputKey(node.id, handle))) {
         addDiagnostic({
           code: "missing-input-edge",
@@ -313,12 +309,12 @@ export const inspectFlow = ({
   }
 
   const outputNode = outputNodes.length === 1 ? outputNodes[0] : undefined;
-  if (outputNode && !incomingEdges.has(inputKey(outputNode.id, "input"))) {
+  if (outputNode && !incomingEdges.has(inputKey(outputNode.id, 0))) {
     addDiagnostic({
       code: "missing-input-edge",
       message: `Missing edge for ${outputNode.id}.input.`,
       nodeId: outputNode.id,
-      handle: "input",
+      handle: 0,
     });
   }
 

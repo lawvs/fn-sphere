@@ -12,37 +12,37 @@ const validEdges: FlowEdgeSpec[] = [
   {
     id: "a-to-sum",
     source: "input",
-    sourceHandle: "0",
+    sourceHandle: 0,
     target: "sum",
-    targetHandle: "0",
+    targetHandle: 0,
   },
   {
     id: "b-to-sum",
     source: "input",
-    sourceHandle: "1",
+    sourceHandle: 1,
     target: "sum",
-    targetHandle: "1",
+    targetHandle: 1,
   },
   {
     id: "sum-to-product",
     source: "sum",
-    sourceHandle: "output",
+    sourceHandle: 0,
     target: "product",
-    targetHandle: "0",
+    targetHandle: 0,
   },
   {
     id: "c-to-product",
     source: "input",
-    sourceHandle: "2",
+    sourceHandle: 2,
     target: "product",
-    targetHandle: "1",
+    targetHandle: 1,
   },
   {
     id: "product-to-output",
     source: "product",
-    sourceHandle: "output",
+    sourceHandle: 0,
     target: "output",
-    targetHandle: "input",
+    targetHandle: 0,
   },
 ];
 
@@ -88,7 +88,7 @@ describe("analyzeFlow", () => {
       expect.objectContaining({
         code: "missing-input-edge",
         nodeId: "sum",
-        handle: "1",
+        handle: 1,
       }),
     );
   });
@@ -99,9 +99,9 @@ describe("analyzeFlow", () => {
       {
         id: "c-also-to-sum",
         source: "input",
-        sourceHandle: "2",
+        sourceHandle: 2,
         target: "sum",
-        targetHandle: "1",
+        targetHandle: 1,
       },
     ];
 
@@ -115,7 +115,7 @@ describe("analyzeFlow", () => {
       expect.objectContaining({
         code: "multiple-input-edges",
         nodeId: "sum",
-        handle: "1",
+        handle: 1,
       }),
     );
   });
@@ -216,44 +216,44 @@ describe("compileFlow", () => {
           {
             id: "input-0-to-formula-0",
             source: "input",
-            sourceHandle: "0",
+            sourceHandle: 0,
             target: "formula",
-            targetHandle: "0",
+            targetHandle: 0,
           },
           {
             id: "input-1-to-formula-1",
             source: "input",
-            sourceHandle: "1",
+            sourceHandle: 1,
             target: "formula",
-            targetHandle: "1",
+            targetHandle: 1,
           },
           {
             id: "input-2-to-formula-2",
             source: "input",
-            sourceHandle: "2",
+            sourceHandle: 2,
             target: "formula",
-            targetHandle: "2",
+            targetHandle: 2,
           },
           {
             id: "formula-to-add",
             source: "formula",
-            sourceHandle: "output",
+            sourceHandle: 0,
             target: "add",
-            targetHandle: "0",
+            targetHandle: 0,
           },
           {
             id: "input-3-to-add",
             source: "input",
-            sourceHandle: "3",
+            sourceHandle: 3,
             target: "add",
-            targetHandle: "1",
+            targetHandle: 1,
           },
           {
             id: "add-to-output",
             source: "add",
-            sourceHandle: "output",
+            sourceHandle: 0,
             target: "output",
-            targetHandle: "input",
+            targetHandle: 0,
           },
         ],
       },
