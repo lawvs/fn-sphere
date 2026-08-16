@@ -14,16 +14,29 @@ type InspectFlowOptions = {
   fnList: readonly StandardFnSchema[];
 };
 
-type InspectedFlow = {
-  analysis: FlowAnalysis;
-  fnByNodeId: Map<string, StandardFnSchema>;
-  getIncomingEdge: (nodeId: string, handle: number) => FlowEdgeSpec | undefined;
+type ExecutableFlow = {
+  inputNodeId: string;
   inputSchemas: $ZodType[];
-  inputSchemasByNodeId: Map<string, $ZodType[]>;
-  nodeById: Map<string, FlowNodeSpec>;
-  orderedFnNodes: FlowFnNodeSpec[];
-  outputSchema: $ZodType | undefined;
+  name: string;
+  nodes: {
+    id: string;
+    fn: StandardFnSchema;
+    inputEdges: FlowEdgeSpec[];
+  }[];
+  outputEdge: FlowEdgeSpec;
+  outputSchema: $ZodType;
 };
+
+type InspectFlowResult =
+  | {
+      valid: false;
+      diagnostics: FlowDiagnostic[];
+    }
+  | {
+      valid: true;
+      diagnostics: FlowDiagnostic[];
+      executable: ExecutableFlow;
+    };
 
 const targetPortKey = (nodeId: string, handle: number) =>
   `${nodeId}\0${handle}`;
@@ -49,7 +62,7 @@ const getOutputSchema = (fnSchema: Pick<StandardFnSchema, "define">) =>
 export const inspectFlow = ({
   flow: flowSpec,
   fnList,
-}: InspectFlowOptions): InspectedFlow => {
+}: InspectFlowOptions): InspectFlowResult => {
   const diagnostics: FlowDiagnostic[] = [];
   const addDiagnostic = (diagnostic: FlowDiagnostic) => {
     diagnostics.push(diagnostic);
@@ -410,20 +423,68 @@ export const inspectFlow = ({
     });
   }
 
-  return {
-    analysis: {
-      valid: diagnostics.length === 0,
+  if (
+    diagnostics.length > 0 ||
+    !inputNodes[0] ||
+    !outputEdge ||
+    !outputSchema
+  ) {
+    return {
+      valid: false,
       diagnostics,
+    };
+  }
+
+  const reachableNodeIds = new Set<string>();
+  const visitSource = (edge: FlowEdgeSpec) => {
+    const sourceNode = nodeById.get(edge.source);
+    if (!sourceNode || sourceNode.type !== "fn") {
+      return;
+    }
+    if (reachableNodeIds.has(sourceNode.id)) {
+      return;
+    }
+    reachableNodeIds.add(sourceNode.id);
+
+    for (const [index] of (
+      inputSchemasByNodeId.get(sourceNode.id) ?? []
+    ).entries()) {
+      const inputEdge = getIncomingEdge(sourceNode.id, index);
+      if (inputEdge) {
+        visitSource(inputEdge);
+      }
+    }
+  };
+  visitSource(outputEdge);
+
+  const nodes = orderedFnNodes
+    .filter((node) => reachableNodeIds.has(node.id))
+    .map((node) => ({
+      id: node.id,
+      fn: fnByNodeId.get(node.id)!,
+      inputEdges: inputSchemasByNodeId
+        .get(node.id)!
+        .map((_, index) => getIncomingEdge(node.id, index)!),
+    }));
+
+  return {
+    valid: true,
+    diagnostics,
+    executable: {
+      inputNodeId: inputNodes[0].id,
+      inputSchemas,
+      name: flowSpec.name,
+      nodes,
+      outputEdge,
+      outputSchema,
     },
-    fnByNodeId,
-    getIncomingEdge,
-    inputSchemas,
-    inputSchemasByNodeId,
-    nodeById,
-    orderedFnNodes,
-    outputSchema,
   };
 };
 
-export const analyzeFlow = (options: InspectFlowOptions): FlowAnalysis =>
-  inspectFlow(options).analysis;
+export const analyzeFlow = (options: InspectFlowOptions): FlowAnalysis => {
+  const inspected = inspectFlow(options);
+  return {
+    valid: inspected.valid,
+    diagnostics: inspected.diagnostics,
+  };
+};
