@@ -8,6 +8,7 @@ export {
   commonFilters,
   dateFilter,
   genericFilter,
+  logicFns,
   numberFilter,
   presetFilter,
   presetSort,

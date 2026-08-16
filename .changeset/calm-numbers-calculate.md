@@ -2,4 +2,4 @@
 "@fn-sphere/core": minor
 ---
 
-Export schema-defined add, subtract, multiply, and divide functions.
+Export schema-defined arithmetic and boolean logic functions.
