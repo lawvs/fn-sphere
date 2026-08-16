@@ -11,6 +11,7 @@ import {
   Background,
   Controls,
   ReactFlow,
+  reconnectEdge,
   useEdgesState,
   useNodesState,
   type Connection,
@@ -116,11 +117,10 @@ const createEdges = (): Edge[] => [
 ];
 
 const numericHandle = (handle: string | null | undefined, edgeId: string) => {
-  const value = Number(handle);
-  if (handle === null || !Number.isInteger(value) || value < 0) {
+  if (typeof handle !== "string" || !/^(0|[1-9]\d*)$/.test(handle)) {
     throw new Error(`Edge ${edgeId} requires a numeric handle ID.`);
   }
-  return value;
+  return Number(handle);
 };
 
 const toFlowSpec = (nodes: FlowCanvasNode[], edges: Edge[]): FlowSpec => {
@@ -156,6 +156,12 @@ export function FlowCanvasExample() {
       setEdges((current) =>
         addEdge({ ...connection, type: "smoothstep" }, current),
       ),
+    [setEdges],
+  );
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) =>
+      setEdges((current) => reconnectEdge(oldEdge, newConnection, current)),
     [setEdges],
   );
 
@@ -202,6 +208,7 @@ export function FlowCanvasExample() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onReconnect={onReconnect}
           fitView
         >
           <Background />
