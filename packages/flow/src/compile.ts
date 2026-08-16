@@ -17,10 +17,11 @@ const implementFn = (fnSchema: StandardFnSchema): RuntimeFn =>
     : (fnSchema.define.implement(fnSchema.implement) as RuntimeFn);
 
 export function compileFlow<T extends $ZodFunction>({
-  flow,
+  flow: flowSchema,
   fnList,
 }: CompileFlowOptions<T>): FlowFnSchema<T> {
-  const inspected = inspectFlow({ flow, fnList });
+  const flowSpec = flowSchema.flow;
+  const inspected = inspectFlow({ flow: flowSchema, fnList });
   if (!inspected.analysis.valid) {
     const codes = [
       ...new Set(
@@ -30,7 +31,7 @@ export function compileFlow<T extends $ZodFunction>({
     throw new Error(`Cannot compile invalid flow: ${codes.join(", ")}`);
   }
 
-  const outputNode = flow.flow.nodes.find((node) => node.type === "output");
+  const outputNode = flowSpec.nodes.find((node) => node.type === "output");
   if (!outputNode) {
     throw new Error("Cannot compile flow without an output node.");
   }
@@ -104,7 +105,7 @@ export function compileFlow<T extends $ZodFunction>({
   }) as FlowFnSchema<T>["implement"];
 
   return {
-    ...flow,
+    ...flowSchema,
     implement,
   };
 }

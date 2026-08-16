@@ -40,16 +40,17 @@ const getOutputSchema = (fnSchema: Pick<StandardFnSchema, "define">) =>
   fnSchema.define._zod.def.output;
 
 export const inspectFlow = ({
-  flow,
+  flow: flowSchema,
   fnList,
 }: InspectFlowOptions): InspectedFlow => {
+  const flowSpec = flowSchema.flow;
   const diagnostics: FlowDiagnostic[] = [];
   const addDiagnostic = (diagnostic: FlowDiagnostic) => {
     diagnostics.push(diagnostic);
   };
 
   const nodeById = new Map<string, FlowNodeSpec>();
-  for (const node of flow.flow.nodes) {
+  for (const node of flowSpec.nodes) {
     if (nodeById.has(node.id)) {
       addDiagnostic({
         code: "duplicate-node-id",
@@ -62,7 +63,7 @@ export const inspectFlow = ({
   }
 
   const edgeIds = new Set<string>();
-  for (const edge of flow.flow.edges) {
+  for (const edge of flowSpec.edges) {
     if (edgeIds.has(edge.id)) {
       addDiagnostic({
         code: "duplicate-edge-id",
@@ -85,7 +86,7 @@ export const inspectFlow = ({
     fnByName.set(fnSchema.name, fnSchema);
   }
 
-  const inputNodes = flow.flow.nodes.filter((node) => node.type === "input");
+  const inputNodes = flowSpec.nodes.filter((node) => node.type === "input");
   if (inputNodes.length === 0) {
     addDiagnostic({
       code: "missing-input-node",
@@ -98,7 +99,7 @@ export const inspectFlow = ({
     });
   }
 
-  const outputNodes = flow.flow.nodes.filter((node) => node.type === "output");
+  const outputNodes = flowSpec.nodes.filter((node) => node.type === "output");
   if (outputNodes.length === 0) {
     addDiagnostic({
       code: "missing-output-node",
@@ -111,7 +112,7 @@ export const inspectFlow = ({
     });
   }
 
-  const fnNodes = flow.flow.nodes.filter(
+  const fnNodes = flowSpec.nodes.filter(
     (node): node is FlowFnNodeSpec => node.type === "fn",
   );
   const fnByNodeId = new Map<string, StandardFnSchema>();
@@ -139,21 +140,21 @@ export const inspectFlow = ({
     inputSchemasByNodeId.set(node.id, inputSchemas);
   }
 
-  const flowInputSchemas = getInputSchemas(flow);
+  const flowInputSchemas = getInputSchemas(flowSchema);
   if (!flowInputSchemas) {
     addDiagnostic({
       code: "unsupported-function-input",
       message: "Flow must use a fixed tuple input schema.",
     });
   }
-  const flowOutputSchema = getOutputSchema(flow);
+  const flowOutputSchema = getOutputSchema(flowSchema);
   const incomingEdges = new Map<string, FlowEdgeSpec[]>();
   const getIncomingEdge = (nodeId: string, handle: number) =>
     incomingEdges.get(targetPortKey(nodeId, handle))?.[0];
   const sourceSchemas = new Map<string, $ZodType>();
   const targetSchemas = new Map<string, $ZodType>();
 
-  for (const edge of flow.flow.edges) {
+  for (const edge of flowSpec.edges) {
     const sourceNode = nodeById.get(edge.source);
     const targetNode = nodeById.get(edge.target);
 
@@ -321,7 +322,7 @@ export const inspectFlow = ({
     });
   }
 
-  for (const edge of flow.flow.edges) {
+  for (const edge of flowSpec.edges) {
     const sourceSchema = sourceSchemas.get(edge.id);
     const targetSchema = targetSchemas.get(edge.id);
     if (
@@ -340,7 +341,7 @@ export const inspectFlow = ({
   const fnNodeById = new Map(fnNodes.map((node) => [node.id, node]));
   const outgoing = new Map<string, string[]>();
   const inDegree = new Map(fnNodes.map((node) => [node.id, 0]));
-  for (const edge of flow.flow.edges) {
+  for (const edge of flowSpec.edges) {
     if (!fnNodeById.has(edge.source) || !fnNodeById.has(edge.target)) {
       continue;
     }
