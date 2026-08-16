@@ -15,7 +15,7 @@ import PackageManagerTabs from "~/components/package-manager-tabs.astro";
 
 ## Overview
 
-The Flow package composes schema-defined functions into a validated, executable directed acyclic graph. Nodes select registered functions, edges connect numbered output and input handles, and the compiled flow is itself a standard fn-sphere function.
+The Flow package composes schema-defined functions into a validated, executable directed acyclic graph. Nodes select registered functions, edges connect numbered output and input handles, and `compileFlow()` returns a `StandardFnSchema` that is itself a standard fn-sphere function.
 
 The example below computes `(a + b) * c`:
 
