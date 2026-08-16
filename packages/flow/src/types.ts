@@ -38,7 +38,7 @@ export type FlowDiagnostic = {
   message: string;
   nodeId?: string;
   edgeId?: string;
-  handle?: string;
+  handle?: number;
 };
 
 export type FlowAnalysis = {

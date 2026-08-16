@@ -25,9 +25,9 @@ const flowNodeSpecSchema = z.discriminatedUnion("type", [
 const flowEdgeSpecSchema = z.object({
   id: z.string().min(1),
   source: z.string().min(1),
-  sourceHandle: z.string().min(1),
+  sourceHandle: z.number().int().nonnegative(),
   target: z.string().min(1),
-  targetHandle: z.string().min(1),
+  targetHandle: z.number().int().nonnegative(),
 });
 
 export const flowSpecSchema = z.object({

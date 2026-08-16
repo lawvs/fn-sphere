@@ -35,7 +35,7 @@ export function compileFlow<T extends $ZodFunction>({
     throw new Error("Cannot compile flow without an output node.");
   }
   const outputEdge = inspected.incomingEdges.get(
-    getFlowInputKey(outputNode.id, "input"),
+    getFlowInputKey(outputNode.id, 0),
   )?.[0];
   if (!outputEdge) {
     throw new Error("Cannot compile flow without an output edge.");
@@ -58,7 +58,7 @@ export function compileFlow<T extends $ZodFunction>({
     }
     inputSchemas.forEach((_, index) => {
       const inputEdge = inspected.incomingEdges.get(
-        getFlowInputKey(sourceNode.id, String(index)),
+        getFlowInputKey(sourceNode.id, index),
       )?.[0];
       if (inputEdge) {
         visitSource(inputEdge);
@@ -85,7 +85,7 @@ export function compileFlow<T extends $ZodFunction>({
   ) => {
     const sourceNode = inspected.nodeById.get(edge.source);
     if (sourceNode?.type === "input") {
-      return args[Number(edge.sourceHandle)];
+      return args[edge.sourceHandle];
     }
     return results.get(edge.source);
   };
@@ -100,7 +100,7 @@ export function compileFlow<T extends $ZodFunction>({
       }
       const nodeArgs = inputSchemas.map((_, index) => {
         const edge = inspected.incomingEdges.get(
-          getFlowInputKey(node.id, String(index)),
+          getFlowInputKey(node.id, index),
         )?.[0];
         return edge ? resolveSource(edge, args, results) : undefined;
       });
