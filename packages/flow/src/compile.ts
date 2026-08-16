@@ -1,6 +1,6 @@
 import type { StandardFnSchema } from "@fn-sphere/core";
 import type { $ZodFunction } from "zod/v4/core";
-import { getFlowInputKey, inspectFlow } from "./analyze.js";
+import { inspectFlow } from "./analyze.js";
 import type { FlowEdgeSpec } from "./schema.js";
 import type { FlowFnSchema, FlowSchema } from "./types.js";
 
@@ -34,9 +34,7 @@ export function compileFlow<T extends $ZodFunction>({
   if (!outputNode) {
     throw new Error("Cannot compile flow without an output node.");
   }
-  const outputEdge = inspected.incomingEdges.get(
-    getFlowInputKey(outputNode.id, 0),
-  )?.[0];
+  const outputEdge = inspected.getIncomingEdge(outputNode.id, 0);
   if (!outputEdge) {
     throw new Error("Cannot compile flow without an output edge.");
   }
@@ -57,9 +55,7 @@ export function compileFlow<T extends $ZodFunction>({
       return;
     }
     inputSchemas.forEach((_, index) => {
-      const inputEdge = inspected.incomingEdges.get(
-        getFlowInputKey(sourceNode.id, index),
-      )?.[0];
+      const inputEdge = inspected.getIncomingEdge(sourceNode.id, index);
       if (inputEdge) {
         visitSource(inputEdge);
       }
@@ -99,9 +95,7 @@ export function compileFlow<T extends $ZodFunction>({
         continue;
       }
       const nodeArgs = inputSchemas.map((_, index) => {
-        const edge = inspected.incomingEdges.get(
-          getFlowInputKey(node.id, index),
-        )?.[0];
+        const edge = inspected.getIncomingEdge(node.id, index);
         return edge ? resolveSource(edge, args, results) : undefined;
       });
       results.set(node.id, fn(...nodeArgs));
