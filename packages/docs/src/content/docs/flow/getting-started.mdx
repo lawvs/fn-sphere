@@ -8,6 +8,9 @@ sidebar:
 import { Tabs, TabItem, Steps, Code } from "@astrojs/starlight/components";
 import { FlowExample } from "~/components/flow-example/index";
 import flowExampleCode from "~/components/flow-example/index?raw";
+import { FlowCanvasExample } from "~/components/flow-example/react-flow";
+import flowCanvasCode from "~/components/flow-example/react-flow?raw";
+import flowNodeCode from "~/components/flow-example/react-flow-node?raw";
 import PackageManagerTabs from "~/components/package-manager-tabs.astro";
 
 ## Overview
@@ -108,6 +111,26 @@ A version 1 flow has exactly one `input` node and one `output` node. Function no
 ```
 
 Handles are zero-based numbers. On an input node they identify flow arguments; on a function node, target handles identify tuple parameters. Function nodes currently expose their single result at source handle `0`, and the output node accepts one edge at target handle `0`.
+
+## Editing with React Flow
+
+`@fn-sphere/flow` is the graph model and execution layer; React Flow is the optional canvas layer. React Flow stores positions and string handle IDs for editing, while the adapter below selects the semantic node fields, converts handles to numbers, and validates the result with `flowSpecSchema`.
+
+Try moving nodes, deleting an edge, or reconnecting handles. **Run graph** analyzes the current canvas before compiling it, so invalid edits appear as structured diagnostics instead of runtime crashes.
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <FlowCanvasExample client:only="react" />
+    </div>
+  </TabItem>
+  <TabItem label="Canvas code">
+    <Code code={flowCanvasCode} lang="tsx" />
+  </TabItem>
+  <TabItem label="Custom node">
+    <Code code={flowNodeCode} lang="tsx" />
+  </TabItem>
+</Tabs>
 
 ## Schema Inference
 
