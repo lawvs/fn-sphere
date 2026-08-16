@@ -1,8 +1,8 @@
 import type { $ZodFunction } from "zod/v4/core";
-import type { FlowDefinition } from "./types.js";
+import type { FlowSchema } from "./types.js";
 
 export function defineFlow<T extends $ZodFunction>(
-  definition: FlowDefinition<T>,
-): FlowDefinition<T> {
-  return definition;
+  schema: FlowSchema<T>,
+): FlowSchema<T> {
+  return schema;
 }

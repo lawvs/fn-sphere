@@ -2,10 +2,10 @@ import type { StandardFnSchema } from "@fn-sphere/core";
 import type { $ZodFunction } from "zod/v4/core";
 import { inspectFlow } from "./analyze.js";
 import type { FlowEdgeSpec } from "./schema.js";
-import type { FlowDefinition } from "./types.js";
+import type { FlowSchema } from "./types.js";
 
 type CompileFlowOptions<T extends $ZodFunction> = {
-  flow: FlowDefinition<T>;
+  flow: FlowSchema<T>;
   fnList: readonly StandardFnSchema[];
 };
 
@@ -17,11 +17,11 @@ const implementFn = (fnSchema: StandardFnSchema): RuntimeFn =>
     : (fnSchema.define.implement(fnSchema.implement) as RuntimeFn);
 
 export function compileFlow<T extends $ZodFunction>({
-  flow: flowDefinition,
+  flow: flowSchema,
   fnList,
 }: CompileFlowOptions<T>): StandardFnSchema<T> {
-  const { flow: flowSpec, ...fnSchema } = flowDefinition;
-  const inspected = inspectFlow({ flow: flowDefinition, fnList });
+  const { flow: flowSpec, ...fnSchema } = flowSchema;
+  const inspected = inspectFlow({ flow: flowSchema, fnList });
   if (!inspected.analysis.valid) {
     const codes = [
       ...new Set(
