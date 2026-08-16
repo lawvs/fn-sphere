@@ -1,0 +1,75 @@
+---
+title: Validation and Composition
+description: Diagnose invalid graphs and reuse compiled flows
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem, Code } from "@astrojs/starlight/components";
+import { FlowCompositionExample } from "~/components/flow-example/composition";
+import compositionCode from "~/components/flow-example/composition?raw";
+
+## Analyze Before Compiling
+
+`analyzeFlow` returns all detected graph diagnostics without throwing:
+
+```ts
+const analysis = analyzeFlow({ flow, fnList });
+
+if (!analysis.valid) {
+  for (const diagnostic of analysis.diagnostics) {
+    console.error(diagnostic.code, diagnostic.message);
+  }
+}
+```
+
+Each diagnostic can identify a `nodeId`, `edgeId`, or numeric `handle` when the error belongs to a specific graph element. `compileFlow` performs the same analysis and throws when the graph is invalid.
+
+## Current Graph Rules
+
+A version 1 executable flow must satisfy these rules:
+
+- Node IDs and edge IDs are unique.
+- `fnName` resolves to exactly one function in `fnList`.
+- There is exactly one input node and one output node.
+- Function schemas use fixed tuple inputs; variadic array inputs are unsupported.
+- Every function input handle has exactly one incoming edge.
+- Each flow input handle has one consumer and its schema can be inferred from that consumer.
+- Function output and output-node handles are `0`.
+- Connected Zod schemas are compatible.
+- Function nodes form an acyclic graph.
+
+## Reuse a Compiled Flow
+
+`compileFlow` returns a `StandardFnSchema`, so the result can be added to another flow's function list. The outer graph references the inner flow by its compiled `name`:
+
+```ts
+const formula = compileFlow({ flow: formulaSpec, fnList: arithmeticFns });
+
+const outer = compileFlow({
+  flow: outerSpec,
+  fnList: [...arithmeticFns, formula],
+});
+```
+
+The example composes `(a + b) * c` as one function node, then adds `d`:
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <FlowCompositionExample client:load />
+    </div>
+  </TabItem>
+  <TabItem label="Code">
+    <Code code={compositionCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+## Serialized Boundary Validation
+
+`FlowSpec` is a compile-time type. Use `flowSpecSchema` to validate untrusted JSON before analysis or compilation:
+
+```ts
+const flow = flowSpecSchema.parse(JSON.parse(serialized));
+const analysis = analyzeFlow({ flow, fnList });
+```
