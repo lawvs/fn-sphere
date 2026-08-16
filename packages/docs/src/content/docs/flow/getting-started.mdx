@@ -1,0 +1,124 @@
+---
+title: Getting Started
+description: Build and run an executable function flow
+sidebar:
+  order: 0
+---
+
+import { Tabs, TabItem, Steps, Code } from "@astrojs/starlight/components";
+import { FlowExample } from "~/components/flow-example/index";
+import flowExampleCode from "~/components/flow-example/index?raw";
+import PackageManagerTabs from "~/components/package-manager-tabs.astro";
+
+## Overview
+
+The Flow package composes schema-defined functions into a validated, executable directed acyclic graph. Nodes select registered functions, edges connect numbered output and input handles, and the compiled flow is itself a standard fn-sphere function.
+
+The example below computes `(a + b) * c`:
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <FlowExample client:load />
+    </div>
+  </TabItem>
+  <TabItem label="Code">
+    <Code code={flowExampleCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+## Usage Summary
+
+<Steps>
+
+1. Install Flow and Core:
+
+   <PackageManagerTabs package="@fn-sphere/flow @fn-sphere/core" />
+
+2. Define a version 1 flow:
+
+   ```ts
+   import type { FlowSpec } from "@fn-sphere/flow";
+
+   const flow = {
+     version: 1,
+     name: "add",
+     nodes: [
+       { id: "input", type: "input" },
+       { id: "add", type: "fn", fnName: "add" },
+       { id: "output", type: "output" },
+     ],
+     edges: [
+       {
+         id: "input-0-to-add-0",
+         source: "input",
+         sourceHandle: 0,
+         target: "add",
+         targetHandle: 0,
+       },
+       {
+         id: "input-1-to-add-1",
+         source: "input",
+         sourceHandle: 1,
+         target: "add",
+         targetHandle: 1,
+       },
+       {
+         id: "add-to-output",
+         source: "add",
+         sourceHandle: 0,
+         target: "output",
+         targetHandle: 0,
+       },
+     ],
+   } satisfies FlowSpec;
+   ```
+
+3. Analyze the graph before compiling when you want structured diagnostics:
+
+   ```ts
+   import { analyzeFlow } from "@fn-sphere/flow";
+   import { arithmeticFns } from "@fn-sphere/core";
+
+   const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+   if (!analysis.valid) {
+     console.error(analysis.diagnostics);
+   }
+   ```
+
+4. Compile and execute the flow:
+
+   ```ts
+   import { compileFlow } from "@fn-sphere/flow";
+
+   const compiled = compileFlow({ flow, fnList: arithmeticFns });
+   const add = compiled.define.implement(compiled.implement);
+
+   add(1, 2); // 3
+   ```
+
+</Steps>
+
+## Nodes and Handles
+
+A version 1 flow has exactly one `input` node and one `output` node. Function nodes use `fnName` to select an entry from `fnList`:
+
+```ts
+{ id: "sum", type: "fn", fnName: "add" }
+```
+
+Handles are zero-based numbers. On an input node they identify flow arguments; on a function node, target handles identify tuple parameters. Function nodes currently expose their single result at source handle `0`, and the output node accepts one edge at target handle `0`.
+
+## Schema Inference
+
+Flow does not duplicate Zod schemas in the graph. `compileFlow` reads each function's fixed tuple input and output schemas, checks every edge for compatibility, and derives the compiled function's input and output schemas from the connected graph.
+
+## Parsing Serialized Flows
+
+Use `flowSpecSchema` at JSON or storage boundaries:
+
+```ts
+import { flowSpecSchema } from "@fn-sphere/flow";
+
+const flow = flowSpecSchema.parse(JSON.parse(serialized));
+```
