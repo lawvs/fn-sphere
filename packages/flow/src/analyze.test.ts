@@ -180,6 +180,7 @@ describe("compileFlow", () => {
     const run = compiled.define.implement(compiled.implement);
 
     expect(run(1, 2, 3)).toBe(9);
+    expect(compiled).not.toHaveProperty("flow");
   });
 
   test("rejects an invalid flow", () => {

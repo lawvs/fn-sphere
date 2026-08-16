@@ -2,10 +2,10 @@ import type { StandardFnSchema } from "@fn-sphere/core";
 import type { $ZodFunction } from "zod/v4/core";
 import { inspectFlow } from "./analyze.js";
 import type { FlowEdgeSpec } from "./schema.js";
-import type { FlowFnSchema, FlowSchema } from "./types.js";
+import type { FlowDefinition } from "./types.js";
 
 type CompileFlowOptions<T extends $ZodFunction> = {
-  flow: FlowSchema<T>;
+  flow: FlowDefinition<T>;
   fnList: readonly StandardFnSchema[];
 };
 
@@ -17,11 +17,11 @@ const implementFn = (fnSchema: StandardFnSchema): RuntimeFn =>
     : (fnSchema.define.implement(fnSchema.implement) as RuntimeFn);
 
 export function compileFlow<T extends $ZodFunction>({
-  flow: flowSchema,
+  flow: flowDefinition,
   fnList,
-}: CompileFlowOptions<T>): FlowFnSchema<T> {
-  const flowSpec = flowSchema.flow;
-  const inspected = inspectFlow({ flow: flowSchema, fnList });
+}: CompileFlowOptions<T>): StandardFnSchema<T> {
+  const { flow: flowSpec, ...fnSchema } = flowDefinition;
+  const inspected = inspectFlow({ flow: flowDefinition, fnList });
   if (!inspected.analysis.valid) {
     const codes = [
       ...new Set(
@@ -102,10 +102,10 @@ export function compileFlow<T extends $ZodFunction>({
       results.set(node.id, fn(...nodeArgs));
     }
     return resolveSource(outputEdge, args, results);
-  }) as FlowFnSchema<T>["implement"];
+  }) as StandardFnSchema<T>["implement"];
 
   return {
-    ...flowSchema,
+    ...fnSchema,
     implement,
   };
 }
