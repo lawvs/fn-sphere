@@ -32,6 +32,7 @@ const flowEdgeSpecSchema = z.object({
 
 export const flowSpecSchema = z.object({
   version: z.literal(1),
+  name: z.string().min(1),
   nodes: z.array(flowNodeSpecSchema),
   edges: z.array(flowEdgeSpecSchema),
 });

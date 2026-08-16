@@ -1,27 +1,32 @@
 import type { StandardFnSchema } from "@fn-sphere/core";
-import type { $ZodFunction } from "zod/v4/core";
+import { z } from "zod";
+import type {
+  $ZodFunction,
+  $ZodTuple,
+  $ZodType,
+  $ZodUnknown,
+} from "zod/v4/core";
 import { inspectFlow } from "./analyze.js";
-import type { FlowEdgeSpec } from "./schema.js";
-import type { FlowSchema } from "./types.js";
+import type { FlowEdgeSpec, FlowSpec } from "./schema.js";
 
-type CompileFlowOptions<T extends $ZodFunction> = {
-  flow: FlowSchema<T>;
+type CompileFlowOptions = {
+  flow: FlowSpec;
   fnList: readonly StandardFnSchema[];
 };
 
 type RuntimeFn = (...args: unknown[]) => unknown;
+type CompiledFlowFunction = $ZodFunction<$ZodTuple<[], $ZodUnknown>, $ZodType>;
 
 const implementFn = (fnSchema: StandardFnSchema): RuntimeFn =>
   fnSchema.skipValidate
     ? (fnSchema.implement as RuntimeFn)
     : (fnSchema.define.implement(fnSchema.implement) as RuntimeFn);
 
-export function compileFlow<T extends $ZodFunction>({
-  flow: flowSchema,
+export function compileFlow({
+  flow: flowSpec,
   fnList,
-}: CompileFlowOptions<T>): StandardFnSchema<T> {
-  const { flow: flowSpec, ...fnSchema } = flowSchema;
-  const inspected = inspectFlow({ flow: flowSchema, fnList });
+}: CompileFlowOptions): StandardFnSchema<CompiledFlowFunction> {
+  const inspected = inspectFlow({ flow: flowSpec, fnList });
   if (!inspected.analysis.valid) {
     const codes = [
       ...new Set(
@@ -38,6 +43,9 @@ export function compileFlow<T extends $ZodFunction>({
   const outputEdge = inspected.getIncomingEdge(outputNode.id, 0);
   if (!outputEdge) {
     throw new Error("Cannot compile flow without an output edge.");
+  }
+  if (!inspected.outputSchema) {
+    throw new Error("Cannot compile flow without an inferred output schema.");
   }
 
   const reachableNodeIds = new Set<string>();
@@ -87,7 +95,7 @@ export function compileFlow<T extends $ZodFunction>({
     return results.get(edge.source);
   };
 
-  const implement = ((...args: unknown[]) => {
+  const implement = (...args: unknown[]) => {
     const results = new Map<string, unknown>();
     for (const node of orderedFnNodes) {
       const inputSchemas = inspected.inputSchemasByNodeId.get(node.id);
@@ -102,10 +110,16 @@ export function compileFlow<T extends $ZodFunction>({
       results.set(node.id, fn(...nodeArgs));
     }
     return resolveSource(outputEdge, args, results);
-  }) as StandardFnSchema<T>["implement"];
+  };
+
+  const define = z.function({
+    input: inspected.inputSchemas,
+    output: inspected.outputSchema,
+  }) as unknown as CompiledFlowFunction;
 
   return {
-    ...fnSchema,
+    name: flowSpec.name,
+    define,
     implement,
   };
 }

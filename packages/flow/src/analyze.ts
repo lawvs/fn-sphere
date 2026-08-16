@@ -1,11 +1,16 @@
 import type { StandardFnSchema } from "@fn-sphere/core";
-import { isCompatibleType } from "zod-compare";
+import { isCompatibleType, isSameType } from "zod-compare";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
-import type { FlowEdgeSpec, FlowFnNodeSpec, FlowNodeSpec } from "./schema.js";
-import type { FlowAnalysis, FlowDiagnostic, FlowSchema } from "./types.js";
+import type {
+  FlowEdgeSpec,
+  FlowFnNodeSpec,
+  FlowNodeSpec,
+  FlowSpec,
+} from "./schema.js";
+import type { FlowAnalysis, FlowDiagnostic } from "./types.js";
 
 type InspectFlowOptions = {
-  flow: FlowSchema;
+  flow: FlowSpec;
   fnList: readonly StandardFnSchema[];
 };
 
@@ -13,9 +18,11 @@ type InspectedFlow = {
   analysis: FlowAnalysis;
   fnByNodeId: Map<string, StandardFnSchema>;
   getIncomingEdge: (nodeId: string, handle: number) => FlowEdgeSpec | undefined;
+  inputSchemas: $ZodType[];
   inputSchemasByNodeId: Map<string, $ZodType[]>;
   nodeById: Map<string, FlowNodeSpec>;
   orderedFnNodes: FlowFnNodeSpec[];
+  outputSchema: $ZodType | undefined;
 };
 
 const targetPortKey = (nodeId: string, handle: number) =>
@@ -40,10 +47,9 @@ const getOutputSchema = (fnSchema: Pick<StandardFnSchema, "define">) =>
   fnSchema.define._zod.def.output;
 
 export const inspectFlow = ({
-  flow: flowSchema,
+  flow: flowSpec,
   fnList,
 }: InspectFlowOptions): InspectedFlow => {
-  const flowSpec = flowSchema.flow;
   const diagnostics: FlowDiagnostic[] = [];
   const addDiagnostic = (diagnostic: FlowDiagnostic) => {
     diagnostics.push(diagnostic);
@@ -140,17 +146,11 @@ export const inspectFlow = ({
     inputSchemasByNodeId.set(node.id, inputSchemas);
   }
 
-  const flowInputSchemas = getInputSchemas(flowSchema);
-  if (!flowInputSchemas) {
-    addDiagnostic({
-      code: "unsupported-function-input",
-      message: "Flow must use a fixed tuple input schema.",
-    });
-  }
-  const flowOutputSchema = getOutputSchema(flowSchema);
   const incomingEdges = new Map<string, FlowEdgeSpec[]>();
   const getIncomingEdge = (nodeId: string, handle: number) =>
     incomingEdges.get(targetPortKey(nodeId, handle))?.[0];
+  const inputSchemaByHandle = new Map<number, $ZodType>();
+  const inputSourceHandles = new Set<number>();
   const sourceSchemas = new Map<string, $ZodType>();
   const targetSchemas = new Map<string, $ZodType>();
 
@@ -175,19 +175,8 @@ export const inspectFlow = ({
           nodeId: sourceNode.id,
           handle: edge.sourceHandle,
         });
-      } else if (flowInputSchemas) {
-        const sourceSchema = flowInputSchemas[index];
-        if (sourceSchema) {
-          sourceSchemas.set(edge.id, sourceSchema);
-        } else {
-          addDiagnostic({
-            code: "invalid-source-handle",
-            message: `Invalid input handle: ${edge.sourceHandle}`,
-            edgeId: edge.id,
-            nodeId: sourceNode.id,
-            handle: edge.sourceHandle,
-          });
-        }
+      } else {
+        inputSourceHandles.add(index);
       }
     } else if (sourceNode.type === "fn") {
       const fnSchema = fnByNodeId.get(sourceNode.id);
@@ -239,6 +228,20 @@ export const inspectFlow = ({
         const targetSchema = inputSchemasByNodeId.get(targetNode.id)?.[index];
         if (targetSchema) {
           targetSchemas.set(edge.id, targetSchema);
+          if (sourceNode?.type === "input") {
+            const inputSchema = inputSchemaByHandle.get(edge.sourceHandle);
+            if (inputSchema && !isSameType(inputSchema, targetSchema)) {
+              addDiagnostic({
+                code: "conflicting-input-schema",
+                message: `Flow input handle ${edge.sourceHandle} connects to different schemas.`,
+                edgeId: edge.id,
+                nodeId: sourceNode.id,
+                handle: edge.sourceHandle,
+              });
+            } else if (!inputSchema) {
+              inputSchemaByHandle.set(edge.sourceHandle, targetSchema);
+            }
+          }
         } else {
           addDiagnostic({
             code: "invalid-target-handle",
@@ -258,8 +261,6 @@ export const inspectFlow = ({
           nodeId: targetNode.id,
           handle: edge.targetHandle,
         });
-      } else {
-        targetSchemas.set(edge.id, flowOutputSchema);
       }
     } else {
       addDiagnostic({
@@ -294,6 +295,22 @@ export const inspectFlow = ({
     });
   }
 
+  const inputSchemas: $ZodType[] = [];
+  const lastInputHandle = Math.max(-1, ...inputSourceHandles);
+  for (let handle = 0; handle <= lastInputHandle; handle += 1) {
+    const inputSchema = inputSchemaByHandle.get(handle);
+    if (inputSchema) {
+      inputSchemas.push(inputSchema);
+      continue;
+    }
+    addDiagnostic({
+      code: "unresolved-input-schema",
+      message: `Cannot infer schema for flow input handle ${handle}.`,
+      ...(inputNodes[0] ? { nodeId: inputNodes[0].id } : {}),
+      handle,
+    });
+  }
+
   for (const node of fnNodes) {
     const inputSchemas = inputSchemasByNodeId.get(node.id);
     if (!inputSchemas) {
@@ -313,13 +330,26 @@ export const inspectFlow = ({
   }
 
   const outputNode = outputNodes.length === 1 ? outputNodes[0] : undefined;
-  if (outputNode && !getIncomingEdge(outputNode.id, 0)) {
+  const outputEdge = outputNode ? getIncomingEdge(outputNode.id, 0) : undefined;
+  if (outputNode && !outputEdge) {
     addDiagnostic({
       code: "missing-input-edge",
       message: `Missing edge for ${outputNode.id}.input.`,
       nodeId: outputNode.id,
       handle: 0,
     });
+  }
+  const outputSourceNode = outputEdge
+    ? nodeById.get(outputEdge.source)
+    : undefined;
+  let outputSchema: $ZodType | undefined;
+  if (outputSourceNode?.type === "fn") {
+    const outputFn = fnByNodeId.get(outputSourceNode.id);
+    if (outputFn) {
+      outputSchema = getOutputSchema(outputFn);
+    }
+  } else if (outputSourceNode?.type === "input" && outputEdge) {
+    outputSchema = inputSchemaByHandle.get(outputEdge.sourceHandle);
   }
 
   for (const edge of flowSpec.edges) {
@@ -385,9 +415,11 @@ export const inspectFlow = ({
     },
     fnByNodeId,
     getIncomingEdge,
+    inputSchemas,
     inputSchemasByNodeId,
     nodeById,
     orderedFnNodes,
+    outputSchema,
   };
 };
 
