@@ -2,10 +2,10 @@ import type { StandardFnSchema } from "@fn-sphere/core";
 import { isCompatibleType } from "zod-compare";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import type { FlowEdgeSpec, FlowFnNodeSpec, FlowNodeSpec } from "./schema.js";
-import type { FlowAnalysis, FlowDefinition, FlowDiagnostic } from "./types.js";
+import type { FlowAnalysis, FlowDiagnostic, FlowSchema } from "./types.js";
 
 type InspectFlowOptions = {
-  flow: FlowDefinition;
+  flow: FlowSchema;
   fnList: readonly StandardFnSchema[];
 };
 
@@ -40,10 +40,10 @@ const getOutputSchema = (fnSchema: Pick<StandardFnSchema, "define">) =>
   fnSchema.define._zod.def.output;
 
 export const inspectFlow = ({
-  flow: flowDefinition,
+  flow: flowSchema,
   fnList,
 }: InspectFlowOptions): InspectedFlow => {
-  const flowSpec = flowDefinition.flow;
+  const flowSpec = flowSchema.flow;
   const diagnostics: FlowDiagnostic[] = [];
   const addDiagnostic = (diagnostic: FlowDiagnostic) => {
     diagnostics.push(diagnostic);
@@ -140,14 +140,14 @@ export const inspectFlow = ({
     inputSchemasByNodeId.set(node.id, inputSchemas);
   }
 
-  const flowInputSchemas = getInputSchemas(flowDefinition);
+  const flowInputSchemas = getInputSchemas(flowSchema);
   if (!flowInputSchemas) {
     addDiagnostic({
       code: "unsupported-function-input",
       message: "Flow must use a fixed tuple input schema.",
     });
   }
-  const flowOutputSchema = getOutputSchema(flowDefinition);
+  const flowOutputSchema = getOutputSchema(flowSchema);
   const incomingEdges = new Map<string, FlowEdgeSpec[]>();
   const getIncomingEdge = (nodeId: string, handle: number) =>
     incomingEdges.get(targetPortKey(nodeId, handle))?.[0];

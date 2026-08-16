@@ -2,7 +2,7 @@ import type { StandardFnSchema } from "@fn-sphere/core";
 import type { $ZodFunction } from "zod/v4/core";
 import type { FlowSpec } from "./schema.js";
 
-export type FlowDefinition<T extends $ZodFunction = $ZodFunction> = Omit<
+export type FlowSchema<T extends $ZodFunction = $ZodFunction> = Omit<
   StandardFnSchema<T>,
   "implement"
 > & {
