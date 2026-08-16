@@ -89,6 +89,8 @@ The example below computes `(a + b) * c`:
    }
    ```
 
+   `valid` becomes `false` only when diagnostics contain an `error`. Unreachable function nodes are reported with `severity: "warning"`; they do not prevent compilation.
+
 4. Compile and execute the flow:
 
    ```ts
@@ -134,7 +136,9 @@ Try moving nodes, deleting an edge, or reconnecting handles. **Run graph** analy
 
 ## Schema Inference
 
-Flow does not duplicate Zod schemas in the graph. `compileFlow` reads each function's fixed tuple input and output schemas, checks every edge for compatibility, and derives the compiled function's input and output schemas from the connected graph.
+Flow does not duplicate Zod schemas in the graph. Starting at the output node, `compileFlow` walks upstream through the function nodes and edges that contribute to the result. It reads that executable slice's fixed tuple input and output schemas, checks its edges for compatibility, and derives the compiled function schema from its active input handles.
+
+Active input handles must form a contiguous zero-based tuple. Unreachable branches do not add parameters to the compiled function.
 
 ## Parsing Serialized Flows
 
