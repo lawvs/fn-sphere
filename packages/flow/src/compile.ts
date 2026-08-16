@@ -28,7 +28,11 @@ export function compileFlow(
   const inspected = inspectFlow(options);
   if (!inspected.valid) {
     const codes = [
-      ...new Set(inspected.diagnostics.map((diagnostic) => diagnostic.code)),
+      ...new Set(
+        inspected.diagnostics
+          .filter((diagnostic) => diagnostic.severity === "error")
+          .map((diagnostic) => diagnostic.code),
+      ),
     ];
     throw new Error(`Cannot compile invalid flow: ${codes.join(", ")}`);
   }

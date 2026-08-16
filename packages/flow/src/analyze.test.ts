@@ -50,7 +50,7 @@ const createFormula = (edges: FlowEdgeSpec[] = validEdges) => ({
     { id: "product", type: "fn" as const, fnName: "multiply" },
     { id: "output", type: "output" as const },
   ],
-  edges,
+  edges: [...edges],
 });
 
 describe("analyzeFlow", () => {
@@ -74,6 +74,7 @@ describe("analyzeFlow", () => {
     expect(analysis.valid).toBe(false);
     expect(analysis.diagnostics).toContainEqual(
       expect.objectContaining({
+        severity: "error",
         code: "missing-input-edge",
         nodeId: "sum",
         handle: 1,
@@ -109,33 +110,20 @@ describe("analyzeFlow", () => {
   });
 
   test("reports one input handle connected to multiple nodes", () => {
-    const numberIdentity = {
-      name: "numberIdentity",
-      define: z.function({
-        input: [z.number()],
-        output: z.number(),
-      }),
-      implement: (value: number) => value,
-    };
     const flow = createFormula([
-      ...validEdges,
+      ...validEdges.filter((edge) => edge.id !== "c-to-product"),
       {
-        id: "a-to-number-identity",
+        id: "a-to-product",
         source: "input",
         sourceHandle: 0,
-        target: "numberIdentity",
-        targetHandle: 0,
+        target: "product",
+        targetHandle: 1,
       },
     ]);
-    flow.nodes.push({
-      id: "numberIdentity",
-      type: "fn",
-      fnName: "numberIdentity",
-    });
 
     const analysis = analyzeFlow({
       flow,
-      fnList: [...arithmeticFns, numberIdentity],
+      fnList: arithmeticFns,
     });
 
     expect(analysis.valid).toBe(false);
@@ -204,6 +192,130 @@ describe("analyzeFlow", () => {
       }),
     );
   });
+
+  test("warns about an unreachable invalid function without rejecting the flow", () => {
+    const flow = createFormula();
+    flow.nodes.push({ id: "draft", type: "fn", fnName: "missing" });
+
+    const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+
+    expect(analysis.valid).toBe(true);
+    expect(analysis.diagnostics).toEqual([
+      expect.objectContaining({
+        severity: "warning",
+        code: "unreachable-node",
+        nodeId: "draft",
+      }),
+    ]);
+  });
+
+  test("ignores a dead consumer when validating flow input fan-out", () => {
+    const flow = createFormula();
+    flow.nodes.push({ id: "draft", type: "fn", fnName: "add" });
+    flow.edges.push({
+      id: "a-to-draft",
+      source: "input",
+      sourceHandle: 0,
+      target: "draft",
+      targetHandle: 0,
+    });
+
+    const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+
+    expect(analysis.valid).toBe(true);
+    expect(analysis.diagnostics).toContainEqual(
+      expect.objectContaining({
+        severity: "warning",
+        code: "unreachable-node",
+        nodeId: "draft",
+      }),
+    );
+    expect(analysis.diagnostics).not.toContainEqual(
+      expect.objectContaining({ code: "multiple-input-consumers" }),
+    );
+  });
+
+  test("ignores a dead cycle", () => {
+    const flow = createFormula();
+    flow.nodes.push(
+      { id: "dead-a", type: "fn", fnName: "add" },
+      { id: "dead-b", type: "fn", fnName: "add" },
+    );
+    flow.edges.push(
+      {
+        id: "dead-a-b",
+        source: "dead-a",
+        sourceHandle: 0,
+        target: "dead-b",
+        targetHandle: 0,
+      },
+      {
+        id: "dead-b-a",
+        source: "dead-b",
+        sourceHandle: 0,
+        target: "dead-a",
+        targetHandle: 0,
+      },
+    );
+
+    const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+
+    expect(analysis.valid).toBe(true);
+    expect(analysis.diagnostics).not.toContainEqual(
+      expect.objectContaining({ code: "cycle" }),
+    );
+    expect(analysis.diagnostics).toHaveLength(2);
+  });
+
+  test("rejects a cycle that contributes to the output", () => {
+    const flow = createFormula([
+      {
+        id: "a-to-sum",
+        source: "input",
+        sourceHandle: 0,
+        target: "sum",
+        targetHandle: 1,
+      },
+      {
+        id: "product-to-sum",
+        source: "product",
+        sourceHandle: 0,
+        target: "sum",
+        targetHandle: 0,
+      },
+      {
+        id: "sum-to-product",
+        source: "sum",
+        sourceHandle: 0,
+        target: "product",
+        targetHandle: 0,
+      },
+      {
+        id: "b-to-product",
+        source: "input",
+        sourceHandle: 1,
+        target: "product",
+        targetHandle: 1,
+      },
+      {
+        id: "product-to-output",
+        source: "product",
+        sourceHandle: 0,
+        target: "output",
+        targetHandle: 0,
+      },
+    ]);
+
+    const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+
+    expect(analysis.valid).toBe(false);
+    expect(analysis.diagnostics).toContainEqual(
+      expect.objectContaining({ severity: "error", code: "cycle" }),
+    );
+    expect(analysis.diagnostics).not.toContainEqual(
+      expect.objectContaining({ code: "unreachable-node" }),
+    );
+  });
 });
 
 describe("compileFlow", () => {
@@ -226,6 +338,34 @@ describe("compileFlow", () => {
         fnList: arithmeticFns,
       }),
     ).toThrowError(/missing-input-edge/);
+  });
+
+  test("compiles and runs when unreachable nodes are invalid", () => {
+    const flow = createFormula();
+    flow.nodes.push({ id: "draft", type: "fn", fnName: "missing" });
+    flow.edges.push({
+      id: "unused-input-to-draft",
+      source: "input",
+      sourceHandle: 3,
+      target: "draft",
+      targetHandle: 0,
+    });
+
+    const compiled = compileFlow({ flow, fnList: arithmeticFns });
+    const run = compiled.define.implement(compiled.implement);
+
+    expect(run(1, 2, 3)).toBe(9);
+    expect(compiled.define._zod.def.input._zod.def.items).toHaveLength(3);
+  });
+
+  test("excludes warning codes from invalid-flow errors", () => {
+    const edges = validEdges.filter((edge) => edge.id !== "b-to-sum");
+    const flow = createFormula(edges);
+    flow.nodes.push({ id: "draft", type: "fn", fnName: "missing" });
+
+    expect(() => compileFlow({ flow, fnList: arithmeticFns })).toThrowError(
+      /^(?!.*unreachable-node).*missing-input-edge/,
+    );
   });
 
   test("allows a compiled flow to be used as a function node", () => {

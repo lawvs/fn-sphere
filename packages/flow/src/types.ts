@@ -17,9 +17,13 @@ export type FlowDiagnosticCode =
   | "missing-input-edge"
   | "unresolved-input-schema"
   | "incompatible-edge"
-  | "cycle";
+  | "cycle"
+  | "unreachable-node";
+
+export type FlowDiagnosticSeverity = "error" | "warning";
 
 export type FlowDiagnostic = {
+  severity: FlowDiagnosticSeverity;
   code: FlowDiagnosticCode;
   message: string;
   nodeId?: string;

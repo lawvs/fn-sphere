@@ -38,6 +38,8 @@ type InspectFlowResult =
       executable: ExecutableFlow;
     };
 
+type DiagnosticInput = Omit<FlowDiagnostic, "severity">;
+
 const targetPortKey = (nodeId: string, handle: number) =>
   `${nodeId}\0${handle}`;
 
@@ -64,14 +66,17 @@ export const inspectFlow = ({
   fnList,
 }: InspectFlowOptions): InspectFlowResult => {
   const diagnostics: FlowDiagnostic[] = [];
-  const addDiagnostic = (diagnostic: FlowDiagnostic) => {
-    diagnostics.push(diagnostic);
+  const addError = (diagnostic: DiagnosticInput) => {
+    diagnostics.push({ ...diagnostic, severity: "error" });
+  };
+  const addWarning = (diagnostic: DiagnosticInput) => {
+    diagnostics.push({ ...diagnostic, severity: "warning" });
   };
 
   const nodeById = new Map<string, FlowNodeSpec>();
   for (const node of flowSpec.nodes) {
     if (nodeById.has(node.id)) {
-      addDiagnostic({
+      addError({
         code: "duplicate-node-id",
         message: `Duplicate node id: ${node.id}`,
         nodeId: node.id,
@@ -84,7 +89,7 @@ export const inspectFlow = ({
   const edgeIds = new Set<string>();
   for (const edge of flowSpec.edges) {
     if (edgeIds.has(edge.id)) {
-      addDiagnostic({
+      addError({
         code: "duplicate-edge-id",
         message: `Duplicate edge id: ${edge.id}`,
         edgeId: edge.id,
@@ -96,7 +101,7 @@ export const inspectFlow = ({
   const fnByName = new Map<string, StandardFnSchema>();
   for (const fnSchema of fnList) {
     if (fnByName.has(fnSchema.name)) {
-      addDiagnostic({
+      addError({
         code: "duplicate-function-name",
         message: `Duplicate function name: ${fnSchema.name}`,
       });
@@ -107,12 +112,12 @@ export const inspectFlow = ({
 
   const inputNodes = flowSpec.nodes.filter((node) => node.type === "input");
   if (inputNodes.length === 0) {
-    addDiagnostic({
+    addError({
       code: "missing-input-node",
       message: "Flow requires one input node.",
     });
   } else if (inputNodes.length > 1) {
-    addDiagnostic({
+    addError({
       code: "multiple-input-nodes",
       message: "Flow requires exactly one input node.",
     });
@@ -120,12 +125,12 @@ export const inspectFlow = ({
 
   const outputNodes = flowSpec.nodes.filter((node) => node.type === "output");
   if (outputNodes.length === 0) {
-    addDiagnostic({
+    addError({
       code: "missing-output-node",
       message: "Flow requires one output node.",
     });
   } else if (outputNodes.length > 1) {
-    addDiagnostic({
+    addError({
       code: "multiple-output-nodes",
       message: "Flow requires exactly one output node.",
     });
@@ -134,12 +139,55 @@ export const inspectFlow = ({
   const fnNodes = flowSpec.nodes.filter(
     (node): node is FlowFnNodeSpec => node.type === "fn",
   );
+
+  const incomingEdgesByNode = new Map<string, FlowEdgeSpec[]>();
+  for (const edge of flowSpec.edges) {
+    const edges = incomingEdgesByNode.get(edge.target) ?? [];
+    edges.push(edge);
+    incomingEdgesByNode.set(edge.target, edges);
+  }
+
+  const activeNodeIds = new Set<string>();
+  const activeEdgeRefs = new Set<FlowEdgeSpec>();
+  const visitNodeInputs = (nodeId: string) => {
+    if (activeNodeIds.has(nodeId)) {
+      return;
+    }
+    activeNodeIds.add(nodeId);
+
+    for (const edge of incomingEdgesByNode.get(nodeId) ?? []) {
+      activeEdgeRefs.add(edge);
+      const sourceNode = nodeById.get(edge.source);
+      if (sourceNode) {
+        visitNodeInputs(sourceNode.id);
+      }
+    }
+  };
+
+  const outputNode = outputNodes.length === 1 ? outputNodes[0] : undefined;
+  if (outputNode) {
+    visitNodeInputs(outputNode.id);
+  }
+
+  const activeFnNodes = fnNodes.filter((node) => activeNodeIds.has(node.id));
+  const activeEdges = flowSpec.edges.filter((edge) => activeEdgeRefs.has(edge));
+
+  for (const node of fnNodes) {
+    if (!activeNodeIds.has(node.id)) {
+      addWarning({
+        code: "unreachable-node",
+        message: `Node ${node.id} does not contribute to the flow output.`,
+        nodeId: node.id,
+      });
+    }
+  }
+
   const fnByNodeId = new Map<string, StandardFnSchema>();
   const inputSchemasByNodeId = new Map<string, $ZodType[]>();
-  for (const node of fnNodes) {
+  for (const node of activeFnNodes) {
     const fnSchema = fnByName.get(node.fnName);
     if (!fnSchema) {
-      addDiagnostic({
+      addError({
         code: "unknown-function",
         message: `Unknown function: ${node.fnName}`,
         nodeId: node.id,
@@ -148,7 +196,7 @@ export const inspectFlow = ({
     }
     const inputSchemas = getInputSchemas(fnSchema);
     if (!inputSchemas) {
-      addDiagnostic({
+      addError({
         code: "unsupported-function-input",
         message: `Function ${node.fnName} must use a fixed tuple input schema.`,
         nodeId: node.id,
@@ -164,15 +212,15 @@ export const inspectFlow = ({
     incomingEdges.get(targetPortKey(nodeId, handle))?.[0];
   const inputSchemaByHandle = new Map<number, $ZodType>();
   const inputEdgeByHandle = new Map<number, FlowEdgeSpec>();
-  const sourceSchemas = new Map<string, $ZodType>();
-  const targetSchemas = new Map<string, $ZodType>();
+  const sourceSchemas = new Map<FlowEdgeSpec, $ZodType>();
+  const targetSchemas = new Map<FlowEdgeSpec, $ZodType>();
 
-  for (const edge of flowSpec.edges) {
+  for (const edge of activeEdges) {
     const sourceNode = nodeById.get(edge.source);
     const targetNode = nodeById.get(edge.target);
 
     if (!sourceNode) {
-      addDiagnostic({
+      addError({
         code: "unknown-source-node",
         message: `Unknown source node: ${edge.source}`,
         edgeId: edge.id,
@@ -181,43 +229,39 @@ export const inspectFlow = ({
     } else if (sourceNode.type === "input") {
       const index = edge.sourceHandle;
       if (!isHandleIndex(index)) {
-        addDiagnostic({
+        addError({
           code: "invalid-source-handle",
           message: `Invalid input handle: ${edge.sourceHandle}`,
           edgeId: edge.id,
           nodeId: sourceNode.id,
           handle: edge.sourceHandle,
         });
+      } else if (inputEdgeByHandle.has(index)) {
+        addError({
+          code: "multiple-input-consumers",
+          message: `Flow input handle ${index} can only connect to one node.`,
+          nodeId: sourceNode.id,
+          edgeId: edge.id,
+          handle: index,
+        });
       } else {
-        if (inputEdgeByHandle.has(index)) {
-          addDiagnostic({
-            code: "multiple-input-consumers",
-            message: `Flow input handle ${index} can only connect to one node.`,
-            nodeId: sourceNode.id,
-            edgeId: edge.id,
-            handle: index,
-          });
-        } else {
-          inputEdgeByHandle.set(index, edge);
-        }
+        inputEdgeByHandle.set(index, edge);
       }
     } else if (sourceNode.type === "fn") {
       const fnSchema = fnByNodeId.get(sourceNode.id);
-      if (edge.sourceHandle !== 0 || !fnSchema) {
-        if (edge.sourceHandle !== 0) {
-          addDiagnostic({
-            code: "invalid-source-handle",
-            message: `Invalid function output handle: ${edge.sourceHandle}`,
-            edgeId: edge.id,
-            nodeId: sourceNode.id,
-            handle: edge.sourceHandle,
-          });
-        }
-      } else {
-        sourceSchemas.set(edge.id, getOutputSchema(fnSchema));
+      if (edge.sourceHandle !== 0) {
+        addError({
+          code: "invalid-source-handle",
+          message: `Invalid function output handle: ${edge.sourceHandle}`,
+          edgeId: edge.id,
+          nodeId: sourceNode.id,
+          handle: edge.sourceHandle,
+        });
+      } else if (fnSchema) {
+        sourceSchemas.set(edge, getOutputSchema(fnSchema));
       }
     } else {
-      addDiagnostic({
+      addError({
         code: "invalid-source-handle",
         message: "Output nodes cannot be edge sources.",
         edgeId: edge.id,
@@ -227,7 +271,7 @@ export const inspectFlow = ({
     }
 
     if (!targetNode) {
-      addDiagnostic({
+      addError({
         code: "unknown-target-node",
         message: `Unknown target node: ${edge.target}`,
         edgeId: edge.id,
@@ -240,7 +284,7 @@ export const inspectFlow = ({
       const fnSchema = fnByNodeId.get(targetNode.id);
       const index = edge.targetHandle;
       if (!isHandleIndex(index)) {
-        addDiagnostic({
+        addError({
           code: "invalid-target-handle",
           message: `Invalid function input handle: ${edge.targetHandle}`,
           edgeId: edge.id,
@@ -250,7 +294,7 @@ export const inspectFlow = ({
       } else if (fnSchema) {
         const targetSchema = inputSchemasByNodeId.get(targetNode.id)?.[index];
         if (targetSchema) {
-          targetSchemas.set(edge.id, targetSchema);
+          targetSchemas.set(edge, targetSchema);
           if (
             sourceNode?.type === "input" &&
             !inputSchemaByHandle.has(edge.sourceHandle)
@@ -258,7 +302,7 @@ export const inspectFlow = ({
             inputSchemaByHandle.set(edge.sourceHandle, targetSchema);
           }
         } else {
-          addDiagnostic({
+          addError({
             code: "invalid-target-handle",
             message: `Invalid function input handle: ${edge.targetHandle}`,
             edgeId: edge.id,
@@ -269,7 +313,7 @@ export const inspectFlow = ({
       }
     } else if (targetNode.type === "output") {
       if (edge.targetHandle !== 0) {
-        addDiagnostic({
+        addError({
           code: "invalid-target-handle",
           message: `Invalid flow output handle: ${edge.targetHandle}`,
           edgeId: edge.id,
@@ -278,7 +322,7 @@ export const inspectFlow = ({
         });
       }
     } else {
-      addDiagnostic({
+      addError({
         code: "invalid-target-handle",
         message: "Input nodes cannot be edge targets.",
         edgeId: edge.id,
@@ -301,7 +345,7 @@ export const inspectFlow = ({
     if (!edge) {
       continue;
     }
-    addDiagnostic({
+    addError({
       code: "multiple-input-edges",
       message: `Multiple edges target ${edge.target}.${edge.targetHandle}.`,
       nodeId: edge.target,
@@ -318,7 +362,7 @@ export const inspectFlow = ({
       inputSchemas.push(inputSchema);
       continue;
     }
-    addDiagnostic({
+    addError({
       code: "unresolved-input-schema",
       message: `Cannot infer schema for flow input handle ${handle}.`,
       ...(inputNodes[0] ? { nodeId: inputNodes[0].id } : {}),
@@ -326,34 +370,33 @@ export const inspectFlow = ({
     });
   }
 
-  for (const node of fnNodes) {
+  for (const node of activeFnNodes) {
     const inputSchemas = inputSchemasByNodeId.get(node.id);
     if (!inputSchemas) {
       continue;
     }
     inputSchemas.forEach((_, index) => {
-      const handle = index;
-      if (!getIncomingEdge(node.id, handle)) {
-        addDiagnostic({
+      if (!getIncomingEdge(node.id, index)) {
+        addError({
           code: "missing-input-edge",
-          message: `Missing edge for ${node.id}.${handle}.`,
+          message: `Missing edge for ${node.id}.${index}.`,
           nodeId: node.id,
-          handle,
+          handle: index,
         });
       }
     });
   }
 
-  const outputNode = outputNodes.length === 1 ? outputNodes[0] : undefined;
   const outputEdge = outputNode ? getIncomingEdge(outputNode.id, 0) : undefined;
   if (outputNode && !outputEdge) {
-    addDiagnostic({
+    addError({
       code: "missing-input-edge",
       message: `Missing edge for ${outputNode.id}.input.`,
       nodeId: outputNode.id,
       handle: 0,
     });
   }
+
   const outputSourceNode = outputEdge
     ? nodeById.get(outputEdge.source)
     : undefined;
@@ -367,15 +410,15 @@ export const inspectFlow = ({
     outputSchema = inputSchemaByHandle.get(outputEdge.sourceHandle);
   }
 
-  for (const edge of flowSpec.edges) {
-    const sourceSchema = sourceSchemas.get(edge.id);
-    const targetSchema = targetSchemas.get(edge.id);
+  for (const edge of activeEdges) {
+    const sourceSchema = sourceSchemas.get(edge);
+    const targetSchema = targetSchemas.get(edge);
     if (
       sourceSchema &&
       targetSchema &&
       !isCompatibleType(targetSchema, sourceSchema)
     ) {
-      addDiagnostic({
+      addError({
         code: "incompatible-edge",
         message: `Incompatible edge: ${edge.id}`,
         edgeId: edge.id,
@@ -383,10 +426,10 @@ export const inspectFlow = ({
     }
   }
 
-  const fnNodeById = new Map(fnNodes.map((node) => [node.id, node]));
+  const fnNodeById = new Map(activeFnNodes.map((node) => [node.id, node]));
   const outgoing = new Map<string, string[]>();
-  const inDegree = new Map(fnNodes.map((node) => [node.id, 0]));
-  for (const edge of flowSpec.edges) {
+  const inDegree = new Map(activeFnNodes.map((node) => [node.id, 0]));
+  for (const edge of activeEdges) {
     if (!fnNodeById.has(edge.source) || !fnNodeById.has(edge.target)) {
       continue;
     }
@@ -396,7 +439,7 @@ export const inspectFlow = ({
     inDegree.set(edge.target, (inDegree.get(edge.target) ?? 0) + 1);
   }
 
-  const queue = fnNodes.filter((node) => inDegree.get(node.id) === 0);
+  const queue = activeFnNodes.filter((node) => inDegree.get(node.id) === 0);
   const orderedFnNodes: FlowFnNodeSpec[] = [];
   for (let index = 0; index < queue.length; index += 1) {
     const node = queue[index];
@@ -416,56 +459,30 @@ export const inspectFlow = ({
     }
   }
 
-  if (orderedFnNodes.length !== fnNodes.length) {
-    addDiagnostic({
+  if (orderedFnNodes.length !== activeFnNodes.length) {
+    addError({
       code: "cycle",
       message: "Flow contains a cycle.",
     });
   }
 
-  if (
-    diagnostics.length > 0 ||
-    !inputNodes[0] ||
-    !outputEdge ||
-    !outputSchema
-  ) {
+  const hasErrors = diagnostics.some(
+    (diagnostic) => diagnostic.severity === "error",
+  );
+  if (hasErrors || !inputNodes[0] || !outputEdge || !outputSchema) {
     return {
       valid: false,
       diagnostics,
     };
   }
 
-  const reachableNodeIds = new Set<string>();
-  const visitSource = (edge: FlowEdgeSpec) => {
-    const sourceNode = nodeById.get(edge.source);
-    if (!sourceNode || sourceNode.type !== "fn") {
-      return;
-    }
-    if (reachableNodeIds.has(sourceNode.id)) {
-      return;
-    }
-    reachableNodeIds.add(sourceNode.id);
-
-    for (const [index] of (
-      inputSchemasByNodeId.get(sourceNode.id) ?? []
-    ).entries()) {
-      const inputEdge = getIncomingEdge(sourceNode.id, index);
-      if (inputEdge) {
-        visitSource(inputEdge);
-      }
-    }
-  };
-  visitSource(outputEdge);
-
-  const nodes = orderedFnNodes
-    .filter((node) => reachableNodeIds.has(node.id))
-    .map((node) => ({
-      id: node.id,
-      fn: fnByNodeId.get(node.id)!,
-      inputEdges: inputSchemasByNodeId
-        .get(node.id)!
-        .map((_, index) => getIncomingEdge(node.id, index)!),
-    }));
+  const nodes = orderedFnNodes.map((node) => ({
+    id: node.id,
+    fn: fnByNodeId.get(node.id)!,
+    inputEdges: inputSchemasByNodeId
+      .get(node.id)!
+      .map((_, index) => getIncomingEdge(node.id, index)!),
+  }));
 
   return {
     valid: true,
