@@ -3,15 +3,21 @@ import Default from "@astrojs/starlight/components/Sidebar.astro";
 import { ModuleSelector } from "../module-selector.tsx";
 
 const { id, sidebar } = Astro.locals.starlightRoute;
-const isSortModule = id.startsWith("sort");
+const isolatedModules = ["sort", "flow"] as const;
+const currentModule = isolatedModules.find((module) => id.startsWith(module));
 
-const hasSortLink = (entry: (typeof sidebar)[number]): boolean => {
-  if (entry.type === "link") return entry.href.includes("/sort/");
-  return entry.entries.some(hasSortLink);
+const hasModuleLink = (
+  entry: (typeof sidebar)[number],
+  module: (typeof isolatedModules)[number],
+): boolean => {
+  if (entry.type === "link") return entry.href.includes(`/${module}/`);
+  return entry.entries.some((child) => hasModuleLink(child, module));
 };
 
-Astro.locals.starlightRoute.sidebar = sidebar.filter(
-  (entry) => hasSortLink(entry) === isSortModule,
+Astro.locals.starlightRoute.sidebar = sidebar.filter((entry) =>
+  currentModule
+    ? hasModuleLink(entry, currentModule)
+    : !isolatedModules.some((module) => hasModuleLink(entry, module)),
 );
 ---
 
