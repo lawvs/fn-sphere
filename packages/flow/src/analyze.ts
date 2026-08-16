@@ -1,5 +1,5 @@
 import type { StandardFnSchema } from "@fn-sphere/core";
-import { isCompatibleType, isSameType } from "zod-compare";
+import { isCompatibleType } from "zod-compare";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import type {
   FlowEdgeSpec,
@@ -150,7 +150,7 @@ export const inspectFlow = ({
   const getIncomingEdge = (nodeId: string, handle: number) =>
     incomingEdges.get(targetPortKey(nodeId, handle))?.[0];
   const inputSchemaByHandle = new Map<number, $ZodType>();
-  const inputSourceHandles = new Set<number>();
+  const inputEdgeByHandle = new Map<number, FlowEdgeSpec>();
   const sourceSchemas = new Map<string, $ZodType>();
   const targetSchemas = new Map<string, $ZodType>();
 
@@ -176,7 +176,17 @@ export const inspectFlow = ({
           handle: edge.sourceHandle,
         });
       } else {
-        inputSourceHandles.add(index);
+        if (inputEdgeByHandle.has(index)) {
+          addDiagnostic({
+            code: "multiple-input-consumers",
+            message: `Flow input handle ${index} can only connect to one node.`,
+            nodeId: sourceNode.id,
+            edgeId: edge.id,
+            handle: index,
+          });
+        } else {
+          inputEdgeByHandle.set(index, edge);
+        }
       }
     } else if (sourceNode.type === "fn") {
       const fnSchema = fnByNodeId.get(sourceNode.id);
@@ -228,19 +238,11 @@ export const inspectFlow = ({
         const targetSchema = inputSchemasByNodeId.get(targetNode.id)?.[index];
         if (targetSchema) {
           targetSchemas.set(edge.id, targetSchema);
-          if (sourceNode?.type === "input") {
-            const inputSchema = inputSchemaByHandle.get(edge.sourceHandle);
-            if (inputSchema && !isSameType(inputSchema, targetSchema)) {
-              addDiagnostic({
-                code: "conflicting-input-schema",
-                message: `Flow input handle ${edge.sourceHandle} connects to different schemas.`,
-                edgeId: edge.id,
-                nodeId: sourceNode.id,
-                handle: edge.sourceHandle,
-              });
-            } else if (!inputSchema) {
-              inputSchemaByHandle.set(edge.sourceHandle, targetSchema);
-            }
+          if (
+            sourceNode?.type === "input" &&
+            !inputSchemaByHandle.has(edge.sourceHandle)
+          ) {
+            inputSchemaByHandle.set(edge.sourceHandle, targetSchema);
           }
         } else {
           addDiagnostic({
@@ -296,7 +298,7 @@ export const inspectFlow = ({
   }
 
   const inputSchemas: $ZodType[] = [];
-  const lastInputHandle = Math.max(-1, ...inputSourceHandles);
+  const lastInputHandle = Math.max(-1, ...inputEdgeByHandle.keys());
   for (let handle = 0; handle <= lastInputHandle; handle += 1) {
     const inputSchema = inputSchemaByHandle.get(handle);
     if (inputSchema) {
