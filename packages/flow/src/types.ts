@@ -9,7 +9,6 @@ export type FlowDiagnosticCode =
   | "unsupported-function-input"
   | "unknown-function"
   | "unknown-source-node"
-  | "unknown-target-node"
   | "invalid-source-handle"
   | "invalid-target-handle"
   | "multiple-input-consumers"

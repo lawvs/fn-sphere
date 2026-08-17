@@ -316,6 +316,65 @@ describe("analyzeFlow", () => {
       expect.objectContaining({ code: "unreachable-node" }),
     );
   });
+
+  test("does not report reachability when there is no unique output", () => {
+    const flow = createFormula();
+    flow.nodes = flow.nodes.filter((node) => node.type !== "output");
+
+    const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+
+    expect(analysis.valid).toBe(false);
+    expect(analysis.diagnostics).toContainEqual(
+      expect.objectContaining({ code: "missing-output-node" }),
+    );
+    expect(analysis.diagnostics).not.toContainEqual(
+      expect.objectContaining({ code: "unreachable-node" }),
+    );
+  });
+
+  test("ignores an edge whose target cannot contribute to the output", () => {
+    const flow = createFormula();
+    flow.edges.push({
+      id: "product-to-nowhere",
+      source: "product",
+      sourceHandle: 0,
+      target: "missing",
+      targetHandle: 0,
+    });
+
+    expect(analyzeFlow({ flow, fnList: arithmeticFns })).toEqual({
+      valid: true,
+      diagnostics: [],
+    });
+  });
+
+  test("ignores duplicate function names unused by the executable slice", () => {
+    const subtract = arithmeticFns.find((fn) => fn.name === "subtract")!;
+
+    expect(
+      analyzeFlow({
+        flow: createFormula(),
+        fnList: [...arithmeticFns, subtract],
+      }),
+    ).toEqual({ valid: true, diagnostics: [] });
+  });
+
+  test("rejects a duplicate function name used by the executable slice", () => {
+    const add = arithmeticFns.find((fn) => fn.name === "add")!;
+    const analysis = analyzeFlow({
+      flow: createFormula(),
+      fnList: [...arithmeticFns, add],
+    });
+
+    expect(analysis.valid).toBe(false);
+    expect(analysis.diagnostics).toContainEqual(
+      expect.objectContaining({
+        severity: "error",
+        code: "duplicate-function-name",
+        nodeId: "sum",
+      }),
+    );
+  });
 });
 
 describe("compileFlow", () => {
