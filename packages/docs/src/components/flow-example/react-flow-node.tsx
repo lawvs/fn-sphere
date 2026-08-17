@@ -1,4 +1,11 @@
-import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
+import {
+  Handle,
+  Position,
+  useUpdateNodeInternals,
+  type Node,
+  type NodeProps,
+} from "@xyflow/react";
+import { useEffect } from "react";
 
 type FlowCanvasNodeData = {
   flowType: "input" | "fn" | "output";
@@ -13,9 +20,25 @@ export type FlowCanvasNode = Node<FlowCanvasNodeData, "flow">;
 const handleTop = (index: number, count: number) =>
   `${((index + 1) / (count + 1)) * 100}%`;
 
-export function FlowCanvasNodeView({ data }: NodeProps<FlowCanvasNode>) {
+export function FlowCanvasNodeView({
+  id,
+  data,
+  selected,
+}: NodeProps<FlowCanvasNode>) {
+  const updateNodeInternals = useUpdateNodeInternals();
+
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [data.inputCount, data.outputCount, id, updateNodeInternals]);
+
   return (
-    <div className="min-w-28 rounded-lg border border-gray-300 bg-white px-4 py-3 text-center shadow-sm dark:border-gray-600 dark:bg-gray-800">
+    <div
+      className={`min-w-28 rounded-lg border bg-white px-4 py-3 text-center shadow-sm dark:bg-gray-800 ${
+        selected
+          ? "border-blue-500 ring-2 ring-blue-200 dark:border-blue-400 dark:ring-blue-900"
+          : "border-gray-300 dark:border-gray-600"
+      }`}
+    >
       {Array.from({ length: data.inputCount }, (_, index) => (
         <Handle
           key={`input-${index}`}
