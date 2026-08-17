@@ -182,7 +182,7 @@ export function FlowPlayground() {
   };
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(22rem,1fr)]">
+    <div className="flex flex-col gap-5">
       <section className="flex min-w-0 flex-col gap-4">
         <div className="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
           <label className="flex min-w-44 flex-1 flex-col gap-1 text-sm">
@@ -329,17 +329,25 @@ export function FlowPlayground() {
         )}
       </section>
 
-      <aside className="min-w-0 rounded-lg border border-gray-300 bg-gray-950 p-4 text-gray-100 dark:border-gray-600">
-        <div className="mb-3 flex items-baseline justify-between gap-3">
-          <h2 className="m-0 text-base font-semibold text-white">FlowSpec</h2>
-          <span className="text-xs text-gray-400">Live JSON</span>
-        </div>
-        <pre className="m-0 max-h-[56rem] overflow-auto whitespace-pre text-xs leading-5 text-gray-100">
+      <details className="group min-w-0 overflow-hidden rounded-lg border border-gray-300 bg-gray-950 text-gray-100 dark:border-gray-600">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:content-none">
+          <span className="text-sm font-semibold text-white">FlowSpec</span>
+          <span className="flex items-center gap-2 text-xs text-gray-400">
+            Live JSON
+            <span
+              aria-hidden="true"
+              className="inline-block transition-transform group-open:rotate-180"
+            >
+              ▾
+            </span>
+          </span>
+        </summary>
+        <pre className="m-0 max-h-[36rem] overflow-auto border-t border-gray-800 px-4 py-3 whitespace-pre text-xs leading-5 text-gray-100">
           {serialization.flow
             ? JSON.stringify(serialization.flow, null, 2)
             : serialization.error}
         </pre>
-      </aside>
+      </details>
     </div>
   );
 }
