@@ -99,12 +99,10 @@ export const inspectFlow = ({
   }
 
   const fnByName = new Map<string, StandardFnSchema>();
+  const duplicateFnNames = new Set<string>();
   for (const fnSchema of fnList) {
     if (fnByName.has(fnSchema.name)) {
-      addError({
-        code: "duplicate-function-name",
-        message: `Duplicate function name: ${fnSchema.name}`,
-      });
+      duplicateFnNames.add(fnSchema.name);
       continue;
     }
     fnByName.set(fnSchema.name, fnSchema);
@@ -148,7 +146,6 @@ export const inspectFlow = ({
   }
 
   const activeNodeIds = new Set<string>();
-  const activeEdgeRefs = new Set<FlowEdgeSpec>();
   const visitNodeInputs = (nodeId: string) => {
     if (activeNodeIds.has(nodeId)) {
       return;
@@ -156,7 +153,6 @@ export const inspectFlow = ({
     activeNodeIds.add(nodeId);
 
     for (const edge of incomingEdgesByNode.get(nodeId) ?? []) {
-      activeEdgeRefs.add(edge);
       const sourceNode = nodeById.get(edge.source);
       if (sourceNode) {
         visitNodeInputs(sourceNode.id);
@@ -170,21 +166,33 @@ export const inspectFlow = ({
   }
 
   const activeFnNodes = fnNodes.filter((node) => activeNodeIds.has(node.id));
-  const activeEdges = flowSpec.edges.filter((edge) => activeEdgeRefs.has(edge));
+  const activeEdges = flowSpec.edges.filter((edge) =>
+    activeNodeIds.has(edge.target),
+  );
 
-  for (const node of fnNodes) {
-    if (!activeNodeIds.has(node.id)) {
-      addWarning({
-        code: "unreachable-node",
-        message: `Node ${node.id} does not contribute to the flow output.`,
-        nodeId: node.id,
-      });
+  if (outputNode) {
+    for (const node of fnNodes) {
+      if (!activeNodeIds.has(node.id)) {
+        addWarning({
+          code: "unreachable-node",
+          message: `Node ${node.id} does not contribute to the flow output.`,
+          nodeId: node.id,
+        });
+      }
     }
   }
 
   const fnByNodeId = new Map<string, StandardFnSchema>();
   const inputSchemasByNodeId = new Map<string, $ZodType[]>();
   for (const node of activeFnNodes) {
+    if (duplicateFnNames.has(node.fnName)) {
+      addError({
+        code: "duplicate-function-name",
+        message: `Duplicate function name: ${node.fnName}`,
+        nodeId: node.id,
+      });
+      continue;
+    }
     const fnSchema = fnByName.get(node.fnName);
     if (!fnSchema) {
       addError({
@@ -212,12 +220,12 @@ export const inspectFlow = ({
     incomingEdges.get(targetPortKey(nodeId, handle))?.[0];
   const inputSchemaByHandle = new Map<number, $ZodType>();
   const inputEdgeByHandle = new Map<number, FlowEdgeSpec>();
-  const sourceSchemas = new Map<FlowEdgeSpec, $ZodType>();
-  const targetSchemas = new Map<FlowEdgeSpec, $ZodType>();
 
   for (const edge of activeEdges) {
     const sourceNode = nodeById.get(edge.source);
-    const targetNode = nodeById.get(edge.target);
+    const targetNode = nodeById.get(edge.target)!;
+    let sourceSchema: $ZodType | undefined;
+    let targetSchema: $ZodType | undefined;
 
     if (!sourceNode) {
       addError({
@@ -258,7 +266,7 @@ export const inspectFlow = ({
           handle: edge.sourceHandle,
         });
       } else if (fnSchema) {
-        sourceSchemas.set(edge, getOutputSchema(fnSchema));
+        sourceSchema = getOutputSchema(fnSchema);
       }
     } else {
       addError({
@@ -268,16 +276,6 @@ export const inspectFlow = ({
         nodeId: sourceNode.id,
         handle: edge.sourceHandle,
       });
-    }
-
-    if (!targetNode) {
-      addError({
-        code: "unknown-target-node",
-        message: `Unknown target node: ${edge.target}`,
-        edgeId: edge.id,
-        nodeId: edge.target,
-      });
-      continue;
     }
 
     if (targetNode.type === "fn") {
@@ -292,14 +290,14 @@ export const inspectFlow = ({
           handle: edge.targetHandle,
         });
       } else if (fnSchema) {
-        const targetSchema = inputSchemasByNodeId.get(targetNode.id)?.[index];
-        if (targetSchema) {
-          targetSchemas.set(edge, targetSchema);
+        const inputSchema = inputSchemasByNodeId.get(targetNode.id)?.[index];
+        if (inputSchema) {
+          targetSchema = inputSchema;
           if (
             sourceNode?.type === "input" &&
             !inputSchemaByHandle.has(edge.sourceHandle)
           ) {
-            inputSchemaByHandle.set(edge.sourceHandle, targetSchema);
+            inputSchemaByHandle.set(edge.sourceHandle, inputSchema);
           }
         } else {
           addError({
@@ -328,6 +326,18 @@ export const inspectFlow = ({
         edgeId: edge.id,
         nodeId: targetNode.id,
         handle: edge.targetHandle,
+      });
+    }
+
+    if (
+      sourceSchema &&
+      targetSchema &&
+      !isCompatibleType(targetSchema, sourceSchema)
+    ) {
+      addError({
+        code: "incompatible-edge",
+        message: `Incompatible edge: ${edge.id}`,
+        edgeId: edge.id,
       });
     }
 
@@ -408,22 +418,6 @@ export const inspectFlow = ({
     }
   } else if (outputSourceNode?.type === "input" && outputEdge) {
     outputSchema = inputSchemaByHandle.get(outputEdge.sourceHandle);
-  }
-
-  for (const edge of activeEdges) {
-    const sourceSchema = sourceSchemas.get(edge);
-    const targetSchema = targetSchemas.get(edge);
-    if (
-      sourceSchema &&
-      targetSchema &&
-      !isCompatibleType(targetSchema, sourceSchema)
-    ) {
-      addError({
-        code: "incompatible-edge",
-        message: `Incompatible edge: ${edge.id}`,
-        edgeId: edge.id,
-      });
-    }
   }
 
   const fnNodeById = new Map(activeFnNodes.map((node) => [node.id, node]));
