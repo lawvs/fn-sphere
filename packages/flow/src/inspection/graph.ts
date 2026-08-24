@@ -5,7 +5,7 @@ import type {
   FlowNodeSpec,
   FlowOutputNodeSpec,
   FlowSpec,
-} from "./schema.js";
+} from "../schema.js";
 
 export type FlowIndex = {
   nodeById: Map<string, FlowNodeSpec>;

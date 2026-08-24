@@ -2,8 +2,8 @@ import type { StandardFnSchema } from "@fn-sphere/core";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import { inspectConnections, type ResolvedFnNode } from "./connections.js";
 import { getOutputSlice, indexFlow, orderFnNodes } from "./graph.js";
-import type { FlowEdgeSpec, FlowSpec } from "./schema.js";
-import type { FlowDiagnostic } from "./types.js";
+import type { FlowEdgeSpec, FlowSpec } from "../schema.js";
+import type { FlowDiagnostic } from "../types.js";
 
 type InspectFlowOptions = {
   flow: FlowSpec;
