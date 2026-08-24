@@ -1,5 +1,5 @@
 import type { StandardFnSchema } from "@fn-sphere/core";
-import { inspectFlow } from "./inspect.js";
+import { inspectFlow } from "./inspection/inspect.js";
 import type { FlowSpec } from "./schema.js";
 import type { FlowAnalysis } from "./types.js";
 

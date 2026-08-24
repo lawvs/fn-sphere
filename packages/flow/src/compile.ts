@@ -6,7 +6,7 @@ import type {
   $ZodType,
   $ZodUnknown,
 } from "zod/v4/core";
-import { inspectFlow } from "./inspect.js";
+import { inspectFlow } from "./inspection/inspect.js";
 import type { FlowEdgeSpec, FlowSpec } from "./schema.js";
 
 type CompileFlowOptions = {

@@ -7,8 +7,8 @@ import type {
   FlowInputNodeSpec,
   FlowNodeSpec,
   FlowOutputNodeSpec,
-} from "./schema.js";
-import type { FlowDiagnostic } from "./types.js";
+} from "../schema.js";
+import type { FlowDiagnostic } from "../types.js";
 
 export type ResolvedFnNode = {
   fn: StandardFnSchema;
