@@ -1,9 +1,8 @@
-import { arithmeticFns } from "@fn-sphere/core";
-import { analyzeFlow, compileFlow, type FlowDiagnostic } from "@fn-sphere/flow";
 import {
   addEdge,
   Background,
   Controls,
+  MarkerType,
   ReactFlow,
   reconnectEdge,
   useEdgesState,
@@ -13,39 +12,52 @@ import {
   type NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  FlowCanvasNodeView,
-  type FlowCanvasNode,
-} from "../flow-example/react-flow-node";
-import {
-  arithmeticOperations,
   createFunctionNode,
   createPlaygroundEdges,
   createPlaygroundNodes,
-  getActiveInputCount,
-  toFlowSpec,
+  playgroundFns,
+  preparePlayground,
+  resolveFunctionView,
+  runPlayground,
 } from "./model";
+import { FlowPlaygroundNode, FlowPlaygroundRuntime } from "./node";
 
-const nodeTypes = { flow: FlowCanvasNodeView } satisfies NodeTypes;
+const nodeTypes = { flow: FlowPlaygroundNode } satisfies NodeTypes;
+const edgeDefaults = {
+  type: "smoothstep",
+  markerEnd: { type: MarkerType.ArrowClosed },
+  style: { stroke: "#94a3b8", strokeWidth: 1.7 },
+};
 const buttonClass =
-  "rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700";
+  "rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700";
 const inputClass =
-  "rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm shadow-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100";
+  "rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100";
 
-type Serialization =
-  | { flow: ReturnType<typeof toFlowSpec>; error?: never }
-  | { flow?: never; error: string };
+const getColorMode = () =>
+  document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 
-type Evaluation =
-  | { status: "invalid" }
-  | { status: "success"; value: unknown }
-  | { status: "error"; message: string };
+function useColorMode() {
+  const [colorMode, setColorMode] = useState<"light" | "dark">(getColorMode);
 
-const errorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Unable to process the flow.";
+  useEffect(() => {
+    const updateColorMode = () => setColorMode(getColorMode());
+    const observer = new MutationObserver(updateColorMode);
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return colorMode;
+}
 
 export function FlowPlayground() {
+  const colorMode = useColorMode();
   const [name, setName] = useState("myFormula");
   const [nodes, setNodes, onNodesChange] = useNodesState(
     createPlaygroundNodes(),
@@ -54,58 +66,41 @@ export function FlowPlayground() {
     createPlaygroundEdges(),
   );
   const [inputs, setInputs] = useState([1, 2, 3]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [functionQuery, setFunctionQuery] = useState("");
   const nextNodeSequence = useRef(1);
 
-  const inputCount =
-    nodes.find((node) => node.data.flowType === "input")?.data.outputCount ?? 0;
-
-  const serialization = useMemo<Serialization>(() => {
-    try {
-      return { flow: toFlowSpec(name, nodes, edges) };
-    } catch (error) {
-      return { error: errorMessage(error) };
-    }
-  }, [edges, name, nodes]);
-
-  const analysis = useMemo(
-    () =>
-      serialization.flow
-        ? analyzeFlow({ flow: serialization.flow, fnList: arithmeticFns })
-        : undefined,
-    [serialization.flow],
+  const inputCount = inputs.length;
+  const prepared = useMemo(
+    () => preparePlayground(name, nodes, edges),
+    [edges, name, nodes],
+  );
+  const result = useMemo(
+    () => runPlayground(prepared, inputs),
+    [inputs, prepared],
   );
 
-  const evaluation = useMemo<Evaluation>(() => {
-    if (!serialization.flow || !analysis?.valid) {
-      return { status: "invalid" };
-    }
-
-    try {
-      const compiled = compileFlow({
-        flow: serialization.flow,
-        fnList: arithmeticFns,
-      });
-      const execute = compiled.define.implement(compiled.implement);
-      const activeInputCount = getActiveInputCount(serialization.flow);
-      return {
-        status: "success",
-        value: execute(...inputs.slice(0, activeInputCount)),
-      };
-    } catch (error) {
-      return { status: "error", message: errorMessage(error) };
-    }
-  }, [analysis?.valid, inputs, serialization.flow]);
-
-  const diagnostics: FlowDiagnostic[] = analysis?.diagnostics ?? [];
-  const hasErrors =
-    Boolean(serialization.error) ||
-    diagnostics.some((diagnostic) => diagnostic.severity === "error") ||
-    evaluation.status === "error";
+  const diagnostics = result.diagnostics;
+  const error = "error" in result ? result.error : undefined;
+  const errorCount =
+    Number(Boolean(error)) +
+    diagnostics.filter((diagnostic) => diagnostic.severity === "error").length;
+  const warningCount = diagnostics.filter(
+    (diagnostic) => diagnostic.severity === "warning",
+  ).length;
+  const hasErrors = errorCount > 0;
 
   const onConnect = useCallback(
     (connection: Connection) =>
       setEdges((current) =>
-        addEdge({ ...connection, type: "smoothstep" }, current),
+        addEdge(
+          { ...connection, ...edgeDefaults },
+          current.filter(
+            (edge) =>
+              edge.target !== connection.target ||
+              edge.targetHandle !== connection.targetHandle,
+          ),
+        ),
       ),
     [setEdges],
   );
@@ -116,36 +111,13 @@ export function FlowPlayground() {
     [setEdges],
   );
 
-  const removeEdgesForNodes = useCallback(
-    (deletedNodes: FlowCanvasNode[]) => {
-      const deletedIds = new Set(deletedNodes.map((node) => node.id));
-      setEdges((current) =>
-        current.filter(
-          (edge) =>
-            !deletedIds.has(edge.source) && !deletedIds.has(edge.target),
-        ),
-      );
-    },
-    [setEdges],
-  );
-
-  const deleteSelected = () => {
-    const selectedIds = new Set(
-      nodes
-        .filter((node) => node.selected && node.data.flowType === "fn")
-        .map((node) => node.id),
-    );
-    if (selectedIds.size === 0) {
-      return;
-    }
-    setNodes((current) => current.filter((node) => !selectedIds.has(node.id)));
-    setEdges((current) =>
-      current.filter(
-        (edge) =>
-          !selectedIds.has(edge.source) && !selectedIds.has(edge.target),
-      ),
-    );
-  };
+  const setInputValue = useCallback((index: number, value: number) => {
+    setInputs((current) => {
+      const next = [...current];
+      next[index] = value;
+      return next;
+    });
+  }, []);
 
   const setInputCount = (requestedCount: number) => {
     const nextCount = Math.min(8, Math.max(1, requestedCount));
@@ -173,150 +145,215 @@ export function FlowPlayground() {
     );
   };
 
+  const visibleFunctions = playgroundFns
+    .map(({ name: fnName }) => ({
+      fnName,
+      view: resolveFunctionView(fnName),
+    }))
+    .filter(({ fnName, view }) =>
+      (fnName + " " + view.title)
+        .toLowerCase()
+        .includes(functionQuery.trim().toLowerCase()),
+    );
+
+  const addFunction = (fnName: string) => {
+    const sequence = nextNodeSequence.current;
+    nextNodeSequence.current += 1;
+    setNodes((current) => [...current, createFunctionNode(fnName, sequence)]);
+    setDrawerOpen(false);
+  };
+
   const reset = () => {
     setName("myFormula");
     setNodes(createPlaygroundNodes());
     setEdges(createPlaygroundEdges());
     setInputs([1, 2, 3]);
+    setDrawerOpen(false);
+    setFunctionQuery("");
     nextNodeSequence.current = 1;
   };
 
+  const statusValue =
+    result.status === "success"
+      ? String(result.value)
+      : result.status === "error"
+        ? "Error"
+        : "Not runnable";
+  const nodeOutput = result.status === "invalid" ? "—" : statusValue;
+
   return (
-    <div className="flex flex-col gap-5">
-      <section className="flex min-w-0 flex-col gap-4">
-        <div className="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
-          <label className="flex min-w-44 flex-1 flex-col gap-1 text-sm">
-            <span className="font-medium text-gray-700 dark:text-gray-300">
-              Flow name
-            </span>
-            <input
-              value={name}
-              onChange={(event) => setName(event.currentTarget.value)}
-              className={inputClass}
-            />
-          </label>
-          <div className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-gray-700 dark:text-gray-300">
-              Input handles
-            </span>
+    <FlowPlaygroundRuntime.Provider
+      value={{ inputs, output: nodeOutput, setInputValue }}
+    >
+      <div className="flex flex-col gap-4">
+        <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
+          <div className="flex flex-wrap items-end gap-3 border-b border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-900/80">
+            <label className="flex min-w-48 flex-1 flex-col gap-1.5 text-sm">
+              <span className="text-xs font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+                Flow name
+              </span>
+              <input
+                value={name}
+                onChange={(event) => setName(event.currentTarget.value)}
+                className={inputClass}
+              />
+            </label>
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                aria-label="Remove input handle"
                 disabled={inputCount <= 1}
                 onClick={() => setInputCount(inputCount - 1)}
                 className={buttonClass}
               >
-                −
+                − Input
               </button>
-              <span className="w-6 text-center text-sm font-semibold">
+              <span className="min-w-8 text-center text-sm font-bold text-slate-600 dark:text-slate-300">
                 {inputCount}
               </span>
               <button
                 type="button"
-                aria-label="Add input handle"
                 disabled={inputCount >= 8}
                 onClick={() => setInputCount(inputCount + 1)}
                 className={buttonClass}
               >
-                +
+                + Input
               </button>
             </div>
-          </div>
-          <button
-            type="button"
-            onClick={deleteSelected}
-            disabled={
-              !nodes.some(
-                (node) => node.selected && node.data.flowType === "fn",
-              )
-            }
-            className={buttonClass}
-          >
-            Delete selected
-          </button>
-          <button type="button" onClick={reset} className={buttonClass}>
-            Reset
-          </button>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
-            Add node
-          </span>
-          {arithmeticOperations.map((operation) => (
-            <button
-              key={operation.fnName}
-              type="button"
-              onClick={() => {
-                const sequence = nextNodeSequence.current;
-                nextNodeSequence.current += 1;
-                setNodes((current) => [
-                  ...current,
-                  createFunctionNode(operation, sequence),
-                ]);
-              }}
-              className={buttonClass}
-            >
-              {operation.label}
+            <button type="button" onClick={reset} className={buttonClass}>
+              Reset
             </button>
-          ))}
-        </div>
-
-        <div className="h-[34rem] overflow-hidden rounded-lg border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-950">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodesDelete={removeEdgesForNodes}
-            onConnect={onConnect}
-            onReconnect={onReconnect}
-            fitView
-          >
-            <Background />
-            <Controls />
-          </ReactFlow>
-        </div>
-
-        <div className="flex flex-wrap items-end gap-3">
-          {inputs.map((value, index) => (
-            <label key={index} className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-gray-700 dark:text-gray-300">
-                input[{index}]
-              </span>
-              <input
-                type="number"
-                value={value}
-                onChange={(event) => {
-                  const next = [...inputs];
-                  next[index] = Number(event.currentTarget.value);
-                  setInputs(next);
-                }}
-                className={`${inputClass} w-28`}
-              />
-            </label>
-          ))}
-        </div>
-
-        {evaluation.status === "success" && (
-          <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-950 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-100">
-            Live output: <strong>{String(evaluation.value)}</strong>
           </div>
-        )}
 
-        {(serialization.error ||
-          diagnostics.length > 0 ||
-          evaluation.status === "error") && (
+          <div className="relative h-[36rem] bg-slate-50 dark:bg-slate-950">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              colorMode={colorMode}
+              proOptions={{ hideAttribution: true }}
+              defaultEdgeOptions={edgeDefaults}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onReconnect={onReconnect}
+              onPaneClick={() => setDrawerOpen(false)}
+              fitView
+            >
+              <Background color="#cbd5e1" gap={20} size={1} />
+              <Controls />
+            </ReactFlow>
+            {!drawerOpen && (
+              <button
+                type="button"
+                aria-expanded="false"
+                onClick={() => setDrawerOpen(true)}
+                className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-xl border border-blue-600 bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-xl shadow-blue-600/20 transition hover:bg-blue-700"
+              >
+                <span aria-hidden="true">☰</span>
+                Functions
+              </button>
+            )}
+            {drawerOpen && (
+              <aside className="absolute top-4 bottom-4 left-4 z-30 flex w-72 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+                <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-700">
+                  <div>
+                    <div className="text-[10px] font-bold tracking-[0.14em] text-blue-500 uppercase">
+                      Add to canvas
+                    </div>
+                    <div className="font-bold text-slate-900 dark:text-white">
+                      Function drawer
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Close function drawer"
+                    onClick={() => setDrawerOpen(false)}
+                    className="rounded-lg bg-transparent px-2 py-1 text-xl text-slate-400 transition hover:bg-slate-100 dark:bg-transparent dark:hover:bg-slate-800"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="p-3">
+                  <input
+                    autoFocus
+                    aria-label="Search functions"
+                    placeholder="Search functions…"
+                    value={functionQuery}
+                    onChange={(event) =>
+                      setFunctionQuery(event.currentTarget.value)
+                    }
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                  />
+                </div>
+                <div className="flex-1 space-y-2 overflow-y-auto px-3 pb-3">
+                  {visibleFunctions.map(({ fnName, view }) => (
+                    <button
+                      key={fnName}
+                      type="button"
+                      onClick={() => addFunction(fnName)}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-blue-400 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-blue-950/30"
+                    >
+                      <span className="flex items-center justify-between gap-3">
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                          {view.title}
+                        </span>
+                        <span className="text-lg text-blue-500">+</span>
+                      </span>
+                      <span className="mt-1 block font-mono text-[10px] text-slate-400">
+                        {view.inputs.map((input) => input.type).join(", ")} →{" "}
+                        {view.output.type}
+                      </span>
+                    </button>
+                  ))}
+                  {visibleFunctions.length === 0 && (
+                    <p className="px-3 py-6 text-center text-sm text-slate-400">
+                      No matching functions
+                    </p>
+                  )}
+                </div>
+              </aside>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-200 bg-white px-4 py-3 text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+            <span>
+              Output{" "}
+              <strong className="text-sm text-slate-900 dark:text-white">
+                {statusValue}
+              </strong>
+            </span>
+            <span>{nodes.length} nodes</span>
+            <span>{edges.length} edges</span>
+            <span
+              className={
+                hasErrors
+                  ? "font-semibold text-red-600 dark:text-red-400"
+                  : "text-slate-400"
+              }
+            >
+              {errorCount} errors
+            </span>
+            <span
+              className={
+                warningCount > 0
+                  ? "font-semibold text-amber-600 dark:text-amber-400"
+                  : "text-slate-400"
+              }
+            >
+              {warningCount} warnings
+            </span>
+          </div>
+        </section>
+
+        {(error || diagnostics.length > 0) && (
           <ul
-            className={`m-0 rounded-md border px-8 py-3 text-sm ${
+            className={`m-0 rounded-xl border px-8 py-3 text-sm ${
               hasErrors
                 ? "border-red-200 bg-red-50 text-red-900 dark:border-red-800 dark:bg-red-950 dark:text-red-100"
                 : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100"
             }`}
           >
-            {serialization.error && <li>{serialization.error}</li>}
+            {error && <li>{error}</li>}
             {diagnostics.map((diagnostic) => (
               <li
                 key={`${diagnostic.severity}:${diagnostic.code}:${diagnostic.nodeId ?? diagnostic.edgeId ?? "flow"}`}
@@ -324,31 +361,28 @@ export function FlowPlayground() {
                 {diagnostic.severity}: {diagnostic.code} — {diagnostic.message}
               </li>
             ))}
-            {evaluation.status === "error" && <li>{evaluation.message}</li>}
           </ul>
         )}
-      </section>
 
-      <details className="group min-w-0 overflow-hidden rounded-lg border border-gray-300 bg-gray-950 text-gray-100 dark:border-gray-600">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:content-none">
-          <span className="text-sm font-semibold text-white">FlowSpec</span>
-          <span className="flex items-center gap-2 text-xs text-gray-400">
-            Live JSON
-            <span
-              aria-hidden="true"
-              className="inline-block transition-transform group-open:rotate-180"
-            >
-              ▾
+        <details className="group min-w-0 overflow-hidden rounded-xl border border-slate-300 bg-slate-950 text-slate-100 dark:border-slate-600">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:content-none">
+            <span className="text-sm font-semibold text-white">FlowSpec</span>
+            <span className="flex items-center gap-2 text-xs text-slate-400">
+              Live JSON
+              <span
+                aria-hidden="true"
+                className="inline-block transition-transform group-open:rotate-180"
+              >
+                ▾
+              </span>
             </span>
-          </span>
-        </summary>
-        <pre className="m-0 max-h-[36rem] overflow-auto border-t border-gray-800 px-4 py-3 whitespace-pre text-xs leading-5 text-gray-100">
-          {serialization.flow
-            ? JSON.stringify(serialization.flow, null, 2)
-            : serialization.error}
-        </pre>
-      </details>
-    </div>
+          </summary>
+          <pre className="m-0 max-h-[36rem] overflow-auto border-t border-slate-800 px-4 py-3 whitespace-pre text-xs leading-5 text-slate-100">
+            {result.flow ? JSON.stringify(result.flow, null, 2) : error}
+          </pre>
+        </details>
+      </div>
+    </FlowPlaygroundRuntime.Provider>
   );
 }
 

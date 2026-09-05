@@ -35,6 +35,18 @@ const warnings = analysis.diagnostics.filter(
 );
 ```
 
+When an editor needs both diagnostics and a compiled function, use `tryCompileFlow` to inspect the graph once. Invalid graphs return `valid: false` with diagnostics; valid graphs also include `compiled`:
+
+```ts
+import { tryCompileFlow } from "@fn-sphere/flow";
+
+const result = tryCompileFlow({ flow, fnList });
+if (result.valid) {
+  const run = result.compiled.define.implement(result.compiled.implement);
+  // Reuse run when only input values change; recompile when the graph changes.
+}
+```
+
 ## Current Graph Rules
 
 A version 1 executable flow must satisfy these rules:

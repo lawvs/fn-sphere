@@ -1,7 +1,12 @@
 import { arithmeticFns } from "@fn-sphere/core";
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import { analyzeFlow, compileFlow, type FlowEdgeSpec } from "./index.js";
+import {
+  analyzeFlow,
+  compileFlow,
+  tryCompileFlow,
+  type FlowEdgeSpec,
+} from "./index.js";
 
 const validEdges: FlowEdgeSpec[] = [
   {
@@ -374,6 +379,37 @@ describe("analyzeFlow", () => {
         nodeId: "sum",
       }),
     );
+  });
+});
+
+describe("tryCompileFlow", () => {
+  test("returns diagnostics for an invalid flow without compiling", () => {
+    const flow = createFormula(
+      validEdges.filter((edge) => edge.id !== "b-to-sum"),
+    );
+    const result = tryCompileFlow({ flow, fnList: arithmeticFns });
+
+    expect(result).toEqual(analyzeFlow({ flow, fnList: arithmeticFns }));
+    expect(result.valid).toBe(false);
+  });
+
+  test("returns warnings together with a reusable compiled function", () => {
+    const flow = createFormula();
+    flow.nodes.push({ id: "draft", type: "fn", fnName: "missing" });
+    const result = tryCompileFlow({ flow, fnList: arithmeticFns });
+
+    expect(result.diagnostics).toEqual([
+      expect.objectContaining({
+        severity: "warning",
+        code: "unreachable-node",
+      }),
+    ]);
+    expect(result.valid).toBe(true);
+    if (!result.valid) throw new Error("Expected a compiled flow");
+
+    const run = result.compiled.define.implement(result.compiled.implement);
+    expect(run(1, 2, 3)).toBe(9);
+    expect(run(3, 4, 5)).toBe(35);
   });
 });
 

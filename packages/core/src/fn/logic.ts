@@ -6,7 +6,7 @@ export const logicFns: StandardFnSchema[] = [
   defineTypedFn({
     name: "and",
     define: z.function({
-      input: [z.boolean(), z.boolean()],
+      input: [z.coerce.boolean(), z.coerce.boolean()],
       output: z.boolean(),
     }),
     implement: (a, b) => a && b,
@@ -14,7 +14,7 @@ export const logicFns: StandardFnSchema[] = [
   defineTypedFn({
     name: "or",
     define: z.function({
-      input: [z.boolean(), z.boolean()],
+      input: [z.coerce.boolean(), z.coerce.boolean()],
       output: z.boolean(),
     }),
     implement: (a, b) => a || b,
@@ -22,7 +22,7 @@ export const logicFns: StandardFnSchema[] = [
   defineTypedFn({
     name: "not",
     define: z.function({
-      input: [z.boolean()],
+      input: [z.coerce.boolean()],
       output: z.boolean(),
     }),
     implement: (value) => !value,

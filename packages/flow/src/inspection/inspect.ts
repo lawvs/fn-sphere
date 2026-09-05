@@ -3,14 +3,14 @@ import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import { inspectConnections, type ResolvedFnNode } from "./connections.js";
 import { getOutputSlice, indexFlow, orderFnNodes } from "./graph.js";
 import type { FlowEdgeSpec, FlowSpec } from "../schema.js";
-import type { FlowDiagnostic } from "../types.js";
+import type { FlowAnalysis, FlowDiagnostic } from "../types.js";
 
 type InspectFlowOptions = {
   flow: FlowSpec;
   fnList: readonly StandardFnSchema[];
 };
 
-type ExecutableFlow = {
+export type ExecutableFlow = {
   inputNodeId: string;
   inputSchemas: $ZodType[];
   name: string;
@@ -53,9 +53,6 @@ export const inspectFlow = ({
   const diagnostics: FlowDiagnostic[] = [];
   const addError = (diagnostic: Omit<FlowDiagnostic, "severity">) => {
     diagnostics.push({ ...diagnostic, severity: "error" });
-  };
-  const addWarning = (diagnostic: Omit<FlowDiagnostic, "severity">) => {
-    diagnostics.push({ ...diagnostic, severity: "warning" });
   };
 
   const index = indexFlow(flow);
@@ -108,14 +105,13 @@ export const inspectFlow = ({
     });
   }
 
-  const outputNode =
-    index.outputNodes.length === 1 ? index.outputNodes[0] : undefined;
-  const slice = getOutputSlice(flow, index, outputNode);
+  const active = getOutputSlice(flow, index);
 
-  if (outputNode) {
+  if (active.outputNode) {
     for (const node of index.fnNodes) {
-      if (!slice.nodeIds.has(node.id)) {
-        addWarning({
+      if (!active.nodeById.has(node.id)) {
+        diagnostics.push({
+          severity: "warning",
           code: "unreachable-node",
           message: `Node ${node.id} does not contribute to the flow output.`,
           nodeId: node.id,
@@ -125,7 +121,7 @@ export const inspectFlow = ({
   }
 
   const fnByNodeId = new Map<string, ResolvedFnNode>();
-  for (const node of slice.fnNodes) {
+  for (const node of active.fnNodes) {
     if (duplicateFnNames.has(node.fnName)) {
       addError({
         code: "duplicate-function-name",
@@ -160,29 +156,22 @@ export const inspectFlow = ({
   }
 
   const connections = inspectConnections({
-    edges: slice.edges,
-    fnNodes: slice.fnNodes,
-    nodeById: index.nodeById,
+    flow: active,
     fnByNodeId,
-    inputNode: index.inputNodes[0],
-    outputNode,
     addError,
   });
 
-  const ordered = orderFnNodes(slice.fnNodes, slice.edges);
-  if (ordered.hasCycle) {
+  const orderedNodes = orderFnNodes(active.fnNodes, active.edges);
+  if (orderedNodes.length !== active.fnNodes.length) {
     addError({
       code: "cycle",
       message: "Flow contains a cycle.",
     });
   }
 
-  const hasErrors = diagnostics.some(
-    (diagnostic) => diagnostic.severity === "error",
-  );
   if (
-    hasErrors ||
-    !index.inputNodes[0] ||
+    diagnostics.some((diagnostic) => diagnostic.severity === "error") ||
+    !active.inputNode ||
     !connections.outputEdge ||
     !connections.outputSchema
   ) {
@@ -193,7 +182,7 @@ export const inspectFlow = ({
   }
 
   // Error-free inspection guarantees each active function and input edge is resolved.
-  const nodes = ordered.nodes.map((node) => {
+  const nodes = orderedNodes.map((node) => {
     const resolved = fnByNodeId.get(node.id)!;
     return {
       id: node.id,
@@ -206,7 +195,7 @@ export const inspectFlow = ({
     valid: true,
     diagnostics,
     executable: {
-      inputNodeId: index.inputNodes[0].id,
+      inputNodeId: active.inputNode.id,
       inputSchemas: connections.inputSchemas,
       name: flow.name,
       nodes,
@@ -214,4 +203,9 @@ export const inspectFlow = ({
       outputSchema: connections.outputSchema,
     },
   };
+};
+
+export const analyzeFlow = (options: InspectFlowOptions): FlowAnalysis => {
+  const { valid, diagnostics } = inspectFlow(options);
+  return { valid, diagnostics };
 };
