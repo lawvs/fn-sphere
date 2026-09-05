@@ -8,9 +8,9 @@ sidebar:
 
 import { FlowPlayground } from "~/components/flow-playground";
 
-Build a flow directly on the canvas. Add arithmetic nodes, connect numbered handles, change the graph inputs, and select a function node to delete it. The live output is compiled from the output-reachable part of the graph.
+Build a runnable function flow directly on the canvas. Open the function drawer to search arithmetic and logic functions, edit graph inputs in the Input node, connect labelled ports, and inspect the result in the Output node.
 
-Expand the JSON section below the playground to inspect the semantic `FlowSpec` produced by the editor. Canvas-only state such as node positions and selection is intentionally excluded, so the displayed value can be validated with `flowSpecSchema`, stored, and compiled without React Flow.
+Function and port labels use each Zod schema's `description` when present, with stable defaults for schemas that do not provide one. Expand FlowSpec at the bottom to inspect the live semantic state.
 
 <div className="not-content mt-6">
   <FlowPlayground client:only="react" />

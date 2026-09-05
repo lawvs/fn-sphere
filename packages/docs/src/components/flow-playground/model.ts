@@ -1,24 +1,83 @@
 import {
+  arithmeticFns,
+  logicFns,
+  type StandardFnSchema,
+} from "@fn-sphere/core";
+import {
   flowSpecSchema,
+  tryCompileFlow,
+  type FlowDiagnostic,
   type FlowNodeSpec,
   type FlowSpec,
 } from "@fn-sphere/flow";
-import type { Edge } from "@xyflow/react";
-import type { FlowCanvasNode } from "../flow-example/react-flow-node";
+import type { Edge, Node } from "@xyflow/react";
+import { z } from "zod";
+import type { $ZodTuple, $ZodType } from "zod/v4/core";
 
-export type ArithmeticOperation = {
-  fnName: "add" | "subtract" | "multiply" | "divide";
-  label: string;
-};
+type PlaygroundNodeData =
+  | { flowType: "input"; outputCount: number }
+  | { flowType: "fn"; fnName: string }
+  | { flowType: "output" };
 
-export const arithmeticOperations: readonly ArithmeticOperation[] = [
-  { fnName: "add", label: "Add" },
-  { fnName: "subtract", label: "Subtract" },
-  { fnName: "multiply", label: "Multiply" },
-  { fnName: "divide", label: "Divide" },
+export type PlaygroundNode = Node<PlaygroundNodeData, "flow">;
+
+export const playgroundFns: readonly StandardFnSchema[] = [
+  ...arithmeticFns,
+  ...logicFns,
 ];
 
-export const createPlaygroundNodes = (): FlowCanvasNode[] => [
+type FlowFunctionPortView = {
+  label: string;
+  type: string;
+};
+
+type FlowFunctionView = {
+  title: string;
+  inputs: FlowFunctionPortView[];
+  output: FlowFunctionPortView;
+};
+
+const descriptionOr = (schema: $ZodType, fallback: string) => {
+  const description = z.globalRegistry.get(schema)?.description?.trim();
+  return description || fallback;
+};
+
+const schemaType = (schema: $ZodType) => schema._zod.def.type || "value";
+
+export const resolveFunctionView = (
+  fnName: string | undefined,
+): FlowFunctionView => {
+  const fallbackName = fnName || "function";
+  const fn = playgroundFns.find((candidate) => candidate.name === fallbackName);
+  if (!fn) {
+    return {
+      title: fallbackName,
+      inputs: [],
+      output: { label: "output", type: "value" },
+    };
+  }
+
+  const input = fn.define._zod.def.input;
+  const inputSchemas =
+    input._zod.def.type === "tuple"
+      ? ((input as $ZodTuple)._zod.def.items as $ZodType[])
+      : [];
+  const outputSchema = fn.define._zod.def.output as $ZodType;
+
+  return {
+    title: descriptionOr(fn.define, fn.name),
+    inputs: inputSchemas.map((schema, index) => ({
+      label: descriptionOr(schema, `input[${index}]`),
+      type: schemaType(schema),
+    })),
+    output: {
+      label: descriptionOr(outputSchema, "output"),
+      type: schemaType(outputSchema),
+    },
+  };
+};
+
+export const createPlaygroundNodes = (): PlaygroundNode[] => [
   {
     id: "input",
     type: "flow",
@@ -26,8 +85,6 @@ export const createPlaygroundNodes = (): FlowCanvasNode[] => [
     deletable: false,
     data: {
       flowType: "input",
-      label: "Inputs",
-      inputCount: 0,
       outputCount: 3,
     },
   },
@@ -38,9 +95,6 @@ export const createPlaygroundNodes = (): FlowCanvasNode[] => [
     data: {
       flowType: "fn",
       fnName: "add",
-      label: "Add",
-      inputCount: 2,
-      outputCount: 1,
     },
   },
   {
@@ -50,9 +104,6 @@ export const createPlaygroundNodes = (): FlowCanvasNode[] => [
     data: {
       flowType: "fn",
       fnName: "multiply",
-      label: "Multiply",
-      inputCount: 2,
-      outputCount: 1,
     },
   },
   {
@@ -62,9 +113,6 @@ export const createPlaygroundNodes = (): FlowCanvasNode[] => [
     deletable: false,
     data: {
       flowType: "output",
-      label: "Output",
-      inputCount: 1,
-      outputCount: 0,
     },
   },
 ];
@@ -113,22 +161,16 @@ export const createPlaygroundEdges = (): Edge[] => [
 ];
 
 export const createFunctionNode = (
-  operation: ArithmeticOperation,
+  fnName: string,
   sequence: number,
-): FlowCanvasNode => ({
-  id: `${operation.fnName}-${sequence}`,
+): PlaygroundNode => ({
+  id: `${fnName}-${sequence}`,
   type: "flow",
   position: {
     x: 220 + ((sequence - 1) % 3) * 190,
     y: 300 + Math.floor((sequence - 1) / 3) * 120,
   },
-  data: {
-    flowType: "fn",
-    fnName: operation.fnName,
-    label: operation.label,
-    inputCount: 2,
-    outputCount: 1,
-  },
+  data: { flowType: "fn", fnName },
 });
 
 const numericHandle = (handle: string | null | undefined, edgeId: string) => {
@@ -138,14 +180,14 @@ const numericHandle = (handle: string | null | undefined, edgeId: string) => {
   return Number(handle);
 };
 
-export const toFlowSpec = (
+const toFlowSpec = (
   name: string,
-  nodes: FlowCanvasNode[],
+  nodes: PlaygroundNode[],
   edges: Edge[],
 ): FlowSpec => {
   const flowNodes: FlowNodeSpec[] = nodes.map(({ id, data }) =>
     data.flowType === "fn"
-      ? { id, type: "fn", fnName: data.fnName ?? "" }
+      ? { id, type: "fn", fnName: data.fnName }
       : { id, type: data.flowType },
   );
 
@@ -163,40 +205,90 @@ export const toFlowSpec = (
   });
 };
 
-export const getActiveInputCount = (flow: FlowSpec) => {
-  const outputNode = flow.nodes.find((node) => node.type === "output");
-  if (!outputNode) {
-    return 0;
-  }
+type PlaygroundContext = {
+  flow: FlowSpec;
+  diagnostics: FlowDiagnostic[];
+};
 
-  const nodeById = new Map(flow.nodes.map((node) => [node.id, node]));
-  const incomingByNode = new Map<string, typeof flow.edges>();
-  for (const edge of flow.edges) {
-    const incoming = incomingByNode.get(edge.target) ?? [];
-    incoming.push(edge);
-    incomingByNode.set(edge.target, incoming);
-  }
+type InvalidPlayground = {
+  status: "invalid";
+  flow: FlowSpec | undefined;
+  diagnostics: FlowDiagnostic[];
+  error?: string;
+};
 
-  const visited = new Set<string>();
-  const pending = [outputNode.id];
-  let lastInputHandle = -1;
-  while (pending.length > 0) {
-    const nodeId = pending.pop();
-    if (!nodeId || visited.has(nodeId)) {
-      continue;
+type PreparedPlayground =
+  | InvalidPlayground
+  | (PlaygroundContext & {
+      status: "ready";
+      execute: (inputs: number[]) => unknown;
+    });
+
+type PlaygroundResult =
+  | InvalidPlayground
+  | (PlaygroundContext &
+      (
+        | { status: "success"; value: unknown }
+        | { status: "error"; error: string }
+      ));
+
+const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Unable to process the flow.";
+
+export const preparePlayground = (
+  name: string,
+  nodes: PlaygroundNode[],
+  edges: Edge[],
+): PreparedPlayground => {
+  let flow: FlowSpec | undefined;
+  try {
+    flow = toFlowSpec(name, nodes, edges);
+    const result = tryCompileFlow({ flow, fnList: playgroundFns });
+    if (!result.valid) {
+      return { flow, diagnostics: result.diagnostics, status: "invalid" };
     }
-    visited.add(nodeId);
 
-    for (const edge of incomingByNode.get(nodeId) ?? []) {
-      const sourceNode = nodeById.get(edge.source);
-      if (sourceNode?.type === "input") {
-        lastInputHandle = Math.max(lastInputHandle, edge.sourceHandle);
-      }
-      if (sourceNode) {
-        pending.push(sourceNode.id);
-      }
-    }
+    const { compiled } = result;
+    const execute = compiled.define.implement(compiled.implement);
+    const inputCount = compiled.define._zod.def.input._zod.def.items.length;
+    return {
+      flow,
+      diagnostics: result.diagnostics,
+      status: "ready",
+      execute: (inputs) => execute(...inputs.slice(0, inputCount)),
+    };
+  } catch (error) {
+    return {
+      flow,
+      diagnostics: [],
+      status: "invalid",
+      error: errorMessage(error),
+    };
+  }
+};
+
+export const runPlayground = (
+  prepared: PreparedPlayground,
+  inputs: number[],
+): PlaygroundResult => {
+  if (prepared.status === "invalid") {
+    return prepared;
   }
 
-  return lastInputHandle + 1;
+  const { flow, diagnostics } = prepared;
+  try {
+    return {
+      flow,
+      diagnostics,
+      status: "success",
+      value: prepared.execute(inputs),
+    };
+  } catch (error) {
+    return {
+      flow,
+      diagnostics,
+      status: "error",
+      error: errorMessage(error),
+    };
+  }
 };
