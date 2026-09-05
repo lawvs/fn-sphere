@@ -1,0 +1,156 @@
+---
+title: Getting Started
+description: Build and run an executable function flow
+sidebar:
+  order: 0
+---
+
+import { Tabs, TabItem, Steps, Code } from "@astrojs/starlight/components";
+import { FlowExample } from "~/components/flow-example/index";
+import flowExampleCode from "~/components/flow-example/index?raw";
+import { FlowCanvasExample } from "~/components/flow-example/react-flow";
+import flowCanvasCode from "~/components/flow-example/react-flow?raw";
+import flowNodeCode from "~/components/flow-example/react-flow-node?raw";
+import PackageManagerTabs from "~/components/package-manager-tabs.astro";
+
+## Overview
+
+The Flow package composes schema-defined functions into a validated, executable directed acyclic graph. Nodes select registered functions, edges connect numbered output and input handles, and `compileFlow()` returns a `StandardFnSchema` that is itself a standard fn-sphere function.
+
+The example below computes `(a + b) * c`:
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <FlowExample client:load />
+    </div>
+  </TabItem>
+  <TabItem label="Code">
+    <Code code={flowExampleCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+## Usage Summary
+
+<Steps>
+
+1. Install Flow and Core:
+
+   <PackageManagerTabs package="@fn-sphere/flow @fn-sphere/core" />
+
+2. Define a version 1 flow:
+
+   ```ts
+   import type { FlowSpec } from "@fn-sphere/flow";
+
+   const flow = {
+     version: 1,
+     name: "add",
+     nodes: [
+       { id: "input", type: "input" },
+       { id: "add", type: "fn", fnName: "add" },
+       { id: "output", type: "output" },
+     ],
+     edges: [
+       {
+         id: "input-0-to-add-0",
+         source: "input",
+         sourceHandle: 0,
+         target: "add",
+         targetHandle: 0,
+       },
+       {
+         id: "input-1-to-add-1",
+         source: "input",
+         sourceHandle: 1,
+         target: "add",
+         targetHandle: 1,
+       },
+       {
+         id: "add-to-output",
+         source: "add",
+         sourceHandle: 0,
+         target: "output",
+         targetHandle: 0,
+       },
+     ],
+   } satisfies FlowSpec;
+   ```
+
+3. Analyze the graph before compiling when you want structured diagnostics:
+
+   ```ts
+   import { analyzeFlow } from "@fn-sphere/flow";
+   import { arithmeticFns } from "@fn-sphere/core";
+
+   const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+   if (!analysis.valid) {
+     console.error(analysis.diagnostics);
+   }
+   ```
+
+   `valid` becomes `false` only when diagnostics contain an `error`. Unreachable function nodes are reported with `severity: "warning"`; they do not prevent compilation.
+
+4. Compile and execute the flow:
+
+   ```ts
+   import { compileFlow } from "@fn-sphere/flow";
+
+   const compiled = compileFlow({ flow, fnList: arithmeticFns });
+   const add = compiled.define.implement(compiled.implement);
+
+   add(1, 2); // 3
+   ```
+
+</Steps>
+
+## Nodes and Handles
+
+A version 1 flow has exactly one `input` node and one `output` node. Function nodes use `fnName` to select an entry from `fnList`:
+
+```ts
+{ id: "sum", type: "fn", fnName: "add" }
+```
+
+Handles are zero-based numbers. On an input node they identify flow arguments; on a function node, target handles identify tuple parameters. Function nodes currently expose their single result at source handle `0`, and the output node accepts one edge at target handle `0`.
+
+## Editing with React Flow
+
+`@fn-sphere/flow` is the graph model and execution layer; React Flow is the optional canvas layer. React Flow stores positions and string handle IDs for editing, while the adapter below selects the semantic node fields, converts handles to numbers, and validates the result with `flowSpecSchema`.
+
+Try moving nodes, deleting an edge, or reconnecting handles. **Run graph** analyzes the current canvas before compiling it, so invalid edits appear as structured diagnostics instead of runtime crashes.
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <FlowCanvasExample client:only="react" />
+    </div>
+  </TabItem>
+  <TabItem label="Canvas code">
+    <Code code={flowCanvasCode} lang="tsx" />
+  </TabItem>
+  <TabItem label="Custom node">
+    <Code code={flowNodeCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+## Schema Inference
+
+Flow does not duplicate Zod schemas in the graph. Starting at the output node, `compileFlow` walks upstream through the function nodes and edges that contribute to the result. It reads that executable slice's fixed tuple input and output schemas, checks its edges for compatibility, and derives the compiled function schema from its active input handles.
+
+Active input handles must form a contiguous zero-based tuple. Unreachable branches do not add parameters to the compiled function.
+
+## Parsing Serialized Flows
+
+Use `flowSpecSchema` at JSON or storage boundaries:
+
+```ts
+import { flowSpecSchema } from "@fn-sphere/flow";
+
+const flow = flowSpecSchema.parse(JSON.parse(serialized));
+```
+
+## Next Steps
+
+- Build a graph in the interactive [Flow Playground](/fn-sphere/flow/playground/).
+- Learn how to [diagnose and compose flows](/fn-sphere/flow/composition/).

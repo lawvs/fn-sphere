@@ -1,0 +1,17 @@
+---
+title: Playground
+description: Build, inspect, and run an arithmetic function flow
+template: splash
+sidebar:
+  order: 2
+---
+
+import { FlowPlayground } from "~/components/flow-playground";
+
+Build a runnable function flow directly on the canvas. Open the function drawer to search arithmetic and logic functions, edit graph inputs in the Input node, connect labelled ports, and inspect the result in the Output node.
+
+Function and port labels use each Zod schema's `description` when present, with stable defaults for schemas that do not provide one. Expand FlowSpec at the bottom to inspect the live semantic state.
+
+<div className="not-content mt-6">
+  <FlowPlayground client:only="react" />
+</div>

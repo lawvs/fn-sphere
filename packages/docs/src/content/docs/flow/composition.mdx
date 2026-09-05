@@ -1,0 +1,98 @@
+---
+title: Validation and Composition
+description: Diagnose invalid graphs and reuse compiled flows
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem, Code } from "@astrojs/starlight/components";
+import { FlowCompositionExample } from "~/components/flow-example/composition";
+import compositionCode from "~/components/flow-example/composition?raw";
+
+## Analyze Before Compiling
+
+`analyzeFlow` returns all detected graph diagnostics without throwing:
+
+```ts
+const analysis = analyzeFlow({ flow, fnList });
+
+for (const diagnostic of analysis.diagnostics) {
+  if (diagnostic.severity === "error") {
+    console.error(diagnostic.code, diagnostic.message);
+  } else {
+    console.warn(diagnostic.code, diagnostic.message);
+  }
+}
+```
+
+Each diagnostic has an `error` or `warning` severity and can identify a `nodeId`, `edgeId`, or numeric `handle`. `analysis.valid` depends only on errors. `compileFlow` performs the same analysis and throws when the output-reachable graph is invalid.
+
+Warnings remain available even when the flow is valid:
+
+```ts
+const warnings = analysis.diagnostics.filter(
+  (diagnostic) => diagnostic.severity === "warning",
+);
+```
+
+When an editor needs both diagnostics and a compiled function, use `tryCompileFlow` to inspect the graph once. Invalid graphs return `valid: false` with diagnostics; valid graphs also include `compiled`:
+
+```ts
+import { tryCompileFlow } from "@fn-sphere/flow";
+
+const result = tryCompileFlow({ flow, fnList });
+if (result.valid) {
+  const run = result.compiled.define.implement(result.compiled.implement);
+  // Reuse run when only input values change; recompile when the graph changes.
+}
+```
+
+## Current Graph Rules
+
+A version 1 executable flow must satisfy these rules:
+
+- Node IDs and edge IDs are unique.
+- Every output-reachable `fnName` resolves to a function in `fnList`.
+- There is exactly one input node and one output node.
+- Output-reachable function schemas use fixed tuple inputs; variadic array inputs are unsupported.
+- Every output-reachable function input handle has exactly one incoming edge.
+- Each active flow input handle has one consumer, and active handles form a contiguous zero-based tuple.
+- Function output and output-node handles are `0`.
+- Connected schemas in the executable slice are compatible.
+- Output-reachable function nodes form an acyclic graph.
+- Unreachable function nodes produce warnings and are excluded from the compiled function.
+
+## Reuse a Compiled Flow
+
+`compileFlow` returns a `StandardFnSchema`, so the result can be added to another flow's function list. The outer graph references the inner flow by its compiled `name`:
+
+```ts
+const formula = compileFlow({ flow: formulaSpec, fnList: arithmeticFns });
+
+const outer = compileFlow({
+  flow: outerSpec,
+  fnList: [...arithmeticFns, formula],
+});
+```
+
+The example composes `(a + b) * c` as one function node, then adds `d`:
+
+<Tabs>
+  <TabItem label="Preview">
+    <div className="not-content flex flex-col gap-4">
+      <FlowCompositionExample client:load />
+    </div>
+  </TabItem>
+  <TabItem label="Code">
+    <Code code={compositionCode} lang="tsx" />
+  </TabItem>
+</Tabs>
+
+## Serialized Boundary Validation
+
+`FlowSpec` is a compile-time type. Use `flowSpecSchema` to validate untrusted JSON before analysis or compilation:
+
+```ts
+const flow = flowSpecSchema.parse(JSON.parse(serialized));
+const analysis = analyzeFlow({ flow, fnList });
+```
