@@ -5,12 +5,15 @@ import {
   type NodeProps,
 } from "@xyflow/react";
 import { createContext, useContext, useEffect } from "react";
+import type { $ZodType } from "zod/v4/core";
+import { SchemaInput } from "./input";
 import { resolveFunctionView, type PlaygroundNode } from "./model";
 
 type FlowPlaygroundRuntime = {
-  inputs: number[];
+  inputs: unknown[];
+  inputSchemas: ($ZodType | undefined)[];
   output: string;
-  setInputValue: (index: number, value: number) => void;
+  setInputValue: (index: number, value: unknown) => void;
 };
 
 export const FlowPlaygroundRuntime =
@@ -58,7 +61,7 @@ export function FlowPlaygroundNode({
   data,
   selected,
 }: NodeProps<PlaygroundNode>) {
-  const { inputs, output, setInputValue } = useRuntime();
+  const { inputs, inputSchemas, output, setInputValue } = useRuntime();
   const updateNodeInternals = useUpdateNodeInternals();
   const dynamicOutputCount = data.flowType === "input" ? data.outputCount : 0;
 
@@ -90,16 +93,16 @@ export function FlowPlaygroundNode({
               className="relative flex h-11 items-center gap-2 pr-3 text-xs"
             >
               <span className="w-16 font-medium text-slate-500 dark:text-slate-400">
-                input[{index}]
+                <span className="block">input[{index}]</span>
+                <span className="block text-[10px] font-normal">
+                  {inputSchemas[index]?._zod.def.type ?? "unconnected"}
+                </span>
               </span>
-              <input
-                aria-label={`input ${index}`}
-                type="number"
-                value={inputs[index] ?? 0}
-                onChange={(event) =>
-                  setInputValue(index, Number(event.currentTarget.value))
-                }
-                className="nodrag nowheel min-w-0 flex-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-right font-mono text-slate-900 outline-none focus:border-violet-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              <SchemaInput
+                label={`input ${index}`}
+                schema={inputSchemas[index]}
+                value={inputs[index]}
+                onChange={(value) => setInputValue(index, value)}
               />
               <PortHandle
                 id={String(index)}

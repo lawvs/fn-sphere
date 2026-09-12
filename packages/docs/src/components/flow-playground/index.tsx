@@ -65,7 +65,7 @@ export function FlowPlayground() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     createPlaygroundEdges(),
   );
-  const [inputs, setInputs] = useState([1, 2, 3]);
+  const [inputs, setInputs] = useState<unknown[]>([1, 2, 3]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [functionQuery, setFunctionQuery] = useState("");
   const nextNodeSequence = useRef(1);
@@ -111,7 +111,7 @@ export function FlowPlayground() {
     [setEdges],
   );
 
-  const setInputValue = useCallback((index: number, value: number) => {
+  const setInputValue = useCallback((index: number, value: unknown) => {
     setInputs((current) => {
       const next = [...current];
       next[index] = value;
@@ -138,9 +138,8 @@ export function FlowPlayground() {
       ),
     );
     setInputs((current) =>
-      Array.from(
-        { length: nextCount },
-        (_, index) => current[index] ?? index + 1,
+      Array.from({ length: nextCount }, (_, index) =>
+        index < current.length ? current[index] : index + 1,
       ),
     );
   };
@@ -183,7 +182,12 @@ export function FlowPlayground() {
 
   return (
     <FlowPlaygroundRuntime.Provider
-      value={{ inputs, output: nodeOutput, setInputValue }}
+      value={{
+        inputs,
+        inputSchemas: prepared.inputSchemas,
+        output: nodeOutput,
+        setInputValue,
+      }}
     >
       <div className="flex flex-col gap-4">
         <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">

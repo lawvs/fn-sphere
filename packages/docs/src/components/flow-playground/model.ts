@@ -29,6 +29,7 @@ export const playgroundFns: readonly StandardFnSchema[] = [
 type FlowFunctionPortView = {
   label: string;
   type: string;
+  schema?: $ZodType;
 };
 
 type FlowFunctionView = {
@@ -69,12 +70,30 @@ export const resolveFunctionView = (
     inputs: inputSchemas.map((schema, index) => ({
       label: descriptionOr(schema, `input[${index}]`),
       type: schemaType(schema),
+      schema,
     })),
     output: {
       label: descriptionOr(outputSchema, "output"),
       type: schemaType(outputSchema),
     },
   };
+};
+
+const resolveInputSchemas = (nodes: PlaygroundNode[], edges: Edge[]) => {
+  const input = nodes.find((node) => node.data.flowType === "input");
+  if (input?.data.flowType !== "input") return [];
+  return Array.from({ length: input.data.outputCount }, (_, index) => {
+    const edge = edges.find(
+      (edge) => edge.source === input.id && edge.sourceHandle === String(index),
+    );
+    const target = nodes.find((node) => node.id === edge?.target);
+    if (target?.data.flowType !== "fn" || edge?.targetHandle == null) {
+      return undefined;
+    }
+    return resolveFunctionView(target.data.fnName).inputs[
+      Number(edge.targetHandle)
+    ]?.schema;
+  });
 };
 
 export const createPlaygroundNodes = (): PlaygroundNode[] => [
@@ -208,12 +227,14 @@ const toFlowSpec = (
 type PlaygroundContext = {
   flow: FlowSpec;
   diagnostics: FlowDiagnostic[];
+  inputSchemas: ($ZodType | undefined)[];
 };
 
 type InvalidPlayground = {
   status: "invalid";
   flow: FlowSpec | undefined;
   diagnostics: FlowDiagnostic[];
+  inputSchemas: ($ZodType | undefined)[];
   error?: string;
 };
 
@@ -221,7 +242,7 @@ type PreparedPlayground =
   | InvalidPlayground
   | (PlaygroundContext & {
       status: "ready";
-      execute: (inputs: number[]) => unknown;
+      execute: (inputs: unknown[]) => unknown;
     });
 
 type PlaygroundResult =
@@ -241,25 +262,36 @@ export const preparePlayground = (
   edges: Edge[],
 ): PreparedPlayground => {
   let flow: FlowSpec | undefined;
+  const inputSchemas = resolveInputSchemas(nodes, edges);
   try {
     flow = toFlowSpec(name, nodes, edges);
     const result = tryCompileFlow({ flow, fnList: playgroundFns });
     if (!result.valid) {
-      return { flow, diagnostics: result.diagnostics, status: "invalid" };
+      return {
+        flow,
+        inputSchemas,
+        diagnostics: result.diagnostics,
+        status: "invalid",
+      };
     }
 
     const { compiled } = result;
     const execute = compiled.define.implement(compiled.implement);
-    const inputCount = compiled.define._zod.def.input._zod.def.items.length;
+    const parameters = compiled.define._zod.def.input._zod.def
+      .items as $ZodType[];
     return {
       flow,
+      inputSchemas: inputSchemas.map(
+        (schema, index) => parameters[index] ?? schema,
+      ),
       diagnostics: result.diagnostics,
       status: "ready",
-      execute: (inputs) => execute(...inputs.slice(0, inputCount)),
+      execute: (inputs) => execute(...inputs.slice(0, parameters.length)),
     };
   } catch (error) {
     return {
       flow,
+      inputSchemas,
       diagnostics: [],
       status: "invalid",
       error: errorMessage(error),
@@ -269,16 +301,17 @@ export const preparePlayground = (
 
 export const runPlayground = (
   prepared: PreparedPlayground,
-  inputs: number[],
+  inputs: unknown[],
 ): PlaygroundResult => {
   if (prepared.status === "invalid") {
     return prepared;
   }
 
-  const { flow, diagnostics } = prepared;
+  const { flow, diagnostics, inputSchemas } = prepared;
   try {
     return {
       flow,
+      inputSchemas,
       diagnostics,
       status: "success",
       value: prepared.execute(inputs),
@@ -286,6 +319,7 @@ export const runPlayground = (
   } catch (error) {
     return {
       flow,
+      inputSchemas,
       diagnostics,
       status: "error",
       error: errorMessage(error),
