@@ -1,0 +1,42 @@
+{
+  "name": "@fn-sphere/flow",
+  "version": "0.0.0",
+  "description": "Compose schema-defined functions into executable flows.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lawvs/fn-sphere.git",
+    "directory": "packages/flow"
+  },
+  "author": "whitewater <me@waterwater.moe>",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc",
+    "typeCheck": "tsc --noEmit",
+    "test": "vitest --typecheck",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@fn-sphere/core": "workspace:^",
+    "zod-compare": "^3.2.0"
+  },
+  "devDependencies": {
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "zod": "^4.1.0"
+  },
+  "exports": "./src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  }
+}

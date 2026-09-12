@@ -67,6 +67,10 @@ export default defineConfig({
           items: [{ autogenerate: { directory: "sort" } }],
         },
         {
+          label: "Flow",
+          items: [{ autogenerate: { directory: "flow" } }],
+        },
+        {
           label: "Changelog",
           collapsed: true,
           items: [

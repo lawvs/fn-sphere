@@ -37,6 +37,28 @@ const SortIcon = () => (
   </svg>
 );
 
+const FlowIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="5" cy="6" r="2" />
+    <circle cx="19" cy="6" r="2" />
+    <circle cx="12" cy="18" r="2" />
+    <path d="M7 6h10" />
+    <path d="m6.5 7.5 4.2 8" />
+    <path d="m17.5 7.5-4.2 8" />
+  </svg>
+);
+
 const CheckIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -76,24 +98,35 @@ const ChevronsUpDown = () => (
 
 const modules = [
   {
+    id: "filter",
     label: "Filter",
     description: "Dynamic filtering interfaces",
     href: "/fn-sphere/guides/introduction/",
     icon: FilterIcon,
   },
   {
+    id: "sort",
     label: "Sort",
     description: "Schema-driven sorting",
     href: "/fn-sphere/sort/getting-started/",
     icon: SortIcon,
   },
-];
+  {
+    id: "flow",
+    label: "Flow",
+    description: "Executable function graphs",
+    href: "/fn-sphere/flow/getting-started/",
+    icon: FlowIcon,
+  },
+] as const;
 
 export function ModuleSelector({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const isSortModule = slug.startsWith("sort");
-  const current = isSortModule ? modules[1]! : modules[0]!;
+  const current =
+    modules.find((module) =>
+      module.id === "filter" ? false : slug.startsWith(module.id),
+    ) ?? modules[0];
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -123,8 +156,7 @@ export function ModuleSelector({ slug }: { slug: string }) {
         {open && (
           <div className="absolute z-10 top-full left-0 right-0 mt-1 p-1 border border-(--sl-color-hairline-light) rounded-xl bg-(--sl-color-bg-nav) backdrop-blur-lg shadow-lg flex flex-col gap-1">
             {modules.map((mod) => {
-              const isActive =
-                mod.label === "Sort" ? isSortModule : !isSortModule;
+              const isActive = mod.id === current.id;
               return (
                 <a
                   key={mod.label}
