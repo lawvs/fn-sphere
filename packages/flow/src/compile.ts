@@ -1,11 +1,6 @@
 import type { StandardFnSchema } from "@fn-sphere/core";
 import { z } from "zod";
-import type {
-  $ZodFunction,
-  $ZodTuple,
-  $ZodType,
-  $ZodUnknown,
-} from "zod/v4/core";
+import type { $ZodFunction, $ZodTuple, $ZodType } from "zod/v4/core";
 import { inspectFlow, type ExecutableFlow } from "./inspection/inspect.js";
 import type { FlowEdgeSpec, FlowSpec } from "./schema.js";
 import type { FlowDiagnostic } from "./types.js";
@@ -16,7 +11,7 @@ type CompileFlowOptions = {
 };
 
 type RuntimeFn = (...args: unknown[]) => unknown;
-type CompiledFlowFunction = $ZodFunction<$ZodTuple<[], $ZodUnknown>, $ZodType>;
+type CompiledFlowFunction = $ZodFunction<$ZodTuple, $ZodType>;
 
 export type TryCompileFlowResult =
   | { valid: false; diagnostics: FlowDiagnostic[] }
@@ -66,37 +61,33 @@ export function tryCompileFlow(
 function compileExecutable(
   executable: ExecutableFlow,
 ): StandardFnSchema<CompiledFlowFunction> {
-  const nodes = executable.nodes.map((node) => ({
-    ...node,
-    implement: implementFn(node.fn),
+  const inputCount = executable.inputSchemas.length;
+  const outputIndices = new Map(
+    executable.nodes.map((node, index) => [node.id, inputCount + index]),
+  );
+  const sourceIndex = (edge: FlowEdgeSpec) =>
+    edge.source === executable.inputNodeId
+      ? edge.sourceHandle
+      : outputIndices.get(edge.source)!;
+  const steps = executable.nodes.map((node) => ({
+    run: implementFn(node.fn),
+    inputs: node.inputEdges.map(sourceIndex),
   }));
+  const outputIndex = sourceIndex(executable.outputEdge);
 
-  const resolveSource = (
-    edge: FlowEdgeSpec,
-    args: unknown[],
-    results: Map<string, unknown>,
-  ) => {
-    if (edge.source === executable.inputNodeId) {
-      return args[edge.sourceHandle];
+  const implement = (...values: unknown[]) => {
+    // Reserve input positions; node results follow in topological order.
+    values.length = inputCount;
+    for (const { run, inputs } of steps) {
+      values.push(run(...inputs.map((index) => values[index])));
     }
-    return results.get(edge.source);
-  };
-
-  const implement = (...args: unknown[]) => {
-    const results = new Map<string, unknown>();
-    for (const node of nodes) {
-      const nodeArgs = node.inputEdges.map((edge) =>
-        resolveSource(edge, args, results),
-      );
-      results.set(node.id, node.implement(...nodeArgs));
-    }
-    return resolveSource(executable.outputEdge, args, results);
+    return values[outputIndex];
   };
 
   const define = z.function({
     input: executable.inputSchemas,
     output: executable.outputSchema,
-  }) as unknown as CompiledFlowFunction;
+  });
 
   return {
     name: executable.name,

@@ -1,5 +1,5 @@
 import { arithmeticFns } from "@fn-sphere/core";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { z } from "zod";
 import {
   analyzeFlow,
@@ -422,6 +422,61 @@ describe("compileFlow", () => {
     const run = compiled.define.implement(compiled.implement);
 
     expect(run(1, 2, 3)).toBe(9);
+  });
+
+  test("evaluates shared dependencies once per run regardless of graph ordering", () => {
+    const flow = createFormula(
+      validEdges.map((edge) =>
+        edge.id === "c-to-product"
+          ? { ...edge, source: "sum", sourceHandle: 0 }
+          : edge,
+      ),
+    );
+    flow.nodes.reverse();
+    flow.edges.reverse();
+    const add = arithmeticFns.find((fn) => fn.name === "add")!;
+    const implement = vi.fn(add.implement);
+    const compiled = compileFlow({
+      flow,
+      fnList: arithmeticFns.map((fn) =>
+        fn === add ? { ...fn, implement } : fn,
+      ),
+    });
+    const run = compiled.define.implement(compiled.implement);
+
+    expect(run(1, 2)).toBe(9);
+    expect(run(2, 3)).toBe(25);
+    expect(implement).toHaveBeenCalledTimes(2);
+  });
+
+  test("keeps result positions stable when the raw implementation receives missing or extra arguments", () => {
+    const flow = createFormula();
+    flow.nodes = flow.nodes.filter((node) => node.id !== "product");
+    flow.edges = flow.edges
+      .filter((edge) => edge.target !== "product")
+      .map((edge) =>
+        edge.target === "output" ? { ...edge, source: "sum" } : edge,
+      );
+    const compiled = compileFlow({
+      flow,
+      fnList: [
+        {
+          name: "add",
+          define: z.function({
+            input: [z.number(), z.number().optional()],
+            output: z.number(),
+          }),
+          implement: (a: number, b?: number) => a + (b ?? 0),
+        },
+      ],
+    });
+
+    expect(compiled.implement(3)).toBe(3);
+    expect(compiled.implement(3, 4, 999)).toBe(7);
+    expect(() => compiled.implement("3", 4)).toThrow();
+    const run = compiled.define.implement(compiled.implement);
+    expect(run(3, 4)).toBe(7);
+    expect(() => run(3, 4, 999)).toThrow();
   });
 
   test("rejects an invalid flow", () => {
