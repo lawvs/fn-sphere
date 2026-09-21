@@ -14,15 +14,15 @@
   "dependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/markdown-remark": "^7.3.1",
-    "@astrojs/react": "^6.0.5",
-    "@astrojs/starlight": "^0.42.0",
+    "@astrojs/react": "^6.0.6",
+    "@astrojs/starlight": "^0.42.1",
     "@astrojs/starlight-tailwind": "^5.0.0",
     "@radix-ui/react-popover": "^1.1.23",
     "@radix-ui/react-select": "^2.3.7",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "astro": "^7.3.2",
+    "astro": "^7.3.3",
     "astro-live-code": "^0.0.6",
     "astro-relative-links": "^0.4.2",
     "react": "^19.3.0",
@@ -43,6 +43,6 @@
     "@fn-sphere/filter": "workspace:*",
     "@fn-sphere/theme-mui-material": "workspace:*",
     "@mui/material": "^9.4.0",
-    "zod": "^4.6.2"
+    "zod": "^4.6.5"
   }
 }
