@@ -5,26 +5,45 @@ import type {
   FlowSpec,
 } from "../schema.js";
 
-export const indexFlow = (flow: FlowSpec) => {
-  const nodeById = new Map<string, FlowNodeSpec>();
-  const duplicateNodeIds: string[] = [];
-  for (const node of flow.nodes) {
-    if (nodeById.has(node.id)) {
-      duplicateNodeIds.push(node.id);
+// Keeps the first item per key and reports every later repeat.
+export const indexUnique = <T>(
+  items: readonly T[],
+  getKey: (item: T) => string,
+) => {
+  const byKey = new Map<string, T>();
+  const duplicates: string[] = [];
+  for (const item of items) {
+    const key = getKey(item);
+    if (byKey.has(key)) {
+      duplicates.push(key);
       continue;
     }
-    nodeById.set(node.id, node);
+    byKey.set(key, item);
+  }
+  return { byKey, duplicates };
+};
+
+export const indexFlow = (flow: FlowSpec) => {
+  const { byKey: nodeById, duplicates: duplicateNodeIds } = indexUnique(
+    flow.nodes,
+    (node) => node.id,
+  );
+  const { duplicates: duplicateEdgeIds } = indexUnique(
+    flow.edges,
+    (edge) => edge.id,
+  );
+
+  const inputNodes: FlowNodeSpec[] = [];
+  const outputNodes: FlowNodeSpec[] = [];
+  const fnNodes: FlowFnNodeSpec[] = [];
+  for (const node of flow.nodes) {
+    if (node.type === "input") inputNodes.push(node);
+    else if (node.type === "output") outputNodes.push(node);
+    else fnNodes.push(node);
   }
 
-  const edgeIds = new Set<string>();
-  const duplicateEdgeIds: string[] = [];
   const incomingEdges = new Map<string, Map<number, FlowEdgeSpec[]>>();
   for (const edge of flow.edges) {
-    if (edgeIds.has(edge.id)) {
-      duplicateEdgeIds.push(edge.id);
-    }
-    edgeIds.add(edge.id);
-
     const edgesByHandle =
       incomingEdges.get(edge.target) ?? new Map<number, FlowEdgeSpec[]>();
     const edges = edgesByHandle.get(edge.targetHandle) ?? [];
@@ -35,11 +54,10 @@ export const indexFlow = (flow: FlowSpec) => {
 
   return {
     nodeById,
-    inputNodes: flow.nodes.filter((node) => node.type === "input"),
-    outputNodes: flow.nodes.filter((node) => node.type === "output"),
-    fnNodes: flow.nodes.filter(
-      (node): node is FlowFnNodeSpec => node.type === "fn",
-    ),
+    edges: flow.edges,
+    inputNodes,
+    outputNodes,
+    fnNodes,
     duplicateNodeIds,
     duplicateEdgeIds,
     incomingEdges,
@@ -48,7 +66,7 @@ export const indexFlow = (flow: FlowSpec) => {
 
 type FlowIndex = ReturnType<typeof indexFlow>;
 
-export const getOutputSlice = (flow: FlowSpec, index: FlowIndex) => {
+export const getOutputSlice = (index: FlowIndex) => {
   const outputNode =
     index.outputNodes.length === 1 ? index.outputNodes[0] : undefined;
   const nodeById = new Map<string, FlowNodeSpec>();
@@ -75,12 +93,10 @@ export const getOutputSlice = (flow: FlowSpec, index: FlowIndex) => {
     outputNode,
     nodeById,
     fnNodes: index.fnNodes.filter((node) => nodeById.has(node.id)),
-    edges: flow.edges.filter((edge) => nodeById.has(edge.target)),
     // All incoming edges of an active target belong to the output slice.
+    edges: index.edges.filter((edge) => nodeById.has(edge.target)),
     getIncomingEdges: (nodeId: string, handle: number): FlowEdgeSpec[] =>
-      nodeById.has(nodeId)
-        ? (index.incomingEdges.get(nodeId)?.get(handle) ?? [])
-        : [],
+      index.incomingEdges.get(nodeId)?.get(handle) ?? [],
   };
 };
 
@@ -101,7 +117,7 @@ export const orderFnNodes = (
     const targets = outgoing.get(edge.source) ?? [];
     targets.push(edge.target);
     outgoing.set(edge.source, targets);
-    inDegree.set(edge.target, (inDegree.get(edge.target) ?? 0) + 1);
+    inDegree.set(edge.target, inDegree.get(edge.target)! + 1);
   }
 
   const queue = fnNodes.filter((node) => inDegree.get(node.id) === 0);
@@ -110,7 +126,7 @@ export const orderFnNodes = (
     const node = queue[index]!;
     orderedNodes.push(node);
     for (const targetId of outgoing.get(node.id) ?? []) {
-      const nextDegree = (inDegree.get(targetId) ?? 0) - 1;
+      const nextDegree = inDegree.get(targetId)! - 1;
       inDegree.set(targetId, nextDegree);
       if (nextDegree === 0) {
         queue.push(fnNodeById.get(targetId)!);

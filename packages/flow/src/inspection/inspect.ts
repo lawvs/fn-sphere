@@ -1,7 +1,12 @@
 import type { StandardFnSchema } from "@fn-sphere/core";
 import type { $ZodTuple, $ZodType } from "zod/v4/core";
 import { inspectConnections, type ResolvedFnNode } from "./connections.js";
-import { getOutputSlice, indexFlow, orderFnNodes } from "./graph.js";
+import {
+  getOutputSlice,
+  indexFlow,
+  indexUnique,
+  orderFnNodes,
+} from "./graph.js";
 import type { FlowEdgeSpec, FlowSpec } from "../schema.js";
 import type { FlowAnalysis, FlowDiagnostic } from "../types.js";
 
@@ -71,41 +76,29 @@ export const inspectFlow = ({
     });
   }
 
-  const fnByName = new Map<string, StandardFnSchema>();
-  const duplicateFnNames = new Set<string>();
-  for (const fnSchema of fnList) {
-    if (fnByName.has(fnSchema.name)) {
-      duplicateFnNames.add(fnSchema.name);
-      continue;
+  const { byKey: fnByName, duplicates } = indexUnique(
+    fnList,
+    (fnSchema) => fnSchema.name,
+  );
+  const duplicateFnNames = new Set(duplicates);
+
+  const requireOne = (kind: "input" | "output", count: number) => {
+    if (count === 0) {
+      addError({
+        code: `missing-${kind}-node`,
+        message: `Flow requires one ${kind} node.`,
+      });
+    } else if (count > 1) {
+      addError({
+        code: `multiple-${kind}-nodes`,
+        message: `Flow requires exactly one ${kind} node.`,
+      });
     }
-    fnByName.set(fnSchema.name, fnSchema);
-  }
+  };
+  requireOne("input", index.inputNodes.length);
+  requireOne("output", index.outputNodes.length);
 
-  if (index.inputNodes.length === 0) {
-    addError({
-      code: "missing-input-node",
-      message: "Flow requires one input node.",
-    });
-  } else if (index.inputNodes.length > 1) {
-    addError({
-      code: "multiple-input-nodes",
-      message: "Flow requires exactly one input node.",
-    });
-  }
-
-  if (index.outputNodes.length === 0) {
-    addError({
-      code: "missing-output-node",
-      message: "Flow requires one output node.",
-    });
-  } else if (index.outputNodes.length > 1) {
-    addError({
-      code: "multiple-output-nodes",
-      message: "Flow requires exactly one output node.",
-    });
-  }
-
-  const active = getOutputSlice(flow, index);
+  const active = getOutputSlice(index);
 
   if (active.outputNode) {
     for (const node of index.fnNodes) {

@@ -58,9 +58,8 @@ export function tryCompileFlow(
   };
 }
 
-function compileExecutable(
-  executable: ExecutableFlow,
-): StandardFnSchema<CompiledFlowFunction> {
+// Resolves edges to value positions so the runtime closure keeps only plain indices.
+const planExecution = (executable: ExecutableFlow) => {
   const inputCount = executable.inputSchemas.length;
   const outputIndices = new Map(
     executable.nodes.map((node, index) => [node.id, inputCount + index]),
@@ -69,11 +68,20 @@ function compileExecutable(
     edge.source === executable.inputNodeId
       ? edge.sourceHandle
       : outputIndices.get(edge.source)!;
-  const steps = executable.nodes.map((node) => ({
-    run: implementFn(node.fn),
-    inputs: node.inputEdges.map(sourceIndex),
-  }));
-  const outputIndex = sourceIndex(executable.outputEdge);
+  return {
+    inputCount,
+    steps: executable.nodes.map((node) => ({
+      run: implementFn(node.fn),
+      inputs: node.inputEdges.map(sourceIndex),
+    })),
+    outputIndex: sourceIndex(executable.outputEdge),
+  };
+};
+
+function compileExecutable(
+  executable: ExecutableFlow,
+): StandardFnSchema<CompiledFlowFunction> {
+  const { inputCount, steps, outputIndex } = planExecution(executable);
 
   const implement = (...values: unknown[]) => {
     // Reserve input positions; node results follow in topological order.

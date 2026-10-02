@@ -33,73 +33,86 @@ export const inspectConnections = ({
   // Presence records a consumer even when its schema cannot be resolved.
   const inputBindings = new Map<number, $ZodType | undefined>();
 
+  const addEdgeError = (
+    edge: FlowEdgeSpec,
+    code: FlowDiagnostic["code"],
+    message: string,
+    nodeId: string,
+    handle?: number,
+  ) =>
+    addError({
+      code,
+      message,
+      edgeId: edge.id,
+      nodeId,
+      ...(handle === undefined ? {} : { handle }),
+    });
+
   const inspectSource = (
     edge: FlowEdgeSpec,
     sourceNode: FlowNodeSpec | undefined,
   ): ResolvedSource | undefined => {
     if (!sourceNode) {
-      addError({
-        code: "unknown-source-node",
-        message: `Unknown source node: ${edge.source}`,
-        edgeId: edge.id,
-        nodeId: edge.source,
-      });
+      addEdgeError(
+        edge,
+        "unknown-source-node",
+        `Unknown source node: ${edge.source}`,
+        edge.source,
+      );
       return undefined;
     }
 
     if (sourceNode.type === "input") {
-      const index = edge.sourceHandle;
-      if (!isHandleIndex(index)) {
-        addError({
-          code: "invalid-source-handle",
-          message: `Invalid input handle: ${edge.sourceHandle}`,
-          edgeId: edge.id,
-          nodeId: sourceNode.id,
-          handle: edge.sourceHandle,
-        });
+      if (!isHandleIndex(edge.sourceHandle)) {
+        addEdgeError(
+          edge,
+          "invalid-source-handle",
+          `Invalid input handle: ${edge.sourceHandle}`,
+          sourceNode.id,
+          edge.sourceHandle,
+        );
         return undefined;
       }
-      return { type: "input", handle: index };
+      return { type: "input", handle: edge.sourceHandle };
     }
 
     if (sourceNode.type === "fn") {
-      const fnNode = fnByNodeId.get(sourceNode.id);
       if (edge.sourceHandle !== 0) {
-        addError({
-          code: "invalid-source-handle",
-          message: `Invalid function output handle: ${edge.sourceHandle}`,
-          edgeId: edge.id,
-          nodeId: sourceNode.id,
-          handle: edge.sourceHandle,
-        });
+        addEdgeError(
+          edge,
+          "invalid-source-handle",
+          `Invalid function output handle: ${edge.sourceHandle}`,
+          sourceNode.id,
+          edge.sourceHandle,
+        );
         return undefined;
       }
+      const fnNode = fnByNodeId.get(sourceNode.id);
       return fnNode ? { type: "fn", schema: fnNode.outputSchema } : undefined;
     }
 
-    addError({
-      code: "invalid-source-handle",
-      message: "Output nodes cannot be edge sources.",
-      edgeId: edge.id,
-      nodeId: sourceNode.id,
-      handle: edge.sourceHandle,
-    });
+    addEdgeError(
+      edge,
+      "invalid-source-handle",
+      "Output nodes cannot be edge sources.",
+      sourceNode.id,
+      edge.sourceHandle,
+    );
     return undefined;
   };
 
   const inspectTarget = (edge: FlowEdgeSpec, targetNode: FlowNodeSpec) => {
     if (targetNode.type === "fn") {
       const fnNode = fnByNodeId.get(targetNode.id);
-      const index = edge.targetHandle;
-      const inputSchema = fnNode?.inputSchemas[index];
-      if (!isHandleIndex(index) || (fnNode && !inputSchema)) {
-        addError({
-          code: "invalid-target-handle",
-          message: `Invalid function input handle: ${edge.targetHandle}`,
-          edgeId: edge.id,
-          nodeId: targetNode.id,
-          handle: edge.targetHandle,
-        });
+      const inputSchema = fnNode?.inputSchemas[edge.targetHandle];
+      if (!isHandleIndex(edge.targetHandle) || (fnNode && !inputSchema)) {
+        addEdgeError(
+          edge,
+          "invalid-target-handle",
+          `Invalid function input handle: ${edge.targetHandle}`,
+          targetNode.id,
+          edge.targetHandle,
+        );
         return undefined;
       }
       return inputSchema;
@@ -107,44 +120,40 @@ export const inspectConnections = ({
 
     if (targetNode.type === "output") {
       if (edge.targetHandle !== 0) {
-        addError({
-          code: "invalid-target-handle",
-          message: `Invalid flow output handle: ${edge.targetHandle}`,
-          edgeId: edge.id,
-          nodeId: targetNode.id,
-          handle: edge.targetHandle,
-        });
+        addEdgeError(
+          edge,
+          "invalid-target-handle",
+          `Invalid flow output handle: ${edge.targetHandle}`,
+          targetNode.id,
+          edge.targetHandle,
+        );
       }
       return undefined;
     }
 
-    addError({
-      code: "invalid-target-handle",
-      message: "Input nodes cannot be edge targets.",
-      edgeId: edge.id,
-      nodeId: targetNode.id,
-      handle: edge.targetHandle,
-    });
+    addEdgeError(
+      edge,
+      "invalid-target-handle",
+      "Input nodes cannot be edge targets.",
+      targetNode.id,
+      edge.targetHandle,
+    );
     return undefined;
   };
 
+  // Slice edges always target an active node.
   for (const edge of edges) {
-    const sourceNode = nodeById.get(edge.source);
-    const targetNode = nodeById.get(edge.target);
-    if (!targetNode) {
-      continue;
-    }
-    const source = inspectSource(edge, sourceNode);
+    const source = inspectSource(edge, nodeById.get(edge.source));
     if (source?.type === "input" && inputBindings.has(source.handle)) {
-      addError({
-        code: "multiple-input-consumers",
-        message: `Flow input handle ${source.handle} can only connect to one node.`,
-        nodeId: edge.source,
-        edgeId: edge.id,
-        handle: source.handle,
-      });
+      addEdgeError(
+        edge,
+        "multiple-input-consumers",
+        `Flow input handle ${source.handle} can only connect to one node.`,
+        edge.source,
+        source.handle,
+      );
     }
-    const targetSchema = inspectTarget(edge, targetNode);
+    const targetSchema = inspectTarget(edge, nodeById.get(edge.target)!);
     if (source?.type === "input") {
       inputBindings.set(
         source.handle,
@@ -163,18 +172,16 @@ export const inspectConnections = ({
         edgeId: edge.id,
       });
     }
-  }
 
-  for (const edge of edges) {
     const portEdges = getIncomingEdges(edge.target, edge.targetHandle);
     if (portEdges.length > 1 && portEdges[0] === edge) {
-      addError({
-        code: "multiple-input-edges",
-        message: `Multiple edges target ${edge.target}.${edge.targetHandle}.`,
-        nodeId: edge.target,
-        edgeId: edge.id,
-        handle: edge.targetHandle,
-      });
+      addEdgeError(
+        edge,
+        "multiple-input-edges",
+        `Multiple edges target ${edge.target}.${edge.targetHandle}.`,
+        edge.target,
+        edge.targetHandle,
+      );
     }
   }
 
@@ -194,14 +201,12 @@ export const inspectConnections = ({
     });
   }
 
+  // Only read once inspection is error-free, when every input edge exists.
   const inputEdgesByNodeId = new Map<string, FlowEdgeSpec[]>();
   for (const [nodeId, fnNode] of fnByNodeId) {
-    const inputEdges: FlowEdgeSpec[] = [];
-    fnNode.inputSchemas.forEach((_, index) => {
+    const inputEdges = fnNode.inputSchemas.map((_, index) => {
       const inputEdge = getIncomingEdges(nodeId, index)[0];
-      if (inputEdge) {
-        inputEdges.push(inputEdge);
-      } else {
+      if (!inputEdge) {
         addError({
           code: "missing-input-edge",
           message: `Missing edge for ${nodeId}.${index}.`,
@@ -209,10 +214,9 @@ export const inspectConnections = ({
           handle: index,
         });
       }
+      return inputEdge!;
     });
-    if (inputEdges.length === fnNode.inputSchemas.length) {
-      inputEdgesByNodeId.set(nodeId, inputEdges);
-    }
+    inputEdgesByNodeId.set(nodeId, inputEdges);
   }
 
   const outputEdge = outputNode
