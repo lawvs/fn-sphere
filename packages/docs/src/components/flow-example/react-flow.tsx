@@ -1,6 +1,5 @@
 import { arithmeticFns } from "@fn-sphere/core";
 import {
-  analyzeFlow,
   compileFlow,
   flowSpecSchema,
   type FlowNodeSpec,
@@ -173,19 +172,19 @@ export function FlowCanvasExample() {
   const run = () => {
     try {
       const flow = toFlowSpec(nodes, edges);
-      const analysis = analyzeFlow({ flow, fnList: arithmeticFns });
+      const compilation = compileFlow({ flow, fnList: arithmeticFns });
       setDiagnostics(
-        analysis.diagnostics.map((diagnostic) => ({
+        compilation.diagnostics.map((diagnostic) => ({
           severity: diagnostic.severity,
           text: `${diagnostic.code}: ${diagnostic.message}`,
         })),
       );
-      if (!analysis.valid) {
+      if (!compilation.valid) {
         setResult(undefined);
         return;
       }
 
-      const compiled = compileFlow({ flow, fnList: arithmeticFns });
+      const { compiled } = compilation;
       const execute = compiled.define.implement(compiled.implement);
       setResult(execute(...inputs));
     } catch (error) {

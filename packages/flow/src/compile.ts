@@ -26,25 +26,7 @@ const implementFn = (fnSchema: StandardFnSchema): RuntimeFn =>
     ? (fnSchema.implement as RuntimeFn)
     : (fnSchema.define.implement(fnSchema.implement) as RuntimeFn);
 
-export function compileFlow(
-  options: CompileFlowOptions,
-): StandardFnSchema<CompiledFlowFunction> {
-  const result = tryCompileFlow(options);
-  if (!result.valid) {
-    const codes = [
-      ...new Set(
-        result.diagnostics
-          .filter((diagnostic) => diagnostic.severity === "error")
-          .map((diagnostic) => diagnostic.code),
-      ),
-    ];
-    throw new Error(`Cannot compile invalid flow: ${codes.join(", ")}`);
-  }
-
-  return result.compiled;
-}
-
-export function tryCompileFlow(options: CompileFlowOptions): FlowCompilation {
+export function compileFlow(options: CompileFlowOptions): FlowCompilation {
   const inspected = inspectFlow(options);
   if (!inspected.valid) {
     return inspected;

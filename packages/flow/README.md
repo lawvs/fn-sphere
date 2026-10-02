@@ -65,8 +65,9 @@ const flow = {
   ],
 } satisfies FlowSpec;
 
-const compiled = compileFlow({ flow, fnList: arithmeticFns });
-const run = compiled.define.implement(compiled.implement);
+const result = compileFlow({ flow, fnList: arithmeticFns });
+if (!result.valid) throw new Error("Invalid flow");
+const run = result.compiled.define.implement(result.compiled.implement);
 
 run(1, 2, 3); // 9
 ```
@@ -96,24 +97,18 @@ declare function analyzeFlow(options: {
   fnList: readonly StandardFnSchema[];
 }): FlowAnalysis;
 
-declare function tryCompileFlow(options: {
-  flow: FlowSpec;
-  fnList: readonly StandardFnSchema[];
-}): FlowCompilation;
-
 declare function compileFlow(options: {
   flow: FlowSpec;
   fnList: readonly StandardFnSchema[];
-}): CompiledFn;
+}): FlowCompilation;
 
 declare const flowSpecSchema: ZodType<FlowSpec>;
 ```
 
 `fnList` maps each function node's `fnName` to a `StandardFnSchema.name`.
-`analyzeFlow` returns diagnostics without compiling. `tryCompileFlow` returns
-diagnostics and, when valid, the compiled function. `compileFlow` returns the
-compiled function directly and throws `Cannot compile invalid flow: ...` with
-the distinct error codes when validation fails.
+`analyzeFlow` returns diagnostics without compiling. `compileFlow` returns the
+same diagnostics and, when valid, the compiled function. Neither throws for an
+invalid graph.
 
 The graph types have these shapes:
 
@@ -142,7 +137,7 @@ type FlowEdgeSpec = {
 `flowSpecSchema` validates this serialized shape: `name`, node IDs, edge IDs,
 and `fnName` must be nonempty strings, and handles must be nonnegative integers.
 It does not check whether a graph can execute; use `analyzeFlow` or
-`tryCompileFlow` for that.
+`compileFlow` for that.
 
 ```ts
 import { flowSpecSchema } from "@fn-sphere/flow";
@@ -200,9 +195,9 @@ produces an `unreachable-node` warning and is excluded from execution; warnings
 do not prevent compilation.
 
 ```ts
-import { tryCompileFlow } from "@fn-sphere/flow";
+import { compileFlow } from "@fn-sphere/flow";
 
-const result = tryCompileFlow({ flow, fnList: arithmeticFns });
+const result = compileFlow({ flow, fnList: arithmeticFns });
 if (!result.valid) {
   console.error(result.diagnostics);
 } else {

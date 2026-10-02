@@ -1,12 +1,7 @@
 import { arithmeticFns } from "@fn-sphere/core";
 import { describe, expect, test, vi } from "vitest";
 import { z } from "zod";
-import {
-  analyzeFlow,
-  compileFlow,
-  tryCompileFlow,
-  type FlowEdgeSpec,
-} from "./index.js";
+import { analyzeFlow, compileFlow, type FlowEdgeSpec } from "./index.js";
 
 const validEdges: FlowEdgeSpec[] = [
   {
@@ -45,6 +40,12 @@ const validEdges: FlowEdgeSpec[] = [
     targetHandle: 0,
   },
 ];
+
+const compileValid = (options: Parameters<typeof compileFlow>[0]) => {
+  const result = compileFlow(options);
+  if (!result.valid) throw new Error("Expected a compiled flow");
+  return result.compiled;
+};
 
 const createFormula = (edges: FlowEdgeSpec[] = validEdges) => ({
   version: 1 as const,
@@ -382,12 +383,12 @@ describe("analyzeFlow", () => {
   });
 });
 
-describe("tryCompileFlow", () => {
+describe("compileFlow", () => {
   test("returns diagnostics for an invalid flow without compiling", () => {
     const flow = createFormula(
       validEdges.filter((edge) => edge.id !== "b-to-sum"),
     );
-    const result = tryCompileFlow({ flow, fnList: arithmeticFns });
+    const result = compileFlow({ flow, fnList: arithmeticFns });
 
     expect(result).toEqual(analyzeFlow({ flow, fnList: arithmeticFns }));
     expect(result.valid).toBe(false);
@@ -396,7 +397,7 @@ describe("tryCompileFlow", () => {
   test("returns warnings together with a reusable compiled function", () => {
     const flow = createFormula();
     flow.nodes.push({ id: "draft", type: "fn", fnName: "missing" });
-    const result = tryCompileFlow({ flow, fnList: arithmeticFns });
+    const result = compileFlow({ flow, fnList: arithmeticFns });
 
     expect(result.diagnostics).toEqual([
       expect.objectContaining({
@@ -411,11 +412,9 @@ describe("tryCompileFlow", () => {
     expect(run(1, 2, 3)).toBe(9);
     expect(run(3, 4, 5)).toBe(35);
   });
-});
 
-describe("compileFlow", () => {
   test("executes the compiled flow", () => {
-    const compiled = compileFlow({
+    const compiled = compileValid({
       flow: createFormula(),
       fnList: arithmeticFns,
     });
@@ -436,7 +435,7 @@ describe("compileFlow", () => {
     flow.edges.reverse();
     const add = arithmeticFns.find((fn) => fn.name === "add")!;
     const implement = vi.fn(add.implement);
-    const compiled = compileFlow({
+    const compiled = compileValid({
       flow,
       fnList: arithmeticFns.map((fn) =>
         fn === add ? { ...fn, implement } : fn,
@@ -457,7 +456,7 @@ describe("compileFlow", () => {
       .map((edge) =>
         edge.target === "output" ? { ...edge, source: "sum" } : edge,
       );
-    const compiled = compileFlow({
+    const compiled = compileValid({
       flow,
       fnList: [
         {
@@ -479,17 +478,6 @@ describe("compileFlow", () => {
     expect(() => run(3, 4, 999)).toThrow();
   });
 
-  test("rejects an invalid flow", () => {
-    const edges = validEdges.filter((edge) => edge.id !== "b-to-sum");
-
-    expect(() =>
-      compileFlow({
-        flow: createFormula(edges),
-        fnList: arithmeticFns,
-      }),
-    ).toThrowError(/missing-input-edge/);
-  });
-
   test("compiles and runs when unreachable nodes are invalid", () => {
     const flow = createFormula();
     flow.nodes.push({ id: "draft", type: "fn", fnName: "missing" });
@@ -501,25 +489,15 @@ describe("compileFlow", () => {
       targetHandle: 0,
     });
 
-    const compiled = compileFlow({ flow, fnList: arithmeticFns });
+    const compiled = compileValid({ flow, fnList: arithmeticFns });
     const run = compiled.define.implement(compiled.implement);
 
     expect(run(1, 2, 3)).toBe(9);
     expect(compiled.define._zod.def.input._zod.def.items).toHaveLength(3);
   });
 
-  test("excludes warning codes from invalid-flow errors", () => {
-    const edges = validEdges.filter((edge) => edge.id !== "b-to-sum");
-    const flow = createFormula(edges);
-    flow.nodes.push({ id: "draft", type: "fn", fnName: "missing" });
-
-    expect(() => compileFlow({ flow, fnList: arithmeticFns })).toThrowError(
-      /^(?!.*unreachable-node).*missing-input-edge/,
-    );
-  });
-
   test("allows a compiled flow to be used as a function node", () => {
-    const formula = compileFlow({
+    const formula = compileValid({
       flow: createFormula(),
       fnList: arithmeticFns,
     });
@@ -577,7 +555,7 @@ describe("compileFlow", () => {
         },
       ],
     };
-    const compiled = compileFlow({
+    const compiled = compileValid({
       flow: nestedFlow,
       fnList: [...arithmeticFns, formula],
     });

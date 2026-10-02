@@ -4,8 +4,8 @@ import {
   type StandardFnSchema,
 } from "@fn-sphere/core";
 import {
+  compileFlow,
   flowSpecSchema,
-  tryCompileFlow,
   type FlowDiagnostic,
   type FlowNodeSpec,
   type FlowSpec,
@@ -265,7 +265,7 @@ export const preparePlayground = (
   const inputSchemas = resolveInputSchemas(nodes, edges);
   try {
     flow = toFlowSpec(name, nodes, edges);
-    const result = tryCompileFlow({ flow, fnList: playgroundFns });
+    const result = compileFlow({ flow, fnList: playgroundFns });
     if (!result.valid) {
       return {
         flow,

@@ -50,7 +50,9 @@ const formula = {
   ],
 } satisfies FlowSpec;
 
-const compiled = compileFlow({ flow: formula, fnList: arithmeticFns });
+const compilation = compileFlow({ flow: formula, fnList: arithmeticFns });
+if (!compilation.valid) throw new Error("Invalid formula flow");
+const { compiled } = compilation;
 const runFormula = compiled.define.implement(compiled.implement);
 
 const inputClass =

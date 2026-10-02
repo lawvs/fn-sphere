@@ -50,7 +50,13 @@ const formulaSpec = {
   ],
 } satisfies FlowSpec;
 
-const formula = compileFlow({ flow: formulaSpec, fnList: arithmeticFns });
+const compileValid = (...args: Parameters<typeof compileFlow>) => {
+  const compilation = compileFlow(...args);
+  if (!compilation.valid) throw new Error("Invalid example flow");
+  return compilation.compiled;
+};
+
+const formula = compileValid({ flow: formulaSpec, fnList: arithmeticFns });
 
 const outerSpec = {
   version: 1,
@@ -107,7 +113,7 @@ const outerSpec = {
   ],
 } satisfies FlowSpec;
 
-const outer = compileFlow({
+const outer = compileValid({
   flow: outerSpec,
   fnList: [...arithmeticFns, formula],
 });
