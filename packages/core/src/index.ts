@@ -4,9 +4,11 @@ export * from "./sort/index.js";
 export { defineGenericFn, defineTypedFn } from "./fn-helpers.js";
 export { createFnSphere } from "./fn-sphere.js";
 export {
+  arithmeticFns,
   commonFilters,
   dateFilter,
   genericFilter,
+  logicFns,
   numberFilter,
   presetFilter,
   presetSort,
