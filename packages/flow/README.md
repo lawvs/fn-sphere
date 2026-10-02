@@ -88,7 +88,7 @@ import type { StandardFnSchema } from "@fn-sphere/core";
 import type {
   FlowAnalysis,
   FlowSpec,
-  TryCompileFlowResult,
+  FlowCompilation,
 } from "@fn-sphere/flow";
 import type { ZodType } from "zod";
 import type { $ZodFunction, $ZodTuple, $ZodType } from "zod/v4/core";
@@ -103,7 +103,7 @@ declare function analyzeFlow(options: {
 declare function tryCompileFlow(options: {
   flow: FlowSpec;
   fnList: readonly StandardFnSchema[];
-}): TryCompileFlowResult;
+}): FlowCompilation;
 
 declare function compileFlow(options: {
   flow: FlowSpec;
@@ -194,7 +194,7 @@ type FlowAnalysis = {
   diagnostics: FlowDiagnostic[];
 };
 
-type TryCompileFlowResult =
+type FlowCompilation =
   | { valid: false; diagnostics: FlowDiagnostic[] }
   | { valid: true; diagnostics: FlowDiagnostic[]; compiled: CompiledFn };
 ```
