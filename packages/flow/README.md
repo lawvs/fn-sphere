@@ -85,11 +85,7 @@ to show the compiled return shape. `CompiledFn` is a shorthand for this README.
 
 ```ts
 import type { StandardFnSchema } from "@fn-sphere/core";
-import type {
-  FlowAnalysis,
-  FlowSpec,
-  FlowCompilation,
-} from "@fn-sphere/flow";
+import type { FlowAnalysis, FlowSpec, FlowCompilation } from "@fn-sphere/flow";
 import type { ZodType } from "zod";
 import type { $ZodFunction, $ZodTuple, $ZodType } from "zod/v4/core";
 
