@@ -13,7 +13,7 @@ type CompileFlowOptions = {
 type RuntimeFn = (...args: unknown[]) => unknown;
 type CompiledFlowFunction = $ZodFunction<$ZodTuple, $ZodType>;
 
-export type TryCompileFlowResult =
+export type FlowCompilation =
   | { valid: false; diagnostics: FlowDiagnostic[] }
   | {
       valid: true;
@@ -44,9 +44,7 @@ export function compileFlow(
   return result.compiled;
 }
 
-export function tryCompileFlow(
-  options: CompileFlowOptions,
-): TryCompileFlowResult {
+export function tryCompileFlow(options: CompileFlowOptions): FlowCompilation {
   const inspected = inspectFlow(options);
   if (!inspected.valid) {
     return inspected;
