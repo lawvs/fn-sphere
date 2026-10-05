@@ -1,5 +1,11 @@
 # @fn-sphere/core
 
+## 1.5.0
+
+### Minor Changes
+
+- [#267](https://github.com/lawvs/fn-sphere/pull/267) [`ecab1a0`](https://github.com/lawvs/fn-sphere/commit/ecab1a0d4904bed6fdfd5d345cfa61641ab72916) Thanks [@lawvs](https://github.com/lawvs)! - Export schema-defined arithmetic and boolean logic functions.
+
 ## 1.4.0
 
 ### Minor Changes
