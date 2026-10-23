@@ -24,12 +24,12 @@ export function ProseFilter() {
     <FilterSphereProvider context={context} theme={proseTheme}>
       <Layout locale={locale} onLocaleChange={setLocale}>
         <FilterBuilder key={locale} />
-        <RulePreview filterRule={filterRule} />
         <Table
           schema={expenseSchema}
           data={expenses.filter(predicate)}
           className="not-content mt-4 max-h-80"
         />
+        <RulePreview filterRule={filterRule} />
       </Layout>
     </FilterSphereProvider>
   );
