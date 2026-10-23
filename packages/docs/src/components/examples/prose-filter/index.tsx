@@ -7,6 +7,7 @@ import {
 import {
   createProseRule,
   expenseSchema,
+  mapExpenseFilterName,
   proseFilters,
   type Expense,
 } from "./schema";
@@ -29,7 +30,7 @@ export function ProseFilter() {
     filterFnList: proseFilters,
     defaultRule: createProseRule,
     getLocaleText: t,
-    mapFilterName: (filter) => `operator.${filter.name}`,
+    mapFilterName: mapExpenseFilterName,
   });
 
   return (

@@ -4,10 +4,15 @@ import {
   useFilterRule,
   useFilterSelect,
   useView,
+  useRootRule,
   type FilterGroup,
   type SingleFilter,
 } from "@fn-sphere/filter";
-import { InlineSelect, ValueLabelContext } from "./inline-editors";
+import {
+  InlineSelect,
+  ValueLabelContext,
+  NegativeValueContext,
+} from "./inline-editors";
 import { ProseText, useProseLocale } from "./locale";
 import { membershipOperator } from "./model";
 import { allowedOperators, amountRule } from "./schema";
@@ -37,8 +42,9 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
   const { FieldSelect, FilterSelect, FilterDataInput } = useView("templates");
   const { removeRule, selectedField, ruleState } = useFilterRule(rule);
   const element = useRef<HTMLSpanElement>(null);
+  const { mapFieldName, getLocaleText } = useRootRule();
   const fieldName = selectedField
-    ? t(`field.${rule.path?.[0]}`)
+    ? getLocaleText(mapFieldName(selectedField))
     : t("condition");
   const remove = () => {
     focusAfterRemoval(element.current);
@@ -73,7 +79,11 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
             <ValueLabelContext.Provider
               value={t("valueLabel", { field: fieldName })}
             >
-              <FilterDataInput rule={rule} />
+              <NegativeValueContext.Provider
+                value={rule.name === "notContains"}
+              >
+                <FilterDataInput rule={rule} />
+              </NegativeValueContext.Provider>
             </ValueLabelContext.Provider>
           ),
         }}
@@ -99,12 +109,13 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
 export function ProseField({ rule }: { rule: SingleFilter }) {
   const { t } = useProseLocale();
   const { fieldOptions, selectedField, setField } = useFilterSelect(rule);
+  const { mapFieldName, getLocaleText } = useRootRule();
   return (
     <InlineSelect
       className="prose-field"
       aria-label={t("fieldLabel", {
         field: selectedField
-          ? t(`field.${selectedField.path.join(".")}`)
+          ? getLocaleText(mapFieldName(selectedField))
           : t("condition"),
       })}
       options={fieldOptions}
@@ -125,19 +136,17 @@ export function ProseOperator({ rule }: { rule: SingleFilter }) {
   const {
     filterOptions = [],
     selectedFilter,
+    selectedField,
     setFilter,
   } = useFilterSelect(rule);
-  const field = rule.path?.[0];
-  const allowed = allowedOperators(field);
-  const options = filterOptions
-    .filter((option) => allowed.includes(option.value.name))
-    .map((option) => ({
-      ...option,
-      label:
-        field === "amount" && option.value.name === "equals"
-          ? t("operator.numberEquals")
-          : option.label,
-    }));
+  const { mapFieldName, getLocaleText } = useRootRule();
+  const allowed = allowedOperators(selectedField?.path[0]);
+  const options = filterOptions.filter((option) =>
+    allowed.includes(option.value.name),
+  );
+  const fieldName = selectedField
+    ? getLocaleText(mapFieldName(selectedField))
+    : t("condition");
   const count = Array.isArray(rule.args[0]) ? rule.args[0].length : 0;
   const display =
     rule.name === "contains" || rule.name === "notContains"
@@ -146,7 +155,7 @@ export function ProseOperator({ rule }: { rule: SingleFilter }) {
   return (
     <InlineSelect
       className="prose-operator"
-      aria-label={t("operatorLabel", { field: t(`field.${field}`) })}
+      aria-label={t("operatorLabel", { field: fieldName })}
       options={options}
       value={selectedFilter}
       display={display}
@@ -157,6 +166,8 @@ export function ProseOperator({ rule }: { rule: SingleFilter }) {
 
 export function ProseGroup({ rule }: { rule: FilterGroup }) {
   const { t } = useProseLocale();
+  const { SingleFilter: ConditionView, FilterGroup: GroupView } =
+    useView("templates");
   const {
     ruleState: { isRoot },
     toggleGroupOp,
@@ -178,9 +189,9 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
   );
   const renderChild = (child: FilterGroup["conditions"][number]) =>
     child.type === "Filter" ? (
-      <ProseCondition rule={child} />
+      <ConditionView rule={child} />
     ) : (
-      <ProseGroup rule={child} />
+      <GroupView rule={child} />
     );
   return (
     <div

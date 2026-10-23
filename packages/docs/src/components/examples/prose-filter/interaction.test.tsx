@@ -3,6 +3,19 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { ProseFilter } from "./index";
+import { z } from "zod";
+import {
+  FilterBuilder,
+  FilterSphereProvider,
+  createFilterGroup,
+  createSingleFilter,
+  defaultMapFieldName,
+  useFilterSphere,
+  type FilterTheme,
+} from "@fn-sphere/filter";
+import { proseTheme } from "./theme";
+import { ProseCondition, ProseGroup } from "./prose-rule";
+import { getProseLocaleText } from "./locale";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 let container: HTMLDivElement;
@@ -294,4 +307,87 @@ test("localized group and root joiners use canonical operators", () => {
   click("このグループのすべての条件に一致");
   expect(json().filterRule.conditions[1].op).toBe("or");
   expect(container.textContent).toContain("次の条件のいずれかが成立");
+});
+
+const metadataSchema = z.object({
+  code: z
+    .union([
+      z.literal(1).describe("First code"),
+      z.literal(2).describe("Second code"),
+    ])
+    .describe("Code metadata"),
+});
+
+function MetadataExample({ theme = proseTheme }: { theme?: FilterTheme }) {
+  const { context } = useFilterSphere({
+    schema: metadataSchema,
+    getLocaleText: (key) => getProseLocaleText("en-US", key),
+    mapFieldName: (field) => `Mapped ${defaultMapFieldName(field)}`,
+    defaultRule: () =>
+      createFilterGroup({
+        op: "and",
+        conditions: [
+          createFilterGroup({
+            op: "or",
+            conditions: [
+              createSingleFilter({
+                path: ["code"],
+                name: "contains",
+                args: [[1, 2]],
+              }),
+            ],
+          }),
+        ],
+      }),
+  });
+  return (
+    <FilterSphereProvider context={context} theme={theme}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+
+test("field labels use the mapper and membership values use literal metadata", () => {
+  act(() => root.render(<MetadataExample />));
+  expect(button("Field: Mapped Code metadata").textContent).toBe(
+    "Mapped Code metadata",
+  );
+  expect(button("Operator for Mapped Code metadata")).toBeTruthy();
+  expect(button("Value for Mapped Code metadata").textContent).toBe(
+    "First code or Second code",
+  );
+  click("Value for Mapped Code metadata");
+  const first = document.querySelector<HTMLInputElement>(
+    ".prose-checkbox input",
+  )!;
+  act(() => first.click());
+  expect(button("Value for Mapped Code metadata").textContent).toBe(
+    "Second code",
+  );
+  act(() => first.click());
+  expect(button("Value for Mapped Code metadata").textContent).toBe(
+    "First code or Second code",
+  );
+});
+
+test("nested groups resolve overridden group and condition templates", () => {
+  const theme: FilterTheme = {
+    ...proseTheme,
+    templates: {
+      ...proseTheme.templates,
+      FilterGroup: ({ rule }) => (
+        <div data-custom-group="">
+          <ProseGroup rule={rule} />
+        </div>
+      ),
+      SingleFilter: ({ rule }) => (
+        <span data-custom-condition="">
+          <ProseCondition rule={rule} />
+        </span>
+      ),
+    },
+  };
+  act(() => root.render(<MetadataExample theme={theme} />));
+  expect(container.querySelectorAll("[data-custom-group]")).toHaveLength(2);
+  expect(container.querySelectorAll("[data-custom-condition]")).toHaveLength(1);
 });

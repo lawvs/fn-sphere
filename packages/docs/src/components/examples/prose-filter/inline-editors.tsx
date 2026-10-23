@@ -8,11 +8,13 @@ import {
   useState,
   type InputHTMLAttributes,
   type ReactNode,
+  type SelectHTMLAttributes,
 } from "react";
 import { useProseLocale } from "./locale";
 import { formatValue, listSeparator, parseInput } from "./model";
 
 export const ValueLabelContext = createContext("");
+export const NegativeValueContext = createContext(false);
 type Option<T> = { label: string; value: T };
 type InlineSelectProps<T> = {
   options?: Option<T>[] | undefined;
@@ -90,19 +92,26 @@ export function InlineSelect<T>({
   );
 }
 
-export function InlineMultiple({
-  options,
-  value,
-  negative,
+type InlineMultipleProps<T> = Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "value" | "onChange" | "children" | "multiple"
+> & {
+  options?: Option<T>[] | undefined;
+  value?: T[] | undefined;
+  onChange?: (value: T[]) => void;
+};
+
+export function InlineMultiple<T>({
+  options = [],
+  value = [],
   onChange,
-}: {
-  options: Option<string>[];
-  value: string[];
-  negative: boolean;
-  onChange: (value: string[]) => void;
-}) {
+  disabled,
+  "aria-label": ariaLabel,
+}: InlineMultipleProps<T>) {
+  const negative = useContext(NegativeValueContext);
   const { t, locale } = useProseLocale();
-  const label = useContext(ValueLabelContext) || t("chooseValue");
+  const valueLabel = useContext(ValueLabelContext) || t("chooseValue");
+  const label = ariaLabel ?? valueLabel;
   const selected = options.filter((option) => value.includes(option.value));
   const [open, setOpen] = useState(false);
   return (
@@ -111,11 +120,12 @@ export function InlineMultiple({
         <button
           type="button"
           className="prose-token prose-values"
+          disabled={disabled}
           aria-label={label}
         >
           {selected.length ? (
             selected.map((option, index) => (
-              <Fragment key={option.value}>
+              <Fragment key={index}>
                 <span className="prose-value-joiner">
                   {listSeparator(index, selected.length, negative, locale)}
                 </span>
@@ -137,8 +147,8 @@ export function InlineMultiple({
           collisionPadding={12}
         >
           <div className="prose-popup-hint">{t("pickMany")}</div>
-          {options.map((option) => (
-            <label className="prose-checkbox" key={option.value}>
+          {options.map((option, index) => (
+            <label className="prose-checkbox" key={index}>
               <input
                 type="checkbox"
                 checked={value.includes(option.value)}
@@ -146,7 +156,7 @@ export function InlineMultiple({
                   const next = event.target.checked
                     ? [...value, option.value]
                     : value.filter((item) => item !== option.value);
-                  onChange(
+                  onChange?.(
                     options
                       .filter((item) => next.includes(item.value))
                       .map((item) => item.value),

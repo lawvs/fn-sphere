@@ -3,6 +3,8 @@ import {
   createSingleFilter,
   presetFilter,
   type SingleFilter,
+  type FilterField,
+  type StandardFnSchema,
 } from "@fn-sphere/filter";
 import { z } from "zod";
 
@@ -112,4 +114,13 @@ export function allowedOperators(field: string | number | undefined) {
       "lessThanOrEqual",
     ];
   return ["equals", "notEqual", "contains", "notContains"];
+}
+
+export function mapExpenseFilterName(
+  filter: StandardFnSchema,
+  field: FilterField,
+) {
+  return field.path[0] === "amount" && filter.name === "equals"
+    ? "operator.numberEquals"
+    : `operator.${filter.name}`;
 }
