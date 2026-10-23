@@ -16,7 +16,7 @@ export function InlineInput({
 }: InlineInputProps) {
   const { getLocaleText: t } = useRootRule();
   const locale = t("locale");
-  const label = t("chooseValue");
+  const label = t("enterValue");
   const [open, setOpen] = useState(false);
   const id = useId();
   const [draft, setDraft] = useState("");
@@ -42,7 +42,7 @@ export function InlineInput({
         >
           <span className="prose-value">
             {value === undefined || value === ""
-              ? t("chooseValue")
+              ? label
               : formatValue(value, locale)}
           </span>
         </button>
@@ -66,15 +66,13 @@ export function InlineInput({
               }
             }}
           >
-            <label className="prose-popup-hint" htmlFor={id}>
-              {label}
-            </label>
             <input
               id={id}
               className="prose-draft"
               type={type}
               step={type === "number" ? "any" : undefined}
               value={draft}
+              aria-label={label}
               aria-invalid={attempted && !valid}
               aria-describedby={attempted && !valid ? `${id}-error` : undefined}
               onChange={(event) => setDraft(event.target.value)}
