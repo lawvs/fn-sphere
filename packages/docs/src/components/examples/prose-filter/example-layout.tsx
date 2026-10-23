@@ -1,0 +1,46 @@
+import type { PropsWithChildren } from "react";
+import { useRootRule } from "@fn-sphere/filter";
+import { localeOptions, type ProseLocale } from "./locale";
+
+type LocaleSelectProps = {
+  locale: ProseLocale;
+  onLocaleChange: (locale: ProseLocale) => void;
+};
+
+export function ExampleLayout({
+  locale,
+  onLocaleChange,
+  children,
+}: PropsWithChildren<LocaleSelectProps>) {
+  const { getLocaleText: t } = useRootRule();
+  return (
+    <section lang={locale} className="prose-editor" aria-label={t("title")}>
+      <header className="prose-heading">
+        <span className="prose-eyebrow">{t("title")}</span>
+        <LocaleSelect locale={locale} onLocaleChange={onLocaleChange} />
+      </header>
+      <h3>{t("heading")}</h3>
+      {children}
+    </section>
+  );
+}
+
+function LocaleSelect({ locale, onLocaleChange }: LocaleSelectProps) {
+  const { getLocaleText: t } = useRootRule();
+  return (
+    <label className="prose-language">
+      <span>{t("language")}</span>
+      <select
+        aria-label={t("language")}
+        value={locale}
+        onChange={(event) => onLocaleChange(event.target.value as ProseLocale)}
+      >
+        {localeOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
