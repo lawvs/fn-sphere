@@ -1,86 +1,86 @@
 ---
 name: filter-sphere
-description: Integrate Filter Sphere into a project - schema-driven filtering for Zod-typed data. Use when building filtering UIs, data tables with filters, or adding sort/filter logic to any TypeScript application.
+description: Integrate or customize Filter Sphere for Zod-typed data. Use for React filter UIs, themes, localization, custom filter functions, and filtering or sorting with @fn-sphere/core.
 ---
 
-# Filter Sphere - Schema-driven Filtering
+# Filter Sphere
 
-Build advanced filtering interfaces powered by Zod schemas.
+## Choose the relevant guide
 
-## Quick Start
+Before implementing a change, read the guides for that task. Follow only the relevant rows.
+
+In the fn-sphere repository, read the local documentation first. Map each URL below to `packages/docs/src/content/docs/`: replace `/fn-sphere/` with that directory and the trailing slash with `.mdx`. For example, `/fn-sphere/customization/theme/` maps to `packages/docs/src/content/docs/customization/theme.mdx`.
+
+In other projects, use the linked documentation and check APIs against the installed package types.
+
+| Task                                            | Read                                                                                                                                                                  |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Add a filter UI or edit an example              | [Getting Started](https://www.waterwater.moe/fn-sphere/guides/getting-started/), [Best Practices](https://www.waterwater.moe/fn-sphere/guides/best-practices/)        |
+| Change controls or rule layouts                 | [Theme](https://www.waterwater.moe/fn-sphere/customization/theme/)                                                                                                    |
+| Translate labels or compose localized sentences | [Localization](https://www.waterwater.moe/fn-sphere/customization/localization/)                                                                                      |
+| Read application metadata from field schemas    | [Schema Metadata](https://www.waterwater.moe/fn-sphere/customization/schema-metadata/)                                                                                |
+| Change how parameter schemas map to inputs      | [Data Input](https://www.waterwater.moe/fn-sphere/customization/data-input/)                                                                                          |
+| Add filtering behavior                          | [Customizing Filters](https://www.waterwater.moe/fn-sphere/customization/filter/), [Preset Filters](https://www.waterwater.moe/fn-sphere/reference/presets/)          |
+| Save or restore rules                           | [Persistence](https://www.waterwater.moe/fn-sphere/customization/persistence/)                                                                                        |
+| Sort data or add compare functions              | [Sort Getting Started](https://www.waterwater.moe/fn-sphere/sort/getting-started/), [Custom Sort Functions](https://www.waterwater.moe/fn-sphere/sort/customization/) |
+
+For working UI compositions, consult [Example](https://www.waterwater.moe/fn-sphere/reference/example/).
+
+## React setup
+
+If the project does not have the React filter package, install it with Zod:
 
 ```bash
-# React filter UI
 pnpm add @fn-sphere/filter zod
 ```
 
-## Core Concepts
-
-### Basic Setup
-
 ```tsx
 import {
-  FilterSphereProvider,
   FilterBuilder,
+  FilterSphereProvider,
   useFilterSphere,
 } from "@fn-sphere/filter";
 import { z } from "zod";
 
-// 1. Define your data schema with Zod
 const schema = z.object({
-  name: z.string().describe("Name"),
-  age: z.number().describe("Age"),
+  id: z.number(),
+  name: z.string(),
+  age: z.number(),
 });
 
-export function FilterBuilder() {
-  // 2. use the `useFilterSphere` hook to get the context and predicate
-  const { filterRule, predicate, context } = useFilterSphere({
+const data = [
+  { id: 1, name: "Alice", age: 25 },
+  { id: 2, name: "Bob", age: 30 },
+];
+
+export function MyFilter() {
+  const { context, predicate } = useFilterSphere<z.infer<typeof schema>>({
     schema,
-    onRuleChange: ({ filterRule }) => {
-      console.log("Filter rule changed:", filterRule);
-    },
   });
-
-  const data = [/* ... */];
-
-  // 4. use the `predicate` to filter the data
   const filteredData = data.filter(predicate);
 
   return (
-    // 3. display the `FilterBuilder` inside the `FilterSphereProvider`
     <FilterSphereProvider context={context}>
       <FilterBuilder />
+      <ul>
+        {filteredData.map((row) => (
+          <li key={row.id}>
+            {row.name}: {row.age}
+          </li>
+        ))}
+      </ul>
     </FilterSphereProvider>
   );
 }
 ```
 
-## Project Structure (Recommended)
+## Implementation choices
 
-```
-filter-sphere/
-  index.tsx      # Main component wiring everything together
-  schema.ts      # Zod schema, default rules, custom functions
-  theme.tsx      # Theme via createFilterTheme
-  locale.ts      # (Optional) i18n with getLocaleText
-```
+- Start with the preset functions and schema-based matching. Set `filterFnList` for custom behavior or an explicit product restriction.
+- Use `createFilterTheme` to retain defaults. Choose `components` for controls, `templates` for rule layouts, `dataInputViews` for parameter adaptation, and `primitives` for base elements.
+- When composing templates, obtain child templates through `useView("templates")`. This keeps nested rules responsive to theme overrides.
+- Use the options and setters from `useFilterSelect` for field and operator selection. Built-in input adapters handle option values, labels, and rule arguments.
+- Configure `getLocaleText` at the integration entry point. Inside the provider, use `useRootRule()` to access it. Keep sentence interpolation separate from translation lookup.
+- Use default field paths and literal values as translation keys when they fit. Add `.describe()` for different labels or translation keys.
 
-## Core References
-
-| Topic                  | Reference                                                                         |
-| ---------------------- | --------------------------------------------------------------------------------- |
-| Introduction           | [Introduction](https://www.waterwater.moe/fn-sphere/guides/introduction/)         |
-| Getting Started        | [Getting Started](https://www.waterwater.moe/fn-sphere/guides/getting-started/)   |
-| Best Practices         | [Best Practices](https://www.waterwater.moe/fn-sphere/guides/best-practices/)     |
-| Work with AI           | [Work with AI](https://www.waterwater.moe/fn-sphere/guides/work-with-ai/)         |
-| Customizing Filters    | [Customizing Filters](https://www.waterwater.moe/fn-sphere/customization/filter/) |
-| Customizing Theme      | [Customizing Theme](https://www.waterwater.moe/fn-sphere/customization/theme/)    |
-| Customizing Data Input | [Data Input](https://www.waterwater.moe/fn-sphere/customization/data-input/)      |
-| Persistence            | [Persistence](https://www.waterwater.moe/fn-sphere/customization/persistence/)    |
-| Preset Filters         | [Preset Filters](https://www.waterwater.moe/fn-sphere/reference/presets/)         |
-| Example                | [Example](https://www.waterwater.moe/fn-sphere/reference/example/)                |
-
-## Resources
-
-- Repository: https://github.com/lawvs/fn-sphere
-- Documentation: https://www.waterwater.moe/fn-sphere/
+Keep the integration entry point focused on schema configuration, the provider, the builder, and data consumption. Read Best Practices for module boundaries and example design.

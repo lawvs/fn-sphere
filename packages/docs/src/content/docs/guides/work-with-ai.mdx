@@ -5,11 +5,11 @@ sidebar:
   order: 3
 ---
 
-Thanks to Filter Sphere being schema-driven and TypeScript-first, it works great with AI coding agents.
+The Filter Sphere skill guides AI coding agents through integration choices and the relevant documentation.
 
 ## Skills
 
-Filter Sphere provides official [skills](https://code.claude.com/docs/en/skills) for AI coding agents, enabling them to understand Filter Sphere's API, patterns, and best practices when helping you build filtering and sorting interfaces.
+The skill includes a React filtering example, extension guidelines, and links to filtering and sorting guides.
 
 ### Installation
 
@@ -19,7 +19,9 @@ Install the Filter Sphere skill to your AI coding agent:
 npx skills add lawvs/fn-sphere
 ```
 
-The source code of the skill is [here](https://github.com/lawvs/fn-sphere/tree/main/skills/filter-sphere).
+The [skill source](https://github.com/lawvs/fn-sphere/tree/main/skills/filter-sphere) is part of this repository. The root `AGENTS.md` directs agents to read it for Filter Sphere integrations, themes, localization, and examples.
+
+Within this repository, the skill points agents to local documentation. In other projects, it directs them to the published guides and installed package types.
 
 ### Example Prompts
 
@@ -39,13 +41,10 @@ Add localization support to my filter builder with English and Chinese in Filter
 
 ### What's Included
 
-The Filter Sphere skill provides knowledge about:
+The skill contains:
 
-- Zod schema definition and field discovery
-- Filter and sort sphere creation (`createFilterSphere`, `createSorterSphere`)
-- Preset functions (`presetFilter`, `presetSort`)
-- Custom function authoring (`defineTypedFn`, `defineGenericFn`)
-- React integration (`useFilterSphere`, `FilterBuilder`, themes, localization)
-- Filter rule composition (single filters, groups with and/or logic)
-- Multi-field sorting with asc/desc support
-- Recommended project structure and best practices
+- A React setup with `useFilterSphere`, `FilterSphereProvider`, `FilterBuilder`, and filtered results.
+- Guidance on schema defaults, theme layers, template composition, and translation lookup.
+- Reading paths for custom functions, parameter inputs, metadata, persistence, sorting, and examples.
+
+Detailed API behavior stays in the linked guides. The skill helps agents choose which guide and extension point apply to the task.
