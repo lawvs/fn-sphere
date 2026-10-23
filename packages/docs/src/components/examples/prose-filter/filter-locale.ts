@@ -13,9 +13,6 @@ const en = {
   lessThan: "is less than",
   lessThanOrEqual: "is at most",
   numberEquals: "is exactly",
-  "member.positive": "is",
-  "member.negative": "is not",
-  "member.negativeMany": "is neither",
 };
 
 const zh = {
@@ -34,9 +31,6 @@ const zh = {
   lessThan: "小于",
   lessThanOrEqual: "不大于",
   numberEquals: "等于",
-  "member.positive": "是",
-  "member.negative": "不是",
-  "member.negativeMany": "不属于以下任一项：",
   Contributor: "员工",
   Manager: "经理",
   Director: "总监",
@@ -73,9 +67,6 @@ const ja = {
   lessThan: "未満である",
   lessThanOrEqual: "以下である",
   numberEquals: "と等しい",
-  "member.positive": "である",
-  "member.negative": "ではない",
-  "member.negativeMany": "のいずれでもない",
   Contributor: "担当者",
   Manager: "マネージャー",
   Director: "部長",

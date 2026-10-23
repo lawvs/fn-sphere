@@ -1,25 +1,7 @@
-export function listSeparatorKey(
-  index: number,
-  count: number,
-  negative: boolean,
-) {
+export function listSeparatorKey(index: number, count: number) {
   if (index === 0) return "";
-  const conjunction = negative ? "Nor" : "Or";
-  const key =
-    index === count - 1
-      ? count > 2
-        ? `list.serial${conjunction}`
-        : `list.${conjunction.toLowerCase()}`
-      : "list.middle";
-  return key;
-}
-
-export function membershipOperatorKey(negative: boolean, count: number) {
-  return negative
-    ? count > 1
-      ? "member.negativeMany"
-      : "member.negative"
-    : "member.positive";
+  if (index !== count - 1) return "list.middle";
+  return count > 2 ? "list.serialOr" : "list.or";
 }
 
 export function formatValue(value: unknown, locale = "en-US"): string {

@@ -264,15 +264,15 @@ test("localized edits store canonical values and preserve filters across languag
   expect(json().filterRule.conditions[0].args).toEqual([
     ["Sales", "Marketing"],
   ]);
-  expect(container.textContent).toContain("不属于以下任一项：销售部或市场部");
+  expect(container.textContent).toContain("不是以下任一项销售部或市场部");
   click("使用“并且”连接根条件");
   expect(json().filterRule.op).toBe("or");
   switchLocale("ja-JP");
   expect(container.textContent).toContain(
-    "営業部、マーケティング部のいずれでもない",
+    "営業部またはマーケティング部のいずれでもない",
   );
   switchLocale("en-US");
-  expect(container.textContent).toContain("is neither Sales nor Marketing");
+  expect(container.textContent).toContain("is none of Sales or Marketing");
   expect(json().filterRule.op).toBe("or");
 });
 

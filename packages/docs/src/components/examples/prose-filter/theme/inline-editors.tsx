@@ -7,14 +7,12 @@ import {
   useId,
   useState,
   type InputHTMLAttributes,
-  type ReactNode,
   type SelectHTMLAttributes,
 } from "react";
 import { useRootRule } from "@fn-sphere/filter";
 import { formatValue, listSeparatorKey, parseInput } from "./model";
 
 export const ValueLabelContext = createContext("");
-export const NegativeValueContext = createContext(false);
 type Option<T> = { label: string; value: T };
 type InlineSelectProps<T> = {
   options?: Option<T>[] | undefined;
@@ -23,7 +21,6 @@ type InlineSelectProps<T> = {
   "aria-label"?: string | undefined;
   className?: string | undefined;
   disabled?: boolean | undefined;
-  display?: ReactNode;
 };
 
 export function InlineSelect<T>({
@@ -33,7 +30,6 @@ export function InlineSelect<T>({
   "aria-label": label,
   className = "prose-value",
   disabled,
-  display,
 }: InlineSelectProps<T>) {
   const { getLocaleText: t } = useRootRule();
   const locale = t("locale");
@@ -55,7 +51,7 @@ export function InlineSelect<T>({
         <span
           className={className === "prose-value" ? "prose-value" : undefined}
         >
-          {display ?? (index < 0 ? t("chooseValue") : options[index]?.label)}
+          {index < 0 ? t("chooseValue") : options[index]?.label}
         </span>
       </Select.Trigger>
       <Select.Portal>
@@ -109,7 +105,6 @@ export function InlineMultiple<T>({
   disabled,
   "aria-label": ariaLabel,
 }: InlineMultipleProps<T>) {
-  const negative = useContext(NegativeValueContext);
   const { getLocaleText: t } = useRootRule();
   const locale = t("locale");
   const valueLabel = useContext(ValueLabelContext) || t("chooseValue");
@@ -129,7 +124,7 @@ export function InlineMultiple<T>({
             selected.map((option, index) => (
               <Fragment key={index}>
                 <span className="prose-value-joiner">
-                  {t(listSeparatorKey(index, selected.length, negative))}
+                  {t(listSeparatorKey(index, selected.length))}
                 </span>
                 <span className="prose-value">{option.label}</span>
               </Fragment>

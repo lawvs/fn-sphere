@@ -8,14 +8,9 @@ import {
   type FilterGroup,
   type SingleFilter,
 } from "@fn-sphere/filter";
-import {
-  InlineSelect,
-  ValueLabelContext,
-  NegativeValueContext,
-} from "./inline-editors";
+import { InlineSelect, ValueLabelContext } from "./inline-editors";
 import { ProseText, formatText } from "./text";
-import { membershipOperatorKey } from "./model";
-import { amountRule, isMembershipFilter } from "../schema";
+import { amountRule } from "../schema";
 
 // Capture a surviving focus target before React removes the current condition.
 function focusAfterRemoval(element: HTMLElement | null) {
@@ -78,11 +73,7 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
             <ValueLabelContext.Provider
               value={formatText(t("valueLabel"), { field: fieldName })}
             >
-              <NegativeValueContext.Provider
-                value={rule.name === "notContains"}
-              >
-                <FilterDataInput rule={rule} />
-              </NegativeValueContext.Provider>
+              <FilterDataInput rule={rule} />
             </ValueLabelContext.Provider>
           ),
         }}
@@ -132,17 +123,12 @@ export function ProseOperator({ rule }: { rule: SingleFilter }) {
   const fieldName = selectedField
     ? t(mapFieldName(selectedField))
     : t("condition");
-  const count = Array.isArray(rule.args[0]) ? rule.args[0].length : 0;
-  const display = isMembershipFilter(selectedFilter)
-    ? t(membershipOperatorKey(rule.name === "notContains", count))
-    : undefined;
   return (
     <InlineSelect
       className="prose-operator"
       aria-label={formatText(t("operatorLabel"), { field: fieldName })}
       options={filterOptions}
       value={selectedFilter}
-      display={display}
       onChange={(filter) => setFilter(filter)}
     />
   );

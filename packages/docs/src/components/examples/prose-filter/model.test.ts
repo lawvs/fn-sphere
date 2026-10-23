@@ -7,25 +7,14 @@ import {
   createSingleFilter,
   type FilterGroup,
 } from "@fn-sphere/filter";
-import {
-  formatValue,
-  listSeparatorKey,
-  membershipOperatorKey,
-  parseInput,
-} from "./theme/model";
+import { formatValue, listSeparatorKey, parseInput } from "./theme/model";
 import { createProseRule, expenseSchema, type Expense } from "./schema";
 
-const membershipOperator = (
-  negative: boolean,
-  count: number,
-  locale: ProseLocale = "en-US",
-) => messages[locale][membershipOperatorKey(negative, count)];
 const listSeparator = (
   index: number,
   count: number,
-  negative: boolean,
   locale: ProseLocale = "en-US",
-) => messages[locale][listSeparatorKey(index, count, negative)] ?? "";
+) => messages[locale][listSeparatorKey(index, count)] ?? "";
 
 const expense: Expense = {
   seniority: "Manager",
@@ -56,7 +45,7 @@ test("the default AND / OR rule and group changes use real filter semantics", ()
   expect(predicate(rule)(expense)).toBe(true);
 });
 
-test("neither / nor excludes every selected department", () => {
+test("notContains excludes every selected department", () => {
   const rule = createFilterGroup({
     op: "and",
     conditions: [
@@ -73,18 +62,13 @@ test("neither / nor excludes every selected department", () => {
 });
 
 test("membership prose handles no, one, two and three values", () => {
-  expect(membershipOperator(false, 0)).toBe("is");
-  expect(membershipOperator(true, 1)).toBe("is not");
-  expect(membershipOperator(true, 2)).toBe("is neither");
-  const sentence = (values: string[], negative: boolean) =>
-    values
-      .map((value, i) => listSeparator(i, values.length, negative) + value)
-      .join("");
-  expect(sentence([], false)).toBe("");
-  expect(sentence(["Sales"], false)).toBe("Sales");
-  expect(sentence(["Sales", "Marketing"], false)).toBe("Sales or Marketing");
-  expect(sentence(["Sales", "Marketing", "Finance"], true)).toBe(
-    "Sales, Marketing, nor Finance",
+  const sentence = (values: string[]) =>
+    values.map((value, i) => listSeparator(i, values.length) + value).join("");
+  expect(sentence([])).toBe("");
+  expect(sentence(["Sales"])).toBe("Sales");
+  expect(sentence(["Sales", "Marketing"])).toBe("Sales or Marketing");
+  expect(sentence(["Sales", "Marketing", "Finance"])).toBe(
+    "Sales, Marketing, or Finance",
   );
 });
 
@@ -99,10 +83,8 @@ test("number formatting never changes stored numeric input", () => {
 });
 
 test("membership connectors and numeric display honor the selected locale", () => {
-  expect(membershipOperator(true, 2, "zh-CN")).toBe("不属于以下任一项：");
-  expect(membershipOperator(true, 2, "ja-JP")).toBe("のいずれでもない");
-  expect(listSeparator(1, 2, false, "zh-CN")).toBe("或");
-  expect(listSeparator(1, 2, true, "ja-JP")).toBe("、");
+  expect(listSeparator(1, 2, "zh-CN")).toBe("或");
+  expect(listSeparator(1, 2, "ja-JP")).toBe("または");
   expect(formatValue(5000.5, "ja-JP")).toBe(
     new Intl.NumberFormat("ja-JP").format(5000.5),
   );
