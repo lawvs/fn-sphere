@@ -184,7 +184,7 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
           type="button"
           onClick={() => appendChildRule(createDefaultRule())}
         >
-          {t(isRoot ? "addCondition" : "addToList")}
+          {t("addCondition")}
         </button>
         <button
           type="button"

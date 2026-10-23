@@ -75,7 +75,7 @@ function input(value: string) {
 test("nested additions can be edited and deleted without touching siblings", () => {
   click("+ nested list");
   const nested = container.querySelectorAll(".prose-nested-group")[1]!;
-  click("+ add to this list", nested);
+  click("+ condition", nested);
   expect(json().filterRule.conditions[1].conditions[3].conditions).toHaveLength(
     2,
   );
