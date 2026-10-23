@@ -1,15 +1,8 @@
 import { Fragment, type ReactNode } from "react";
 import { useRootRule } from "@fn-sphere/filter";
 
-export function formatText(text: string, values: Record<string, string>) {
-  return text.replace(
-    /\{(\w+)\}/g,
-    (placeholder, name: string) => values[name] ?? placeholder,
-  );
-}
-
 // Rich slots preserve each language's word order without HTML translation strings.
-export function ProseText({
+export function LocalizedSentence({
   message,
   slots,
 }: {

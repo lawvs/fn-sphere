@@ -9,16 +9,13 @@ import {
   type SingleFilter,
 } from "@fn-sphere/filter";
 import { InlineSelect } from "./inline-select";
-import { ProseText, formatText } from "./text";
+import { LocalizedSentence } from "./localized-sentence";
 import { createDefaultRule } from "../schema";
 
 export function ProseCondition({ rule }: { rule: SingleFilter }) {
-  const { getLocaleText: t, mapFieldName } = useRootRule();
+  const { getLocaleText: t } = useRootRule();
   const { FieldSelect, FilterSelect, FilterDataInput } = useView("templates");
-  const { removeRule, selectedField, ruleState } = useFilterRule(rule);
-  const fieldName = selectedField
-    ? t(mapFieldName(selectedField))
-    : t("condition");
+  const { removeRule, ruleState } = useFilterRule(rule);
   const remove = () => {
     removeRule(true);
   };
@@ -37,7 +34,7 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
   };
   return (
     <span className="prose-condition" onKeyDown={onKeyDown}>
-      <ProseText
+      <LocalizedSentence
         message="sentence.condition"
         slots={{
           field: <FieldSelect rule={rule} />,
@@ -45,12 +42,7 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
           value: <FilterDataInput rule={rule} />,
         }}
       />
-      <button
-        type="button"
-        className="prose-remove"
-        aria-label={formatText(t("deleteCondition"), { field: fieldName })}
-        onClick={remove}
-      >
+      <button type="button" className="prose-remove" onClick={remove}>
         ×
       </button>
       {!ruleState.isValid && (
@@ -64,14 +56,10 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
 }
 
 export function ProseField({ rule }: { rule: SingleFilter }) {
-  const { getLocaleText: t, mapFieldName } = useRootRule();
   const { fieldOptions, selectedField, setField } = useFilterSelect(rule);
   return (
     <InlineSelect
       className="prose-field"
-      aria-label={formatText(t("fieldLabel"), {
-        field: selectedField ? t(mapFieldName(selectedField)) : t("condition"),
-      })}
       options={fieldOptions}
       value={selectedField}
       onChange={(field) => setField(field)}
@@ -80,20 +68,14 @@ export function ProseField({ rule }: { rule: SingleFilter }) {
 }
 
 export function ProseOperator({ rule }: { rule: SingleFilter }) {
-  const { getLocaleText: t, mapFieldName } = useRootRule();
   const {
     filterOptions = [],
     selectedFilter,
-    selectedField,
     setFilter,
   } = useFilterSelect(rule);
-  const fieldName = selectedField
-    ? t(mapFieldName(selectedField))
-    : t("condition");
   return (
     <InlineSelect
       className="prose-operator"
-      aria-label={formatText(t("operatorLabel"), { field: fieldName })}
       options={filterOptions}
       value={selectedFilter}
       onChange={(filter) => setFilter(filter)}
@@ -136,9 +118,6 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
                   <button
                     type="button"
                     className="prose-token prose-joiner"
-                    aria-label={formatText(t("joinLabel"), {
-                      operator: t(`join.${rule.op}`),
-                    })}
                     onClick={() => toggleGroupOp()}
                   >
                     {t(`join.${rule.op}`)}
@@ -159,7 +138,7 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
         </div>
       ) : (
         <>
-          <ProseText
+          <LocalizedSentence
             message={`sentence.group.${rule.op}`}
             slots={{ match: groupControl }}
           />

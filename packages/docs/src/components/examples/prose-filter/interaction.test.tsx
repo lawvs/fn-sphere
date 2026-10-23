@@ -45,8 +45,26 @@ function button(label: string, scope: ParentNode = document) {
 function click(label: string, scope?: ParentNode) {
   act(() => button(label, scope).click());
 }
+function fieldButton(name: string, scope: ParentNode = document) {
+  const field = Array.from(
+    scope.querySelectorAll<HTMLButtonElement>(".prose-field"),
+  ).find((element) => element.textContent === name);
+  if (!field) throw new Error(`Field not found: ${name}`);
+  return field;
+}
+function operatorButton(name: string) {
+  return fieldButton(name)
+    .closest(".prose-condition")!
+    .querySelector<HTMLButtonElement>(".prose-operator")!;
+}
+function removeCondition(name: string, scope: ParentNode = document) {
+  const remove = fieldButton(name, scope)
+    .closest(".prose-condition")!
+    .querySelector<HTMLButtonElement>(".prose-remove")!;
+  act(() => remove.click());
+}
 function valueButton(fieldLabel: string) {
-  const condition = button(fieldLabel).closest(".prose-condition")!;
+  const condition = fieldButton(fieldLabel).closest(".prose-condition")!;
   return condition.querySelector<HTMLButtonElement>(
     "button.prose-value, button.prose-values",
   )!;
@@ -81,18 +99,18 @@ test("nested additions can be edited and deleted without touching siblings", () 
   );
   click("Match all conditions in this group", nested);
   expect(json().filterRule.conditions[1].conditions[3].op).toBe("or");
-  click("Delete amount condition", nested);
+  removeCondition("amount", nested);
   expect(json().filterRule.conditions[1].conditions[3].conditions).toHaveLength(
     1,
   );
-  click("Delete amount condition", nested);
+  removeCondition("amount", nested);
   expect(json().filterRule.conditions[1].conditions).toHaveLength(3);
   expect(json().filterRule.conditions[0].args).toEqual(["Manager"]);
 });
 
 test("deleting the last condition leaves an editable empty root", () => {
   click("Delete this group");
-  click("Delete submitter’s seniority condition");
+  removeCondition("submitter’s seniority");
   expect(json().filterRule.conditions).toEqual([]);
   expect(container.textContent).toContain(
     "Add a condition to filter expenses.",
@@ -105,11 +123,11 @@ test("deleting the last condition leaves an editable empty root", () => {
 });
 
 test("text drafts cancel cleanly and commit only on apply", () => {
-  clickValue("Field: merchant");
+  clickValue("merchant");
   input("WeWork");
   click("Cancel");
   expect(json().filterRule.conditions[1].conditions[1].args).toEqual(["Uber"]);
-  clickValue("Field: merchant");
+  clickValue("merchant");
   expect(document.querySelector<HTMLInputElement>(".prose-draft")!.value).toBe(
     "Uber",
   );
@@ -125,7 +143,7 @@ test("number editors reject empty input and preserve numeric zero", () => {
     "+ condition",
     container.querySelector(".prose-root-group > .prose-add-actions")!,
   );
-  clickValue("Field: amount");
+  clickValue("amount");
   input("");
   click("Apply");
   expect(document.querySelector(".prose-input-error")).not.toBeNull();
@@ -136,7 +154,7 @@ test("number editors reject empty input and preserve numeric zero", () => {
 });
 
 test("multi-select toggles update live and Done preserves the selection", () => {
-  clickValue("Field: expense type");
+  clickValue("expense type");
   const entertainment = Array.from(
     document.querySelectorAll(".prose-checkbox"),
   ).find((label) => label.textContent === "Entertainment")!;
@@ -156,14 +174,14 @@ test("multi-select toggles update live and Done preserves the selection", () => 
 });
 
 test("Delete on a condition trigger removes it, while a draft input keeps native keys", () => {
-  const trigger = button("Field: currency");
+  const trigger = fieldButton("currency");
   act(() =>
     trigger.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
     ),
   );
   expect(json().filterRule.conditions[1].conditions).toHaveLength(2);
-  clickValue("Field: merchant");
+  clickValue("merchant");
   const draft = document.querySelector<HTMLInputElement>(".prose-draft")!;
   act(() =>
     draft.dispatchEvent(
@@ -173,9 +191,9 @@ test("Delete on a condition trigger removes it, while a draft input keeps native
   expect(json().filterRule.conditions[1].conditions).toHaveLength(2);
 });
 
-function choose(label: string, option: string) {
+function choose(trigger: HTMLButtonElement, option: string) {
   act(() =>
-    button(label).dispatchEvent(
+    trigger.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
     ),
   );
@@ -191,28 +209,28 @@ function choose(label: string, option: string) {
 }
 
 test("field and operator changes retain only compatible arguments", () => {
-  choose("Operator for expense type", "is none of");
+  choose(operatorButton("expense type"), "is none of");
   expect(json().filterRule.conditions[1].conditions[0].args).toEqual([
     ["Food & drink", "Travel"],
   ]);
-  choose("Field: expense type", "merchant");
+  choose(fieldButton("expense type"), "merchant");
   const merchant = json().filterRule.conditions[1].conditions[0];
   expect(merchant.name).toBe("notContains");
   expect(merchant.args).toEqual([]);
-  choose("Field: submitter’s seniority", "submitter’s department");
+  choose(fieldButton("submitter’s seniority"), "submitter’s department");
   expect(json().filterRule.conditions[0].args).toEqual([]);
-  choose("Field: submitter’s department", "amount");
+  choose(fieldButton("submitter’s department"), "amount");
   expect(json().filterRule.conditions[0].args).toEqual([]);
-  choose("Operator for amount", "is at least");
-  clickValue("Field: amount");
+  choose(operatorButton("amount"), "is at least");
+  clickValue("amount");
   input("5000");
   click("Apply");
-  choose("Operator for amount", "is at most");
+  choose(operatorButton("amount"), "is at most");
   expect(json().filterRule.conditions[0].args).toEqual([5000]);
 });
 
 test("filter JSON reflects the selected logic without a workflow action", () => {
-  click("Join root conditions with and");
+  click("and");
   expect(json().filterRule.op).toBe("or");
   expect(json()).not.toHaveProperty("action");
   expect(container.textContent).toContain("Show expenses where");
@@ -244,7 +262,7 @@ test("locale changes translate the full UI without changing rules", () => {
   expect(container.textContent).toContain("餐饮或差旅");
   expect(container.textContent).toContain("以下条件至少一项成立");
   expect(json()).toEqual(initial);
-  clickValue("字段：费用类型");
+  clickValue("费用类型");
   expect(document.querySelector(".prose-popup")?.getAttribute("lang")).toBe(
     "zh-CN",
   );
@@ -263,9 +281,9 @@ test("locale changes translate the full UI without changing rules", () => {
 
 test("localized edits store canonical values and preserve filters across languages", () => {
   switchLocale("zh-CN");
-  choose("字段：提交人的职级", "提交人的部门");
-  choose("提交人的部门的运算符", "不是以下任一项");
-  clickValue("字段：提交人的部门");
+  choose(fieldButton("提交人的职级"), "提交人的部门");
+  choose(operatorButton("提交人的部门"), "不是以下任一项");
+  clickValue("提交人的部门");
   for (const text of ["销售部", "市场部"]) {
     const label = Array.from(document.querySelectorAll(".prose-checkbox")).find(
       (element) => element.textContent === text,
@@ -277,7 +295,7 @@ test("localized edits store canonical values and preserve filters across languag
     ["Sales", "Marketing"],
   ]);
   expect(container.textContent).toContain("不是以下任一项销售部或市场部");
-  click("使用“并且”连接根条件");
+  click("并且");
   expect(json().filterRule.op).toBe("or");
   switchLocale("ja-JP");
   expect(container.textContent).toContain(
@@ -294,7 +312,7 @@ test("localized text editors translate validation and cancel draft changes", () 
     "+ 条件",
     container.querySelector(".prose-root-group > .prose-add-actions")!,
   );
-  clickValue("字段：金额");
+  clickValue("金额");
   input("");
   click("应用");
   expect(document.querySelector(".prose-input-error")?.textContent).toBe(
@@ -304,7 +322,7 @@ test("localized text editors translate validation and cancel draft changes", () 
   switchLocale("ja-JP");
   expect(document.querySelector(".prose-popup")).toBeNull();
   expect(json().filterRule.conditions[2].args).toEqual([500]);
-  clickValue("項目：金額");
+  clickValue("金額");
   expect(document.querySelector<HTMLInputElement>(".prose-draft")!.value).toBe(
     "500",
   );
@@ -316,7 +334,7 @@ test("localized group and root joiners use canonical operators", () => {
   click("匹配此组的至少一项条件");
   expect(json().filterRule.conditions[1].op).toBe("and");
   expect(container.textContent).toContain("以下条件全部成立");
-  click("使用“并且”连接根条件");
+  click("并且");
   expect(json().filterRule.op).toBe("or");
   switchLocale("ja-JP");
   click("このグループのすべての条件に一致");
@@ -370,23 +388,21 @@ function MetadataExample({ theme = proseTheme }: { theme?: FilterTheme }) {
 test("field labels use the mapper and membership values use literal metadata", () => {
   act(() => root.render(<MetadataExample />));
   expect(container.textContent).toContain("Custom filter introduction: ");
-  expect(button("Field: Mapped Code metadata").textContent).toBe(
+  expect(fieldButton("Mapped Code metadata").textContent).toBe(
     "Mapped Code metadata",
   );
-  expect(button("Operator for Mapped Code metadata")).toBeTruthy();
-  expect(valueButton("Field: Mapped Code metadata").textContent).toBe(
+  expect(operatorButton("Mapped Code metadata")).toBeTruthy();
+  expect(valueButton("Mapped Code metadata").textContent).toBe(
     "First code or Second code",
   );
-  clickValue("Field: Mapped Code metadata");
+  clickValue("Mapped Code metadata");
   const first = document.querySelector<HTMLInputElement>(
     ".prose-checkbox input",
   )!;
   act(() => first.click());
-  expect(valueButton("Field: Mapped Code metadata").textContent).toBe(
-    "Second code",
-  );
+  expect(valueButton("Mapped Code metadata").textContent).toBe("Second code");
   act(() => first.click());
-  expect(valueButton("Field: Mapped Code metadata").textContent).toBe(
+  expect(valueButton("Mapped Code metadata").textContent).toBe(
     "First code or Second code",
   );
 });
@@ -414,18 +430,18 @@ test("nested groups resolve overridden group and condition templates", () => {
 });
 
 test("string filters use native options and do not render membership prose", () => {
-  choose("Operator for merchant", "contains");
-  expect(button("Operator for merchant").textContent).toBe("contains");
+  choose(operatorButton("merchant"), "contains");
+  expect(operatorButton("merchant").textContent).toBe("contains");
   expect(json().filterRule.conditions[1].conditions[1].args).toEqual(["Uber"]);
-  choose("Operator for merchant", "starts with");
+  choose(operatorButton("merchant"), "starts with");
   expect(json().filterRule.conditions[1].conditions[1].name).toBe("startsWith");
-  choose("Operator for merchant", "ends with");
+  choose(operatorButton("merchant"), "ends with");
   expect(json().filterRule.conditions[1].conditions[1].name).toBe("endsWith");
-  choose("Operator for merchant", "is empty");
+  choose(operatorButton("merchant"), "is empty");
   expect(json().filterRule.conditions[1].conditions[1].args).toEqual([]);
   expect(
     container.querySelectorAll(".prose-condition")[2]!.textContent,
   ).not.toContain("choose a value");
-  choose("Operator for merchant", "is not empty");
+  choose(operatorButton("merchant"), "is not empty");
   expect(json().filterRule.conditions[1].conditions[1].name).toBe("isNotEmpty");
 });
