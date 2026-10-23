@@ -97,7 +97,10 @@ test("deleting the last condition leaves an editable empty root", () => {
   expect(container.textContent).toContain(
     "Add a condition to filter expenses.",
   );
-  click("+ condition");
+  click(
+    "+ condition",
+    container.querySelector(".prose-root-group > .prose-add-actions")!,
+  );
   expect(json().filterRule.conditions[0].args).toEqual([500]);
 });
 
@@ -118,7 +121,10 @@ test("text drafts cancel cleanly and commit only on apply", () => {
 });
 
 test("number editors reject empty input and preserve numeric zero", () => {
-  click("+ condition");
+  click(
+    "+ condition",
+    container.querySelector(".prose-root-group > .prose-add-actions")!,
+  );
   clickValue("Field: amount");
   input("");
   click("Apply");
@@ -284,7 +290,10 @@ test("localized edits store canonical values and preserve filters across languag
 
 test("localized text editors translate validation and cancel draft changes", () => {
   switchLocale("zh-CN");
-  click("+ 条件");
+  click(
+    "+ 条件",
+    container.querySelector(".prose-root-group > .prose-add-actions")!,
+  );
   clickValue("字段：金额");
   input("");
   click("应用");
