@@ -71,7 +71,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
       [newRule.id]: {
         type: "Filter",
         data: newRule,
-        parentId,
+        parentId: ruleGroup.id,
       },
     });
   };
@@ -94,7 +94,7 @@ export const useFilterGroup = (ruleGroup: FilterGroup) => {
           ...ruleNode.conditionIds.slice(index + 1),
         ],
       },
-      ...toFilterMap(newFilterGroup, parentId),
+      ...toFilterMap(newFilterGroup, ruleGroup.id),
     });
   };
 
