@@ -1,7 +1,6 @@
 import {
-  createFilterGroup,
   createSingleFilter,
-  type SingleFilter,
+  type FilterGroup,
   type FilterField,
   type StandardFnSchema,
 } from "@fn-sphere/filter";
@@ -44,43 +43,45 @@ export const amountRule = () =>
   createSingleFilter({ path: ["amount"], name: "greaterThan", args: [500] });
 
 // Stable fixture IDs keep the initial server and client markup identical.
-const fixtureRule = (
-  id: string,
-  input: Omit<SingleFilter, "id" | "type">,
-): SingleFilter => ({
-  ...input,
-  id: id as SingleFilter["id"],
-  type: "Filter",
-});
-export function createProseRule() {
+export function createProseRule(): FilterGroup {
   return {
-    ...createFilterGroup({ op: "and" }),
-    id: "prose-root" as SingleFilter["id"],
+    type: "FilterGroup",
+    op: "and",
+    id: "prose-root" as FilterGroup["id"],
     conditions: [
-      fixtureRule("prose-seniority", {
+      {
+        id: "prose-seniority" as FilterGroup["id"],
+        type: "Filter",
         path: ["seniority"],
         name: "equals",
         args: ["Manager"],
-      }),
+      },
       {
-        ...createFilterGroup({ op: "or" }),
-        id: "prose-list" as SingleFilter["id"],
+        type: "FilterGroup",
+        op: "or",
+        id: "prose-list" as FilterGroup["id"],
         conditions: [
-          fixtureRule("prose-type", {
+          {
+            id: "prose-type" as FilterGroup["id"],
+            type: "Filter",
             path: ["expenseType"],
             name: "contains",
             args: [["Food & drink", "Travel"]],
-          }),
-          fixtureRule("prose-merchant", {
+          },
+          {
+            id: "prose-merchant" as FilterGroup["id"],
+            type: "Filter",
             path: ["merchant"],
             name: "equals",
             args: ["Uber"],
-          }),
-          fixtureRule("prose-currency", {
+          },
+          {
+            id: "prose-currency" as FilterGroup["id"],
+            type: "Filter",
             path: ["currency"],
             name: "equals",
             args: ["USD"],
-          }),
+          },
         ],
       },
     ],
