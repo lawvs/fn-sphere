@@ -1,0 +1,120 @@
+import type { FilterField, StandardFnSchema } from "@fn-sphere/filter";
+import type { $ZodTuple } from "zod/v4/core";
+import { enUS, jaJP, zhCN } from "@fn-sphere/filter/locales";
+
+const en = {
+  seniority: "submitter’s seniority",
+  department: "submitter’s department",
+  expenseType: "expense type",
+  equals: "is",
+  notEqual: "is not",
+  "member.contains": "is any of",
+  "member.notContains": "is none of",
+  greaterThan: "is more than",
+  greaterThanOrEqual: "is at least",
+  lessThan: "is less than",
+  lessThanOrEqual: "is at most",
+  numberEquals: "is exactly",
+};
+
+const zh = {
+  seniority: "提交人的职级",
+  department: "提交人的部门",
+  expenseType: "费用类型",
+  merchant: "商户",
+  currency: "币种",
+  amount: "金额",
+  greaterThan: "大于",
+  greaterThanOrEqual: "不小于",
+  lessThan: "小于",
+  lessThanOrEqual: "不大于",
+  numberEquals: "等于",
+  equals: "是",
+  notEqual: "不是",
+  "member.contains": "是以下任一项",
+  "member.notContains": "不是以下任一项",
+  Contributor: "员工",
+  Manager: "经理",
+  Director: "总监",
+  Engineering: "工程部",
+  Sales: "销售部",
+  Marketing: "市场部",
+  Finance: "财务部",
+  Operations: "运营部",
+  "Food & drink": "餐饮",
+  Travel: "差旅",
+  Lodging: "住宿",
+  Software: "软件",
+  "Office supplies": "办公用品",
+  Entertainment: "招待",
+  USD: "美元",
+  EUR: "欧元",
+  GBP: "英镑",
+  SGD: "新加坡元",
+} satisfies Record<keyof typeof en, string> & Record<string, string>;
+
+const ja = {
+  seniority: "申請者の役職",
+  department: "申請者の部署",
+  expenseType: "経費の種類",
+  merchant: "支払先",
+  currency: "通貨",
+  amount: "金額",
+  equals: "である",
+  notEqual: "ではない",
+  "member.contains": "のいずれかである",
+  "member.notContains": "のいずれでもない",
+  greaterThan: "を超える",
+  greaterThanOrEqual: "以上である",
+  lessThan: "未満である",
+  lessThanOrEqual: "以下である",
+  numberEquals: "と等しい",
+  Contributor: "担当者",
+  Manager: "マネージャー",
+  Director: "部長",
+  Engineering: "開発部",
+  Sales: "営業部",
+  Marketing: "マーケティング部",
+  Finance: "財務部",
+  Operations: "運用部",
+  "Food & drink": "飲食",
+  Travel: "出張",
+  Lodging: "宿泊",
+  Software: "ソフトウェア",
+  "Office supplies": "事務用品",
+  Entertainment: "接待",
+  USD: "米ドル",
+  EUR: "ユーロ",
+  GBP: "英ポンド",
+  SGD: "シンガポールドル",
+} satisfies Record<Exclude<keyof typeof zh, keyof typeof jaJP>, string> &
+  Record<string, string>;
+
+export const filterMessages = {
+  "en-US": { ...enUS, ...en },
+  "zh-CN": { ...zhCN, ...zh },
+  "ja-JP": { ...jaJP, ...ja },
+};
+
+export function mapExpenseFilterName(
+  filter: StandardFnSchema,
+  field: FilterField,
+) {
+  if (
+    field.fieldSchema._zod.def.type === "number" &&
+    filter.name === "equals"
+  ) {
+    return "numberEquals";
+  }
+  if (isMembershipFilter(filter)) {
+    return `member.${filter.name}`;
+  }
+  return filter.name;
+}
+
+function isMembershipFilter(filter: StandardFnSchema | undefined) {
+  if (!filter || (filter.name !== "contains" && filter.name !== "notContains"))
+    return false;
+  const input = filter.define._zod.def.input as $ZodTuple;
+  return input._zod.def.items[1]?._zod.def.type === "array";
+}

@@ -47,6 +47,19 @@ import { WorkflowConditionPanel } from "~/components/examples/workflow-condition
 </div>
 <SourceCodeCard path="~/components/examples/workflow-condition-panel/index.tsx" />
 
+## Rules as prose
+
+Filter expense records with interactive prose. Edit the highlighted words and combine nested lists with “all” or “at least one.” Inspired by [Doma.](https://x.com/leishenghao/status/2113463838779818239)
+
+import { ProseFilter } from "~/components/examples/prose-filter/index.tsx";
+
+<div className="not-content">
+  <ProseFilter client:load />
+</div>
+<SourceCodeCard path="~/components/examples/prose-filter/index.tsx" />
+
+The adjacent modules define the expense schema, prose theme, and inline editors. The conditions use Filter Sphere’s standard rule model.
+
 ## Backend Integration
 
 Filter Sphere is easy to integrate with backend systems. This example demonstrates converting filter rules into SQL WHERE clauses and [Meilisearch](https://www.meilisearch.com/) queries in real time.
