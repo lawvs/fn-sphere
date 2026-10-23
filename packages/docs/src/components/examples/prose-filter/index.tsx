@@ -6,7 +6,7 @@ import {
   defaultGetLocaleText,
 } from "@fn-sphere/filter";
 import {
-  createProseRule,
+  createDefaultGroup,
   expenseSchema,
   mapExpenseFilterName,
   type Expense,
@@ -24,7 +24,7 @@ export function ProseFilter() {
   const [showJSON, setShowJSON] = useState(false);
   const { context, filterRule } = useFilterSphere<Expense>({
     schema: expenseSchema,
-    defaultRule: createProseRule,
+    defaultRule: createDefaultGroup,
     getLocaleText: t,
     mapFilterName: mapExpenseFilterName,
   });

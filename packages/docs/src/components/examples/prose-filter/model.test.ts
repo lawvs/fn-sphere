@@ -8,7 +8,7 @@ import {
   type FilterGroup,
 } from "@fn-sphere/filter";
 import { formatValue, listSeparatorKey, parseInput } from "./theme/model";
-import { createProseRule, expenseSchema, type Expense } from "./schema";
+import { createDefaultGroup, expenseSchema, type Expense } from "./schema";
 
 const listSeparator = (
   index: number,
@@ -32,7 +32,7 @@ const predicate = (filterRule: FilterGroup) =>
   });
 
 test("the default AND / OR rule and group changes use real filter semantics", () => {
-  const rule = createProseRule();
+  const rule = createDefaultGroup();
   expect(predicate(rule)(expense)).toBe(true);
   expect(predicate(rule)({ ...expense, seniority: "Contributor" })).toBe(false);
   const group = rule.conditions[1] as FilterGroup;

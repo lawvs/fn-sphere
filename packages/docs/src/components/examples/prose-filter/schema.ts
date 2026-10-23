@@ -43,7 +43,7 @@ export const createDefaultRule = () =>
   createSingleFilter({ path: ["amount"], name: "greaterThan", args: [500] });
 
 // Stable fixture IDs keep the initial server and client markup identical.
-export function createProseRule(): FilterGroup {
+export function createDefaultGroup(): FilterGroup {
   return {
     type: "FilterGroup",
     op: "and",
