@@ -37,7 +37,14 @@ export function InlineMultiple<T>({
             selected.map((option, index) => (
               <Fragment key={index}>
                 <span className="prose-value-joiner">
-                  {t(listSeparatorKey(index, selected.length))}
+                  {index > 0 &&
+                    t(
+                      index !== selected.length - 1
+                        ? "list.middle"
+                        : selected.length > 2
+                          ? "list.serialOr"
+                          : "list.or",
+                    )}
                 </span>
                 <span className="prose-value">{option.label}</span>
               </Fragment>
@@ -84,10 +91,4 @@ export function InlineMultiple<T>({
       </Popover.Portal>
     </Popover.Root>
   );
-}
-
-function listSeparatorKey(index: number, count: number) {
-  if (index === 0) return "";
-  if (index !== count - 1) return "list.middle";
-  return count > 2 ? "list.serialOr" : "list.or";
 }

@@ -20,7 +20,9 @@ export function InlineInput({
   const id = useId();
   const [draft, setDraft] = useState("");
   const [attempted, setAttempted] = useState(false);
-  const valid = parseInput(draft, type) !== undefined;
+  const valid =
+    draft.trim() !== "" &&
+    (type !== "number" || Number.isFinite(Number(draft)));
   return (
     <Popover.Root
       open={open}
@@ -42,7 +44,11 @@ export function InlineInput({
           <span className="prose-value">
             {value === undefined || value === ""
               ? label
-              : formatValue(value, locale)}
+              : typeof value === "number"
+                ? new Intl.NumberFormat(locale, {
+                    maximumFractionDigits: 20,
+                  }).format(value)
+                : String(value ?? "")}
           </span>
         </button>
       </Popover.Trigger>
@@ -94,20 +100,4 @@ export function InlineInput({
       </Popover.Portal>
     </Popover.Root>
   );
-}
-
-function formatValue(value: unknown, locale = "en-US"): string {
-  return typeof value === "number"
-    ? new Intl.NumberFormat(locale, { maximumFractionDigits: 20 }).format(value)
-    : String(value ?? "");
-}
-
-function parseInput(
-  value: string,
-  type: string | undefined,
-): string | number | undefined {
-  if (!value.trim()) return undefined;
-  if (type !== "number") return value;
-  const number = Number(value);
-  return Number.isFinite(number) ? number : undefined;
 }
