@@ -5,13 +5,9 @@ import {
   useFilterSphere,
   defaultGetLocaleText,
 } from "@fn-sphere/filter";
-import {
-  createDefaultGroup,
-  expenseSchema,
-  mapExpenseFilterName,
-  type Expense,
-} from "./schema";
+import { createDefaultGroup, expenseSchema, type Expense } from "./schema";
 import { messages, localeOptions, type ProseLocale } from "./locale";
+import { mapExpenseFilterName } from "./filter-locale";
 import { proseTheme } from "./theme";
 
 export function ProseFilter() {

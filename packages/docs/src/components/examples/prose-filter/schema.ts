@@ -1,11 +1,5 @@
-import {
-  createSingleFilter,
-  type FilterGroup,
-  type FilterField,
-  type StandardFnSchema,
-} from "@fn-sphere/filter";
+import { createSingleFilter, type FilterGroup } from "@fn-sphere/filter";
 import { z } from "zod";
-import type { $ZodTuple } from "zod/v4/core";
 
 export const expenseSchema = z.object({
   seniority: z.union([
@@ -86,27 +80,4 @@ export function createDefaultGroup(): FilterGroup {
       },
     ],
   };
-}
-
-export function mapExpenseFilterName(
-  filter: StandardFnSchema,
-  field: FilterField,
-) {
-  if (
-    field.fieldSchema._zod.def.type === "number" &&
-    filter.name === "equals"
-  ) {
-    return "numberEquals";
-  }
-  if (isMembershipFilter(filter)) {
-    return `member.${filter.name}`;
-  }
-  return filter.name;
-}
-
-export function isMembershipFilter(filter: StandardFnSchema | undefined) {
-  if (!filter || (filter.name !== "contains" && filter.name !== "notContains"))
-    return false;
-  const input = filter.define._zod.def.input as $ZodTuple;
-  return input._zod.def.items[1]?._zod.def.type === "array";
 }
