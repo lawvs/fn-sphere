@@ -1,5 +1,5 @@
 import { getProseLocaleText } from "./locale";
-import { describe, expect, test } from "vitest";
+import { expect, test } from "vitest";
 import {
   createFilterPredicate,
   createFilterGroup,
@@ -7,10 +7,7 @@ import {
   type FilterGroup,
 } from "@fn-sphere/filter";
 import {
-  createDocument,
-  createHistory,
   formatValue,
-  historyReducer,
   listSeparator,
   membershipOperator,
   parseInput,
@@ -91,67 +88,6 @@ test("number formatting never changes stored numeric input", () => {
   expect(parseInput("Infinity", "number")).toBeUndefined();
   expect(parseInput("oops", "number")).toBeUndefined();
   expect(parseInput("WeWork", "text")).toBe("WeWork");
-});
-
-describe("document history", () => {
-  test("undo and redo restore filters without mutating old snapshots", () => {
-    const initial = createHistory();
-    const document = createDocument();
-    document.filterRule.op = "or";
-    const changed = historyReducer(initial, { type: "commit", document });
-    document.filterRule.conditions.length = 0;
-    expect(changed.present.filterRule.conditions).toHaveLength(2);
-    const undone = historyReducer(changed, { type: "undo" });
-    expect(undone.present).toEqual(initial.present);
-    expect(historyReducer(undone, { type: "redo" }).present).toEqual(
-      changed.present,
-    );
-    expect(initial.present.filterRule.op).toBe("and");
-  });
-  test("a new edit clears redo; no-op commits leave history alone", () => {
-    const initial = createHistory();
-    expect(
-      historyReducer(initial, { type: "commit", document: createDocument() }),
-    ).toBe(initial);
-    const changed = historyReducer(initial, {
-      type: "commit",
-      document: { filterRule: { ...initial.present.filterRule, op: "or" } },
-    });
-    const undone = historyReducer(changed, { type: "undo" });
-    const edited = historyReducer(undone, {
-      type: "commit",
-      document: {
-        ...undone.present,
-        filterRule: { ...undone.present.filterRule, op: "or" },
-      },
-    });
-    expect(edited.future).toHaveLength(0);
-  });
-  test("reset is undoable and history is bounded", () => {
-    let state = createHistory();
-    for (let index = 0; index < 120; index++) {
-      state = historyReducer(state, {
-        type: "commit",
-        document: {
-          ...state.present,
-          filterRule: {
-            ...state.present.filterRule,
-            op: index % 2 ? "and" : "or",
-          },
-        },
-      });
-    }
-    expect(state.past).toHaveLength(100);
-    state = historyReducer(state, {
-      type: "commit",
-      document: { filterRule: { ...state.present.filterRule, op: "or" } },
-    });
-    const reset = historyReducer(state, { type: "reset" });
-    expect(reset.present).toEqual(createDocument());
-    expect(historyReducer(reset, { type: "undo" }).present).toEqual(
-      state.present,
-    );
-  });
 });
 
 test("membership connectors and numeric display honor the selected locale", () => {

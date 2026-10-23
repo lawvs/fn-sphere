@@ -66,10 +66,6 @@ test("nested additions can be edited and deleted without touching siblings", () 
   click("Delete amount condition", nested);
   expect(json().filterRule.conditions[1].conditions).toHaveLength(3);
   expect(json().filterRule.conditions[0].args).toEqual(["Manager"]);
-  click("Undo");
-  expect(json().filterRule.conditions[1].conditions[3].conditions).toHaveLength(
-    1,
-  );
 });
 
 test("deleting the last condition leaves an editable empty root", () => {
@@ -84,7 +80,7 @@ test("deleting the last condition leaves an editable empty root", () => {
   expect(json().filterRule.conditions[0].args).toEqual([500]);
 });
 
-test("text drafts cancel cleanly, commit once, and undo restores the value", () => {
+test("text drafts cancel cleanly and commit only on apply", () => {
   click("Value for merchant");
   input("WeWork");
   click("Cancel");
@@ -95,12 +91,6 @@ test("text drafts cancel cleanly, commit once, and undo restores the value", () 
   );
   input("WeWork");
   click("Apply");
-  expect(json().filterRule.conditions[1].conditions[1].args).toEqual([
-    "WeWork",
-  ]);
-  click("Undo");
-  expect(json().filterRule.conditions[1].conditions[1].args).toEqual(["Uber"]);
-  click("Redo");
   expect(json().filterRule.conditions[1].conditions[1].args).toEqual([
     "WeWork",
   ]);
@@ -118,7 +108,7 @@ test("number editors reject empty input and preserve numeric zero", () => {
   expect(json().filterRule.conditions[2].args).toEqual([0]);
 });
 
-test("multi-select toggles update live, and undo closes the editor", () => {
+test("multi-select toggles update live, and reset closes the editor", () => {
   click("Value for expense type");
   const entertainment = Array.from(
     document.querySelectorAll(".prose-checkbox"),
@@ -129,7 +119,7 @@ test("multi-select toggles update live, and undo closes the editor", () => {
     "Travel",
     "Entertainment",
   ]);
-  click("Undo");
+  click("Reset filters");
   expect(document.querySelector(".prose-popup")).toBeNull();
   expect(json().filterRule.conditions[1].conditions[0].args[0]).toEqual([
     "Food & drink",
@@ -145,7 +135,7 @@ test("Delete on a condition trigger removes it, while a draft input keeps native
     ),
   );
   expect(json().filterRule.conditions[1].conditions).toHaveLength(2);
-  click("Undo");
+  click("Reset filters");
   click("Value for merchant");
   const draft = document.querySelector<HTMLInputElement>(".prose-draft")!;
   act(() =>
@@ -194,17 +184,13 @@ test("field and operator changes retain only compatible arguments", () => {
   expect(json().filterRule.conditions[0].args).toEqual([5000]);
 });
 
-test("filter reset is undoable and JSON contains no workflow action", () => {
+test("filter reset restores defaults and JSON contains no workflow action", () => {
   click("Join root conditions with and");
   expect(json().filterRule.op).toBe("or");
   expect(json()).not.toHaveProperty("action");
   expect(container.textContent).toContain("Show expenses where");
   expect(container.textContent).not.toContain("Then");
   click("Reset filters");
-  expect(json().filterRule.op).toBe("and");
-  click("Undo");
-  expect(json().filterRule.op).toBe("or");
-  click("Redo");
   expect(json().filterRule.op).toBe("and");
 });
 
@@ -218,7 +204,7 @@ function switchLocale(locale: string) {
   });
 }
 
-test("locale changes translate the full UI without changing rules or adding history", () => {
+test("locale changes translate the full UI without changing rules", () => {
   const initial = json();
   switchLocale("zh-CN");
   expect(container.querySelector(".prose-editor")?.getAttribute("lang")).toBe(
@@ -232,7 +218,6 @@ test("locale changes translate the full UI without changing rules or adding hist
   );
   expect(container.textContent).toContain("餐饮或差旅");
   expect(container.textContent).toContain("以下条件至少一项成立");
-  expect(button("撤销").disabled).toBe(true);
   expect(json()).toEqual(initial);
   click("费用类型的值");
   expect(document.querySelector(".prose-popup")?.getAttribute("lang")).toBe(
@@ -248,11 +233,10 @@ test("locale changes translate the full UI without changing rules or adding hist
   );
   expect(container.textContent).toContain("飲食または出張");
   expect(container.textContent).toContain("次の条件のいずれかが成立");
-  expect(button("元に戻す").disabled).toBe(true);
   expect(json()).toEqual(initial);
 });
 
-test("localized edits store canonical values and preserve history across languages", () => {
+test("localized edits store canonical values and preserve filters across languages", () => {
   switchLocale("zh-CN");
   choose("字段：提交人的职级", "提交人的部门");
   choose("提交人的部门的运算符", "不是以下任一项");
@@ -274,14 +258,9 @@ test("localized edits store canonical values and preserve history across languag
   expect(container.textContent).toContain(
     "営業部、マーケティング部のいずれでもない",
   );
-  click("元に戻す");
-  expect(json().filterRule.op).toBe("and");
-  click("やり直す");
-  expect(json().filterRule.op).toBe("or");
   switchLocale("en-US");
   expect(container.textContent).toContain("is neither Sales nor Marketing");
-  click("Undo");
-  expect(json().filterRule.op).toBe("and");
+  expect(json().filterRule.op).toBe("or");
 });
 
 test("localized text editors translate validation and cancel draft changes", () => {
