@@ -1,0 +1,318 @@
+// @vitest-environment jsdom
+import { act } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { ProseFilter } from "./index";
+
+Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+let container: HTMLDivElement;
+let root: Root;
+beforeEach(() => {
+  container = document.createElement("div");
+  document.body.append(container);
+  root = createRoot(container);
+  act(() => root.render(<ProseFilter />));
+});
+afterEach(() => {
+  act(() => root.unmount());
+  container.remove();
+  vi.restoreAllMocks();
+});
+function button(label: string, scope: ParentNode = document) {
+  const match = Array.from(
+    scope.querySelectorAll<HTMLButtonElement>("button"),
+  ).find(
+    (element) =>
+      element.getAttribute("aria-label") === label ||
+      element.textContent === label,
+  );
+  if (!match) throw new Error(`Button not found: ${label}`);
+  return match;
+}
+function click(label: string, scope?: ParentNode) {
+  act(() => button(label, scope).click());
+}
+function json() {
+  if (!container.querySelector(".prose-json"))
+    act(() =>
+      container.querySelector<HTMLButtonElement>(".prose-json-toggle")!.click(),
+    );
+  return JSON.parse(container.querySelector(".prose-json")!.textContent!);
+}
+function input(value: string) {
+  const element = document.querySelector<HTMLInputElement>(".prose-draft")!;
+  act(() => {
+    Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )!.set!.call(element, value);
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+}
+
+test("nested additions can be edited and deleted without touching siblings", () => {
+  click("+ nested list");
+  const nested = container.querySelectorAll(".prose-nested-group")[1]!;
+  click("+ add to this list", nested);
+  expect(json().filterRule.conditions[1].conditions[3].conditions).toHaveLength(
+    2,
+  );
+  click("Match all conditions in this group", nested);
+  expect(json().filterRule.conditions[1].conditions[3].op).toBe("or");
+  click("Delete amount condition", nested);
+  expect(json().filterRule.conditions[1].conditions[3].conditions).toHaveLength(
+    1,
+  );
+  click("Delete amount condition", nested);
+  expect(json().filterRule.conditions[1].conditions).toHaveLength(3);
+  expect(json().filterRule.conditions[0].args).toEqual(["Manager"]);
+  click("Undo");
+  expect(json().filterRule.conditions[1].conditions[3].conditions).toHaveLength(
+    1,
+  );
+});
+
+test("deleting the last condition leaves an editable empty root", () => {
+  click("Delete this group");
+  click("Delete submitter’s seniority condition");
+  expect(json().filterRule.conditions).toEqual([]);
+  expect(container.textContent).toContain(
+    "Add a condition to filter expenses.",
+  );
+  expect(document.activeElement).toBe(button("+ condition"));
+  click("+ condition");
+  expect(json().filterRule.conditions[0].args).toEqual([500]);
+});
+
+test("text drafts cancel cleanly, commit once, and undo restores the value", () => {
+  click("Value for merchant");
+  input("WeWork");
+  click("Cancel");
+  expect(json().filterRule.conditions[1].conditions[1].args).toEqual(["Uber"]);
+  click("Value for merchant");
+  expect(document.querySelector<HTMLInputElement>(".prose-draft")!.value).toBe(
+    "Uber",
+  );
+  input("WeWork");
+  click("Apply");
+  expect(json().filterRule.conditions[1].conditions[1].args).toEqual([
+    "WeWork",
+  ]);
+  click("Undo");
+  expect(json().filterRule.conditions[1].conditions[1].args).toEqual(["Uber"]);
+  click("Redo");
+  expect(json().filterRule.conditions[1].conditions[1].args).toEqual([
+    "WeWork",
+  ]);
+});
+
+test("number editors reject empty input and preserve numeric zero", () => {
+  click("+ condition");
+  click("Value for amount");
+  input("");
+  click("Apply");
+  expect(document.querySelector(".prose-input-error")).not.toBeNull();
+  expect(json().filterRule.conditions[2].args).toEqual([500]);
+  input("0");
+  click("Apply");
+  expect(json().filterRule.conditions[2].args).toEqual([0]);
+});
+
+test("multi-select toggles update live, and undo closes the editor", () => {
+  click("Value for expense type");
+  const entertainment = Array.from(
+    document.querySelectorAll(".prose-checkbox"),
+  ).find((label) => label.textContent === "Entertainment")!;
+  act(() => entertainment.querySelector<HTMLInputElement>("input")!.click());
+  expect(json().filterRule.conditions[1].conditions[0].args[0]).toEqual([
+    "Food & drink",
+    "Travel",
+    "Entertainment",
+  ]);
+  click("Undo");
+  expect(document.querySelector(".prose-popup")).toBeNull();
+  expect(json().filterRule.conditions[1].conditions[0].args[0]).toEqual([
+    "Food & drink",
+    "Travel",
+  ]);
+});
+
+test("Delete on a condition trigger removes it, while a draft input keeps native keys", () => {
+  const trigger = button("Field: merchant");
+  act(() =>
+    trigger.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
+    ),
+  );
+  expect(json().filterRule.conditions[1].conditions).toHaveLength(2);
+  click("Undo");
+  click("Value for merchant");
+  const draft = document.querySelector<HTMLInputElement>(".prose-draft")!;
+  act(() =>
+    draft.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
+    ),
+  );
+  expect(json().filterRule.conditions[1].conditions).toHaveLength(3);
+});
+
+function choose(label: string, option: string) {
+  act(() =>
+    button(label).dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+    ),
+  );
+  const item = Array.from(
+    document.querySelectorAll<HTMLElement>('[role="option"]'),
+  ).find((element) => element.textContent?.replace("✓", "").trim() === option);
+  if (!item) throw new Error(`Option not found: ${option}`);
+  act(() =>
+    item.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+    ),
+  );
+}
+
+test("field and operator changes retain only compatible arguments", () => {
+  choose("Operator for expense type", "is none of");
+  expect(json().filterRule.conditions[1].conditions[0].args).toEqual([
+    ["Food & drink", "Travel"],
+  ]);
+  choose("Field: expense type", "merchant");
+  const merchant = json().filterRule.conditions[1].conditions[0];
+  expect(merchant.name).toBe("equals");
+  expect(merchant.args).toEqual([]);
+  choose("Field: submitter’s seniority", "submitter’s department");
+  expect(json().filterRule.conditions[0].args).toEqual([]);
+  choose("Field: submitter’s department", "amount");
+  expect(json().filterRule.conditions[0].args).toEqual([]);
+  choose("Operator for amount", "is at least");
+  click("Value for amount");
+  input("5000");
+  click("Apply");
+  choose("Operator for amount", "is at most");
+  expect(json().filterRule.conditions[0].args).toEqual([5000]);
+});
+
+test("filter reset is undoable and JSON contains no workflow action", () => {
+  click("Join root conditions with and");
+  expect(json().filterRule.op).toBe("or");
+  expect(json()).not.toHaveProperty("action");
+  expect(container.textContent).toContain("Show expenses where");
+  expect(container.textContent).not.toContain("Then");
+  click("Reset filters");
+  expect(json().filterRule.op).toBe("and");
+  click("Undo");
+  expect(json().filterRule.op).toBe("or");
+  click("Redo");
+  expect(json().filterRule.op).toBe("and");
+});
+
+function switchLocale(locale: string) {
+  const select = container.querySelector<HTMLSelectElement>(
+    ".prose-language select",
+  )!;
+  act(() => {
+    select.value = locale;
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+
+test("locale changes translate the full UI without changing rules or adding history", () => {
+  const initial = json();
+  switchLocale("zh-CN");
+  expect(container.querySelector(".prose-editor")?.getAttribute("lang")).toBe(
+    "zh-CN",
+  );
+  expect(container.querySelector(".prose-sentence")?.textContent).toContain(
+    "筛选符合以下条件的费用记录：",
+  );
+  expect(container.querySelector(".prose-sentence")?.textContent).toContain(
+    "提交人的职级是经理",
+  );
+  expect(container.textContent).toContain("餐饮或差旅");
+  expect(container.textContent).toContain("以下条件至少一项成立");
+  expect(button("撤销").disabled).toBe(true);
+  expect(json()).toEqual(initial);
+  click("费用类型的值");
+  expect(document.querySelector(".prose-popup")?.getAttribute("lang")).toBe(
+    "zh-CN",
+  );
+  expect(document.querySelector(".prose-popup")?.textContent).toContain(
+    "选择一项或多项",
+  );
+  switchLocale("ja-JP");
+  expect(document.querySelector(".prose-popup")).toBeNull();
+  expect(container.querySelector(".prose-sentence")?.textContent).toContain(
+    "申請者の役職がマネージャーである",
+  );
+  expect(container.textContent).toContain("飲食または出張");
+  expect(container.textContent).toContain("次の条件のいずれかが成立");
+  expect(button("元に戻す").disabled).toBe(true);
+  expect(json()).toEqual(initial);
+});
+
+test("localized edits store canonical values and preserve history across languages", () => {
+  switchLocale("zh-CN");
+  choose("字段：提交人的职级", "提交人的部门");
+  choose("提交人的部门的运算符", "不是以下任一项");
+  click("提交人的部门的值");
+  for (const text of ["销售部", "市场部"]) {
+    const label = Array.from(document.querySelectorAll(".prose-checkbox")).find(
+      (element) => element.textContent === text,
+    )!;
+    act(() => label.querySelector<HTMLInputElement>("input")!.click());
+  }
+  click("完成");
+  expect(json().filterRule.conditions[0].args).toEqual([
+    ["Sales", "Marketing"],
+  ]);
+  expect(container.textContent).toContain("不属于以下任一项：销售部或市场部");
+  click("使用“并且”连接根条件");
+  expect(json().filterRule.op).toBe("or");
+  switchLocale("ja-JP");
+  expect(container.textContent).toContain(
+    "営業部、マーケティング部のいずれでもない",
+  );
+  click("元に戻す");
+  expect(json().filterRule.op).toBe("and");
+  click("やり直す");
+  expect(json().filterRule.op).toBe("or");
+  switchLocale("en-US");
+  expect(container.textContent).toContain("is neither Sales nor Marketing");
+  click("Undo");
+  expect(json().filterRule.op).toBe("and");
+});
+
+test("localized text editors translate validation and cancel draft changes", () => {
+  switchLocale("zh-CN");
+  click("+ 条件");
+  click("金额的值");
+  input("");
+  click("应用");
+  expect(document.querySelector(".prose-input-error")?.textContent).toBe(
+    "请输入一个有限数值。",
+  );
+  input("123");
+  switchLocale("ja-JP");
+  expect(document.querySelector(".prose-popup")).toBeNull();
+  expect(json().filterRule.conditions[2].args).toEqual([500]);
+  click("金額の値");
+  expect(document.querySelector<HTMLInputElement>(".prose-draft")!.value).toBe(
+    "500",
+  );
+  click("キャンセル");
+});
+
+test("localized group and root joiners use canonical operators", () => {
+  switchLocale("zh-CN");
+  click("匹配此组的至少一项条件");
+  expect(json().filterRule.conditions[1].op).toBe("and");
+  expect(container.textContent).toContain("以下条件全部成立");
+  click("使用“并且”连接根条件");
+  expect(json().filterRule.op).toBe("or");
+  switchLocale("ja-JP");
+  click("このグループのすべての条件に一致");
+  expect(json().filterRule.conditions[1].op).toBe("or");
+  expect(container.textContent).toContain("次の条件のいずれかが成立");
+});

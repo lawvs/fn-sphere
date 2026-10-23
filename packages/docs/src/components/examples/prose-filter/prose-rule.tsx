@@ -1,0 +1,265 @@
+import { Fragment, useRef, type KeyboardEvent } from "react";
+import {
+  useFilterGroup,
+  useFilterRule,
+  useFilterSelect,
+  useView,
+  type FilterGroup,
+  type SingleFilter,
+} from "@fn-sphere/filter";
+import { InlineSelect, ValueLabelContext } from "./inline-editors";
+import { ProseText, useProseLocale } from "./locale";
+import { membershipOperator } from "./model";
+import { allowedOperators, amountRule } from "./schema";
+
+// Capture a surviving focus target before React removes the current condition.
+function focusAfterRemoval(element: HTMLElement | null) {
+  const editor = element?.closest(".prose-editor");
+  if (!editor || !element) return;
+  const fields = Array.from(
+    editor.querySelectorAll<HTMLElement>("[data-prose-rule] .prose-field"),
+  );
+  const current = element.querySelector<HTMLElement>(".prose-field");
+  const index = current ? fields.indexOf(current) : -1;
+  const next =
+    fields.slice(index + 1).find((field) => !element.contains(field)) ??
+    fields
+      .slice(0, Math.max(index, 0))
+      .reverse()
+      .find((field) => !element.contains(field));
+  // The root add control survives removal of empty ancestor groups.
+  const fallback = editor.querySelector<HTMLElement>("[data-root-add]");
+  (next ?? fallback)?.focus();
+}
+
+export function ProseCondition({ rule }: { rule: SingleFilter }) {
+  const { t } = useProseLocale();
+  const { FieldSelect, FilterSelect, FilterDataInput } = useView("templates");
+  const { removeRule, selectedField, ruleState } = useFilterRule(rule);
+  const element = useRef<HTMLSpanElement>(null);
+  const fieldName = selectedField
+    ? t(`field.${rule.path?.[0]}`)
+    : t("condition");
+  const remove = () => {
+    focusAfterRemoval(element.current);
+    removeRule(true);
+  };
+  const onKeyDown = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement;
+    if (
+      event.key === "Delete" &&
+      target.closest(".prose-token") &&
+      !target.closest(".prose-popup") &&
+      !element.current?.querySelector('[data-state="open"]')
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+      remove();
+    }
+  };
+  return (
+    <span
+      ref={element}
+      className="prose-condition"
+      data-prose-rule=""
+      onKeyDown={onKeyDown}
+    >
+      <ProseText
+        message="sentence.condition"
+        slots={{
+          field: <FieldSelect rule={rule} />,
+          operator: <FilterSelect rule={rule} />,
+          value: (
+            <ValueLabelContext.Provider
+              value={t("valueLabel", { field: fieldName })}
+            >
+              <FilterDataInput rule={rule} />
+            </ValueLabelContext.Provider>
+          ),
+        }}
+      />
+      <button
+        type="button"
+        className="prose-remove"
+        aria-label={t("deleteCondition", { field: fieldName })}
+        onClick={remove}
+      >
+        ×
+      </button>
+      {!ruleState.isValid && (
+        <span className="prose-incomplete" role="status">
+          {" "}
+          {t("incomplete")}
+        </span>
+      )}
+    </span>
+  );
+}
+
+export function ProseField({ rule }: { rule: SingleFilter }) {
+  const { t } = useProseLocale();
+  const { fieldOptions, selectedField, setField } = useFilterSelect(rule);
+  return (
+    <InlineSelect
+      className="prose-field"
+      aria-label={t("fieldLabel", {
+        field: selectedField
+          ? t(`field.${selectedField.path.join(".")}`)
+          : t("condition"),
+      })}
+      options={fieldOptions}
+      value={selectedField}
+      onChange={(field) =>
+        setField(field, {
+          tryRetainFilter: allowedOperators(field.path[0]).includes(
+            rule.name ?? "",
+          ),
+        })
+      }
+    />
+  );
+}
+
+export function ProseOperator({ rule }: { rule: SingleFilter }) {
+  const { t, locale } = useProseLocale();
+  const {
+    filterOptions = [],
+    selectedFilter,
+    setFilter,
+  } = useFilterSelect(rule);
+  const field = rule.path?.[0];
+  const allowed = allowedOperators(field);
+  const options = filterOptions
+    .filter((option) => allowed.includes(option.value.name))
+    .map((option) => ({
+      ...option,
+      label:
+        field === "amount" && option.value.name === "equals"
+          ? t("operator.numberEquals")
+          : option.label,
+    }));
+  const count = Array.isArray(rule.args[0]) ? rule.args[0].length : 0;
+  const display =
+    rule.name === "contains" || rule.name === "notContains"
+      ? membershipOperator(rule.name === "notContains", count, locale)
+      : undefined;
+  return (
+    <InlineSelect
+      className="prose-operator"
+      aria-label={t("operatorLabel", { field: t(`field.${field}`) })}
+      options={options}
+      value={selectedFilter}
+      display={display}
+      onChange={(filter) => setFilter(filter)}
+    />
+  );
+}
+
+export function ProseGroup({ rule }: { rule: FilterGroup }) {
+  const { t } = useProseLocale();
+  const {
+    ruleState: { isRoot },
+    toggleGroupOp,
+    appendChildRule,
+    appendChildGroup,
+    removeGroup,
+  } = useFilterGroup(rule);
+  const element = useRef<HTMLDivElement>(null);
+  const groupLabel = t(`match.${rule.op}`);
+  const groupControl = (
+    <button
+      type="button"
+      className="prose-token prose-joiner"
+      aria-label={t(`groupLabel.${rule.op}`)}
+      onClick={() => toggleGroupOp()}
+    >
+      {groupLabel}
+    </button>
+  );
+  const renderChild = (child: FilterGroup["conditions"][number]) =>
+    child.type === "Filter" ? (
+      <ProseCondition rule={child} />
+    ) : (
+      <ProseGroup rule={child} />
+    );
+  return (
+    <div
+      ref={element}
+      className={isRoot ? "prose-root-group" : "prose-nested-group"}
+    >
+      {isRoot ? (
+        <div className="prose-sentence">
+          {rule.conditions.length > 0 && t("sentence.filter")}
+          {rule.conditions.map((child, index) => (
+            <Fragment key={child.id}>
+              {index > 0 && (
+                <>
+                  {t("comma")}
+                  <button
+                    type="button"
+                    className="prose-token prose-joiner"
+                    aria-label={t("joinLabel", {
+                      operator: t(`join.${rule.op}`),
+                    })}
+                    onClick={() => toggleGroupOp()}
+                  >
+                    {t(`join.${rule.op}`)}
+                  </button>
+                  {t("space")}
+                </>
+              )}
+              {renderChild(child)}
+            </Fragment>
+          ))}
+          {!rule.conditions.length && (
+            <span className="prose-empty">{t("emptyRoot")}</span>
+          )}
+        </div>
+      ) : (
+        <>
+          <ProseText
+            message={`sentence.group.${rule.op}`}
+            slots={{ match: groupControl }}
+          />
+          <ul className="prose-condition-list">
+            {rule.conditions.map((child) => (
+              <li key={child.id}>{renderChild(child)}</li>
+            ))}
+          </ul>
+          {!rule.conditions.length && (
+            <span className="prose-empty">{t("emptyGroup")}</span>
+          )}
+        </>
+      )}
+      <div className="prose-add-actions">
+        <button
+          type="button"
+          data-root-add={isRoot ? "" : undefined}
+          onClick={() => appendChildRule(amountRule())}
+        >
+          {t(isRoot ? "addCondition" : "addToList")}
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            appendChildGroup({ op: "and", conditions: [amountRule()] })
+          }
+        >
+          {t(isRoot ? "addGroup" : "addNested")}
+        </button>
+        {!isRoot && (
+          <button
+            type="button"
+            aria-label={t("deleteGroup")}
+            onClick={() => {
+              focusAfterRemoval(element.current);
+              removeGroup();
+            }}
+          >
+            {t("removeList")}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
