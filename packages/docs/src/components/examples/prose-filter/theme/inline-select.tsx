@@ -1,7 +1,5 @@
 import * as Select from "@radix-ui/react-select";
-import { useContext } from "react";
 import { useRootRule } from "@fn-sphere/filter";
-import { ValueLabelContext } from "./value-label-context";
 
 type Option<T> = { label: string; value: T };
 type InlineSelectProps<T> = {
@@ -23,7 +21,6 @@ export function InlineSelect<T>({
 }: InlineSelectProps<T>) {
   const { getLocaleText: t } = useRootRule();
   const locale = t("locale");
-  const valueLabel = useContext(ValueLabelContext) || t("chooseValue");
   const index = options.findIndex((option) => option.value === value);
   return (
     <Select.Root
@@ -35,7 +32,7 @@ export function InlineSelect<T>({
       }}
     >
       <Select.Trigger
-        aria-label={label ?? valueLabel}
+        aria-label={label ?? t("chooseValue")}
         className={`prose-token ${className}`}
       >
         <span

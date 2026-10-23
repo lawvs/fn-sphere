@@ -1,12 +1,6 @@
 import * as Popover from "@radix-ui/react-popover";
-import {
-  Fragment,
-  useContext,
-  useState,
-  type SelectHTMLAttributes,
-} from "react";
+import { Fragment, useState, type SelectHTMLAttributes } from "react";
 import { useRootRule } from "@fn-sphere/filter";
-import { ValueLabelContext } from "./value-label-context";
 import { listSeparatorKey } from "./model";
 
 type Option<T> = { label: string; value: T };
@@ -28,8 +22,7 @@ export function InlineMultiple<T>({
 }: InlineMultipleProps<T>) {
   const { getLocaleText: t } = useRootRule();
   const locale = t("locale");
-  const valueLabel = useContext(ValueLabelContext) || t("chooseValue");
-  const label = ariaLabel ?? valueLabel;
+  const label = ariaLabel ?? t("chooseValue");
   const selected = options.filter((option) => value.includes(option.value));
   const [open, setOpen] = useState(false);
   return (

@@ -1,7 +1,6 @@
 import * as Popover from "@radix-ui/react-popover";
-import { useContext, useId, useState, type InputHTMLAttributes } from "react";
+import { useId, useState, type InputHTMLAttributes } from "react";
 import { useRootRule } from "@fn-sphere/filter";
-import { ValueLabelContext } from "./value-label-context";
 import { formatValue, parseInput } from "./model";
 
 type InlineInputProps = Omit<
@@ -17,7 +16,7 @@ export function InlineInput({
 }: InlineInputProps) {
   const { getLocaleText: t } = useRootRule();
   const locale = t("locale");
-  const label = useContext(ValueLabelContext) || t("chooseValue");
+  const label = t("chooseValue");
   const [open, setOpen] = useState(false);
   const id = useId();
   const [draft, setDraft] = useState("");

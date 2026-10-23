@@ -9,7 +9,6 @@ import {
   type SingleFilter,
 } from "@fn-sphere/filter";
 import { InlineSelect } from "./inline-select";
-import { ValueLabelContext } from "./value-label-context";
 import { ProseText, formatText } from "./text";
 import { createDefaultRule } from "../schema";
 
@@ -43,13 +42,7 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
         slots={{
           field: <FieldSelect rule={rule} />,
           operator: <FilterSelect rule={rule} />,
-          value: (
-            <ValueLabelContext.Provider
-              value={formatText(t("valueLabel"), { field: fieldName })}
-            >
-              <FilterDataInput rule={rule} />
-            </ValueLabelContext.Provider>
-          ),
+          value: <FilterDataInput rule={rule} />,
         }}
       />
       <button

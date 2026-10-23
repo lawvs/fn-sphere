@@ -45,6 +45,15 @@ function button(label: string, scope: ParentNode = document) {
 function click(label: string, scope?: ParentNode) {
   act(() => button(label, scope).click());
 }
+function valueButton(fieldLabel: string) {
+  const condition = button(fieldLabel).closest(".prose-condition")!;
+  return condition.querySelector<HTMLButtonElement>(
+    "button.prose-value, button.prose-values",
+  )!;
+}
+function clickValue(fieldLabel: string) {
+  act(() => valueButton(fieldLabel).click());
+}
 function json() {
   if (!container.querySelector(".prose-json"))
     act(() =>
@@ -93,11 +102,11 @@ test("deleting the last condition leaves an editable empty root", () => {
 });
 
 test("text drafts cancel cleanly and commit only on apply", () => {
-  click("Value for merchant");
+  clickValue("Field: merchant");
   input("WeWork");
   click("Cancel");
   expect(json().filterRule.conditions[1].conditions[1].args).toEqual(["Uber"]);
-  click("Value for merchant");
+  clickValue("Field: merchant");
   expect(document.querySelector<HTMLInputElement>(".prose-draft")!.value).toBe(
     "Uber",
   );
@@ -110,7 +119,7 @@ test("text drafts cancel cleanly and commit only on apply", () => {
 
 test("number editors reject empty input and preserve numeric zero", () => {
   click("+ condition");
-  click("Value for amount");
+  clickValue("Field: amount");
   input("");
   click("Apply");
   expect(document.querySelector(".prose-input-error")).not.toBeNull();
@@ -121,7 +130,7 @@ test("number editors reject empty input and preserve numeric zero", () => {
 });
 
 test("multi-select toggles update live and Done preserves the selection", () => {
-  click("Value for expense type");
+  clickValue("Field: expense type");
   const entertainment = Array.from(
     document.querySelectorAll(".prose-checkbox"),
   ).find((label) => label.textContent === "Entertainment")!;
@@ -148,7 +157,7 @@ test("Delete on a condition trigger removes it, while a draft input keeps native
     ),
   );
   expect(json().filterRule.conditions[1].conditions).toHaveLength(2);
-  click("Value for merchant");
+  clickValue("Field: merchant");
   const draft = document.querySelector<HTMLInputElement>(".prose-draft")!;
   act(() =>
     draft.dispatchEvent(
@@ -189,7 +198,7 @@ test("field and operator changes retain only compatible arguments", () => {
   choose("Field: submitter’s department", "amount");
   expect(json().filterRule.conditions[0].args).toEqual([]);
   choose("Operator for amount", "is at least");
-  click("Value for amount");
+  clickValue("Field: amount");
   input("5000");
   click("Apply");
   choose("Operator for amount", "is at most");
@@ -229,7 +238,7 @@ test("locale changes translate the full UI without changing rules", () => {
   expect(container.textContent).toContain("餐饮或差旅");
   expect(container.textContent).toContain("以下条件至少一项成立");
   expect(json()).toEqual(initial);
-  click("费用类型的值");
+  clickValue("字段：费用类型");
   expect(document.querySelector(".prose-popup")?.getAttribute("lang")).toBe(
     "zh-CN",
   );
@@ -250,7 +259,7 @@ test("localized edits store canonical values and preserve filters across languag
   switchLocale("zh-CN");
   choose("字段：提交人的职级", "提交人的部门");
   choose("提交人的部门的运算符", "不是以下任一项");
-  click("提交人的部门的值");
+  clickValue("字段：提交人的部门");
   for (const text of ["销售部", "市场部"]) {
     const label = Array.from(document.querySelectorAll(".prose-checkbox")).find(
       (element) => element.textContent === text,
@@ -276,7 +285,7 @@ test("localized edits store canonical values and preserve filters across languag
 test("localized text editors translate validation and cancel draft changes", () => {
   switchLocale("zh-CN");
   click("+ 条件");
-  click("金额的值");
+  clickValue("字段：金额");
   input("");
   click("应用");
   expect(document.querySelector(".prose-input-error")?.textContent).toBe(
@@ -286,7 +295,7 @@ test("localized text editors translate validation and cancel draft changes", () 
   switchLocale("ja-JP");
   expect(document.querySelector(".prose-popup")).toBeNull();
   expect(json().filterRule.conditions[2].args).toEqual([500]);
-  click("金額の値");
+  clickValue("項目：金額");
   expect(document.querySelector<HTMLInputElement>(".prose-draft")!.value).toBe(
     "500",
   );
@@ -356,19 +365,19 @@ test("field labels use the mapper and membership values use literal metadata", (
     "Mapped Code metadata",
   );
   expect(button("Operator for Mapped Code metadata")).toBeTruthy();
-  expect(button("Value for Mapped Code metadata").textContent).toBe(
+  expect(valueButton("Field: Mapped Code metadata").textContent).toBe(
     "First code or Second code",
   );
-  click("Value for Mapped Code metadata");
+  clickValue("Field: Mapped Code metadata");
   const first = document.querySelector<HTMLInputElement>(
     ".prose-checkbox input",
   )!;
   act(() => first.click());
-  expect(button("Value for Mapped Code metadata").textContent).toBe(
+  expect(valueButton("Field: Mapped Code metadata").textContent).toBe(
     "Second code",
   );
   act(() => first.click());
-  expect(button("Value for Mapped Code metadata").textContent).toBe(
+  expect(valueButton("Field: Mapped Code metadata").textContent).toBe(
     "First code or Second code",
   );
 });
