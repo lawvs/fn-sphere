@@ -49,12 +49,9 @@ const en = {
   apply: "Apply",
   numberError: "Enter a finite number.",
   valueError: "Enter a value.",
-  reset: "Reset filters",
   showJSON: "Show filter JSON",
   hideJSON: "Hide filter JSON",
   ruleJSON: "Filter JSON",
-  help: "Click an underlined word to edit it. Tab and Enter work too. Click and, or, all, or at least one to change the logic.",
-  keyboardHelp: "Esc closes an editor. Delete removes the focused condition.",
 };
 
 const zh = {
@@ -99,12 +96,9 @@ const zh = {
   apply: "应用",
   numberError: "请输入一个有限数值。",
   valueError: "请输入一个值。",
-  reset: "重置筛选",
   showJSON: "显示筛选 JSON",
   hideJSON: "隐藏筛选 JSON",
   ruleJSON: "筛选 JSON",
-  help: "点击带下划线的文字即可编辑，也可使用 Tab 和 Enter。点击“并且”“或者”“全部成立”或“至少一项成立”切换逻辑。",
-  keyboardHelp: "Esc 关闭编辑器。Delete 删除当前聚焦的条件。",
 } satisfies Record<keyof typeof en, string>;
 
 const ja = {
@@ -149,13 +143,9 @@ const ja = {
   apply: "適用",
   numberError: "有限の数値を入力してください。",
   valueError: "値を入力してください。",
-  reset: "絞り込みをリセット",
   showJSON: "絞り込みの JSON を表示",
   hideJSON: "絞り込みの JSON を隠す",
   ruleJSON: "絞り込みの JSON",
-  help: "下線付きの文字をクリックして編集します。Tab と Enter も使えます。「かつ」「または」「すべてが成立」「いずれかが成立」で論理を切り替えます。",
-  keyboardHelp:
-    "Esc で編集を閉じます。Delete でフォーカス中の条件を削除します。",
 } satisfies Record<keyof typeof en, string>;
 
 export const messages: Record<ProseLocale, Record<string, string>> = {

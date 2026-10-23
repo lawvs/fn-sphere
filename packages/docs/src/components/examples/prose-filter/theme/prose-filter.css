@@ -185,17 +185,6 @@
 .prose-toolbar .prose-json-toggle {
   margin-left: auto;
 }
-.prose-editor .prose-help {
-  margin: 1.5rem 0 0;
-  max-width: 37rem;
-  font-size: 0.82rem;
-  line-height: 1.7;
-  color: var(--prose-muted);
-}
-.prose-editor .prose-help-secondary {
-  margin-top: 0.4rem;
-  font-size: 0.75rem;
-}
 .prose-editor .prose-json {
   background: var(--prose-soft);
   padding: 1rem;

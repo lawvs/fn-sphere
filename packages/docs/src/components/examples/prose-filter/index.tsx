@@ -21,9 +21,8 @@ export function ProseFilter() {
     Object.hasOwn(dictionary, key)
       ? dictionary[key]!
       : defaultGetLocaleText(key);
-  const [editorVersion, setEditorVersion] = useState(0);
   const [showJSON, setShowJSON] = useState(false);
-  const { context, filterRule, reset } = useFilterSphere<Expense>({
+  const { context, filterRule } = useFilterSphere<Expense>({
     schema: expenseSchema,
     defaultRule: createProseRule,
     getLocaleText: t,
@@ -42,7 +41,6 @@ export function ProseFilter() {
               value={locale}
               onChange={(event) => {
                 setLocale(event.target.value as ProseLocale);
-                setEditorVersion((version) => version + 1);
               }}
             >
               {localeOptions.map((option) => (
@@ -54,20 +52,10 @@ export function ProseFilter() {
           </label>
         </header>
         <h3>{t("heading")}</h3>
-        <div key={editorVersion}>
+        <div key={locale}>
           <FilterBuilder />
         </div>
         <div className="prose-toolbar">
-          <button
-            className="prose-small-button"
-            type="button"
-            onClick={() => {
-              reset(createProseRule());
-              setEditorVersion((version) => version + 1);
-            }}
-          >
-            {t("reset")}
-          </button>
           <button
             className="prose-small-button prose-json-toggle"
             type="button"
@@ -82,8 +70,6 @@ export function ProseFilter() {
             <code>{JSON.stringify({ filterRule }, null, 2)}</code>
           </pre>
         )}
-        <p className="prose-help">{t("help")}</p>
-        <p className="prose-help prose-help-secondary">{t("keyboardHelp")}</p>
       </section>
     </FilterSphereProvider>
   );

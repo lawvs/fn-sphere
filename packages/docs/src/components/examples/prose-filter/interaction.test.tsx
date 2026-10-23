@@ -121,7 +121,7 @@ test("number editors reject empty input and preserve numeric zero", () => {
   expect(json().filterRule.conditions[2].args).toEqual([0]);
 });
 
-test("multi-select toggles update live, and reset closes the editor", () => {
+test("multi-select toggles update live and Done preserves the selection", () => {
   click("Value for expense type");
   const entertainment = Array.from(
     document.querySelectorAll(".prose-checkbox"),
@@ -132,23 +132,23 @@ test("multi-select toggles update live, and reset closes the editor", () => {
     "Travel",
     "Entertainment",
   ]);
-  click("Reset filters");
+  click("Done");
   expect(document.querySelector(".prose-popup")).toBeNull();
   expect(json().filterRule.conditions[1].conditions[0].args[0]).toEqual([
     "Food & drink",
     "Travel",
+    "Entertainment",
   ]);
 });
 
 test("Delete on a condition trigger removes it, while a draft input keeps native keys", () => {
-  const trigger = button("Field: merchant");
+  const trigger = button("Field: currency");
   act(() =>
     trigger.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
     ),
   );
   expect(json().filterRule.conditions[1].conditions).toHaveLength(2);
-  click("Reset filters");
   click("Value for merchant");
   const draft = document.querySelector<HTMLInputElement>(".prose-draft")!;
   act(() =>
@@ -156,7 +156,7 @@ test("Delete on a condition trigger removes it, while a draft input keeps native
       new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
     ),
   );
-  expect(json().filterRule.conditions[1].conditions).toHaveLength(3);
+  expect(json().filterRule.conditions[1].conditions).toHaveLength(2);
 });
 
 function choose(label: string, option: string) {
@@ -197,14 +197,12 @@ test("field and operator changes retain only compatible arguments", () => {
   expect(json().filterRule.conditions[0].args).toEqual([5000]);
 });
 
-test("filter reset restores defaults and JSON contains no workflow action", () => {
+test("filter JSON reflects the selected logic without a workflow action", () => {
   click("Join root conditions with and");
   expect(json().filterRule.op).toBe("or");
   expect(json()).not.toHaveProperty("action");
   expect(container.textContent).toContain("Show expenses where");
   expect(container.textContent).not.toContain("Then");
-  click("Reset filters");
-  expect(json().filterRule.op).toBe("and");
 });
 
 function switchLocale(locale: string) {
