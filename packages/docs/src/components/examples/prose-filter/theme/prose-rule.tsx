@@ -130,12 +130,6 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
       {groupLabel}
     </button>
   );
-  const renderChild = (child: FilterGroup["conditions"][number]) =>
-    child.type === "Filter" ? (
-      <ConditionView rule={child} />
-    ) : (
-      <GroupView rule={child} />
-    );
   return (
     <div className={isRoot ? "prose-root-group" : "prose-nested-group"}>
       {isRoot ? (
@@ -159,7 +153,11 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
                   {t("space")}
                 </>
               )}
-              {renderChild(child)}
+              {child.type === "Filter" ? (
+                <ConditionView rule={child} />
+              ) : (
+                <GroupView rule={child} />
+              )}
             </Fragment>
           ))}
           {!rule.conditions.length && (
@@ -174,7 +172,13 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
           />
           <ul className="prose-condition-list">
             {rule.conditions.map((child) => (
-              <li key={child.id}>{renderChild(child)}</li>
+              <li key={child.id}>
+                {child.type === "Filter" ? (
+                  <ConditionView rule={child} />
+                ) : (
+                  <GroupView rule={child} />
+                )}
+              </li>
             ))}
           </ul>
           {!rule.conditions.length && (
