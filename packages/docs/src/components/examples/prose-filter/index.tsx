@@ -18,7 +18,6 @@ import {
   type ProseLocale,
 } from "./locale";
 import { proseTheme } from "./theme";
-import "./prose-filter.css";
 
 export function ProseFilter() {
   const [locale, setLocale] = useState<ProseLocale>("en-US");

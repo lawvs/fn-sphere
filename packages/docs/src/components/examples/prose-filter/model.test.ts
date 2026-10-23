@@ -11,7 +11,7 @@ import {
   listSeparator,
   membershipOperator,
   parseInput,
-} from "./model";
+} from "./theme/model";
 import {
   createProseRule,
   expenseSchema,

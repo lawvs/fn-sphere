@@ -7,6 +7,8 @@ import {
   ProseOperator,
 } from "./prose-rule";
 
+import "./prose-filter.css";
+
 export const proseTheme = createFilterTheme({
   templates: {
     FilterGroup: ProseGroup,

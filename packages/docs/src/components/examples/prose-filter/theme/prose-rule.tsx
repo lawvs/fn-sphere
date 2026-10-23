@@ -13,9 +13,9 @@ import {
   ValueLabelContext,
   NegativeValueContext,
 } from "./inline-editors";
-import { ProseText, useProseLocale } from "./locale";
+import { ProseText, useProseLocale } from "../locale";
 import { membershipOperator } from "./model";
-import { allowedOperators, amountRule } from "./schema";
+import { allowedOperators, amountRule } from "../schema";
 
 // Capture a surviving focus target before React removes the current condition.
 function focusAfterRemoval(element: HTMLElement | null) {

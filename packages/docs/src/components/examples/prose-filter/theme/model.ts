@@ -1,4 +1,4 @@
-import { getProseLocaleText, type ProseLocale } from "./locale";
+import { getProseLocaleText, type ProseLocale } from "../locale";
 export function listSeparator(
   index: number,
   count: number,

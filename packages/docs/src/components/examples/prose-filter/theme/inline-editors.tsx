@@ -10,7 +10,7 @@ import {
   type ReactNode,
   type SelectHTMLAttributes,
 } from "react";
-import { useProseLocale } from "./locale";
+import { useProseLocale } from "../locale";
 import { formatValue, listSeparator, parseInput } from "./model";
 
 export const ValueLabelContext = createContext("");

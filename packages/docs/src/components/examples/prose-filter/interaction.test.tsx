@@ -14,7 +14,7 @@ import {
   type FilterTheme,
 } from "@fn-sphere/filter";
 import { proseTheme } from "./theme";
-import { ProseCondition, ProseGroup } from "./prose-rule";
+import { ProseCondition, ProseGroup } from "./theme/prose-rule";
 import { getProseLocaleText } from "./locale";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
