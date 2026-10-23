@@ -10,7 +10,7 @@ import {
 } from "@fn-sphere/filter";
 import { InlineSelect, ValueLabelContext } from "./inline-editors";
 import { ProseText, formatText } from "./text";
-import { amountRule } from "../schema";
+import { createDefaultRule } from "../schema";
 
 // Capture a surviving focus target before React removes the current condition.
 function focusAfterRemoval(element: HTMLElement | null) {
@@ -216,14 +216,14 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
         <button
           type="button"
           data-root-add={isRoot ? "" : undefined}
-          onClick={() => appendChildRule(amountRule())}
+          onClick={() => appendChildRule(createDefaultRule())}
         >
           {t(isRoot ? "addCondition" : "addToList")}
         </button>
         <button
           type="button"
           onClick={() =>
-            appendChildGroup({ op: "and", conditions: [amountRule()] })
+            appendChildGroup({ op: "and", conditions: [createDefaultRule()] })
           }
         >
           {t(isRoot ? "addGroup" : "addNested")}

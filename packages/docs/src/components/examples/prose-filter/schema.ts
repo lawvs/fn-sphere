@@ -39,7 +39,7 @@ export const expenseSchema = z.object({
 });
 
 export type Expense = z.infer<typeof expenseSchema>;
-export const amountRule = () =>
+export const createDefaultRule = () =>
   createSingleFilter({ path: ["amount"], name: "greaterThan", args: [500] });
 
 // Stable fixture IDs keep the initial server and client markup identical.
