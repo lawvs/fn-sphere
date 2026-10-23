@@ -15,7 +15,7 @@ import {
 } from "@fn-sphere/filter";
 import { proseTheme } from "./theme";
 import { ProseCondition, ProseGroup } from "./theme/prose-rule";
-import { messages } from "./locale";
+import { messages } from "./locales/locale";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 let container: HTMLDivElement;

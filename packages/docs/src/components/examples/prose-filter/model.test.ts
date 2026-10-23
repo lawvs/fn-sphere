@@ -1,4 +1,4 @@
-import { messages, type ProseLocale } from "./locale";
+import { messages, type ProseLocale } from "./locales/locale";
 import { expect, test } from "vitest";
 import {
   createFilterPredicate,

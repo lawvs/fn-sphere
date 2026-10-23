@@ -6,8 +6,8 @@ import {
   defaultGetLocaleText,
 } from "@fn-sphere/filter";
 import { createDefaultGroup, expenseSchema, type Expense } from "./schema";
-import { messages, type ProseLocale } from "./locale";
-import { mapExpenseFilterName } from "./filter-locale";
+import { messages, type ProseLocale } from "./locales/locale";
+import { mapExpenseFilterName } from "./locales/filter-locale";
 import { proseTheme } from "./theme";
 import { Layout } from "./layout";
 import { RulePreview } from "./rule-preview";
