@@ -10,8 +10,8 @@ import {
   type ReactNode,
   type SelectHTMLAttributes,
 } from "react";
-import { useProseLocale } from "../locale";
-import { formatValue, listSeparator, parseInput } from "./model";
+import { useRootRule } from "@fn-sphere/filter";
+import { formatValue, listSeparatorKey, parseInput } from "./model";
 
 export const ValueLabelContext = createContext("");
 export const NegativeValueContext = createContext(false);
@@ -35,7 +35,8 @@ export function InlineSelect<T>({
   disabled,
   display,
 }: InlineSelectProps<T>) {
-  const { t, locale } = useProseLocale();
+  const { getLocaleText: t } = useRootRule();
+  const locale = t("locale");
   const valueLabel = useContext(ValueLabelContext) || t("chooseValue");
   const index = options.findIndex((option) => option.value === value);
   return (
@@ -109,7 +110,8 @@ export function InlineMultiple<T>({
   "aria-label": ariaLabel,
 }: InlineMultipleProps<T>) {
   const negative = useContext(NegativeValueContext);
-  const { t, locale } = useProseLocale();
+  const { getLocaleText: t } = useRootRule();
+  const locale = t("locale");
   const valueLabel = useContext(ValueLabelContext) || t("chooseValue");
   const label = ariaLabel ?? valueLabel;
   const selected = options.filter((option) => value.includes(option.value));
@@ -127,7 +129,7 @@ export function InlineMultiple<T>({
             selected.map((option, index) => (
               <Fragment key={index}>
                 <span className="prose-value-joiner">
-                  {listSeparator(index, selected.length, negative, locale)}
+                  {t(listSeparatorKey(index, selected.length, negative))}
                 </span>
                 <span className="prose-value">{option.label}</span>
               </Fragment>
@@ -190,7 +192,7 @@ function InputDraft({
   type: string | undefined;
   onCommit: (value: string) => void;
 }) {
-  const { t } = useProseLocale();
+  const { getLocaleText: t } = useRootRule();
   const label = useContext(ValueLabelContext) || t("chooseValue");
   const id = useId();
   const [draft, setDraft] = useState(value);
@@ -240,7 +242,8 @@ export function InlineInput({
   disabled,
   onChange,
 }: InlineInputProps) {
-  const { t, locale } = useProseLocale();
+  const { getLocaleText: t } = useRootRule();
+  const locale = t("locale");
   const label = useContext(ValueLabelContext) || t("chooseValue");
   const [open, setOpen] = useState(false);
   return (

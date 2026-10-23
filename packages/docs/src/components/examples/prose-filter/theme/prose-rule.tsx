@@ -13,8 +13,8 @@ import {
   ValueLabelContext,
   NegativeValueContext,
 } from "./inline-editors";
-import { ProseText, useProseLocale } from "../locale";
-import { membershipOperator } from "./model";
+import { ProseText, formatText } from "./text";
+import { membershipOperatorKey } from "./model";
 import { allowedOperators, amountRule } from "../schema";
 
 // Capture a surviving focus target before React removes the current condition.
@@ -38,13 +38,12 @@ function focusAfterRemoval(element: HTMLElement | null) {
 }
 
 export function ProseCondition({ rule }: { rule: SingleFilter }) {
-  const { t } = useProseLocale();
+  const { getLocaleText: t, mapFieldName } = useRootRule();
   const { FieldSelect, FilterSelect, FilterDataInput } = useView("templates");
   const { removeRule, selectedField, ruleState } = useFilterRule(rule);
   const element = useRef<HTMLSpanElement>(null);
-  const { mapFieldName, getLocaleText } = useRootRule();
   const fieldName = selectedField
-    ? getLocaleText(mapFieldName(selectedField))
+    ? t(mapFieldName(selectedField))
     : t("condition");
   const remove = () => {
     focusAfterRemoval(element.current);
@@ -77,7 +76,7 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
           operator: <FilterSelect rule={rule} />,
           value: (
             <ValueLabelContext.Provider
-              value={t("valueLabel", { field: fieldName })}
+              value={formatText(t("valueLabel"), { field: fieldName })}
             >
               <NegativeValueContext.Provider
                 value={rule.name === "notContains"}
@@ -91,7 +90,7 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
       <button
         type="button"
         className="prose-remove"
-        aria-label={t("deleteCondition", { field: fieldName })}
+        aria-label={formatText(t("deleteCondition"), { field: fieldName })}
         onClick={remove}
       >
         ×
@@ -107,16 +106,13 @@ export function ProseCondition({ rule }: { rule: SingleFilter }) {
 }
 
 export function ProseField({ rule }: { rule: SingleFilter }) {
-  const { t } = useProseLocale();
+  const { getLocaleText: t, mapFieldName } = useRootRule();
   const { fieldOptions, selectedField, setField } = useFilterSelect(rule);
-  const { mapFieldName, getLocaleText } = useRootRule();
   return (
     <InlineSelect
       className="prose-field"
-      aria-label={t("fieldLabel", {
-        field: selectedField
-          ? getLocaleText(mapFieldName(selectedField))
-          : t("condition"),
+      aria-label={formatText(t("fieldLabel"), {
+        field: selectedField ? t(mapFieldName(selectedField)) : t("condition"),
       })}
       options={fieldOptions}
       value={selectedField}
@@ -132,30 +128,29 @@ export function ProseField({ rule }: { rule: SingleFilter }) {
 }
 
 export function ProseOperator({ rule }: { rule: SingleFilter }) {
-  const { t, locale } = useProseLocale();
+  const { getLocaleText: t, mapFieldName } = useRootRule();
   const {
     filterOptions = [],
     selectedFilter,
     selectedField,
     setFilter,
   } = useFilterSelect(rule);
-  const { mapFieldName, getLocaleText } = useRootRule();
   const allowed = allowedOperators(selectedField?.path[0]);
   const options = filterOptions.filter((option) =>
     allowed.includes(option.value.name),
   );
   const fieldName = selectedField
-    ? getLocaleText(mapFieldName(selectedField))
+    ? t(mapFieldName(selectedField))
     : t("condition");
   const count = Array.isArray(rule.args[0]) ? rule.args[0].length : 0;
   const display =
     rule.name === "contains" || rule.name === "notContains"
-      ? membershipOperator(rule.name === "notContains", count, locale)
+      ? t(membershipOperatorKey(rule.name === "notContains", count))
       : undefined;
   return (
     <InlineSelect
       className="prose-operator"
-      aria-label={t("operatorLabel", { field: fieldName })}
+      aria-label={formatText(t("operatorLabel"), { field: fieldName })}
       options={options}
       value={selectedFilter}
       display={display}
@@ -165,7 +160,7 @@ export function ProseOperator({ rule }: { rule: SingleFilter }) {
 }
 
 export function ProseGroup({ rule }: { rule: FilterGroup }) {
-  const { t } = useProseLocale();
+  const { getLocaleText: t } = useRootRule();
   const { SingleFilter: ConditionView, FilterGroup: GroupView } =
     useView("templates");
   const {
@@ -209,7 +204,7 @@ export function ProseGroup({ rule }: { rule: FilterGroup }) {
                   <button
                     type="button"
                     className="prose-token prose-joiner"
-                    aria-label={t("joinLabel", {
+                    aria-label={formatText(t("joinLabel"), {
                       operator: t(`join.${rule.op}`),
                     })}
                     onClick={() => toggleGroupOp()}

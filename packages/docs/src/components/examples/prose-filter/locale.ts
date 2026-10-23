@@ -1,4 +1,3 @@
-import { createContext, Fragment, useContext, type ReactNode } from "react";
 import { enUS, jaJP, zhCN } from "@fn-sphere/filter/locales";
 
 export const localeOptions = [
@@ -272,56 +271,8 @@ const ja: Messages = {
   "value.SGD": "シンガポールドル",
 };
 
-const messages: Record<ProseLocale, Record<string, string>> = {
-  "en-US": { ...enUS, ...en },
-  "zh-CN": { ...zhCN, ...zh },
-  "ja-JP": { ...jaJP, ...ja },
+export const messages: Record<ProseLocale, Record<string, string>> = {
+  "en-US": { ...enUS, ...en, locale: "en-US" },
+  "zh-CN": { ...zhCN, ...zh, locale: "zh-CN" },
+  "ja-JP": { ...jaJP, ...ja, locale: "ja-JP" },
 };
-export function getProseLocaleText(
-  locale: ProseLocale,
-  key: string,
-  params: Record<string, string> = {},
-): string {
-  const dictionary = messages[locale];
-  const fallback = messages["en-US"];
-  const text = Object.hasOwn(dictionary, key)
-    ? dictionary[key]!
-    : Object.hasOwn(fallback, key)
-      ? fallback[key]!
-      : key;
-  return text.replace(
-    /\{(\w+)\}/g,
-    (placeholder, name: string) => params[name] ?? placeholder,
-  );
-}
-export const ProseLocaleContext = createContext<ProseLocale>("en-US");
-export function useProseLocale() {
-  const locale = useContext(ProseLocaleContext);
-  return {
-    locale,
-    t: (key: string, params?: Record<string, string>) =>
-      getProseLocaleText(locale, key, params),
-  };
-}
-
-// Rich slots preserve each language's word order without HTML translation strings.
-export function ProseText({
-  message,
-  slots,
-}: {
-  message: string;
-  slots: Record<string, ReactNode>;
-}) {
-  const { t } = useProseLocale();
-  return (
-    <>
-      {t(message)
-        .split(/(\{\w+\})/g)
-        .map((part, index) => (
-          <Fragment key={index}>
-            {part.startsWith("{") ? (slots[part.slice(1, -1)] ?? part) : part}
-          </Fragment>
-        ))}
-    </>
-  );
-}

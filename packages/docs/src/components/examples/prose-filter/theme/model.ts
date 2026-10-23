@@ -1,9 +1,7 @@
-import { getProseLocaleText, type ProseLocale } from "../locale";
-export function listSeparator(
+export function listSeparatorKey(
   index: number,
   count: number,
   negative: boolean,
-  locale: ProseLocale = "en-US",
 ) {
   if (index === 0) return "";
   const conjunction = negative ? "Nor" : "Or";
@@ -13,28 +11,18 @@ export function listSeparator(
         ? `list.serial${conjunction}`
         : `list.${conjunction.toLowerCase()}`
       : "list.middle";
-  return getProseLocaleText(locale, key);
+  return key;
 }
 
-export function membershipOperator(
-  negative: boolean,
-  count: number,
-  locale: ProseLocale = "en-US",
-) {
-  return getProseLocaleText(
-    locale,
-    negative
-      ? count > 1
-        ? "member.negativeMany"
-        : "member.negative"
-      : "member.positive",
-  );
+export function membershipOperatorKey(negative: boolean, count: number) {
+  return negative
+    ? count > 1
+      ? "member.negativeMany"
+      : "member.negative"
+    : "member.positive";
 }
 
-export function formatValue(
-  value: unknown,
-  locale: ProseLocale = "en-US",
-): string {
+export function formatValue(value: unknown, locale = "en-US"): string {
   return typeof value === "number"
     ? new Intl.NumberFormat(locale, { maximumFractionDigits: 20 }).format(value)
     : String(value ?? "");

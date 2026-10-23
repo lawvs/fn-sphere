@@ -3,6 +3,7 @@ import {
   FilterBuilder,
   FilterSphereProvider,
   useFilterSphere,
+  defaultGetLocaleText,
 } from "@fn-sphere/filter";
 import {
   createProseRule,
@@ -11,17 +12,16 @@ import {
   proseFilters,
   type Expense,
 } from "./schema";
-import {
-  getProseLocaleText,
-  localeOptions,
-  ProseLocaleContext,
-  type ProseLocale,
-} from "./locale";
+import { messages, localeOptions, type ProseLocale } from "./locale";
 import { proseTheme } from "./theme";
 
 export function ProseFilter() {
   const [locale, setLocale] = useState<ProseLocale>("en-US");
-  const t = (key: string) => getProseLocaleText(locale, key);
+  const dictionary = messages[locale];
+  const t = (key: string) =>
+    Object.hasOwn(dictionary, key)
+      ? dictionary[key]!
+      : defaultGetLocaleText(key);
   const [editorVersion, setEditorVersion] = useState(0);
   const [showJSON, setShowJSON] = useState(false);
   const { context, filterRule, reset } = useFilterSphere<Expense>({
@@ -33,7 +33,7 @@ export function ProseFilter() {
   });
 
   return (
-    <ProseLocaleContext.Provider value={locale}>
+    <FilterSphereProvider context={context} theme={proseTheme}>
       <section lang={locale} className="prose-editor" aria-label={t("title")}>
         <header className="prose-heading">
           <span className="prose-eyebrow">{t("title")}</span>
@@ -57,9 +57,7 @@ export function ProseFilter() {
         </header>
         <h3>{t("heading")}</h3>
         <div key={editorVersion}>
-          <FilterSphereProvider context={context} theme={proseTheme}>
-            <FilterBuilder />
-          </FilterSphereProvider>
+          <FilterBuilder />
         </div>
         <div className="prose-toolbar">
           <button
@@ -89,6 +87,6 @@ export function ProseFilter() {
         <p className="prose-help">{t("help")}</p>
         <p className="prose-help prose-help-secondary">{t("keyboardHelp")}</p>
       </section>
-    </ProseLocaleContext.Provider>
+    </FilterSphereProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { getProseLocaleText } from "./locale";
+import { messages, type ProseLocale } from "./locale";
 import { expect, test } from "vitest";
 import {
   createFilterPredicate,
@@ -8,8 +8,8 @@ import {
 } from "@fn-sphere/filter";
 import {
   formatValue,
-  listSeparator,
-  membershipOperator,
+  listSeparatorKey,
+  membershipOperatorKey,
   parseInput,
 } from "./theme/model";
 import {
@@ -18,6 +18,18 @@ import {
   proseFilters,
   type Expense,
 } from "./schema";
+
+const membershipOperator = (
+  negative: boolean,
+  count: number,
+  locale: ProseLocale = "en-US",
+) => messages[locale][membershipOperatorKey(negative, count)];
+const listSeparator = (
+  index: number,
+  count: number,
+  negative: boolean,
+  locale: ProseLocale = "en-US",
+) => messages[locale][listSeparatorKey(index, count, negative)] ?? "";
 
 const expense: Expense = {
   seniority: "Manager",
@@ -100,9 +112,9 @@ test("membership connectors and numeric display honor the selected locale", () =
   );
 });
 
-test("the locale bridge includes built-in messages and falls back to unknown keys", () => {
-  expect(getProseLocaleText("zh-CN", "addRule")).toBe("添加规则");
-  expect(getProseLocaleText("ja-JP", "value.Manager")).toBe("マネージャー");
-  expect(getProseLocaleText("en-US", "unknown.key")).toBe("unknown.key");
-  expect(getProseLocaleText("zh-CN", "toString")).toBe("toString");
+test("locale dictionaries extend the built-in messages", () => {
+  expect(messages["zh-CN"].addRule).toBe("\u6dfb\u52a0\u89c4\u5219");
+  expect(messages["ja-JP"]["value.Manager"]).toBe(
+    "\u30de\u30cd\u30fc\u30b8\u30e3\u30fc",
+  );
 });

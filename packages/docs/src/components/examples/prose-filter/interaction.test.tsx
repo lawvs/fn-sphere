@@ -15,7 +15,7 @@ import {
 } from "@fn-sphere/filter";
 import { proseTheme } from "./theme";
 import { ProseCondition, ProseGroup } from "./theme/prose-rule";
-import { getProseLocaleText } from "./locale";
+import { messages } from "./locale";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 let container: HTMLDivElement;
@@ -321,7 +321,12 @@ const metadataSchema = z.object({
 function MetadataExample({ theme = proseTheme }: { theme?: FilterTheme }) {
   const { context } = useFilterSphere({
     schema: metadataSchema,
-    getLocaleText: (key) => getProseLocaleText("en-US", key),
+    getLocaleText: (key) =>
+      key === "sentence.filter"
+        ? "Custom filter introduction: "
+        : Object.hasOwn(messages["en-US"], key)
+          ? messages["en-US"][key]!
+          : key,
     mapFieldName: (field) => `Mapped ${defaultMapFieldName(field)}`,
     defaultRule: () =>
       createFilterGroup({
@@ -349,6 +354,7 @@ function MetadataExample({ theme = proseTheme }: { theme?: FilterTheme }) {
 
 test("field labels use the mapper and membership values use literal metadata", () => {
   act(() => root.render(<MetadataExample />));
+  expect(container.textContent).toContain("Custom filter introduction: ");
   expect(button("Field: Mapped Code metadata").textContent).toBe(
     "Mapped Code metadata",
   );
