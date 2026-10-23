@@ -73,7 +73,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
   }));
 
   /**
-   * Compares user-input parameters, excluding the field value parameter.
+   * Checks if the new filter schema has the same arguments as the current filter schema.
    */
   const canRetainArgs = (newFilterSchema: StandardFnSchema) => {
     if (!selectedField) {
