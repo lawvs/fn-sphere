@@ -189,11 +189,11 @@ test("field and operator changes retain only compatible arguments", () => {
   expect(json().filterRule.conditions[0].args).toEqual([]);
   choose("Field: submitter’s department", "amount");
   expect(json().filterRule.conditions[0].args).toEqual([]);
-  choose("Operator for amount", ">=");
+  choose("Operator for amount", "is at least");
   click("Value for amount");
   input("5000");
   click("Apply");
-  choose("Operator for amount", "<=");
+  choose("Operator for amount", "is at most");
   expect(json().filterRule.conditions[0].args).toEqual([5000]);
 });
 
