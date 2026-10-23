@@ -1,7 +1,7 @@
 import {
   getParametersExceptFirst,
+  isCompatibleType,
   isEqualPath,
-  isSameType,
   type FilterField,
   type SingleFilter,
   type StandardFnSchema,
@@ -86,7 +86,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
       // Select filter first time
       return false;
     }
-    return isSameType(
+    return isCompatibleType(
       getParametersExceptFirst(newFilterSchema),
       getParametersExceptFirst(currentFilterSchema),
     );

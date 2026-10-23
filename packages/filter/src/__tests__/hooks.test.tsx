@@ -104,6 +104,55 @@ describe("useFilterRule", async () => {
 
 describe("useFilterSelect", () => {
   it.each([
+    { from: "enumEquals", to: "startsWith", expectedArgs: ["open"] },
+    { from: "startsWith", to: "enumEquals", expectedArgs: [] },
+  ])(
+    "should retain only compatible args when switching $from to $to",
+    ({ from, to, expectedArgs }) => {
+      const initialRule = createSingleFilter({
+        path: ["status"],
+        name: from,
+        args: ["open"],
+      });
+      const defaultRule = createFilterGroup({
+        op: "and",
+        conditions: [initialRule],
+      });
+      const { result } = renderHook(
+        () => {
+          const { rootRule } = useRootRule();
+          const rule = rootRule.conditions[0];
+          if (rule?.type !== "Filter") throw new Error("Expected a filter");
+          return { rule, ...useFilterSelect(rule) };
+        },
+        {
+          wrapper: ({ children }) => {
+            const { context } = useFilterSphere({
+              schema: z.object({ status: z.enum(["open", "closed"]) }),
+              defaultRule,
+            });
+            return (
+              <FilterSchemaProvider context={context}>
+                {children}
+              </FilterSchemaProvider>
+            );
+          },
+        },
+      );
+      const filter = result.current.selectedField!.filterFnList.find(
+        (filter) => filter.name === to,
+      )!;
+
+      act(() => result.current.setFilter(filter));
+
+      expect(result.current.rule).toMatchObject({
+        name: to,
+        args: expectedArgs,
+      });
+    },
+  );
+
+  it.each([
     ["equals", "greaterThanOrEqual"],
     ["notEqual", "lessThan"],
   ])(
