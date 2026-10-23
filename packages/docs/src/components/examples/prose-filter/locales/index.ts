@@ -1,6 +1,6 @@
 import { defaultGetLocaleText } from "@fn-sphere/filter";
-import { messages } from "./locale";
-import { mapExpenseFilterName } from "./filter-locale";
+import { messages } from "./messages";
+import { mapExpenseFilterName } from "./filter";
 
 export type ProseLocale = keyof typeof messages;
 

@@ -1,4 +1,4 @@
-import { filterMessages } from "./filter-locale";
+import { filterMessages } from "./filter";
 
 const en = {
   title: "Filters as prose",
