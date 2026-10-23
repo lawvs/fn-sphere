@@ -183,7 +183,7 @@ test("field and operator changes retain only compatible arguments", () => {
   ]);
   choose("Field: expense type", "merchant");
   const merchant = json().filterRule.conditions[1].conditions[0];
-  expect(merchant.name).toBe("equals");
+  expect(merchant.name).toBe("notContains");
   expect(merchant.args).toEqual([]);
   choose("Field: submitter’s seniority", "submitter’s department");
   expect(json().filterRule.conditions[0].args).toEqual([]);
@@ -396,4 +396,21 @@ test("nested groups resolve overridden group and condition templates", () => {
   act(() => root.render(<MetadataExample theme={theme} />));
   expect(container.querySelectorAll("[data-custom-group]")).toHaveLength(2);
   expect(container.querySelectorAll("[data-custom-condition]")).toHaveLength(1);
+});
+
+test("string filters use native options and do not render membership prose", () => {
+  choose("Operator for merchant", "contains");
+  expect(button("Operator for merchant").textContent).toBe("contains");
+  expect(json().filterRule.conditions[1].conditions[1].args).toEqual(["Uber"]);
+  choose("Operator for merchant", "starts with");
+  expect(json().filterRule.conditions[1].conditions[1].name).toBe("startsWith");
+  choose("Operator for merchant", "ends with");
+  expect(json().filterRule.conditions[1].conditions[1].name).toBe("endsWith");
+  choose("Operator for merchant", "is empty");
+  expect(json().filterRule.conditions[1].conditions[1].args).toEqual([]);
+  expect(
+    container.querySelectorAll(".prose-condition")[2]!.textContent,
+  ).not.toContain("choose a value");
+  choose("Operator for merchant", "is not empty");
+  expect(json().filterRule.conditions[1].conditions[1].name).toBe("isNotEmpty");
 });

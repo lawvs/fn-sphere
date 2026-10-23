@@ -2,6 +2,7 @@ import { messages, type ProseLocale } from "./locale";
 import { expect, test } from "vitest";
 import {
   createFilterPredicate,
+  presetFilter,
   createFilterGroup,
   createSingleFilter,
   type FilterGroup,
@@ -12,12 +13,7 @@ import {
   membershipOperatorKey,
   parseInput,
 } from "./theme/model";
-import {
-  createProseRule,
-  expenseSchema,
-  proseFilters,
-  type Expense,
-} from "./schema";
+import { createProseRule, expenseSchema, type Expense } from "./schema";
 
 const membershipOperator = (
   negative: boolean,
@@ -42,7 +38,7 @@ const expense: Expense = {
 const predicate = (filterRule: FilterGroup) =>
   createFilterPredicate({
     schema: expenseSchema,
-    filterFnList: proseFilters,
+    filterFnList: presetFilter,
     filterRule,
   });
 

@@ -9,7 +9,6 @@ import {
   createProseRule,
   expenseSchema,
   mapExpenseFilterName,
-  proseFilters,
   type Expense,
 } from "./schema";
 import { messages, localeOptions, type ProseLocale } from "./locale";
@@ -26,7 +25,6 @@ export function ProseFilter() {
   const [showJSON, setShowJSON] = useState(false);
   const { context, filterRule, reset } = useFilterSphere<Expense>({
     schema: expenseSchema,
-    filterFnList: proseFilters,
     defaultRule: createProseRule,
     getLocaleText: t,
     mapFilterName: mapExpenseFilterName,

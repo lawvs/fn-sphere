@@ -1,12 +1,12 @@
 import {
   createFilterGroup,
   createSingleFilter,
-  presetFilter,
   type SingleFilter,
   type FilterField,
   type StandardFnSchema,
 } from "@fn-sphere/filter";
 import { z } from "zod";
+import type { $ZodTuple } from "zod/v4/core";
 
 export const expenseSchema = z.object({
   seniority: z.union([
@@ -40,19 +40,6 @@ export const expenseSchema = z.object({
 });
 
 export type Expense = z.infer<typeof expenseSchema>;
-export const proseFilters = presetFilter.filter((filter) =>
-  [
-    "equals",
-    "notEqual",
-    "contains",
-    "notContains",
-    "greaterThan",
-    "greaterThanOrEqual",
-    "lessThan",
-    "lessThanOrEqual",
-  ].includes(filter.name),
-);
-
 export const amountRule = () =>
   createSingleFilter({ path: ["amount"], name: "greaterThan", args: [500] });
 
@@ -100,25 +87,25 @@ export function createProseRule() {
   };
 }
 
-export function allowedOperators(field: string | number | undefined) {
-  if (field === "merchant") return ["equals", "notEqual"];
-  if (field === "amount")
-    return [
-      "equals",
-      "notEqual",
-      "greaterThan",
-      "greaterThanOrEqual",
-      "lessThan",
-      "lessThanOrEqual",
-    ];
-  return ["equals", "notEqual", "contains", "notContains"];
-}
-
 export function mapExpenseFilterName(
   filter: StandardFnSchema,
   field: FilterField,
 ) {
-  return field.path[0] === "amount" && filter.name === "equals"
-    ? "operator.numberEquals"
-    : `operator.${filter.name}`;
+  if (
+    field.fieldSchema._zod.def.type === "number" &&
+    filter.name === "equals"
+  ) {
+    return "numberEquals";
+  }
+  if (isMembershipFilter(filter)) {
+    return `member.${filter.name}`;
+  }
+  return filter.name;
+}
+
+export function isMembershipFilter(filter: StandardFnSchema | undefined) {
+  if (!filter || (filter.name !== "contains" && filter.name !== "notContains"))
+    return false;
+  const input = filter.define._zod.def.input as $ZodTuple;
+  return input._zod.def.items[1]?._zod.def.type === "array";
 }

@@ -15,7 +15,7 @@ import {
 } from "./inline-editors";
 import { ProseText, formatText } from "./text";
 import { membershipOperatorKey } from "./model";
-import { allowedOperators, amountRule } from "../schema";
+import { amountRule, isMembershipFilter } from "../schema";
 
 // Capture a surviving focus target before React removes the current condition.
 function focusAfterRemoval(element: HTMLElement | null) {
@@ -116,13 +116,7 @@ export function ProseField({ rule }: { rule: SingleFilter }) {
       })}
       options={fieldOptions}
       value={selectedField}
-      onChange={(field) =>
-        setField(field, {
-          tryRetainFilter: allowedOperators(field.path[0]).includes(
-            rule.name ?? "",
-          ),
-        })
-      }
+      onChange={(field) => setField(field)}
     />
   );
 }
@@ -135,23 +129,18 @@ export function ProseOperator({ rule }: { rule: SingleFilter }) {
     selectedField,
     setFilter,
   } = useFilterSelect(rule);
-  const allowed = allowedOperators(selectedField?.path[0]);
-  const options = filterOptions.filter((option) =>
-    allowed.includes(option.value.name),
-  );
   const fieldName = selectedField
     ? t(mapFieldName(selectedField))
     : t("condition");
   const count = Array.isArray(rule.args[0]) ? rule.args[0].length : 0;
-  const display =
-    rule.name === "contains" || rule.name === "notContains"
-      ? t(membershipOperatorKey(rule.name === "notContains", count))
-      : undefined;
+  const display = isMembershipFilter(selectedFilter)
+    ? t(membershipOperatorKey(rule.name === "notContains", count))
+    : undefined;
   return (
     <InlineSelect
       className="prose-operator"
       aria-label={formatText(t("operatorLabel"), { field: fieldName })}
-      options={options}
+      options={filterOptions}
       value={selectedFilter}
       display={display}
       onChange={(filter) => setFilter(filter)}
