@@ -17,6 +17,11 @@ const zh = {
   merchant: "商户",
   currency: "币种",
   amount: "金额",
+  greaterThan: "大于",
+  greaterThanOrEqual: "不小于",
+  lessThan: "小于",
+  lessThanOrEqual: "不大于",
+  numberEquals: "等于",
   equals: "是",
   notEqual: "不是",
   "member.contains": "是以下任一项",
@@ -70,7 +75,8 @@ const ja = {
   EUR: "ユーロ",
   GBP: "英ポンド",
   SGD: "シンガポールドル",
-} satisfies Record<keyof typeof zh, string>;
+} satisfies Record<Exclude<keyof typeof zh, keyof typeof jaJP>, string> &
+  Record<string, string>;
 
 export const filterMessages = {
   "en-US": { ...enUS, ...en },
