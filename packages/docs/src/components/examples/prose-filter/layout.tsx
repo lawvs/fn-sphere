@@ -7,7 +7,7 @@ type LocaleSelectProps = {
   onLocaleChange: (locale: ProseLocale) => void;
 };
 
-export function ExampleLayout({
+export function Layout({
   locale,
   onLocaleChange,
   children,

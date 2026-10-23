@@ -9,7 +9,7 @@ import { createDefaultGroup, expenseSchema, type Expense } from "./schema";
 import { messages, type ProseLocale } from "./locale";
 import { mapExpenseFilterName } from "./filter-locale";
 import { proseTheme } from "./theme";
-import { ExampleLayout } from "./example-layout";
+import { Layout } from "./layout";
 import { FilterJSON } from "./filter-json";
 
 export function ProseFilter() {
@@ -27,10 +27,10 @@ export function ProseFilter() {
 
   return (
     <FilterSphereProvider context={context} theme={proseTheme}>
-      <ExampleLayout locale={locale} onLocaleChange={setLocale}>
+      <Layout locale={locale} onLocaleChange={setLocale}>
         <FilterBuilder key={locale} />
         <FilterJSON filterRule={filterRule} />
-      </ExampleLayout>
+      </Layout>
     </FilterSphereProvider>
   );
 }
