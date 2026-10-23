@@ -1,4 +1,5 @@
 import {
+  getParametersExceptFirst,
   isEqualPath,
   isSameType,
   type FilterField,
@@ -72,7 +73,7 @@ export const useFilterSelect = (rule: SingleFilter) => {
   }));
 
   /**
-   * Checks if the new filter schema has the same arguments as the current filter schema.
+   * Compares user-input parameters, excluding the field value parameter.
    */
   const canRetainArgs = (newFilterSchema: StandardFnSchema) => {
     if (!selectedField) {
@@ -86,8 +87,8 @@ export const useFilterSelect = (rule: SingleFilter) => {
       return false;
     }
     return isSameType(
-      newFilterSchema.define._zod.def.input,
-      currentFilterSchema.define._zod.def.input,
+      getParametersExceptFirst(newFilterSchema),
+      getParametersExceptFirst(currentFilterSchema),
     );
   };
 
