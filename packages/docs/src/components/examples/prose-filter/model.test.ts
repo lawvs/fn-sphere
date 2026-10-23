@@ -114,7 +114,7 @@ test("membership connectors and numeric display honor the selected locale", () =
 
 test("locale dictionaries extend the built-in messages", () => {
   expect(messages["zh-CN"].addRule).toBe("\u6dfb\u52a0\u89c4\u5219");
-  expect(messages["ja-JP"]["value.Manager"]).toBe(
+  expect(messages["ja-JP"]["Manager"]).toBe(
     "\u30de\u30cd\u30fc\u30b8\u30e3\u30fc",
   );
 });

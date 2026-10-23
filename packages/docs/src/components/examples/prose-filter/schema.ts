@@ -8,37 +8,35 @@ import {
 } from "@fn-sphere/filter";
 import { z } from "zod";
 
-const literal = <T extends string>(value: T) =>
-  z.literal(value).describe(`value.${value}`);
-
 export const expenseSchema = z.object({
-  seniority: z
-    .union([literal("Contributor"), literal("Manager"), literal("Director")])
-    .describe("field.seniority"),
-  department: z
-    .union([
-      literal("Engineering"),
-      literal("Sales"),
-      literal("Marketing"),
-      literal("Finance"),
-      literal("Operations"),
-    ])
-    .describe("field.department"),
-  expenseType: z
-    .union([
-      literal("Food & drink"),
-      literal("Travel"),
-      literal("Lodging"),
-      literal("Software"),
-      literal("Office supplies"),
-      literal("Entertainment"),
-    ])
-    .describe("field.expenseType"),
-  merchant: z.string().describe("field.merchant"),
-  currency: z
-    .union([literal("USD"), literal("EUR"), literal("GBP"), literal("SGD")])
-    .describe("field.currency"),
-  amount: z.number().describe("field.amount"),
+  seniority: z.union([
+    z.literal("Contributor"),
+    z.literal("Manager"),
+    z.literal("Director"),
+  ]),
+  department: z.union([
+    z.literal("Engineering"),
+    z.literal("Sales"),
+    z.literal("Marketing"),
+    z.literal("Finance"),
+    z.literal("Operations"),
+  ]),
+  expenseType: z.union([
+    z.literal("Food & drink"),
+    z.literal("Travel"),
+    z.literal("Lodging"),
+    z.literal("Software"),
+    z.literal("Office supplies"),
+    z.literal("Entertainment"),
+  ]),
+  merchant: z.string(),
+  currency: z.union([
+    z.literal("USD"),
+    z.literal("EUR"),
+    z.literal("GBP"),
+    z.literal("SGD"),
+  ]),
+  amount: z.number(),
 });
 
 export type Expense = z.infer<typeof expenseSchema>;
