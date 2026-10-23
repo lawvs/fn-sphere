@@ -38,11 +38,10 @@
   cursor: default;
   opacity: 0.4;
 }
-.prose-editor :where(button, input):focus-visible,
-.prose-popup :where(button, input, [role="option"]):focus-visible {
-  outline: 2px solid var(--prose-blue);
-  outline-offset: 3px;
-  border-radius: 2px;
+.prose-editor :focus,
+.prose-popup:focus,
+.prose-popup :focus {
+  outline: none;
 }
 .prose-heading {
   display: flex;
