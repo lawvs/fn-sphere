@@ -8,7 +8,8 @@ import {
   type FilterGroup,
   type SingleFilter,
 } from "@fn-sphere/filter";
-import { InlineSelect, ValueLabelContext } from "./inline-editors";
+import { InlineSelect } from "./inline-select";
+import { ValueLabelContext } from "./value-label-context";
 import { ProseText, formatText } from "./text";
 import { createDefaultRule } from "../schema";
 

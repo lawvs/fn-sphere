@@ -1,5 +1,7 @@
 import { createFilterTheme } from "@fn-sphere/filter";
-import { InlineInput, InlineMultiple, InlineSelect } from "./inline-editors";
+import { InlineInput } from "./inline-input";
+import { InlineMultiple } from "./inline-multiple";
+import { InlineSelect } from "./inline-select";
 import {
   ProseCondition,
   ProseField,
