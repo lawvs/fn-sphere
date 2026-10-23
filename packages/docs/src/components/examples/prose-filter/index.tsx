@@ -10,7 +10,7 @@ import { messages, type ProseLocale } from "./locale";
 import { mapExpenseFilterName } from "./filter-locale";
 import { proseTheme } from "./theme";
 import { Layout } from "./layout";
-import { FilterJSON } from "./filter-json";
+import { RulePreview } from "./rule-preview";
 
 export function ProseFilter() {
   const [locale, setLocale] = useState<ProseLocale>("en-US");
@@ -29,7 +29,7 @@ export function ProseFilter() {
     <FilterSphereProvider context={context} theme={proseTheme}>
       <Layout locale={locale} onLocaleChange={setLocale}>
         <FilterBuilder key={locale} />
-        <FilterJSON filterRule={filterRule} />
+        <RulePreview filterRule={filterRule} />
       </Layout>
     </FilterSphereProvider>
   );

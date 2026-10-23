@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRootRule, type FilterGroup } from "@fn-sphere/filter";
 
-export function FilterJSON({ filterRule }: { filterRule: FilterGroup }) {
+export function RulePreview({ filterRule }: { filterRule: FilterGroup }) {
   const { getLocaleText: t } = useRootRule();
   const [showJSON, setShowJSON] = useState(false);
   return (
