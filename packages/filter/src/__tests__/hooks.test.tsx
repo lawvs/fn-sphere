@@ -1,13 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks, @eslint-react/rules-of-hooks */
-import type { FilterId } from "@fn-sphere/core";
-import { renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createFilterGroup,
+  createSingleFilter,
+  type FilterId,
+} from "@fn-sphere/core";
+import { act, cleanup, renderHook } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import {
   FilterSchemaProvider,
   useFilterRule,
+  useFilterSelect,
   useFilterSphere,
+  useRootRule,
 } from "../index.js";
+
+afterEach(cleanup);
 
 // see https://vitest.dev/api/vi.html#vi-mock
 vi.mock(import("@fn-sphere/core"), async (importOriginal) => {
@@ -92,4 +100,104 @@ describe("useFilterRule", async () => {
       }
     `);
   });
+});
+
+describe("useFilterSelect", () => {
+  it.each([
+    { from: "enumEquals", to: "startsWith", expectedArgs: ["open"] },
+    { from: "startsWith", to: "enumEquals", expectedArgs: [] },
+  ])(
+    "should retain only compatible args when switching $from to $to",
+    ({ from, to, expectedArgs }) => {
+      const initialRule = createSingleFilter({
+        path: ["status"],
+        name: from,
+        args: ["open"],
+      });
+      const defaultRule = createFilterGroup({
+        op: "and",
+        conditions: [initialRule],
+      });
+      const { result } = renderHook(
+        () => {
+          const { rootRule } = useRootRule();
+          const rule = rootRule.conditions[0];
+          if (rule?.type !== "Filter") throw new Error("Expected a filter");
+          return { rule, ...useFilterSelect(rule) };
+        },
+        {
+          wrapper: ({ children }) => {
+            const { context } = useFilterSphere({
+              schema: z.object({ status: z.enum(["open", "closed"]) }),
+              defaultRule,
+            });
+            return (
+              <FilterSchemaProvider context={context}>
+                {children}
+              </FilterSchemaProvider>
+            );
+          },
+        },
+      );
+      const filter = result.current.selectedField!.filterFnList.find(
+        (filter) => filter.name === to,
+      )!;
+
+      act(() => result.current.setFilter(filter));
+
+      expect(result.current.rule).toMatchObject({
+        name: to,
+        args: expectedArgs,
+      });
+    },
+  );
+
+  it.each([
+    ["equals", "greaterThanOrEqual"],
+    ["notEqual", "lessThan"],
+  ])(
+    "should retain numeric args when switching %s to %s and back",
+    (from, to) => {
+      const initialRule = createSingleFilter({
+        path: ["amount"],
+        name: from,
+        args: [42],
+      });
+      const defaultRule = createFilterGroup({
+        op: "and",
+        conditions: [initialRule],
+      });
+      const { result } = renderHook(
+        () => {
+          const { rootRule } = useRootRule();
+          const rule = rootRule.conditions[0];
+          if (rule?.type !== "Filter") throw new Error("Expected a filter");
+          return { rule, ...useFilterSelect(rule) };
+        },
+        {
+          wrapper: ({ children }) => {
+            const { context } = useFilterSphere({
+              schema: z.object({ amount: z.number() }),
+              defaultRule,
+            });
+            return (
+              <FilterSchemaProvider context={context}>
+                {children}
+              </FilterSchemaProvider>
+            );
+          },
+        },
+      );
+
+      for (const name of [to, from]) {
+        const filter = result.current.selectedField!.filterFnList.find(
+          (filter) => filter.name === name,
+        )!;
+
+        act(() => result.current.setFilter(filter));
+
+        expect(result.current.rule).toMatchObject({ name, args: [42] });
+      }
+    },
+  );
 });
