@@ -154,6 +154,9 @@ test("number editors reject empty input and preserve numeric zero", () => {
 });
 
 test("multi-select toggles update live and Done preserves the selection", () => {
+  expect(valueButton("expense type").textContent).toBe(
+    "Food & drink or Travel",
+  );
   clickValue("expense type");
   const entertainment = Array.from(
     document.querySelectorAll(".prose-checkbox"),
@@ -166,6 +169,9 @@ test("multi-select toggles update live and Done preserves the selection", () => 
   ]);
   click("Done");
   expect(document.querySelector(".prose-popup")).toBeNull();
+  expect(valueButton("expense type").textContent).toBe(
+    "Food & drink, Travel, or Entertainment",
+  );
   expect(json().filterRule.conditions[1].conditions[0].args[0]).toEqual([
     "Food & drink",
     "Travel",
@@ -227,6 +233,7 @@ test("field and operator changes retain only compatible arguments", () => {
   click("Apply");
   choose(operatorButton("amount"), "is at most");
   expect(json().filterRule.conditions[0].args).toEqual([5000]);
+  expect(valueButton("amount").textContent).toBe("5,000");
 });
 
 test("filter JSON reflects the selected logic without a workflow action", () => {

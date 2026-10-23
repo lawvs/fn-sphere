@@ -1,4 +1,4 @@
-import { getLocaleConfig, type ProseLocale } from "./locales";
+import { getLocaleConfig } from "./locales";
 import { expect, test } from "vitest";
 import {
   createFilterPredicate,
@@ -7,14 +7,7 @@ import {
   createSingleFilter,
   type FilterGroup,
 } from "@fn-sphere/filter";
-import { formatValue, listSeparatorKey, parseInput } from "./theme/model";
 import { createDefaultGroup, expenseSchema, type Expense } from "./schema";
-
-const listSeparator = (
-  index: number,
-  count: number,
-  locale: ProseLocale = "en-US",
-) => getLocaleConfig(locale).getLocaleText(listSeparatorKey(index, count));
 
 const expense: Expense = {
   seniority: "Manager",
@@ -59,35 +52,6 @@ test("notContains excludes every selected department", () => {
   expect(predicate(rule)(expense)).toBe(false);
   expect(predicate(rule)({ ...expense, department: "Marketing" })).toBe(false);
   expect(predicate(rule)({ ...expense, department: "Engineering" })).toBe(true);
-});
-
-test("membership prose handles no, one, two and three values", () => {
-  const sentence = (values: string[]) =>
-    values.map((value, i) => listSeparator(i, values.length) + value).join("");
-  expect(sentence([])).toBe("");
-  expect(sentence(["Sales"])).toBe("Sales");
-  expect(sentence(["Sales", "Marketing"])).toBe("Sales or Marketing");
-  expect(sentence(["Sales", "Marketing", "Finance"])).toBe(
-    "Sales, Marketing, or Finance",
-  );
-});
-
-test("number formatting never changes stored numeric input", () => {
-  expect(formatValue(5000)).toBe("5,000");
-  expect(parseInput("0", "number")).toBe(0);
-  expect(parseInput("", "number")).toBeUndefined();
-  expect(parseInput(" ", "number")).toBeUndefined();
-  expect(parseInput("Infinity", "number")).toBeUndefined();
-  expect(parseInput("oops", "number")).toBeUndefined();
-  expect(parseInput("WeWork", "text")).toBe("WeWork");
-});
-
-test("membership connectors and numeric display honor the selected locale", () => {
-  expect(listSeparator(1, 2, "zh-CN")).toBe("或");
-  expect(listSeparator(1, 2, "ja-JP")).toBe("または");
-  expect(formatValue(5000.5, "ja-JP")).toBe(
-    new Intl.NumberFormat("ja-JP").format(5000.5),
-  );
 });
 
 test("locale dictionaries extend the built-in messages", () => {

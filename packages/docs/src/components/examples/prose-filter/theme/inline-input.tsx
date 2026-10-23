@@ -1,7 +1,6 @@
 import * as Popover from "@radix-ui/react-popover";
 import { useId, useState, type InputHTMLAttributes } from "react";
 import { useRootRule } from "@fn-sphere/filter";
-import { formatValue, parseInput } from "./model";
 
 type InlineInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -95,4 +94,20 @@ export function InlineInput({
       </Popover.Portal>
     </Popover.Root>
   );
+}
+
+function formatValue(value: unknown, locale = "en-US"): string {
+  return typeof value === "number"
+    ? new Intl.NumberFormat(locale, { maximumFractionDigits: 20 }).format(value)
+    : String(value ?? "");
+}
+
+function parseInput(
+  value: string,
+  type: string | undefined,
+): string | number | undefined {
+  if (!value.trim()) return undefined;
+  if (type !== "number") return value;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : undefined;
 }

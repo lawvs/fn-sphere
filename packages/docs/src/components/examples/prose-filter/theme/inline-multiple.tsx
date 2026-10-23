@@ -1,7 +1,6 @@
 import * as Popover from "@radix-ui/react-popover";
 import { Fragment, useState, type SelectHTMLAttributes } from "react";
 import { useRootRule } from "@fn-sphere/filter";
-import { listSeparatorKey } from "./model";
 
 type Option<T> = { label: string; value: T };
 type InlineMultipleProps<T> = Omit<
@@ -85,4 +84,10 @@ export function InlineMultiple<T>({
       </Popover.Portal>
     </Popover.Root>
   );
+}
+
+function listSeparatorKey(index: number, count: number) {
+  if (index === 0) return "";
+  if (index !== count - 1) return "list.middle";
+  return count > 2 ? "list.serialOr" : "list.or";
 }
