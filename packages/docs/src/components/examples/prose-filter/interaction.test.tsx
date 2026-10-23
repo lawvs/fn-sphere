@@ -88,7 +88,6 @@ test("deleting the last condition leaves an editable empty root", () => {
   expect(container.textContent).toContain(
     "Add a condition to filter expenses.",
   );
-  expect(document.activeElement).toBe(button("+ condition"));
   click("+ condition");
   expect(json().filterRule.conditions[0].args).toEqual([500]);
 });

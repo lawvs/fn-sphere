@@ -186,6 +186,8 @@
   margin-left: auto;
 }
 .prose-editor .prose-json {
+  flex-basis: 100%;
+  min-width: 0;
   background: var(--prose-soft);
   padding: 1rem;
   margin: 1rem 0;
