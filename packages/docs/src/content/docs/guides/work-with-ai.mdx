@@ -5,11 +5,11 @@ sidebar:
   order: 3
 ---
 
-The Filter Sphere skill guides AI coding agents through integration choices and the relevant documentation.
+Use the Filter Sphere skill to help an AI coding agent integrate filtering and sorting into your application or library.
 
 ## Skills
 
-The skill includes a React filtering example, extension guidelines, and links to filtering and sorting guides.
+The skill covers package selection, rule state ownership, theme extension points, and translation integration. It also includes a React filtering example and links to detailed guides.
 
 ### Installation
 
@@ -19,9 +19,9 @@ Install the Filter Sphere skill to your AI coding agent:
 npx skills add lawvs/fn-sphere
 ```
 
-The [skill source](https://github.com/lawvs/fn-sphere/tree/main/skills/filter-sphere) is part of this repository. The root `AGENTS.md` directs agents to read it for Filter Sphere integrations, themes, localization, and examples.
+The installed skill works in your project without a checkout of fn-sphere. It directs agents to published guides and the types in your installed packages.
 
-Within this repository, the skill points agents to local documentation. In other projects, it directs them to the published guides and installed package types.
+The [skill source](https://github.com/lawvs/fn-sphere/tree/main/skills/filter-sphere) is part of this repository. For repository contributors, `AGENTS.md` adds local documentation paths and example conventions.
 
 ### Example Prompts
 
@@ -44,7 +44,7 @@ Add localization support to my filter builder with English and Chinese in Filter
 The skill contains:
 
 - A React setup with `useFilterSphere`, `FilterSphereProvider`, `FilterBuilder`, and filtered results.
-- Guidance on schema defaults, theme layers, template composition, and translation lookup.
+- Guidance on package selection, rule state ownership, reusable components, schema defaults, theme layers, and translation lookup.
 - Reading paths for custom functions, parameter inputs, metadata, persistence, sorting, and examples.
 
 Detailed API behavior stays in the linked guides. The skill helps agents choose which guide and extension point apply to the task.

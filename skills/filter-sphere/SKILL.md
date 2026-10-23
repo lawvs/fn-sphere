@@ -1,21 +1,26 @@
 ---
 name: filter-sphere
-description: Integrate or customize Filter Sphere for Zod-typed data. Use for React filter UIs, themes, localization, custom filter functions, and filtering or sorting with @fn-sphere/core.
+description: Integrate Filter Sphere into applications and libraries. Use for React filter UIs, reusable filter components, themes, localization, custom filter functions, and filtering or sorting with @fn-sphere/core.
 ---
 
 # Filter Sphere
 
+Help developers use Filter Sphere in their own applications and libraries. Adapt the integration to the host project's schemas, components, state ownership, and translation system.
+
+## Choose the integration
+
+- Use `@fn-sphere/filter` for React filtering interfaces. It provides the hooks, provider, builder, and theme extension points.
+- Use `@fn-sphere/core` for filtering or sorting without React. Use `createFilterPredicate` or `createFilterSphere` for filtering, and `createSorterSphere` for sorting.
+- Check the host project's installed versions and package types before choosing APIs. Reuse its Zod schemas, UI components, and i18n integration where they fit.
+- Use `defaultRule` for initial rules when Filter Sphere owns the state. If the host owns the rules, pass `ruleValue` and update it through `onRuleChange`.
+
 ## Choose the relevant guide
 
-Before implementing a change, read the guides for that task. Follow only the relevant rows.
-
-In the fn-sphere repository, read the local documentation first. Map each URL below to `packages/docs/src/content/docs/`: replace `/fn-sphere/` with that directory and the trailing slash with `.mdx`. For example, `/fn-sphere/customization/theme/` maps to `packages/docs/src/content/docs/customization/theme.mdx`.
-
-In other projects, use the linked documentation and check APIs against the installed package types.
+Before implementing a change, read the guides for that task. Follow only the relevant rows. The links below work from a consuming project without a checkout of the fn-sphere repository.
 
 | Task                                            | Read                                                                                                                                                                  |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Add a filter UI or edit an example              | [Getting Started](https://www.waterwater.moe/fn-sphere/guides/getting-started/), [Best Practices](https://www.waterwater.moe/fn-sphere/guides/best-practices/)        |
+| Integrate a React filter UI                     | [Getting Started](https://www.waterwater.moe/fn-sphere/guides/getting-started/), [Best Practices](https://www.waterwater.moe/fn-sphere/guides/best-practices/)        |
 | Change controls or rule layouts                 | [Theme](https://www.waterwater.moe/fn-sphere/customization/theme/)                                                                                                    |
 | Translate labels or compose localized sentences | [Localization](https://www.waterwater.moe/fn-sphere/customization/localization/)                                                                                      |
 | Read application metadata from field schemas    | [Schema Metadata](https://www.waterwater.moe/fn-sphere/customization/schema-metadata/)                                                                                |
@@ -24,11 +29,11 @@ In other projects, use the linked documentation and check APIs against the insta
 | Save or restore rules                           | [Persistence](https://www.waterwater.moe/fn-sphere/customization/persistence/)                                                                                        |
 | Sort data or add compare functions              | [Sort Getting Started](https://www.waterwater.moe/fn-sphere/sort/getting-started/), [Custom Sort Functions](https://www.waterwater.moe/fn-sphere/sort/customization/) |
 
-For working UI compositions, consult [Example](https://www.waterwater.moe/fn-sphere/reference/example/).
+For implementation references, consult [Example](https://www.waterwater.moe/fn-sphere/reference/example/). Adapt the relevant parts to the host project's requirements.
 
 ## React setup
 
-If the project does not have the React filter package, install it with Zod:
+If dependencies are missing, add them with the host project's package manager. For a React integration using pnpm:
 
 ```bash
 pnpm add @fn-sphere/filter zod
@@ -83,4 +88,4 @@ export function MyFilter() {
 - Configure `getLocaleText` at the integration entry point. Inside the provider, use `useRootRule()` to access it. Keep sentence interpolation separate from translation lookup.
 - Use default field paths and literal values as translation keys when they fit. Add `.describe()` for different labels or translation keys.
 
-Keep the integration entry point focused on schema configuration, the provider, the builder, and data consumption. Read Best Practices for module boundaries and example design.
+For reusable integrations, expose the configuration and rule state that consumers need. Keep application-specific labels, data, and layout outside shared theme components. Read Best Practices for module boundaries.
