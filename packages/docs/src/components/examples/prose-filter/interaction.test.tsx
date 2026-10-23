@@ -15,7 +15,7 @@ import {
 } from "@fn-sphere/filter";
 import { proseTheme } from "./theme";
 import { ProseCondition, ProseGroup } from "./theme/prose-rule";
-import { messages } from "./locales/locale";
+import { getLocaleConfig } from "./locales";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 let container: HTMLDivElement;
@@ -357,9 +357,7 @@ function MetadataExample({ theme = proseTheme }: { theme?: FilterTheme }) {
     getLocaleText: (key) =>
       key === "sentence.filter"
         ? "Custom filter introduction: "
-        : Object.hasOwn(messages["en-US"], key)
-          ? messages["en-US"][key]!
-          : key,
+        : getLocaleConfig("en-US").getLocaleText(key),
     mapFieldName: (field) => `Mapped ${defaultMapFieldName(field)}`,
     defaultRule: () =>
       createFilterGroup({

@@ -3,26 +3,19 @@ import {
   FilterBuilder,
   FilterSphereProvider,
   useFilterSphere,
-  defaultGetLocaleText,
 } from "@fn-sphere/filter";
 import { createDefaultGroup, expenseSchema, type Expense } from "./schema";
-import { messages, type ProseLocale } from "./locales/locale";
-import { mapExpenseFilterName } from "./locales/filter-locale";
+import { getLocaleConfig, type ProseLocale } from "./locales";
 import { proseTheme } from "./theme";
 import { Layout } from "./layout";
 import { RulePreview } from "./rule-preview";
 
 export function ProseFilter() {
   const [locale, setLocale] = useState<ProseLocale>("en-US");
-  const dictionary = messages[locale];
   const { context, filterRule } = useFilterSphere<Expense>({
     schema: expenseSchema,
     defaultRule: createDefaultGroup,
-    getLocaleText: (key) =>
-      Object.hasOwn(dictionary, key)
-        ? dictionary[key]!
-        : defaultGetLocaleText(key),
-    mapFilterName: mapExpenseFilterName,
+    ...getLocaleConfig(locale),
   });
 
   return (

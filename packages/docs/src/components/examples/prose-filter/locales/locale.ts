@@ -1,12 +1,5 @@
 import { filterMessages } from "./filter-locale";
 
-export const localeOptions = [
-  { value: "en-US", label: "English" },
-  { value: "zh-CN", label: "简体中文" },
-  { value: "ja-JP", label: "日本語" },
-] as const;
-export type ProseLocale = (typeof localeOptions)[number]["value"];
-
 const en = {
   title: "Filters as prose",
   heading: "Filter expenses",
@@ -130,7 +123,10 @@ const ja = {
   ruleJSON: "絞り込みの JSON",
 } satisfies Record<keyof typeof en, string>;
 
-export const messages: Record<ProseLocale, Record<string, string>> = {
+export const messages: Record<
+  "en-US" | "zh-CN" | "ja-JP",
+  Record<string, string>
+> = {
   "en-US": { ...filterMessages["en-US"], ...en, locale: "en-US" },
   "zh-CN": { ...filterMessages["zh-CN"], ...zh, locale: "zh-CN" },
   "ja-JP": { ...filterMessages["ja-JP"], ...ja, locale: "ja-JP" },

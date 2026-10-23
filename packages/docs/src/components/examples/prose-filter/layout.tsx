@@ -1,6 +1,12 @@
 import type { PropsWithChildren } from "react";
 import { useRootRule } from "@fn-sphere/filter";
-import { localeOptions, type ProseLocale } from "./locales/locale";
+import type { ProseLocale } from "./locales";
+
+const localeOptions = [
+  { value: "en-US", label: "English" },
+  { value: "zh-CN", label: "简体中文" },
+  { value: "ja-JP", label: "日本語" },
+] as const;
 
 type LocaleSelectProps = {
   locale: ProseLocale;
