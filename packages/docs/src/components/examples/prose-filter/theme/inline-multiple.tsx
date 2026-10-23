@@ -83,7 +83,6 @@ export function InlineMultiple<T>({
               {option.label}
             </label>
           ))}
-          <div className="prose-popup-hint">{t("multiHelp")}</div>
           <Popover.Close className="prose-small-button">
             {t("done")}
           </Popover.Close>
