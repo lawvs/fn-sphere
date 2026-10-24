@@ -130,11 +130,28 @@ const createFlattenFilterGroup = () =>
     conditions: [
       createFilterGroup({
         op: "and",
-        conditions: [createSingleFilter(), createSingleFilter()],
+        conditions: [
+          createSingleFilter({
+            path: ["name"],
+            name: "contains",
+            args: ["Alice"],
+          }),
+          createSingleFilter({
+            path: ["status"],
+            name: "equals",
+            args: ["pending"],
+          }),
+        ],
       }),
       createFilterGroup({
         op: "and",
-        conditions: [createSingleFilter()],
+        conditions: [
+          createSingleFilter({
+            path: ["id"],
+            name: "greaterThan",
+            args: [100],
+          }),
+        ],
       }),
     ],
   });

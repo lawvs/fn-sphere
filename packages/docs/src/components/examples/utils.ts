@@ -17,10 +17,20 @@ export const schema = z.object({
 export const defaultRule = createFilterGroup({
   op: "and",
   conditions: [
-    createSingleFilter(),
+    createSingleFilter({
+      path: ["name"],
+      name: "contains",
+      args: ["Alice"],
+    }),
     createFilterGroup({
       op: "or",
-      conditions: [createSingleFilter()],
+      conditions: [
+        createSingleFilter({
+          path: ["status"],
+          name: "equals",
+          args: ["pending"],
+        }),
+      ],
     }),
   ],
 });
