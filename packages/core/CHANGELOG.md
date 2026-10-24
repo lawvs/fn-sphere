@@ -1,5 +1,15 @@
 # @fn-sphere/core
 
+## 1.5.0
+
+### Minor Changes
+
+- [#267](https://github.com/lawvs/fn-sphere/pull/267) [`ecab1a0`](https://github.com/lawvs/fn-sphere/commit/ecab1a0d4904bed6fdfd5d345cfa61641ab72916) Thanks [@lawvs](https://github.com/lawvs)! - Export schema-defined arithmetic and boolean logic functions.
+
+### Patch Changes
+
+- [#286](https://github.com/lawvs/fn-sphere/pull/286) [`c76e64d`](https://github.com/lawvs/fn-sphere/commit/c76e64d9386bdb7f2bb78437afc9f448c033a0d8) Thanks [@lawvs](https://github.com/lawvs)! - Preserve filter input when the new argument types accept the previous argument types, including numeric equality/comparison switches and enum-to-string switches. Export `isCompatibleType` from `@fn-sphere/core` to support these checks.
+
 ## 1.4.0
 
 ### Minor Changes
