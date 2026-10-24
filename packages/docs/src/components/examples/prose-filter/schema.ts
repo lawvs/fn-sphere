@@ -1,4 +1,4 @@
-import { createSingleFilter, type FilterGroup } from "@fn-sphere/filter";
+import { createFilterGroup, createSingleFilter } from "@fn-sphere/filter";
 import { z } from "zod";
 
 export const expenseSchema = z.object({
@@ -36,48 +36,35 @@ export type Expense = z.infer<typeof expenseSchema>;
 export const createDefaultRule = () =>
   createSingleFilter({ path: ["amount"], name: "greaterThan", args: [500] });
 
-// Stable fixture IDs keep the initial server and client markup identical.
-export function createDefaultGroup(): FilterGroup {
-  return {
-    type: "FilterGroup",
+export function createDefaultGroup() {
+  return createFilterGroup({
     op: "and",
-    id: "prose-root" as FilterGroup["id"],
     conditions: [
-      {
-        id: "prose-seniority" as FilterGroup["id"],
-        type: "Filter",
+      createSingleFilter({
         path: ["seniority"],
         name: "equals",
         args: ["Manager"],
-      },
-      {
-        type: "FilterGroup",
+      }),
+      createFilterGroup({
         op: "or",
-        id: "prose-list" as FilterGroup["id"],
         conditions: [
-          {
-            id: "prose-type" as FilterGroup["id"],
-            type: "Filter",
+          createSingleFilter({
             path: ["expenseType"],
             name: "contains",
             args: [["Food & drink", "Travel"]],
-          },
-          {
-            id: "prose-merchant" as FilterGroup["id"],
-            type: "Filter",
+          }),
+          createSingleFilter({
             path: ["merchant"],
             name: "equals",
             args: ["Uber"],
-          },
-          {
-            id: "prose-currency" as FilterGroup["id"],
-            type: "Filter",
+          }),
+          createSingleFilter({
             path: ["currency"],
             name: "equals",
             args: ["USD"],
-          },
+          }),
         ],
-      },
+      }),
     ],
-  };
+  });
 }
