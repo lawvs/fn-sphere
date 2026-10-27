@@ -1,5 +1,15 @@
 # @fn-sphere/filter
 
+## 1.5.0
+
+### Patch Changes
+
+- [#284](https://github.com/lawvs/fn-sphere/pull/284) [`ac9d98a`](https://github.com/lawvs/fn-sphere/commit/ac9d98a0f7cfd92b84e20d002b40dbf0b0771d29) Thanks [@lawvs](https://github.com/lawvs)! - Keep the correct parent ID when appending a condition or group inside a nested filter group.
+
+- [#286](https://github.com/lawvs/fn-sphere/pull/286) [`c76e64d`](https://github.com/lawvs/fn-sphere/commit/c76e64d9386bdb7f2bb78437afc9f448c033a0d8) Thanks [@lawvs](https://github.com/lawvs)! - Preserve filter input when switching between numeric equality and comparison operators by comparing only user-input parameter types. Retain arguments only when those types are the same.
+- Updated dependencies [[`ecab1a0`](https://github.com/lawvs/fn-sphere/commit/ecab1a0d4904bed6fdfd5d345cfa61641ab72916)]:
+  - @fn-sphere/core@1.5.0
+
 ## 1.4.0
 
 ### Minor Changes
