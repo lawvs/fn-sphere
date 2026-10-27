@@ -104,10 +104,10 @@ describe("useFilterRule", async () => {
 
 describe("useFilterSelect", () => {
   it.each([
-    { from: "enumEquals", to: "startsWith", expectedArgs: ["open"] },
+    { from: "enumEquals", to: "startsWith", expectedArgs: [] },
     { from: "startsWith", to: "enumEquals", expectedArgs: [] },
   ])(
-    "should retain only compatible args when switching $from to $to",
+    "should reset args when switching $from to $to with different argument types",
     ({ from, to, expectedArgs }) => {
       const initialRule = createSingleFilter({
         path: ["status"],

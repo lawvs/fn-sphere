@@ -15,5 +15,5 @@ export {
   stringFilter,
 } from "./presets.js";
 
-export { isCompatibleType, isSameType } from "zod-compare";
+export { isSameType } from "zod-compare";
 export type * from "./types.js";
