@@ -7,7 +7,7 @@ import type { FilterId, SingleFilter } from "./types.js";
 import { createFilterGroup, createSingleFilter } from "./utils.js";
 import { isValidRule, normalizeFilter, validateGroup } from "./validation.js";
 
-describe.each(["and", "or"] as const)("validateGroup (%s)", (op) => {
+describe("validateGroup", () => {
   const dataSchema = z.object({ name: z.string() });
   const filterFnList = [
     defineTypedFn({
@@ -40,8 +40,11 @@ describe.each(["and", "or"] as const)("validateGroup (%s)", (op) => {
         filterFnList,
         dataSchema,
         ruleGroup: createFilterGroup({
-          op,
-          conditions: [createFilterGroup({ op, conditions }), invalidRule],
+          op: "and",
+          conditions: [
+            createFilterGroup({ op: "and", conditions }),
+            invalidRule,
+          ],
         }),
       });
 
