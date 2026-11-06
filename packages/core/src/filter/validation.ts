@@ -235,7 +235,7 @@ export const validateGroup = ({
       if (!result.success) {
         return result;
       }
-      return result;
+      continue;
     }
     const result = validateRule({
       filterFnList,
