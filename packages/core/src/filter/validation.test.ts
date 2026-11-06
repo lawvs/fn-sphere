@@ -5,7 +5,50 @@ import { defineGenericFn, defineTypedFn } from "../fn-helpers.js";
 import type { FnSchema } from "../types.js";
 import type { FilterId, SingleFilter } from "./types.js";
 import { createFilterGroup, createSingleFilter } from "./utils.js";
-import { isValidRule, normalizeFilter } from "./validation.js";
+import { isValidRule, normalizeFilter, validateGroup } from "./validation.js";
+
+describe.each(["and", "or"] as const)("validateGroup (%s)", (op) => {
+  const dataSchema = z.object({ name: z.string() });
+  const filterFnList = [
+    defineTypedFn({
+      name: "equals",
+      define: z.function({
+        input: [z.string(), z.string()],
+        output: z.boolean(),
+      }),
+      implement: (value, target) => value === target,
+    }),
+  ];
+  const validRule = createSingleFilter({
+    path: ["name"],
+    name: "equals",
+    args: ["Alice"],
+  });
+  const invalidRule = createSingleFilter({
+    path: ["name"],
+    name: "missing",
+    args: [],
+  });
+
+  it.each([
+    { label: "empty", conditions: [] },
+    { label: "non-empty", conditions: [validRule] },
+  ])(
+    "rejects an invalid sibling after a valid $label subgroup",
+    ({ conditions }) => {
+      const result = validateGroup({
+        filterFnList,
+        dataSchema,
+        ruleGroup: createFilterGroup({
+          op,
+          conditions: [createFilterGroup({ op, conditions }), invalidRule],
+        }),
+      });
+
+      expect(result.success).toBe(false);
+    },
+  );
+});
 
 describe("isValidRule", () => {
   const filterFnList: FnSchema[] = [
