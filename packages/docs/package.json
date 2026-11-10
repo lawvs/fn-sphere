@@ -45,7 +45,6 @@
     "@fn-sphere/theme-mui-material": "workspace:*",
     "@mui/material": "^9.5.0",
     "@xyflow/react": "^12.12.1",
-    "typescript": "^6.0.3",
     "zod": "^4.6.7"
   }
 }
