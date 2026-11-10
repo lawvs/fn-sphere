@@ -37,6 +37,7 @@
     "typedoc-plugin-markdown": "^4.14.1"
   },
   "devDependencies": {
+    "@emnapi/runtime": "1.11.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fn-sphere/core": "workspace:*",
@@ -45,6 +46,7 @@
     "@fn-sphere/theme-mui-material": "workspace:*",
     "@mui/material": "^9.5.0",
     "@xyflow/react": "^12.12.1",
+    "typescript": "^6.0.3",
     "zod": "^4.6.7"
   }
 }
