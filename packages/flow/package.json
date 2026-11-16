@@ -1,6 +1,6 @@
 {
   "name": "@fn-sphere/flow",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Compose schema-defined functions into executable flows.",
   "type": "module",
   "repository": {
