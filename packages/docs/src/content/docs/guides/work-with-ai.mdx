@@ -5,11 +5,11 @@ sidebar:
   order: 3
 ---
 
-Thanks to Filter Sphere being schema-driven and TypeScript-first, it works great with AI coding agents.
+Use the Filter Sphere skill to help an AI coding agent integrate filtering and sorting into your application or library.
 
 ## Skills
 
-Filter Sphere provides official [skills](https://code.claude.com/docs/en/skills) for AI coding agents, enabling them to understand Filter Sphere's API, patterns, and best practices when helping you build filtering and sorting interfaces.
+The skill covers package selection, rule state ownership, theme extension points, and translation integration. It also includes a React filtering example and links to detailed guides.
 
 ### Installation
 
@@ -19,7 +19,9 @@ Install the Filter Sphere skill to your AI coding agent:
 npx skills add lawvs/fn-sphere
 ```
 
-The source code of the skill is [here](https://github.com/lawvs/fn-sphere/tree/main/skills/filter-sphere).
+The installed skill works in your project without a checkout of fn-sphere. It directs agents to published guides and the types in your installed packages.
+
+The [skill source](https://github.com/lawvs/fn-sphere/tree/main/skills/filter-sphere) is part of this repository. For repository contributors, `AGENTS.md` adds local documentation paths and example conventions.
 
 ### Example Prompts
 
@@ -39,13 +41,10 @@ Add localization support to my filter builder with English and Chinese in Filter
 
 ### What's Included
 
-The Filter Sphere skill provides knowledge about:
+The skill contains:
 
-- Zod schema definition and field discovery
-- Filter and sort sphere creation (`createFilterSphere`, `createSorterSphere`)
-- Preset functions (`presetFilter`, `presetSort`)
-- Custom function authoring (`defineTypedFn`, `defineGenericFn`)
-- React integration (`useFilterSphere`, `FilterBuilder`, themes, localization)
-- Filter rule composition (single filters, groups with and/or logic)
-- Multi-field sorting with asc/desc support
-- Recommended project structure and best practices
+- A React setup with `useFilterSphere`, `FilterSphereProvider`, `FilterBuilder`, and filtered results.
+- Guidance on package selection, rule state ownership, reusable components, schema defaults, theme layers, and translation lookup.
+- Reading paths for custom functions, parameter inputs, metadata, persistence, sorting, and examples.
+
+Detailed API behavior stays in the linked guides. The skill helps agents choose which guide and extension point apply to the task.

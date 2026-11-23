@@ -177,6 +177,88 @@ function accordingly.
 
 </Aside>
 
+## Default Labels and Translation Keys
+
+By default, fields use their descriptions or fall back to their paths. Built-in literal input options use their descriptions or fall back to `String(value)`. Both labels pass through `getLocaleText`.
+
+If paths and values already make suitable keys, use them directly. For example, `name` and `Manager` can remain unchanged in English and have entries in another language. Add `.describe()` when the display label or translation key needs to differ from the path or value.
+
+Custom labels must follow the same mapping as the built-in selectors. Use the labels from `useFilterSelect`, or pass `mapFieldName` and `mapFilterName` results to `getLocaleText`. This keeps menus, sentence fragments, and supporting labels consistent when schema metadata changes.
+
+## Share Translation Configuration
+
+Pass one `getLocaleText` function to `useFilterSphere`. Inside `FilterSphereProvider`, custom templates and controls can read it from `useRootRule()`. This keeps all filter UI on the same translation path.
+
+Start with the built-in locale and add application labels. For prose, override operator wording when symbols do not fit the sentence. Keep those overrides with the translation configuration.
+
+If localization also needs a name mapping, a factory can return both settings. The following module keeps its dictionaries private:
+
+```ts
+// locales.ts
+import {
+  defaultGetLocaleText,
+  type FilterField,
+  type StandardFnSchema,
+} from "@fn-sphere/filter";
+import { enUS, zhCN } from "@fn-sphere/filter/locales";
+
+export type Locale = "en" | "zh";
+
+const messages: Record<Locale, Record<string, string>> = {
+  en: { ...enUS, numberEquals: "is exactly" },
+  zh: { ...zhCN, amount: "金额", numberEquals: "等于" },
+};
+
+export function getLocaleConfig(locale: Locale) {
+  const dictionary = messages[locale];
+  return {
+    getLocaleText: (key: string): string =>
+      dictionary[key] ?? defaultGetLocaleText(key),
+    mapFilterName: (filter: StandardFnSchema, field: FilterField): string =>
+      filter.name === "equals" && field.fieldSchema._zod.def.type === "number"
+        ? "numberEquals"
+        : filter.name,
+  };
+}
+```
+
+Use the returned settings at the integration entry point:
+
+```tsx
+import {
+  FilterBuilder,
+  FilterSphereProvider,
+  useFilterSphere,
+} from "@fn-sphere/filter";
+import { z } from "zod";
+import { getLocaleConfig } from "./locales";
+
+const schema = z.object({ amount: z.number() });
+
+export function LocalizedFilter() {
+  const { context } = useFilterSphere({
+    schema,
+    ...getLocaleConfig("zh"),
+  });
+
+  return (
+    <FilterSphereProvider context={context}>
+      <FilterBuilder />
+    </FilterSphereProvider>
+  );
+}
+```
+
+For language switching, pass the selected locale to the factory. Translate display labels while retaining the stored field paths, operator names, and argument values.
+
+If translation lookup is the only setting, exporting `getLocaleText` is enough. A factory is optional, as shown in [Best Practices](/fn-sphere/guides/best-practices/#use-one-translation-entry-point).
+
+## Compose Localized Sentences
+
+`getLocaleText` resolves a key to a string. A prose UI can add a small rendering component that places interactive controls into translated sentence placeholders. Keep that component responsible for interpolation, and obtain its text through the existing `getLocaleText` function.
+
+This lets each language choose the order of field, operator, and value without changing the rule. The [Rules as prose example](/fn-sphere/reference/example/#rules-as-prose) demonstrates this separation with `LocalizedSentence`.
+
 ## Integration with i18n Libraries
 
 If your project already uses an i18n library (e.g. `next-intl`, `react-intl`, `react-i18next`), you can bridge it with Filter Sphere's `getLocaleText` instead of maintaining separate locale files.

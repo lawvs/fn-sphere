@@ -37,7 +37,15 @@ export default function AdvancedFilter({ schema }) {
 }
 ```
 
-## Overriding a existing theme
+## Choose an Extension Point
+
+Use `components` to change control appearance or interaction, and `templates` to change the layout of rules and groups. See [Best Practices](/fn-sphere/guides/best-practices/#override-the-relevant-theme-layer) for the theme layers.
+
+Built-in input adapters match parameter schemas, produce translated options, and update rule arguments. For a different multi-select appearance, override `components.MultipleSelect` to keep those adapters. Add a `dataInputViews` entry when the existing adapters cannot represent the required parameter shape. See [Data Input](/fn-sphere/customization/data-input/).
+
+When a template renders child templates, obtain them from `useView("templates")`. Direct imports of concrete child components bypass later theme overrides. The recursive group below uses `GroupView` and `RuleView` from the active theme.
+
+## Overriding an Existing Theme
 
 You can override existing theme by replacing them with your own custom components or templates.
 
